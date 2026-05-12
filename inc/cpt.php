@@ -148,10 +148,12 @@ add_filter('the_posts', function($posts, $query) {
         return $posts;
     }
 
-    // 3. Collect thumbnail IDs from the posts
+    // 3. Collect thumbnail IDs and post IDs from the posts
     $img_ids = array();
+    $post_ids = array();
     foreach ($posts as $post) {
         if ($post instanceof WP_Post) {
+            $post_ids[] = $post->ID;
             $thumb_id = get_post_thumbnail_id($post->ID);
             if ($thumb_id) {
                 $img_ids[] = (int) $thumb_id;
@@ -168,6 +170,11 @@ add_filter('the_posts', function($posts, $query) {
         if (function_exists('_prime_post_caches')) {
             _prime_post_caches($img_ids, false, false);
         }
+    }
+
+    // ⚡ Bolt: Prime term caches to avoid N+1 queries in REST API get_callback
+    if (!empty($post_ids)) {
+        update_object_term_cache($post_ids, $post_type);
     }
 
     return $posts;
