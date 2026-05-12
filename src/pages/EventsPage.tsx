@@ -1,6 +1,7 @@
 import React, { memo, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { useParams, Link, generatePath } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
@@ -80,6 +81,14 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
         events={[event]}
+      />
+
+      <Breadcrumb
+        items={[
+          { label: t('nav.events'), path: getLocalizedRoute('events', lang as Language) },
+          { label: event.title },
+        ]}
+        className="mb-8"
       />
 
       <Link
@@ -326,6 +335,7 @@ const EventsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto">
+        <Breadcrumb items={[{ label: t('nav.events') }]} className="mb-8" />
         <header className="text-center mb-16 px-4">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 font-display uppercase text-white tracking-tighter">
             {t('events.title_part1')} <span className="text-primary">{t('events.title_part2')}</span>

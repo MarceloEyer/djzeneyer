@@ -14,6 +14,7 @@ import React, { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
@@ -292,6 +293,9 @@ const ZenTribePage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
+              <div className="flex justify-center">
+                <Breadcrumb items={[{ label: t('nav.tribe') }]} className="mb-6" />
+              </div>
               <div className="inline-block mb-4">
                 <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
                   {t('zenTribe.badge')}
