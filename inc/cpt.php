@@ -148,10 +148,15 @@ add_filter('the_posts', function($posts, $query) {
         return $posts;
     }
 
-    // 3. Collect thumbnail IDs from the posts
+    // 3. Collect thumbnail IDs and post IDs grouped by post type
     $img_ids = array();
+    $posts_by_type = array();
+
     foreach ($posts as $post) {
         if ($post instanceof WP_Post) {
+            // Group post IDs by type for term cache priming
+            $posts_by_type[$post->post_type][] = $post->ID;
+
             $thumb_id = get_post_thumbnail_id($post->ID);
             if ($thumb_id) {
                 $img_ids[] = (int) $thumb_id;
@@ -159,7 +164,16 @@ add_filter('the_posts', function($posts, $query) {
         }
     }
 
-    // 4. Prime caches in bulk (2 queries total)
+    // 4. Prime caches in bulk
+
+    // ⚡ Bolt: Prime term caches for all posts in a single query per post type
+    // Resolves N+1 query issue for get_the_terms() calls in the REST API loop
+    if (function_exists('update_object_term_cache')) {
+        foreach ($posts_by_type as $type => $ids) {
+            update_object_term_cache($ids, $type);
+        }
+    }
+
     if (!empty($img_ids)) {
         $img_ids = array_unique($img_ids);
         // Prime metadata cache
