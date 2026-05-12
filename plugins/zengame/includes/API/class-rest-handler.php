@@ -260,6 +260,18 @@ final class REST_Handler
         }
 
         $types = \gamipress_get_points_types();
+
+        // Prime caches for point type thumbnails to prevent N+1 queries
+        $type_ids = [];
+        foreach ($types as $type) {
+            if (!empty($type['id'])) {
+                $type_ids[] = (int) $type['id'];
+            }
+        }
+        if (!empty($type_ids)) {
+            \_prime_post_caches($type_ids, false, true);
+        }
+
         $points = [];
 
         foreach ($types as $type_key => $type) {
