@@ -97,6 +97,9 @@ const ensureAbsoluteUrl = (u: string, baseUrl: string): string => {
   return `${cleanBase}/${cleanPath}`;
 };
 
+// ⚡ Bolt: Extracted static array to module scope to prevent re-allocation on every render
+const DEFAULT_SPEAKABLE = ['h1', '[data-speakable]'];
+
 // ============================================================================
 // 3. COMPONENTE PRINCIPAL
 // ============================================================================
@@ -204,36 +207,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const isProfileType = type === 'profile';
 
   // Schema Generation (Mantido igual)
-  let finalSchema: Record<string, unknown> | undefined = schema as Record<string, unknown> | undefined;
-  if (!finalSchema && isHomepage) {
-    finalSchema = {
-      '@context': 'https://schema.org',
-      '@graph': [
-        {
-          '@type': 'WebSite',
-          '@id': `${baseUrl}/#website`,
-          url: baseUrl,
-          name: 'DJ Zen Eyer - Official Website',
-          description: artist.site.defaultDescription,
-          publisher: { '@id': `${baseUrl}/#artist` },
-          inLanguage: ['en', 'pt-BR'],
-        },
-        ARTIST_SCHEMA_BASE,
-        {
-          '@type': 'WebPage',
-          '@id': `${finalUrl}#webpage`,
-          url: finalUrl,
-          name: finalTitle,
-          isPartOf: { '@id': `${baseUrl}/#website` },
-          about: { '@id': `${baseUrl}/#artist` },
-          mainEntity: { '@id': `${baseUrl}/#artist` },
-          description: truncatedDesc,
-          inLanguage: htmlLangAttribute,
-        },
-      ],
-    };
-  }
-
   // 4. Advanced Schema Logic (Breadcrumbs, FAQ, Events)
   // ⚡ Bolt: Wrapped dynamic graph generation (Breadcrumbs, FAQs, Events schema) in useMemo.
   // This prevents costly array mappings (split, filter, map) and string manipulations on every render,
@@ -289,7 +262,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
     // 4.3 Event Schema (Single-pass MusicEvent mapping)
     if (events && events.length > 0) {
-      // eslint-disable-next-line react-hooks/purity
+
       const now = Date.now();
       const threeHoursMs = 3 * 60 * 60 * 1000;
       const musicEvents: Record<string, unknown>[] = [];
@@ -426,10 +399,13 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     return graph;
   }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage]);
 
-  if (!schema) {
+  const memoizedFinalSchema = React.useMemo(() => {
+    if (schema) return schema as Record<string, unknown>;
+
+    let resolvedSchema: Record<string, unknown>;
+
     // Speakable spec — injeta seletores CSS para Google Assistant / LLMs de voz
     // Sanitiza: trim + remove strings vazias + fallback para defaults se array vazio
-    const DEFAULT_SPEAKABLE = ['h1', '[data-speakable]'];
     const normalizedSpeakableSelectors = Array.isArray(speakable)
       ? speakable.map((s) => s.trim()).filter(Boolean)
       : DEFAULT_SPEAKABLE;
@@ -458,7 +434,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     };
 
     if (dynamicGraph && dynamicGraph.length > 0) {
-      finalSchema = {
+      resolvedSchema = {
         '@context': 'https://schema.org',
         '@graph': [
           ...(isHomepage ? [
@@ -477,7 +453,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       };
     } else if (isHomepage) {
       // Re-use original homepage schema if no dynamic graph items
-      finalSchema = {
+      resolvedSchema = {
         '@context': 'https://schema.org',
         '@graph': [
           {
@@ -494,9 +470,15 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         ],
       };
     } else {
-      finalSchema = webPageSchema; // Fallback to basic WebPage if no graph
+      resolvedSchema = webPageSchema; // Fallback to basic WebPage if no graph
     }
-  }
+
+    return resolvedSchema;
+  }, [schema, speakable, finalUrl, finalTitle, baseUrl, truncatedDesc, htmlLangAttribute, dynamicGraph, isHomepage, artist.site.defaultDescription]);
+
+  // Use the memoized schema. The original logic assigned finalSchema twice if isHomepage,
+  // but memoizedFinalSchema replaces that entire block correctly.
+  const finalSchema = memoizedFinalSchema;
 
   // Identificador para o script do schema para evitar duplicidade
   // react-helmet-async não remove scripts duplicados se não tiverem uma chave única
