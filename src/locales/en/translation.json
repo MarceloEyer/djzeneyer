@@ -489,6 +489,12 @@
     "releases_title": "Music releases",
     "releases_subtitle": "Release notes, credits, and official links published in Zen News.",
     "read_release": "Read release notes",
+    "release_type": {
+      "album": "Album",
+      "ep": "EP",
+      "remix": "Remix",
+      "single": "Single"
+    },
     "discography_schema_name": "DJ Zen Eyer Discography",
     "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing."
   },

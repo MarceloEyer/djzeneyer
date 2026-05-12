@@ -488,6 +488,12 @@
     "releases_title": "Lançamentos musicais",
     "releases_subtitle": "Notas de lançamento, créditos e links oficiais publicados no Zen News.",
     "read_release": "Ler notas do lançamento",
+    "release_type": {
+      "album": "Álbum",
+      "ep": "EP",
+      "remix": "Remix",
+      "single": "Single"
+    },
     "discography_schema_name": "Discografia Zen Eyer",
     "discography_schema_desc": "Lançamentos oficiais do Zen Eyer, incluindo singles, remixes e músicas para dançar Zouk Brasileiro."
   },

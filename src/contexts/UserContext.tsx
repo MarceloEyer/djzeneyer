@@ -1,6 +1,7 @@
 // src/contexts/UserContext.tsx - VERSÃO ATUALIZADA COM TURNSTILE
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
-import { clearAllCache } from '../config/queryClient';
+import { clearAllCache, queryClient, QUERY_KEYS } from '../config/queryClient';
+import { fetchAuthSessionFn } from '../hooks/useQueries';
 
 interface WordPressUser {
   id: number;
@@ -53,7 +54,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     clearAllCache();
   }, []);
 
-  const saveSession = useCallback((userData: WordPressUser, token: string) => {
+  const saveSession = useCallback((userData: Omit<WordPressUser, 'isLoggedIn'> & { isLoggedIn?: boolean }, token: string) => {
     const userWithStatus = { ...userData, isLoggedIn: true, token };
     setUser(userWithStatus);
     localStorage.setItem('zen_jwt', token);
@@ -100,14 +101,19 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           setUser({ ...parsedUser, token, isLoggedIn: true });
 
           // Validação silenciosa
-          fetch(`${API_URL}/auth/validate`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
+          queryClient.fetchQuery({
+            queryKey: QUERY_KEYS.user.session(Boolean(token)),
+            queryFn: () => fetchAuthSessionFn(token),
+            staleTime: 0,
           })
-            .then(res => res.json())
             .then(data => {
-              if (!data.success) {
+              if (!data.authenticated) {
                 logout();
+                return;
+              }
+
+              if (data.user) {
+                saveSession(data.user, token);
               }
             })
             .catch(err => {
@@ -123,7 +129,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     };
 
     init();
-  }, [API_URL, logout]);
+  }, [API_URL, logout, saveSession]);
 
 
 

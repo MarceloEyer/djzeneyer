@@ -293,50 +293,7 @@ const MusicPage: React.FC = () => {
             </div>
           </div>
 
-          {releaseCards.length > 0 && (
-            <section className="mb-16" aria-labelledby="music-releases-title">
-              <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <h2 id="music-releases-title" className="text-2xl font-black font-display text-white">
-                    {t('music.releases_title')}
-                  </h2>
-                  <p className="mt-1 text-sm text-white/50">{t('music.releases_subtitle')}</p>
-                </div>
-                <Link to={getLocalizedRoute('news', currentLang)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
-                  {t('news.title')} <ExternalLink size={14} />
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {releaseCards.map((release) => (
-                  <Link
-                    key={release.id}
-                    to={release.path}
-                    className="group flex min-h-[132px] gap-4 rounded-2xl border border-white/10 bg-surface/35 p-4 transition-colors hover:border-primary/50 hover:bg-surface/60"
-                  >
-                    <img
-                      src={safeUrl(release.image, '/images/zen-eyer-og-image.png')}
-                      alt={release.name}
-                      className="h-24 w-24 flex-none rounded-xl object-cover"
-                      width="96"
-                      height="96"
-                      loading="lazy"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-                        {release.type}
-                      </div>
-                      <h3 className="line-clamp-2 text-lg font-black text-white transition-colors group-hover:text-primary">
-                        {release.name}
-                      </h3>
-                      <p className="mt-2 text-sm text-white/50">{t('music.read_release')}</p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </section>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
             {/* Download / Grab & Go Card */}
             <motion.div
               variants={CARD_VARIANTS(0.7)}
@@ -381,6 +338,49 @@ const MusicPage: React.FC = () => {
               </Link>
             </motion.div>
           </div>
+
+          {releaseCards.length > 0 && (
+            <section aria-labelledby="music-releases-title">
+              <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 id="music-releases-title" className="text-2xl font-black font-display text-white">
+                    {t('music.releases_title')}
+                  </h2>
+                  <p className="mt-1 text-sm text-white/50">{t('music.releases_subtitle')}</p>
+                </div>
+                <Link to={getLocalizedRoute('news', currentLang)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
+                  {t('news.title')} <ExternalLink size={14} />
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {releaseCards.map((release) => (
+                  <Link
+                    key={release.id}
+                    to={release.path}
+                    className="group flex min-h-[132px] gap-4 rounded-2xl border border-white/10 bg-surface/35 p-4 transition-colors hover:border-primary/50 hover:bg-surface/60"
+                  >
+                    <img
+                      src={safeUrl(release.image, '/images/zen-eyer-og-image.png')}
+                      alt={release.name}
+                      className="h-24 w-24 flex-none rounded-xl object-cover"
+                      width="96"
+                      height="96"
+                      loading="lazy"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+                        {t(`music.release_type.${release.type}`, { defaultValue: release.type })}
+                      </div>
+                      <h3 className="line-clamp-2 text-lg font-black text-white transition-colors group-hover:text-primary">
+                        {release.name}
+                      </h3>
+                      <p className="mt-2 text-sm text-white/50">{t('music.read_release')}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
         </div>
       </div>
