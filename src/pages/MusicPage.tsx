@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
 import { YoutubeIcon } from '../components/icons/BrandIcons';
 import { Link, generatePath } from 'react-router-dom';
@@ -207,6 +208,7 @@ const MusicPage: React.FC = () => {
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">
+          <Breadcrumb items={[{ label: t('nav.music') }]} className="mb-8" />
 
           <div className="text-center mb-16">
             <motion.div

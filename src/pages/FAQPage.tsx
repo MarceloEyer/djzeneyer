@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen, HeartPulse } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
@@ -135,6 +136,7 @@ const FAQPage: React.FC = () => {
       />
 
       <div className="container mx-auto px-4">
+        <Breadcrumb items={[{ label: t('faq.title') }]} className="mb-8" />
 
         {/* Header */}
         <motion.div
