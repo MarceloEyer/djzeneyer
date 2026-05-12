@@ -270,6 +270,20 @@ final class REST_Handler
         }
         if (!empty($type_ids)) {
             \_prime_post_caches($type_ids, false, true);
+
+            // ⚡ Bolt: Prevent N+1 queries on attachment post objects and their metadata
+            // by collecting the newly cached _thumbnail_id values and batch priming them.
+            $attachment_ids = [];
+            foreach ($type_ids as $type_id) {
+                // Because $type_id's meta was just primed above, this is an O(1) in-memory lookup
+                $thumb_id = (int) \get_post_meta($type_id, '_thumbnail_id', true);
+                if ($thumb_id > 0) {
+                    $attachment_ids[] = $thumb_id;
+                }
+            }
+            if (!empty($attachment_ids)) {
+                \_prime_post_caches(\array_unique($attachment_ids), false, true);
+            }
         }
 
         $points = [];
