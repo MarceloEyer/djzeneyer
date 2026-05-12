@@ -103,7 +103,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           fetch(`${API_URL}/session`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
-            .then(res => res.json())
+            .then(async res => {
+              const text = await res.text();
+              if (!res.ok || text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+                throw new Error('Invalid session response');
+              }
+
+              return JSON.parse(text);
+            })
             .then(data => {
               if (!data.authenticated) {
                 logout();

@@ -369,7 +369,7 @@ const MusicPage: React.FC = () => {
                     />
                     <div className="min-w-0 flex-1">
                       <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-                        {release.type}
+                        {t(`music.release_type.${release.type}`, { defaultValue: release.type })}
                       </div>
                       <h3 className="line-clamp-2 text-lg font-black text-white transition-colors group-hover:text-primary">
                         {release.name}
