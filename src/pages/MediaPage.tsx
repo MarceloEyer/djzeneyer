@@ -6,8 +6,16 @@ import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
-// ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
-const EMPTY_CLIPPING_ARRAY: { name: string; url: string; date: string }[] = [];
+type MediaClippingItem = {
+  type: string;
+  title: string;
+  description: string;
+  source: string;
+  url: string;
+  date: string;
+};
+
+const EMPTY_CLIPPING_ARRAY: MediaClippingItem[] = [];
 
 const MediaPage: React.FC = () => {
   const { t, i18n } = useTranslation();
