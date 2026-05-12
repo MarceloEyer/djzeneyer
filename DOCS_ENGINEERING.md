@@ -9,7 +9,7 @@ Este documento estabelece as regras invioláveis de engenharia, identidade e flu
 
 ### 1.1 DRY, KISS & YAGNI
 - **DRY (Don't Repeat Yourself):** Não duplique lógica de tradução ou formatação. Use Hooks e Utils centralizados.
-- **KISS (Keep It Simple, Stupid):** Prefira soluções diretas. Evite overengineering que possa causar falhas de carregamento (como erros 429).
+- **KISS (Keep It Simple, Stupid):** Prefira soluções diretas. Evite overengineering que aumente complexidade ciclomática, acoplamento, dificuldade de manutenção ou bugs introduzidos por abstrações desnecessárias.
 - **YAGNI (You Aren't Gonna Need It):** Não implemente funcionalidades ou nós de schema "para o futuro". Foque no Must Have.
 
 ### 1.2 SOLID & SSOT
@@ -23,7 +23,7 @@ Este documento estabelece as regras invioláveis de engenharia, identidade e flu
 ### 2.1 Nomenclatura Estrita
 - **Nome Canônico:** `Zen Eyer` (Sempre com espaço, sem variações).
 - **Alias Oficial:** `DJ Zen Eyer`.
-- **Proibido:** `Zen Ayer` (NÃO deve constar em `alternateName` ou metadados, exceto se houver uma estratégia de SEO explicitamente discutida para captura de typos em campos específicos).
+- **Proibido:** `Zen Ayer` NÃO deve constar em `alternateName`, aliases canônicos ou metadados estruturados. Só pode aparecer como grafia incorreta comum em FAQ/copy explicativa, sempre deixando claro que não é nome oficial nem alias.
 - **Tautologia:** Evite descrições como "Zen Eyer, também conhecido como Zen Eyer". Se o alias for o mesmo que o nome, não o liste como alternateName.
 
 ### 2.2 Localização (i18n)
