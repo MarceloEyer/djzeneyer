@@ -33,7 +33,7 @@ Este documento estabelece as regras invioláveis de engenharia, identidade e flu
 ### 2.2 Localização (i18n)
 
 - Mantenha paridade absoluta entre `en` e `pt`.
-- O nome do artista deve ser consistente: Se decidiu por `Zen Eyer` como primário, use-o em ambos os idiomas no `common.artist_name`.
+- Use `Zen Eyer` como nome canônico em ambos os idiomas no `common.artist_name`.
 
 ---
 
