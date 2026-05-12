@@ -199,9 +199,9 @@ const DashboardContent = () => {
   // Stars: dynamic based on rank progress
   const rankStars = rankProgress >= 66 ? 3 : rankProgress >= 33 ? 2 : rankProgress > 0 ? 1 : 0;
 
-  const earnedAchievements = gamipress.achievements_earned || [];
+  const earnedAchievements = gamipress.achievements_earned || EMPTY_ACHIEVEMENTS_ARRAY;
   // leaderboardData is Record<pointType, entries[]> — take the first point type
-  const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
+  const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || EMPTY_LEADERBOARD_ARRAY;
 
   // ⚡ Bolt: Use static CURRENT_YEAR instead of new Date().getFullYear() on render
   const currentYear = user?.user_registered_year || CURRENT_YEAR;
@@ -468,6 +468,9 @@ const DashboardContent = () => {
     </div>
   );
 };
+
+const EMPTY_ACHIEVEMENTS_ARRAY: unknown[] = [];
+const EMPTY_LEADERBOARD_ARRAY: unknown[] = [];
 
 const DashboardPage = () => {
   const { user, loadingInitial } = useUser();

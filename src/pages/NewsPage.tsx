@@ -49,6 +49,8 @@ const ARTICLE_ANIMATE = { opacity: 1, y: 0 };
 // ============================================================================
 // COMPONENT
 // ============================================================================
+const EMPTY_POSTS_ARRAY: unknown[] = [];
+
 const NewsPage: React.FC = () => {
   const params = useParams();
   const slug = params.slug;
@@ -65,7 +67,7 @@ const NewsPage: React.FC = () => {
   const { data: postsData, isLoading: loadingList } = useNewsQuery(normalizedLanguage, { enabled: !slug });
   const { data: singlePost, isLoading: loadingDetail } = useNewsBySlug(slug, normalizedLanguage);
 
-  const posts = postsData || [];
+  const posts = postsData || EMPTY_POSTS_ARRAY;
   const loading = slug ? loadingDetail : loadingList;
 
   // Helper para rotas localizadas usando SSOT

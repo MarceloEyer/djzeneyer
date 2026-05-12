@@ -6,11 +6,13 @@ import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
+const EMPTY_CLIPPING_ARRAY: unknown[] = [];
+
 const MediaPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
-  const clippingData = ARTIST.mediaClipping || [];
+  const clippingData = ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY;
 
   const mediaAssets = [
     {

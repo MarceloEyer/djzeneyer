@@ -78,6 +78,8 @@ const MediaKitCard = memo<{
 ));
 MediaKitCard.displayName = 'MediaKitCard';
 
+const EMPTY_FESTIVALS_ARRAY: { name: string; country: string; date: string; flag: string }[] = [];
+
 const PressKitPage: React.FC = () => {
   const { t } = useTranslation();
   const { artist } = useBranding();
@@ -352,7 +354,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {(artist.festivals || []).slice(0, 9).map((festival: { name: string; country: string; date: string; flag: string }, index: number) => (
+                {(artist.festivals || EMPTY_FESTIVALS_ARRAY).slice(0, 9).map((festival: { name: string; country: string; date: string; flag: string }, index: number) => (
                   <motion.div
                     key={index}
                     whileHover={{ scale: 1.02 }}

@@ -6,6 +6,8 @@ import { useUser } from '../contexts/UserContext';
 import { useGamipressQuery } from './useQueries';
 import type { ZenGameUserData, ZenGameAchievement } from '../types/gamification';
 
+const EMPTY_ACHIEVEMENTS_ARRAY: ZenGameAchievement[] = [];
+
 export type GamiPressData = ZenGameUserData;
 
 interface GamiPressHookResponse {
@@ -92,8 +94,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
       progressToNextLevel: resolved.rank?.progress || 0,
       nextLevelPoints: resolved.rank?.requirements?.[0]?.required || 0,
       achievements: [
-        ...(resolved.achievements_earned || []),
-        ...(resolved.achievements_locked || [])
+        ...(resolved.achievements_earned || EMPTY_ACHIEVEMENTS_ARRAY),
+        ...(resolved.achievements_locked || EMPTY_ACHIEVEMENTS_ARRAY)
       ],
     };
   }, [resolved, isLoading, error, refresh]);

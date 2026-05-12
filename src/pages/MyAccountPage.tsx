@@ -30,6 +30,9 @@ interface UserStats {
   recentAchievements: number;
 }
 
+const EMPTY_ROLES_ARRAY: string[] = [];
+const EMPTY_REQUIREMENTS_ARRAY: unknown[] = [];
+
 const MyAccountContent: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { user, loading, logout } = useUser();
@@ -131,7 +134,7 @@ const MyAccountContent: React.FC = () => {
         preferredName: profileData.preferred_name || '',
         facebookUrl: profileData.facebook_url || '',
         instagramUrl: profileData.instagram_url || '',
-        danceRole: profileData.dance_role || [],
+        danceRole: profileData.dance_role || EMPTY_ROLES_ARRAY,
         gender: profileData.gender || '',
       });
     }
@@ -249,7 +252,7 @@ const MyAccountContent: React.FC = () => {
                     subLabel={gamipress.rank.next.title}
                   />
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {(gamipress.rank.requirements || []).slice(0, 3).map((req, idx) => (
+                    {(gamipress.rank.requirements || EMPTY_REQUIREMENTS_ARRAY).slice(0, 3).map((req, idx) => (
                       <div key={idx} className="bg-white/5 px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{req.title}:</span>
