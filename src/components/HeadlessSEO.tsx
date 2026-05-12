@@ -398,12 +398,14 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           image: (event.image as string | undefined) || finalImage,
           description: eventDescription,
           performer: {
+            '@id': `${baseUrl}/#musicgroup`,
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             sameAs: ARTIST_SCHEMA_SAME_AS
           },
           offers: eventOffers,
           organizer: {
+            '@id': `${baseUrl}/#artist`,
             '@type': 'Person',
             name: artist.identity.stageName,
             url: artist.site.baseUrl,
@@ -418,6 +420,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           url: finalUrl,
           description: `Official tour dates and upcoming performances for ${artist.identity.stageName}.`,
           performer: {
+            '@id': `${baseUrl}/#musicgroup`,
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             url: artist.site.baseUrl,

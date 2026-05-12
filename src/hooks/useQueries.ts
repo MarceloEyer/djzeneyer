@@ -304,16 +304,32 @@ export const fetchEventsFn = async ({
     }
     const rawData = await res.json();
 
+    let events: ZenBitEventListItem[] = [];
     if (Array.isArray(rawData)) {
-      return z.array(ZenBitEventListItemSchema).parse(rawData);
+      events = z.array(ZenBitEventListItemSchema).parse(rawData);
+    } else if (rawData && typeof rawData === 'object' && 'events' in rawData) {
+      const parsedResponse = EventsApiResponseSchema.parse(rawData);
+      events = parsedResponse.events;
     }
 
-    if (rawData && typeof rawData === 'object' && 'events' in rawData) {
-       const parsedResponse = EventsApiResponseSchema.parse(rawData);
-       return parsedResponse.events;
-    }
+    // Optimization: Pre-process dates and IDs at fetch time to avoid O(N) on render
+    const eventsDetailRoute = getLocalizedRoute('events-detail', lang || 'en');
+    
+    return events.map(event => {
+      const eventDate = new Date(event.starts_at);
+      const identifier = event.canonical_path
+        ? event.canonical_path.split('/').pop() || event.event_id
+        : event.event_id;
 
-    return [];
+      return {
+        ...event,
+        _processed: {
+          eventDate,
+          day: eventDate.getDate(),
+          detailHref: generatePath(eventsDetailRoute, { id: identifier })
+        }
+      };
+    });
   } catch (err) {
     console.error('Fetch Events failed:', err);
     return [];

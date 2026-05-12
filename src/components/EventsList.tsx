@@ -53,21 +53,16 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     const results = [];
 
     for (const event of visibleItems) {
-      const startDate = event.starts_at;
-      const eventDate = new Date(startDate);
-      const loc = event.location;
-
-      const identifier = event.canonical_path
-        ? event.canonical_path.split('/').pop() || event.event_id
-        : event.event_id;
+      const p = (event as any)._processed;
+      if (!p) continue;
 
       results.push({
         ...event,
-        day: eventDate.getDate(),
-        month: monthFormatter.format(eventDate),
-        time: timeFormatter.format(eventDate),
-        locationString: `${loc.city}, ${loc.country || ''}`,
-        detailHref: generatePath(eventsDetailRoute, { id: identifier }),
+        day: p.day,
+        month: monthFormatter.format(p.eventDate),
+        time: timeFormatter.format(p.eventDate),
+        locationString: `${event.location.city}, ${event.location.country || ''}`,
+        detailHref: p.detailHref,
         sanitizedTitle: sanitizeHtml(event.title)
       });
     }
