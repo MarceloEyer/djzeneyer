@@ -170,7 +170,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
   // 2. Fallbacks
   const rawDescription = data?.desc || description || artist.site.defaultDescription;
-  const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
+  const finalTitle = data?.title || title || 'Zen Eyer | World Champion Brazilian Zouk DJ';
 
   // AIO Enhancement: Lead Answer logic
   const finalDescription = leadAnswer
@@ -221,7 +221,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           '@type': 'WebSite',
           '@id': `${baseUrl}/#website`,
           url: baseUrl,
-          name: 'DJ Zen Eyer - Official Website',
+          name: 'Zen Eyer',
           description: artist.site.defaultDescription,
           publisher: { '@id': `${baseUrl}/#artist` },
           inLanguage: ['en', 'pt-BR'],
@@ -473,7 +473,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
               '@type': 'WebSite',
               '@id': `${baseUrl}/#website`,
               url: baseUrl,
-              name: 'DJ Zen Eyer',
+              name: 'Zen Eyer',
               publisher: { '@id': `${baseUrl}/#artist` },
               potentialAction: siteSearchAction,
             },
@@ -493,7 +493,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             '@type': 'WebSite',
             '@id': `${baseUrl}/#website`,
             url: baseUrl,
-            name: 'DJ Zen Eyer - Official Website',
+            name: 'Zen Eyer',
             description: artist.site.defaultDescription,
             publisher: { '@id': `${baseUrl}/#artist` },
             inLanguage: ['en', 'pt-BR'],
@@ -543,7 +543,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       />
 
       {/* Open Graph (Facebook/LinkedIn) */}
-      <meta property="og:site_name" content="DJ Zen Eyer" />
+      <meta property="og:site_name" content="Zen Eyer" />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={truncatedDesc} />

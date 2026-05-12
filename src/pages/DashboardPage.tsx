@@ -209,7 +209,7 @@ const DashboardContent = () => {
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">
       <HeadlessSEO
-        title={`${t('dashboard_page_title')} | DJ Zen Eyer`}
+        title={`${t('dashboard_page_title')} | Zen Eyer`}
         description={t('dashboard_page_meta_desc')}
         image="/images/zen-eyer-og-image.png"
         noindex

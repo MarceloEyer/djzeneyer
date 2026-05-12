@@ -196,7 +196,7 @@ const HomePage: React.FC = () => {
               <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
               <img
                 src="/images/hero-background.webp"
-                alt="DJ Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
+                alt="Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
                 className="w-full h-full object-cover object-center opacity-65"
                 width="1920"
                 height="1080"
@@ -242,7 +242,7 @@ const HomePage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 min-h-[44px] shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
-                aria-label="Listen to DJ Zen Eyer on SoundCloud"
+                aria-label="Listen to Zen Eyer on SoundCloud"
               >
                 <PlayCircle size={22} />
                 <span>{t('home.cta_soundcloud')}</span>
@@ -250,7 +250,7 @@ const HomePage: React.FC = () => {
               <Link
                 to={routes.booking}
                 className="btn btn-outline btn-lg flex items-center gap-2 min-h-[44px] backdrop-blur-sm"
-                aria-label="Book DJ Zen Eyer or Get Press Kit"
+                aria-label="Book Zen Eyer or Get Press Kit"
               >
                 <Mail size={22} />
                 <span>{t('home.cta_booking')}</span>
@@ -323,7 +323,7 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} />
                 <span>{t('home.shows.cta')}</span>
               </Link>
-              <a href={ARTIST.social.bandsintown?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow DJ Zen Eyer on Bandsintown">
+              <a href={ARTIST.social.bandsintown?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow Zen Eyer on Bandsintown">
                 <ExternalLink size={18} />
                 <span>Bandsintown</span>
               </a>
