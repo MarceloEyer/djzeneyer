@@ -375,7 +375,9 @@ final class REST_Handler
                 $user_points = \function_exists('gamipress_get_user_points')
                     ? (int) \gamipress_get_user_points($user_id, $main_slug)
                     : 0;
+
                 // GamiPress stores minimum points in _gamipress_points_to_unlock (not _gamipress_points).
+                // Note: Meta caches for these ranks are primed inside get_next_rank_post().
                 $next_min    = (int) \get_post_meta($next->ID, '_gamipress_points_to_unlock', true);
                 $curr_min    = (int) \get_post_meta($current->ID, '_gamipress_points_to_unlock', true);
 
@@ -423,6 +425,13 @@ final class REST_Handler
                 'date' => 'ASC',
             ],
         ]);
+
+        // ⚡ Bolt: Prime meta caches for all ranks at once to prevent N+1 queries when calculating points required.
+        if (!empty($ranks)) {
+            $rank_ids = \array_column($ranks, 'ID');
+            \_prime_post_caches($rank_ids, false, true);
+            \update_meta_cache('post', $rank_ids);
+        }
 
         if (empty($ranks)) {
             return null;
