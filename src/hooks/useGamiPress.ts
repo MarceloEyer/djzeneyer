@@ -6,6 +6,9 @@ import { useUser } from '../contexts/UserContext';
 import { useGamipressQuery } from './useQueries';
 import type { ZenGameUserData, ZenGameAchievement } from '../types/gamification';
 
+// ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
+const EMPTY_ACHIEVEMENT_ARRAY: ZenGameAchievement[] = [];
+
 export type GamiPressData = ZenGameUserData;
 
 interface GamiPressHookResponse {
@@ -92,8 +95,8 @@ export const useGamiPress = (): GamiPressHookResponse => {
       progressToNextLevel: resolved.rank?.progress || 0,
       nextLevelPoints: resolved.rank?.requirements?.[0]?.required || 0,
       achievements: [
-        ...(resolved.achievements_earned || []),
-        ...(resolved.achievements_locked || [])
+        ...(resolved.achievements_earned || EMPTY_ACHIEVEMENT_ARRAY),
+        ...(resolved.achievements_locked || EMPTY_ACHIEVEMENT_ARRAY)
       ],
     };
   }, [resolved, isLoading, error, refresh]);
