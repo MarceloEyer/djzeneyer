@@ -443,7 +443,7 @@ export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: ['DJ Zen Eyer', 'djzeneyer'],
+  alternateName: ['DJ Zen Eyer', 'djzeneyer', 'Zen Ayer'],
   birthName: ARTIST.identity.fullName,
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],

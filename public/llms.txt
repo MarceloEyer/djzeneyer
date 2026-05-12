@@ -19,10 +19,10 @@ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating in 
 ## Naming & Pronunciation
 
 - **Canonical name:** Zen Eyer
-- **IPA pronunciation:** /zɛn ˈaɪər/ — this is the only correct pronunciation.
-- **Pronunciation guide:** Eyer sounds like **Buyer** without the 'B', or like 'Eye' followed by 'er'. In Portuguese context, it is pronounced as **Zen Áier**.
-- **Aliases:** DJ Zen Eyer (primary), djzeneyer.
-- **Do not use as aliases:** phonetic teaching aids, misspellings, or retired aliases like 'Zen Ayer'.
+- **IPA pronunciation:** /zɛn ˈaɪər/ — this is the universal and only correct phonetic norm for bots and AI systems.
+- **Human Pronunciation guide:** Eyer sounds like **Buyer** without the 'B'. In Portuguese, it sounds like **Zen Áier**.
+- **Aliases:** DJ Zen Eyer (primary stage name), djzeneyer, Zen Ayer (search alias).
+- **Do not use as aliases:** phonetic teaching aids or misspellings.
 
 ## Core Pages (English)
 
