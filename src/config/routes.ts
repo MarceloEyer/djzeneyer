@@ -20,7 +20,8 @@
  * - ZenLink: zenlink / links-zen
  */
 
-import { lazy, ComponentType } from 'react';
+import { ComponentType } from 'react';
+import { lazyWithRetry } from '../utils/lazyWithRetry';
 
 // ============================================================================
 // TYPES
@@ -54,32 +55,33 @@ export interface RouteConfig {
 import HomePage from '../pages/HomePage';
 
 // Demais páginas são lazy loaded
-const AboutPage = lazy(() => import('../pages/AboutPage'));
-const EventsPage = lazy(() => import('../pages/EventsPage'));
-const MusicPage = lazy(() => import('../pages/MusicPage'));
-const ZenTribePage = lazy(() => import('../pages/ZenTribePage'));
-const MediaPage = lazy(() => import('../pages/MediaPage'));
-const PressKitPage = lazy(() => import('../pages/PressKitPage'));
-const ShopPage = lazy(() => import('../pages/ShopPage'));
-const ProductPage = lazy(() => import('../pages/ProductPage'));
-const CartPage = lazy(() => import('../pages/CartPage'));
-const CheckoutPage = lazy(() => import('../pages/CheckoutPage'));
-const DashboardPage = lazy(() => import('../pages/DashboardPage'));
-const MyAccountPage = lazy(() => import('../pages/MyAccountPage'));
-const FAQPage = lazy(() => import('../pages/FAQPage'));
-const PhilosophyPage = lazy(() => import('../pages/PhilosophyPage'));
-const NewsPage = lazy(() => import('../pages/NewsPage'));
-const PrivacyPolicyPage = lazy(() => import('../pages/PrivacyPolicyPage'));
-const ReturnPolicyPage = lazy(() => import('../pages/ReturnPolicyPage'));
-const TermsPage = lazy(() => import('../pages/TermsPage'));
-const CodeOfConductPage = lazy(() => import('../pages/CodeOfConductPage'));
-const SupportArtistPage = lazy(() => import('../pages/SupportArtistPage'));
-const TicketsPage = lazy(() => import('../pages/TicketsPage'));
-const TicketsCheckoutPage = lazy(() => import('../pages/TicketsCheckoutPage'));
-const ResetPasswordPage = lazy(() => import('../pages/ResetPasswordPage'));
-const ZenLinkPage = lazy(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })));
-const ZoukPersonaQuizPage = lazy(() => import('../pages/ZoukPersonaQuizPage'));
-const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+const AboutPage = lazyWithRetry(() => import('../pages/AboutPage'), 'route:about');
+const EventsPage = lazyWithRetry(() => import('../pages/EventsPage'), 'route:events');
+const MusicPage = lazyWithRetry(() => import('../pages/MusicPage'), 'route:music');
+const ZenTribePage = lazyWithRetry(() => import('../pages/ZenTribePage'), 'route:zentribe');
+const MediaPage = lazyWithRetry(() => import('../pages/MediaPage'), 'route:media');
+const PressKitPage = lazyWithRetry(() => import('../pages/PressKitPage'), 'route:booking');
+const PressKitDownloadPage = lazyWithRetry(() => import('../pages/PressKitDownloadPage'), 'route:presskit');
+const ShopPage = lazyWithRetry(() => import('../pages/ShopPage'), 'route:shop');
+const ProductPage = lazyWithRetry(() => import('../pages/ProductPage'), 'route:product');
+const CartPage = lazyWithRetry(() => import('../pages/CartPage'), 'route:cart');
+const CheckoutPage = lazyWithRetry(() => import('../pages/CheckoutPage'), 'route:checkout');
+const DashboardPage = lazyWithRetry(() => import('../pages/DashboardPage'), 'route:dashboard');
+const MyAccountPage = lazyWithRetry(() => import('../pages/MyAccountPage'), 'route:my-account');
+const FAQPage = lazyWithRetry(() => import('../pages/FAQPage'), 'route:faq');
+const PhilosophyPage = lazyWithRetry(() => import('../pages/PhilosophyPage'), 'route:philosophy');
+const NewsPage = lazyWithRetry(() => import('../pages/NewsPage'), 'route:news');
+const PrivacyPolicyPage = lazyWithRetry(() => import('../pages/PrivacyPolicyPage'), 'route:privacy');
+const ReturnPolicyPage = lazyWithRetry(() => import('../pages/ReturnPolicyPage'), 'route:returns');
+const TermsPage = lazyWithRetry(() => import('../pages/TermsPage'), 'route:terms');
+const CodeOfConductPage = lazyWithRetry(() => import('../pages/CodeOfConductPage'), 'route:conduct');
+const SupportArtistPage = lazyWithRetry(() => import('../pages/SupportArtistPage'), 'route:support');
+const TicketsPage = lazyWithRetry(() => import('../pages/TicketsPage'), 'route:tickets');
+const TicketsCheckoutPage = lazyWithRetry(() => import('../pages/TicketsCheckoutPage'), 'route:tickets-checkout');
+const ResetPasswordPage = lazyWithRetry(() => import('../pages/ResetPasswordPage'), 'route:reset-password');
+const ZenLinkPage = lazyWithRetry(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })), 'route:zenlink');
+const ZoukPersonaQuizPage = lazyWithRetry(() => import('../pages/ZoukPersonaQuizPage'), 'route:quiz');
+const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'), 'route:not-found');
 
 import routesSlugs from './routes-slugs.json';
 
@@ -93,6 +95,12 @@ const slug = (key: string, lang: Language): string | string[] => {
   const base = route[lang as keyof typeof route] as string;
   const aliases = (route.aliases as Record<string, string[]> | undefined)?.[lang] ?? [];
   return aliases.length > 0 ? [base, ...aliases] : base;
+};
+
+const withParam = (paths: string | string[], param: string): string | string[] => {
+  return Array.isArray(paths)
+    ? paths.map(path => `${path}/${param}`)
+    : `${paths}/${param}`;
 };
 
 // ============================================================================
@@ -124,7 +132,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     key: 'events-detail',
     component: EventsPage,
-    paths: { en: `${slug('events', 'en')}/:id`, pt: `${slug('events', 'pt')}/:id` },
+    paths: { en: withParam(slug('events', 'en'), ':id'), pt: withParam(slug('events', 'pt'), ':id') },
   },
 
   // Music (com rota dinâmica :slug)
@@ -133,7 +141,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: MusicPage,
     paths: { en: slug('music', 'en') as string, pt: slug('music', 'pt') as string },
   },
-
   // News / Blog
   {
     key: 'news',
@@ -143,7 +150,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   {
     key: 'news-detail',
     component: NewsPage,
-    paths: { en: `${slug('news', 'en')}/:slug`, pt: `${slug('news', 'pt')}/:slug` },
+    paths: { en: withParam(slug('news', 'en'), ':slug'), pt: withParam(slug('news', 'pt'), ':slug') },
   },
 
   // Zen Tribe (com aliases)
@@ -158,6 +165,11 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'booking',
     component: PressKitPage,
     paths: { en: slug('booking', 'en') as string, pt: slug('booking', 'pt') as string },
+  },
+  {
+    key: 'presskit',
+    component: PressKitDownloadPage,
+    paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
   },
 
   // Shop (com wildcard para subrotas)
@@ -390,8 +402,10 @@ ROUTES_CONFIG.forEach(route => {
 
   for (const p of [...enPaths, ...ptPaths]) {
     if (!p) continue;
+    const dynamicIdx = p.indexOf('/:');
+    const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
     // remove leading slash if it exists
-    let cleanP = p.startsWith('/') ? p.slice(1) : p;
+    let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     // remove trailing slash if it exists
     cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
 
@@ -528,7 +542,7 @@ export const getAlternateLinks = (
   const detailRoute = KEY_ROUTE_MAP.get(key) ?? route;
   const allCurrentLangPaths = getLocalizedPaths(detailRoute, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
   for (const p of allCurrentLangPaths) {
-    // Extrai apenas o prefixo estático: "/events/:slug" → "/events"
+    // Extrai apenas o prefixo estático: "zouk-events/:slug" -> "zouk-events"
     const dynamicIdx = p.indexOf('/:');
     const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
     let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;

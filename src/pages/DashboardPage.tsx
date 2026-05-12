@@ -69,14 +69,12 @@ const Gauge = ({ progress, strokeWidth = 14, color = 'rgb(var(--color-primary))'
           fill="transparent" stroke="currentColor"
           strokeWidth={strokeWidth} className="text-white/5"
         />
-        <motion.circle
+        <circle
           cx={size / 2} cy={size / 2} r={radius}
           fill="transparent" stroke={color}
           strokeWidth={strokeWidth}
           strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1.5, ease: "easeOut" }}
+          strokeDashoffset={offset}
           strokeLinecap="round"
           className="drop-shadow-[0_0_8px_rgba(var(--color-primary),0.5)]"
         />
@@ -209,7 +207,7 @@ const DashboardContent = () => {
   return (
     <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">
       <HeadlessSEO
-        title={`${t('dashboard_page_title')} | DJ Zen Eyer`}
+        title={`${t('dashboard_page_title')} | Zen Eyer`}
         description={t('dashboard_page_meta_desc')}
         image="/images/zen-eyer-og-image.png"
         noindex
@@ -265,9 +263,8 @@ const DashboardContent = () => {
                 <span className="text-sm font-black text-primary font-display">{rankProgress}%</span>
              </div>
              <div className="h-2 w-full sm:w-64 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${rankProgress}%` }}
+                <div 
+                  style={{ width: `${rankProgress}%` }}
                   className="h-full bg-gradient-to-r from-primary to-secondary shadow-neon-sm"
                 />
              </div>
@@ -328,9 +325,8 @@ const DashboardContent = () => {
                         }
                       </div>
                       <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${quest.progress}%` }}
+                        <div
+                          style={{ width: `${quest.progress}%` }}
                           className={`h-full ${quest.done ? 'bg-success' : 'bg-primary'}`}
                         />
                       </div>

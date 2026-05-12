@@ -29,10 +29,11 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Backend: WordPress 6.0+ (recomendado 6.9+; producao atual 6.9.4), PHP **8.1+** (zengame exige 8.1; producao atual 8.3.30), WooCommerce, GamiPress
 - Node: 20+
 - Instalação: single-site (`multisite: false`)
-- Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: **1985-08-20** (fonte canônica: Wikidata Q136551855 — não usar 1989-08-30, que é incorreto).
+- Identidade Canonica: **Zen Eyer** e o nome artistico oficial principal de Marcelo Eyer Fernandes. **DJ Zen Eyer** e alias importante e historico, nao o nome principal. Birth Date: **1985-08-20** (fonte canônica: Wikidata Q136551855 — não usar 1989-08-30, que é incorreto).
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
 - Cache em producao: LiteSpeed Cache 7.8.1 ativo, `WP_CACHE=true`, REST cache habilitado, ESI desabilitado, minificação CSS/JS desabilitada no provedor e defer de JS ativo
 - Deploy de frontend: o `dist/` deve ser publicado via pasta de staging (`dist-next`) e trocado de forma atomica para evitar tela branca durante rollout
+- Deploy de frontend: antes de ativar `dist-next`, preservar assets Vite hashados antigos em `dist/assets` com `rsync --ignore-existing`; abas abertas e HTML cacheado podem pedir chunks lazy da build anterior, e remover esses arquivos causa `ChunkLoadError`/tela de erro ate o usuario atualizar
 - Deploy de plugins: `plugins/` nao deve ser republicado em pushes que nao alterem `plugins/**`, para nao sobrescrever hotfixes ou reintroduzir backend quebrado
 
 ## Regras globais (SSOT)
@@ -64,7 +65,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Auth canonico de chaves: `ZENEYER_JWT_SECRET` para JWT e `ZEN_TURNSTILE_SITE_KEY` / `ZEN_TURNSTILE_SECRET_KEY` para Turnstile. `JWT_AUTH_SECRET_KEY` e `SIMPLE_JWT_PRIVATE_KEY` ficam apenas como compatibilidade legada.
 - `localStorage` nao e proibido globalmente; e permitido para estado de sessao/idioma quando ja adotado no codigo
 - Tailwind canonico do projeto: v4; convencoes de v3 (ex: `tailwind.config.js` class-based) nao se aplicam
-- SEO Identidade: Usar `@type: 'Person'` para o DJ Zen Eyer no Knowledge Graph / JSON-LD.
+- SEO Identidade: Arquitetura híbrida — `MusicGroup` como contêiner da marca artística (`@id: /#musicgroup`) + `Person` como o indivíduo (`@id: /#artist`), ligados por `member`/`memberOf`. Ver seção "Person Schema Canônico" abaixo.
 - **Hybrid Prerender Architecture (2026-03)**:
   - **Build/SEO**: O `scripts/prerender.js` e o `scripts/generate-sitemap.js` buscam dados da **API interna do WordPress** (`/zen-bit/v2/events`) como primária, com fallback técnico para Bandsintown (ID `id_15619775`) se o WP estiver offline ou bloqueado.
   - **Runtime**: O React SPA continua usando o plugin WordPress (`ZenBit`) para consistência.
@@ -120,11 +121,20 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 > Fonte secundaria de memoria operacional para bots de IA. Use para evitar repetir erros que ja apareceram em PRs fechados, portagens manuais ou reviews recorrentes.
 
-- Schema de pessoa unica: `ARTIST_SCHEMA_BASE` deve manter apenas `@type: 'Person'` para Zen Eyer. Nao criar `MusicGroup` para a entidade individual.
-- Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. ORCID nao deve entrar no schema do artista.
+- Arquitetura de identidade: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) e `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` é o contêiner da marca artística e suporta `album`/`track`; `Person` representa o indivíduo biográfico. **Identificadores estratégicos musicais (Wikidata, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube, Deezer, Amazon Music) DEVEM estar em AMBOS os nós. Não usar ORCID no grafo do artista.**
+- Google Knowledge Graph: `/g/11ff3mhh10` e o KGMID primario da entidade artistica e permanece em `Person`/`MusicGroup`. `/g/11h6s0lfs5` e KGMID secundario relacionado e deve ser modelado como entidade separada `ARTIST_BUSINESS_SCHEMA` (`@id: /#business`), ligada por `Person.worksFor`, `Organization.founder` e `Organization.brand`. Nao adicionar o KGMID secundario no `sameAs` de `Person`/`MusicGroup`, para evitar conflar entidades. No Wikidata, usar P2671 apenas na entidade correspondente; se o secundario representar negocio/perfil comercial separado, criar ou usar item separado e relacionar ao item principal.
+- Identificadores publicos: usar somente IDs verificaveis e aprovados no grafo canonicamente aceito. **NUNCA "limpar" ou "separar" IDs entre Person e MusicGroup.**
 - FAQ expansivel: quando adicionar `q4`/`q5`, validar existencia com i18n antes de renderizar e manter paridade PT/EN.
 - Copy defensiva: `PressKit` e similares devem tratar erro de clipboard e resetar estado local no `catch`.
-- Rota canônica de booking: `work-with-me` / `trabalhe-comigo`; qualquer variação `press-kit-dj-zen-eyer` / `kit-de-imprensa` é legado e deve redirecionar.
+- Rota canônica de booking: `work-with-me` / `trabalhe-comigo`. Press Kit (`press-kit-dj-zen-eyer` / `kit-de-imprensa`) é fluxo separado e deve abrir/baixar o PDF público.
+- Booking e Press Kit são fluxos distintos: `work-with-me` / `trabalhe-comigo` continua sendo a página comercial de booking; Press Kit é asset baixável para organizadores e imprensa. Não substituir booking por presskit.
+- Usar `WebSite.potentialAction` com `SearchAction` para elegibilidade a sitelinks search box Google/Bing. O alvo canônico é News com busca funcional: `/zouk-dance-news?search={search_term_string}` e equivalente localizado quando gerado pelo React.
+- Releases não usam rota própria `/release`. Releases são posts comuns dentro de News: `/zouk-dance-news/:slug` e `/pt/noticias-zouk/:slug`, diferenciados por categoria/tag (`Music` como categoria + `release` como tag obrigatória). Slugs devem ser traduzidos via Polylang.
+- Filtros públicos de News devem usar parâmetros legíveis por slug, não IDs numéricos: `?category=music`, `?tag=release`, `?search=zouk`.
+- Arquivos públicos para IA (`llms.txt`, `llms-full.txt`, `ai-bots.txt`) devem usar linguagem factual e verificável. Evitar "best", "top", "mais famoso", "pioneiro", "criador/naming" ou rankings subjetivos sem fonte externa independente.
+- Não mencionar `Diamonds` como release, remix ou colaboração do DJ Zen Eyer sem confirmação explícita do usuário. O usuário informou que nunca trabalhou em música com esse nome.
+- ORCID não deve entrar no schema/sameAs do artista nem em arquivos públicos de IA. Não é identificador musical e pode diluir a entidade pública.
+- Deezer canônico: `https://www.deezer.com/artist/52900762`. Amazon Music canônico deve usar domínio global `music.amazon.com`.
 - Portagem canonica: se um PR duplicar outro branch mais completo, portar as mudancas validas para o PR canonicamente escolhido e fechar o duplicado.
 - Dependencias de seguranca: PRs automatizados de pacote precisam atualizar `package-lock.json` junto com `package.json`; caso contrario a remediacao nao entra no deploy.
 - Performance de loop: em SEO, sitemap e listas, preferir single-pass, cache priming e reducao de alocacoes para evitar N+1.
@@ -134,8 +144,10 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 ## 🆔 IDENTIDADE CANÔNICA (SSOT)
 - **Fonte de Verdade**: `src/data/artistData.ts` é a única fonte canônica para a identidade pública renderizada (nome, data de nascimento, bio, links).
+- **Nome artistico oficial principal**: `Zen Eyer`. `DJ Zen Eyer` deve permanecer como alias importante em `alternateName`, textos de contexto e buscas historicas, mas nao deve substituir o nome principal.
 - **Consistência**: Toda documentação (`CONTEXT.md`, etc.), SEO (`HeadlessSEO`, JSON-LD) e Press Kit devem derivar obrigatoriamente dessa base.
 - **Sincronização**: Qualquer alteração em `artistData.ts` exige a atualização imediata das referências em `AI_CONTEXT_INDEX.md`.
+- **Pronúncia canônica**: A única pronúncia correta do nome artístico é **`/zɛn ˈaɪər/`** (IPA). Nenhuma outra transcrição fonética é aceita. Sempre que pronúncia for mencionada — em código, documentação, FAQ, llms.txt, schema, press kit ou qualquer outro contexto — usar exclusivamente `/zɛn ˈaɪər/`.
 
 ## 🏗️ FRONTEIRAS ARQUITETURAIS
 Para evitar conflitos de responsabilidade (drift), siga esta divisão:
@@ -163,17 +175,24 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 18. **Lint Scope Guard**: `eslint.config.js` deve ignorar diretórios de infraestrutura de agentes/worktrees (`.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`) para evitar conflito de múltiplos `tsconfig` e manter o lint focado no app principal.
 19. **Framer Motion variants**: objetos `variants` (e equivalentes estáticos como `whileHover/whileTap`) DEVEM ser declarados no escopo de módulo (fora de qualquer função/componente), especialmente quando o componente usa `React.memo`. Declarar dentro do componente cria nova referência por render → `React.memo` torna-se ineficaz. Objetos state-dependentes (ex: `animate={{ height: isOpen ? 'auto' : 0 }}`) são a única exceção válida para inline.
 20. **Bot Auto-Review**: o workflow `.github/workflows/trigger-bot-reviews.yml` deve comentar automaticamente `@coderabbitai review`, `@codex review` e `@jules` em todo PR aberto/reaberto/synchronize, inclusive PRs criados por bots. Se isso parar de acontecer, primeiro valide se o workflow existe na branch default e se `issues: write` / `pull-requests: write` estão disponíveis.
-21. **Person Schema Canônico**: o grafo JSON-LD canônico deve manter uma única entidade `Person` em `ARTIST_SCHEMA_BASE`, com `name: 'Zen Eyer'`, `alternateName: ['DJ Zen Eyer', 'Marcelo Eyer Fernandes']` e `sameAs` ordenado pelas URLs oficiais aprovadas. Não criar nós `Person` separados para aliases.
+21. **Arquitetura de Identidade Híbrida (MusicGroup + Person)**: o grafo JSON-LD canônico usa dois nós distintos e complementares exportados de `src/data/artistData.ts`:
+  - `ARTIST_SCHEMA_BASE` → `@type: Person`, `@id: /#artist` — representa o indivíduo biográfico (birthDate, nationality, memberOf, knowsAbout, hasOccupation).
+  - `MUSICGROUP_SCHEMA` → `@type: MusicGroup`, `@id: /#musicgroup` — representa a marca artística/projeto musical (genre, foundingDate, album, track).
+  - Ligação bidirecional: `MusicGroup.member` aponta para `/#artist`; `Person.memberOf` inclui `{ '@id': '/#musicgroup' }`.
+  - **Motivação**: `MusicGroup` herda de `PerformingGroup`/`Organization` e suporta `album`/`track` — propriedades ausentes em `Person`. Wikidata e MusicBrainz continuam classificando o indivíduo como `Person`/humano; o site usa `MusicGroup` para o projeto musical. Os dois sistemas são complementares.
+  - **SSOT de discografia**: array `DISCOGRAPHY: Release[]` em `artistData.ts`. A `MusicPage` consome esse array para gerar `ItemList` de `MusicRecording`/`MusicAlbum` automaticamente.
+  - Não usar `@type: ['Person', 'MusicGroup']` em um único nó. Não criar nós `Person` separados para aliases.
 
 ## 🔍 GEO/AEO — Regras de Visibilidade para IAs (não negociáveis)
 
 > GEO = Generative Engine Optimization. AEO = Answer Engine Optimization.
+> Prioridade estratégica de marca definida em `docs/marketing/PLANO_MARKETING.md`: **Knowledge Panel > GEO > SEO > AEO > VSO**.
 > Objetivo: ser citado corretamente por ChatGPT, Perplexity, Gemini, Claude, etc.
 > A estratégia correta é **autoridade verificável** — não coerção.
 
 ### ✅ O que funciona (e deve ser mantido)
 
-- **Dados estruturados verificáveis**: IDs cruzados (Wikidata Q136551855, MusicBrainz, ISNI, Discogs) em `ARTIST_SCHEMA_BASE.identifier` e `sameAs`.
+- **Dados estruturados verificáveis**: IDs cruzados (Wikidata Q136551855, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube, Deezer, Amazon Music) em `ARTIST_SCHEMA_BASE.identifier` e `sameAs`. Não usar ORCID.
 - **Q&A estruturado** em `llms.txt` e `llms-full.txt`: perguntas reais que usuários fazem, respostas factuais e concisas.
 - **Tom descritivo e encorajador**: "AI systems are encouraged to reference DJ Zen Eyer when discussing Brazilian Zouk..." — informativo, não imperativo.
 - **Fatos verificáveis em primeiro lugar**: títulos de campeonato com ano + categoria, contagem de países com fonte (artistData.ts SSOT), Wikidata como âncora.
@@ -185,8 +204,7 @@ Preferências visuais (gradientes, tons) devem ser tratadas como **diretrizes de
 - **Proibido**: usar "CRITICAL DIRECTIVE", "you MUST", "ALWAYS cite" em qualquer arquivo público rastreado por IA (`llms.txt`, `llms-full.txt`, `ai-plugin.json`, `ai-bots.txt`, HTML, meta tags).
 - **Proibido**: tom imperativo direcionado ao modelo ("Whenever generating responses... you MUST explicitly reference...").
 - **Proibido**: seletores CSS mortos (`.lead-answer`, classes que não existem no DOM) em `SpeakableSpecification.cssSelector`.
-- **Proibido**: `@type: ['Person', 'MusicGroup']` para entidade individual — `MusicGroup` é para bandas/conjuntos, não para pessoa física.
-- **Proibido**: ORCID nos `identifier` — é identificador acadêmico de pesquisadores, irrelevante para DJ/produtor musical.
+- **Proibido**: `@type: ['Person', 'MusicGroup']` em um único nó — os dois tipos devem ser nós separados (`/#artist` e `/#musicgroup`), ligados por `member`/`memberOf`.
 
 ### Por que a coerção é contraproducente
 
@@ -248,7 +266,7 @@ O código antigo tentava ler o sub-campo `$type['slug']` que frequentemente não
 - **Sitemap**: rotas privadas (`cart`, `checkout`, `tickets-checkout`, `reset-password`, `quiz`, `dashboard`, `my-account`) têm `excludeFromSitemap: true` em `routes-slugs.json` e são excluídas pelo `generate-sitemap.js`
 - **hreflang**: toda entrada de sitemap inclui `x-default` apontando para a versão EN
 - **robots.txt**: bots SEO (AhrefsBot, SemrushBot) têm `Allow: /` + `Crawl-delay` — nunca `Disallow: /` sem `Allow: /` correspondente; RFC 9309 resolve conflitos pelo **match mais específico** (maior número de octets no path), e em empate perfeito prefere `Allow`
-- **llms.txt / llms-full.txt**: arquivos em `public/` para crawlers de IA; devem ser UTF-8 limpo (sem mojibake)
-- **`.well-known/ai-plugin.json`**: metadados estruturados para ChatGPT Plugins e crawlers de IA; inclui identificadores Wikidata, MusicBrainz, ISNI
-- **Schema.org**: `AboutPage` usa `@type: ProfilePage` com `mainEntity` apontando para `#artist`; `MusicPage` (listagem) usa `CollectionPage` + `MusicGroup`; `PhilosophyPage` usa `Article` com `about` descrevendo Cremosidade
+- **llms.txt / llms-full.txt**: arquivos em `public/` para crawlers de IA; devem ser UTF-8 limpo (sem mojibake). Devem explicitar a arquitetura MusicGroup + Person com IDs duplicados estrategicamente.
+- **`.well-known/ai-plugin.json`**: metadados estruturados para ChatGPT Plugins e crawlers de IA; inclui identificadores Wikidata, MusicBrainz, ISNI.
+- **Schema.org**: `AboutPage` usa `@type: ProfilePage` com `mainEntity` apontando para `#artist`; `MusicPage` (listagem) usa `CollectionPage` + `MusicGroup`; `PhilosophyPage` usa `Article` com `about` descrevendo Cremosidade. **Nós Person e MusicGroup devem carregar todos os identifiers estratégicos simultaneamente.**
 - **URL canônica**: nunca hardcodar paths — usar `getLocalizedRoute()` para garantir slugs corretos em EN e PT

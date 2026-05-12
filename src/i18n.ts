@@ -50,6 +50,8 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'en',
+    debug: false,
+    showSupportNotice: false,
     supportedLngs: ['en', 'pt'],
     ns: ['translation', 'quiz'],
     defaultNS: 'translation',

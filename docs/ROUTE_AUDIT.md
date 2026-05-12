@@ -1,6 +1,6 @@
 # 🔀 Auditoria de Rotas — Frontend ↔ WordPress
 
-**Data:** Fevereiro 2026
+**Data:** Maio 2026
 
 Verificação de sincronização entre rotas do frontend React e slugs do WordPress.
 
@@ -11,28 +11,28 @@ Verificação de sincronização entre rotas do frontend React e slugs do WordPr
 | Rota React (EN) | Rota React (PT) | Slug WordPress | Status |
 |-----------------|-----------------|----------------|--------|
 | `/` | `/pt/` | `home` | ✅ OK |
-| `/about` | `/pt/sobre` | `about` / `sobre` | ✅ OK |
-| `/music` | `/pt/musica` | `music` / `musica` | ✅ OK |
-| `/events` | `/pt/eventos` | `events` / `eventos` | ✅ OK |
-| `/news` | `/pt/noticias` | `news` / `noticias` | ✅ OK |
+| `/about-dj-zen-eyer` | `/pt/sobre-dj-zen-eyer` | `about-dj-zen-eyer` / `sobre-dj-zen-eyer` | ✅ OK |
+| `/zouk-music` | `/pt/musica-zouk` | `zouk-music` / `musica-zouk` | ✅ OK |
+| `/zouk-events` | `/pt/eventos-zouk` | `zouk-events` / `eventos-zouk` | ✅ OK |
+| `/zouk-dance-news` | `/pt/noticias-zouk` | `zouk-dance-news` / `noticias-zouk` | ✅ OK |
 | `/shop` | `/pt/loja` | `shop` / `loja` | ✅ OK |
-| `/contact` | `/pt/contato` | `contact` / `contato` | ✅ OK |
+| `/work-with-me` | `/pt/trabalhe-comigo` | `work-with-me` / `trabalhe-comigo` | ✅ OK |
 
 ## Rotas Dinâmicas
 
 | Rota React | Componente | Status |
 |-----------|-----------|--------|
-| `/news/:slug` | `NewsPage.tsx` | ✅ OK — Renderização por slug implementada |
-| `/events/:id` | `EventsPage.tsx` | ✅ OK — Renderização por ID implementada |
+| `/zouk-dance-news/:slug` | `NewsPage.tsx` | ✅ OK — Renderização por slug implementada |
+| `/zouk-events/:id` | `EventsPage.tsx` | ✅ OK — Renderização por ID implementada |
 | `/shop/:slug` | `ShopPage.tsx` | ✅ OK |
-| `/music/:slug` | `MusicPage.tsx` | ✅ OK — Renderização por slug implementada |
+| `/zouk-music#release-id` | `MusicPage.tsx` | ✅ OK — Discografia renderizada como listagem sem rota `/release` |
 
 ## Próximos Passos
 
-1. Validar canonical/alternate links específicos nas páginas dinâmicas (`news/:slug`, `events/:id`, `music/:slug`)
+1. Validar canonical/alternate links específicos nas páginas dinâmicas (`zouk-dance-news/:slug`, `zouk-events/:id`)
 2. Adicionar testes automatizados de roteamento para evitar regressão em PT/EN
 3. Monitorar erro 404 de slugs inválidos via observabilidade (frontend + WP logs)
 
 ---
 
-**Atualizado:** Fevereiro 2026 (revisão pós-auditoria técnica)
+**Atualizado:** Maio 2026 (revisão pós-auditoria técnica)

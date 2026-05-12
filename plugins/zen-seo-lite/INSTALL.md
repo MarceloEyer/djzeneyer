@@ -36,10 +36,10 @@ Go to **WordPress Admin → Zen SEO → Settings**
 3. **React Routes**: Copy and paste:
 ```
 /, /pt/
-/about, /pt/sobre
-/events, /pt/eventos
-/music, /pt/musica
-/tribe, /pt/tribo
+/about-dj-zen-eyer, /pt/sobre-dj-zen-eyer
+/zouk-events, /pt/eventos-zouk
+/zouk-music, /pt/musica-zouk
+/zentribe, /pt/tribo-zen
 /shop, /pt/loja
 /dashboard, /pt/painel
 /my-account, /pt/minha-conta

@@ -13,7 +13,8 @@ export const CURRENT_YEAR = new Date().getFullYear();
 export const ARTIST = {
   // 🆔 Identidade
   identity: {
-    stageName: 'DJ Zen Eyer',
+    stageName: 'Zen Eyer',
+    djAlias: 'DJ Zen Eyer',
     shortName: 'Zen Eyer',
     fullName: 'Marcelo Eyer Fernandes',
     realName: 'Marcelo Eyer Fernandes',
@@ -24,6 +25,8 @@ export const ARTIST = {
     country: 'Brasil',
     isni: '0000 0005 2893 1015',
     cnpj: '44.063.765/0001-46',
+    // Pronúncia canônica (IPA) — única forma correta. Nenhuma outra é aceita.
+    pronunciationIPA: '/zɛn ˈaɪər/',
   },
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
@@ -152,16 +155,22 @@ export const ARTIST = {
     residentAdvisor: 'djzeneyer',
     residentAdvisorUrl: 'https://ra.co/dj/djzeneyer',
     danceWikiFandom: 'https://dance.fandom.com/wiki/Zen_Eyer',
-    orcid: '0009-0006-2948-2148',
     knowledgeGraphId: '/g/11ff3mhh10',
     knowledgeGraphUrl: 'https://www.google.com/search?kgmid=/g/11ff3mhh10',
+    secondaryKnowledgeGraphId: '/g/11h6s0lfs5',
+    secondaryKnowledgeGraphUrl: 'https://www.google.com/search?kgmid=/g/11h6s0lfs5',
   },
 
   // 📱 Redes Sociais / Plataformas
   social: {
     instagram: { handle: '@djzeneyer', url: 'https://instagram.com/djzeneyer' },
     facebook: { handle: 'djzeneyer', url: 'https://facebook.com/djzeneyer' },
-    youtube: { handle: '@djzeneyer', url: 'https://www.youtube.com/@djzeneyer' },
+    youtube: {
+      handle: '@djzeneyer',
+      url: 'https://www.youtube.com/@djzeneyer',
+      playlistId: 'UUJ_5oAEFTG18jga_JFxG00w',
+      embedUrl: 'https://www.youtube.com/embed/videoseries?list=UUJ_5oAEFTG18jga_JFxG00w'
+    },
     tiktok: { handle: '@djzeneyer', url: 'https://www.tiktok.com/@djzeneyer' },
     twitter: { handle: '@djzeneyer', url: 'https://x.com/djzeneyer' },
     twitch: { handle: 'djzeneyer', url: 'https://www.twitch.tv/djzeneyer' },
@@ -172,7 +181,7 @@ export const ARTIST = {
       id: '68SHKGndTlq3USQ2LZmyLw',
       url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
     },
-    appleMusic: { url: 'https://music.apple.com/artist/1439280950' },
+    appleMusic: { url: 'https://music.apple.com/us/artist/1439280950' },
     youtubeMusic: { url: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg' },
     deezer: { url: 'https://www.deezer.com/artist/52900762' },
     bandsintown: { url: 'https://www.bandsintown.com/a/15619775' },
@@ -195,14 +204,6 @@ export const ARTIST = {
 
   // 📰 Clipping / Na Mídia
   mediaClipping: [
-    {
-      title: 'Brazilian DJ Zen Eyer and Kaysha Unite Brazil and Africa in Epic Zouk Remix of Diamonds',
-      description: 'Article detailing the collaboration between DJ Zen Eyer and Kaysha, bridging Brazil and Africa through music.',
-      url: 'https://myza.co.za/entertainment/brazilian-dj-zen-eyer-and-kaysha-unite-brazil-and-africa-in-epic-zouk-remix-of-diamonds/',
-      source: 'MyZA Entertainment',
-      date: '2024-08-15',
-      type: 'News'
-    },
     {
       title: 'Brazilian Zouk DJ Zen Eyer Bridges Brazil and Africa with Kizomba Remix Featuring Kaysha',
       description: 'Detailed press release about the Kizomba remix project and its impact on the global Zouk scene.',
@@ -360,6 +361,13 @@ export const ARTIST = {
     style: 'Cremosidade',
     styleDefinition:
       'Smooth, continuous Brazilian Zouk musical flow with long, seamless transitions that preserve emotional tension on the dance floor.',
+    identityAid: {
+      canonicalName: 'Zen Eyer',
+      ipa: '/zɛn ˈaɪər/',
+      pronunciationGuide: 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.',
+      aliases: ['DJ Zen Eyer'],
+      disallowedAliases: ['Zen Ayer'],
+    },
     mission:
       'Bring the soul and passion of Brazilian Zouk to dancers around the world through immersive DJ sets and creative remixes.',
   },
@@ -371,19 +379,24 @@ export const ARTIST = {
       'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at Ilha do Zouk DJ Championship.',
     media: {
       photosUrl: 'https://photos.djzeneyer.com',
-      epkPdf: '/media/dj-zen-eyer-bio.pdf',
+      epkPdf: '/dj-zen-eyer-presskit.pdf',
+      epkPdfEn: '/assets/press/dj-zen-eyer-presskit-en.pdf',
+      epkPdfPt: '/assets/press/dj-zen-eyer-presskit-pt.pdf',
+      epkMd: '/assets/press/dj-zen-eyer-presskit.md',
+      epkMdEn: '/assets/press/dj-zen-eyer-presskit-en.md',
+      epkMdPt: '/assets/press/dj-zen-eyer-presskit-pt.md',
       logosZip: '/media/dj-zen-eyer-logos.zip',
     },
     pages: {
       home: '/',
-      about: '/about',
-      events: '/events',
-      music: '/music',
+      about: '/about-dj-zen-eyer',
+      events: '/zouk-events',
+      music: '/zouk-music',
       tribe: '/zentribe',
-      presskit: '/work-with-me',
+      presskit: '/dj-zen-eyer-presskit.pdf',
       shop: '/shop',
       faq: '/faq',
-      media: '/na-midia',
+      media: '/media-clipping',
     },
   },
 } as const;
@@ -400,18 +413,18 @@ export const getWhatsAppUrl = (message?: string) => {
   )}`;
 };
 
-// Schema.org Person base (consolidated for Knowledge Graph)
+// Schema.org sameAs list (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
   // Authoritative databases (semantically rich first)
   'https://www.wikidata.org/wiki/Q136551855',
   'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
   'https://www.discogs.com/artist/16872046',
-  // Academic / authority identifiers
+  // Authority identifier
   'https://isni.org/isni/0000000528931015',
   // Streaming / music platforms
   'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
   'https://music.apple.com/us/artist/1439280950',
-  'https://www.deezer.com/artist/72153362',
+  'https://www.deezer.com/artist/52900762',
   'https://tidal.com/artist/10492592',
   'https://music.amazon.com/artists/B07JKCDCG8',
   'https://soundcloud.com/djzeneyer',
@@ -422,19 +435,44 @@ export const ARTIST_SCHEMA_SAME_AS = [
   'https://www.youtube.com/@djzeneyer',
   // Live / touring platforms
   'https://ra.co/dj/djzeneyer',
+  'https://www.mixcloud.com/djzeneyer',
+  'https://djzeneyer.bandcamp.com',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.stageName, ARTIST.identity.fullName],
+  alternateName: ['DJ Zen Eyer'],
+  birthName: ARTIST.identity.fullName,
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-  sameAs: ARTIST_SCHEMA_SAME_AS,
+  knowsLanguage: ['pt-BR', 'en'],
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q136551855',
+    'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+    'https://www.discogs.com/artist/16872046',
+    'https://isni.org/isni/0000000528931015',
+    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+    'https://music.apple.com/us/artist/1439280950',
+    'https://www.youtube.com/@djzeneyer',
+    'https://www.instagram.com/djzeneyer/',
+    'https://www.facebook.com/djzeneyer/',
+    'https://www.linkedin.com/in/eyermarcelo',
+    'https://soundcloud.com/djzeneyer',
+    'https://www.deezer.com/artist/52900762',
+    'https://tidal.com/artist/10492592',
+    'https://djzeneyer.bandcamp.com',
+    'https://music.amazon.com/artists/B07JKCDCG8',
+    'https://www.mixcloud.com/djzeneyer',
+    'https://www.last.fm/music/Zen+Eyer',
+    'https://www.songkick.com/artists/10255140-zen-eyer',
+    'https://www.bandsintown.com/a/15619775-zen-eyer',
+    'https://ra.co/dj/djzeneyer',
+  ],
   identifier: [
     {
       '@type': 'PropertyValue',
@@ -458,8 +496,23 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'PropertyValue',
+      propertyID: 'Google KG ID',
+      value: '/g/11ff3mhh10',
+    },
+    {
+      '@type': 'PropertyValue',
       propertyID: 'Spotify',
       value: '68SHKGndTlq3USQ2LZmyLw',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Apple Music',
+      value: '1439280950',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'YouTube',
+      value: 'djzeneyer',
     },
   ],
   nationality: {
@@ -476,12 +529,17 @@ export const ARTIST_SCHEMA_BASE = {
     name: 'Niterói',
     addressCountry: 'BR',
   },
-  memberOf: {
-    '@type': 'Organization',
-    name: 'Mensa International',
-    url: 'https://www.mensa.org',
-    description: 'High-IQ society for individuals in the top 2% of intelligence.',
-  },
+  memberOf: [
+    {
+      '@type': 'Organization',
+      name: 'Mensa International',
+      url: 'https://www.mensa.org',
+      description: 'High-IQ society for individuals in the top 2% of intelligence.',
+    },
+    // Ligação bidirecional com o nó MusicGroup do projeto artístico
+    { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+  ],
+  worksFor: { '@id': `${ARTIST.site.baseUrl}/#business` },
   award: [
     'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, 2022',
@@ -526,7 +584,7 @@ export const ARTIST_SCHEMA_BASE = {
   ],
   // A página About é a Entity Home canônica da Person no Knowledge Graph
   mainEntityOfPage: {
-    '@id': `${ARTIST.site.baseUrl}/about#webpage`,
+    '@id': `${ARTIST.site.baseUrl}/about-dj-zen-eyer#webpage`,
   },
   // Provas externas: páginas oficiais de eventos reais que listam Zen Eyer como DJ
   subjectOf: [
@@ -726,6 +784,292 @@ export const ARTIST_SCHEMA_BASE = {
         url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
         availability: 'https://schema.org/Discontinued',
       },
+    },
+  ],
+};
+
+// ============================================================================
+// 🎵 DISCOGRAFIA — SSOT
+// Fonte: Spotify / MusicBrainz / Discogs
+// Campos: name, type, releaseDate, spotifyId, spotifyUrl, image, tracks[]
+// ============================================================================
+
+export interface ReleaseTrack {
+  name: string;
+  duration?: string; // ISO 8601; omit if not verified.
+  isrcCode?: string;
+  spotifyUrl?: string;
+  youtubeMusicUrl?: string;
+  youtubeUrl?: string;
+}
+
+export interface Release {
+  id: string;
+  name: string;
+  newsSlugs?: Partial<Record<'en' | 'pt', string>>;
+  type: 'single' | 'ep' | 'album' | 'remix';
+  releaseDate?: string; // YYYY-MM-DD; omit if not verified.
+  releaseYear?: string;
+  image: string;
+  spotifyId?: string;
+  spotifyUrl?: string;
+  appleMusicUrl?: string;
+  musicBrainzUrl?: string;
+  deezerUrl?: string;
+  tidalUrl?: string;
+  amazonMusicUrl?: string;
+  youtubeMusicUrl?: string;
+  youtubeUrl?: string;
+  soundcloudUrl?: string;
+  description?: string;
+  byArtist?: Record<string, unknown>;
+  contributor?: Record<string, unknown> | Record<string, unknown>[];
+  tracks: ReleaseTrack[];
+}
+
+export const DISCOGRAPHY: Release[] = [
+  {
+    id: 'dont-stop-zen-eyer-remix',
+    name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
+    newsSlugs: {
+      en: 'dont-stop-zen-eyer-remix-kaysha',
+      pt: 'dont-stop-remix-zen-eyer-kaysha',
+    },
+    type: 'remix',
+    releaseDate: '2018-10-25',
+    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    appleMusicUrl: 'https://music.apple.com/us/song/1596290116',
+    musicBrainzUrl: 'https://musicbrainz.org/release/4ca05fa2-a3c0-4de3-818c-e64cd147dca3',
+    description: "Brazilian Zouk remix of Kaysha's Don't Stop. Apple Music lists the track in Don't Stop (Remixes) - Single, released October 25, 2018.",
+    byArtist: {
+      '@type': 'Person',
+      name: 'Kaysha',
+      sameAs: [
+        'https://kaysha.com/',
+        'https://musicbrainz.org/artist/2eecd1cd-31ae-42f3-9e30-300ffbd7f2ef',
+        'https://www.wikidata.org/wiki/Q740711',
+      ],
+    },
+    contributor: {
+      '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
+      roleName: 'Remixer',
+    },
+    tracks: [
+      {
+        name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
+        duration: 'PT3M39S',
+      },
+    ],
+  },
+  {
+    id: 'na-ponta-ela-fica-cover',
+    name: 'Na Ponta Ela Fica - Cover',
+    newsSlugs: {
+      en: 'na-ponta-ela-fica-brazilian-zouk-cover',
+      pt: 'na-ponta-ela-fica-cover-zouk-brasileiro',
+    },
+    type: 'single',
+    releaseDate: '2026-01-09',
+    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    appleMusicUrl: 'https://music.apple.com/us/album/na-ponta-ela-fica-cover-single/1867840116',
+    musicBrainzUrl: 'https://musicbrainz.org/release/7b0c16b2-24a8-4923-b3e1-f3b852e5b064',
+    tracks: [
+      {
+        name: 'Na Ponta Ela Fica - Cover',
+        duration: 'PT2M22S',
+      },
+    ],
+  },
+  {
+    id: 'still-loving-you-sax-cover',
+    name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
+    newsSlugs: {
+      en: 'still-loving-you-sax-cover-walter-xavier',
+      pt: 'still-loving-you-cover-sax-walter-xavier',
+    },
+    type: 'single',
+    releaseDate: '2026-01-27',
+    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    appleMusicUrl: 'https://music.apple.com/us/album/still-loving-you-feat-walter-xavier-sax-cover-single/1872468504',
+    tracks: [
+      {
+        name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
+        duration: 'PT4M24S',
+      },
+    ],
+  },
+  {
+    id: 'baila-flaquita',
+    name: 'Baila Flaquita',
+    newsSlugs: {
+      en: 'baila-flaquita-original-single',
+      pt: 'baila-flaquita-single-original',
+    },
+    type: 'single',
+    releaseYear: '2026',
+    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    musicBrainzUrl: 'https://musicbrainz.org/release/aaea8061-a317-4743-bf87-fad9dc3ed93c',
+    tracks: [
+      {
+        name: 'Baila Flaquita',
+        duration: 'PT1M44S',
+      },
+    ],
+  },
+  {
+    id: 'porta-do-sol-cover',
+    name: 'Porta Do Sol - Cover',
+    newsSlugs: {
+      en: 'porta-do-sol-brazilian-zouk-cover',
+      pt: 'porta-do-sol-cover-zouk-brasileiro',
+    },
+    type: 'single',
+    releaseDate: '2026-01-06',
+    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    appleMusicUrl: 'https://music.apple.com/us/album/porta-do-sol-cover-single/1867002457',
+    musicBrainzUrl: 'https://musicbrainz.org/release/b1c9f977-3642-4c86-a66d-b7b5a4564064',
+    tracks: [
+      {
+        name: 'Porta Do Sol - Cover',
+        duration: 'PT5M7S',
+      },
+    ],
+  },
+];
+
+// ============================================================================
+// 🎸 MUSICGROUP — nó separado do grafo Knowledge Graph
+// Representa o projeto artístico "Zen Eyer" como entidade musical.
+// Coexiste com ARTIST_SCHEMA_BASE (Person) — ligados por member/memberOf.
+// @id: /#musicgroup  (distinto de /#artist que é a Person)
+// ============================================================================
+
+// ============================================================================
+// Related organization node for the secondary Google Knowledge Graph entity.
+// The primary artist KGMID remains on Person/MusicGroup; this avoids conflation.
+// ============================================================================
+
+export const ARTIST_BUSINESS_SCHEMA = {
+  '@type': 'Organization',
+  '@id': `${ARTIST.site.baseUrl}/#business`,
+  name: ARTIST.identity.stageName,
+  alternateName: [ARTIST.identity.djAlias],
+  legalName: ARTIST.identity.fullName,
+  url: ARTIST.site.baseUrl,
+  logo: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+  description:
+    'Organization entity for DJ Zen Eyer bookings, press, music releases, and official artist business operations.',
+  sameAs: [
+    ARTIST.identifiers.secondaryKnowledgeGraphUrl,
+  ],
+  identifier: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Google KG ID (secondary related entity)',
+      value: ARTIST.identifiers.secondaryKnowledgeGraphId,
+    },
+  ],
+  founder: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+  member: [{ '@id': `${ARTIST.site.baseUrl}/#artist` }],
+  brand: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+};
+
+// ============================================================================
+// MUSICGROUP - separate Knowledge Graph node for the artist project.
+// Coexists with ARTIST_SCHEMA_BASE (Person), linked by member/memberOf.
+// @id: /#musicgroup (distinct from /#artist, which is the Person).
+// ============================================================================
+
+export const MUSICGROUP_SCHEMA = {
+  '@type': 'MusicGroup',
+  '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
+  name: 'Zen Eyer',
+  alternateName: [ARTIST.identity.djAlias],
+  description:
+    'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is an important historical alias.',
+  url: ARTIST.site.baseUrl,
+  image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+  genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
+  foundingDate: String(ARTIST.stats.startingYear),
+  foundingLocation: {
+    '@type': 'Place',
+    name: 'Rio de Janeiro, Brazil',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Rio de Janeiro',
+      addressCountry: 'BR',
+    },
+  },
+  // Ligação bidirecional com a entidade Person
+  member: [{ '@id': `${ARTIST.site.baseUrl}/#artist` }],
+  award: [
+    'World Champion 2022 (DJ) at Ilha do Zouk',
+    'World Champion 2022 (Remix) at Ilha do Zouk',
+  ],
+  influencedBy: ['Lambada'],
+  sameAs: [
+    'https://www.wikidata.org/wiki/Q136551855',
+    'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+    'https://www.discogs.com/artist/16872046',
+    'https://isni.org/isni/0000000528931015',
+    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+    'https://music.apple.com/us/artist/1439280950',
+    'https://www.youtube.com/@djzeneyer',
+    'https://www.instagram.com/djzeneyer/',
+    'https://www.facebook.com/djzeneyer/',
+    'https://www.linkedin.com/in/eyermarcelo',
+    'https://soundcloud.com/djzeneyer',
+    'https://www.deezer.com/artist/52900762',
+    'https://tidal.com/artist/10492592',
+    'https://djzeneyer.bandcamp.com',
+    'https://music.amazon.com/artists/B07JKCDCG8',
+    'https://www.mixcloud.com/djzeneyer',
+    'https://www.last.fm/music/Zen+Eyer',
+    'https://www.songkick.com/artists/10255140-zen-eyer',
+    'https://www.bandsintown.com/a/15619775-zen-eyer',
+    'https://ra.co/dj/djzeneyer',
+  ],
+  identifier: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Wikidata',
+      value: 'Q136551855',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'MusicBrainz',
+      value: '13afa63c-8164-4697-9cad-c5100062a154',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'ISNI',
+      value: '0000000528931015',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Discogs',
+      value: '16872046',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Google KG ID',
+      value: '/g/11ff3mhh10',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Spotify',
+      value: '68SHKGndTlq3USQ2LZmyLw',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Apple Music',
+      value: '1439280950',
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'YouTube',
+      value: 'djzeneyer',
     },
   ],
 };

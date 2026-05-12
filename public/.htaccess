@@ -205,10 +205,11 @@ RewriteEngine On
 RewriteRule ^payme/?$ /support-dj-zen-eyer/ [R=301,L]
 RewriteRule ^pt/pagamentos/?$ /pt/apoie-dj-zen-eyer/ [R=301,L]
 
-# Legacy press kit route -> canonical booking page
-RewriteRule ^press-kit-dj-zen-eyer/?$ /work-with-me/ [R=301,L]
-RewriteRule ^pt/kit-de-imprensa/?$ /pt/trabalhe-comigo/ [R=301,L]
-RewriteRule ^pt/press-kit/?$ /pt/trabalhe-comigo/ [R=301,L]
+# Legacy press kit route -> canonical press kit download route
+# REMOVIDO: press-kit agora é uma rota válida apontando para PressKitDownloadPage
+# RewriteRule ^press-kit-dj-zen-eyer/?$ /work-with-me/ [R=301,L]
+# RewriteRule ^pt/kit-de-imprensa/?$ /pt/trabalhe-comigo/ [R=301,L]
+RewriteRule ^pt/press-kit/?$ /pt/kit-de-imprensa/ [R=301,L]
 
 # Legacy support and philosophy aliases -> canonical pages
 RewriteRule ^support-the-artist/?$ /support-dj-zen-eyer/ [R=301,L]
@@ -220,6 +221,15 @@ RewriteRule ^pt/privacy-policy-2/?$ /pt/privacidade/ [R=301,L]
 # Legacy media route -> canonical clipping pages
 RewriteRule ^media/?$ /media-clipping/ [R=301,L]
 RewriteRule ^pt/media/?$ /pt/na-midia/ [R=301,L]
+
+# Events Standardization (SSOT)
+# Redireciona slugs legados/curtos para a estrutura canônica de Zouk Events
+RewriteRule ^events/([0-9]{4}-[0-9]{2}-[0-9]{2}-.*)$ /zouk-events/$1 [R=301,L,NC]
+RewriteRule ^pt/eventos/([0-9]{4}-[0-9]{2}-[0-9]{2}-.*)$ /pt/eventos-zouk/$1 [R=301,L,NC]
+RewriteRule ^events/(.+)$ /zouk-events/$1 [R=301,L,NC]
+RewriteRule ^pt/eventos/(.+)$ /pt/eventos-zouk/$1 [R=301,L,NC]
+RewriteRule ^events/?$ /zouk-events/ [R=301,L,NC]
+RewriteRule ^pt/eventos/?$ /pt/eventos-zouk/ [R=301,L,NC]
 
 # Duplicate index files -> canonical home pages
 RewriteRule ^index\.html$ / [R=301,L]

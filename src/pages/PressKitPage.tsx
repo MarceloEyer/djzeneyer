@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { useBranding } from '../contexts/BrandingContext';
 import { sanitizeHtml } from '../utils/sanitize';
 import {
@@ -20,19 +21,12 @@ import {
   MapPin,
   PlayCircle,
   Radio,
-  Database,
   ExternalLink,
   Copy,
   Check
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../data/artistData';
-
-const PRESS_LINKS = {
-  photos: ARTIST.site.media.photosUrl,
-  epk: ARTIST.site.media.epkPdf,
-  logos: ARTIST.site.media.logosZip,
-};
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
   ({ icon, number, label, color }) => (
@@ -79,12 +73,20 @@ const MediaKitCard = memo<{
 MediaKitCard.displayName = 'MediaKitCard';
 
 const PressKitPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { artist } = useBranding();
   const location = useLocation();
 
   const currentPath = location.pathname;
   const currentUrl = `https://djzeneyer.com${currentPath}`;
+  const isPortuguese = i18n.language?.toLowerCase().startsWith('pt') ?? false;
+
+  const pressLinks = useMemo(() => ({
+    photos: ARTIST.site.media.photosUrl,
+    epk: isPortuguese ? ARTIST.site.media.epkPdfPt : ARTIST.site.media.epkPdfEn,
+    epkMd: isPortuguese ? ARTIST.site.media.epkMdPt : ARTIST.site.media.epkMdEn,
+    logos: ARTIST.site.media.logosZip,
+  }), [isPortuguese]);
 
   const [isCopied, setIsCopied] = useState(false);
   const handleCopyBio = useCallback(() => {
@@ -102,13 +104,6 @@ const PressKitPage: React.FC = () => {
       { name: t('social.youtube'), url: artist.social.youtube?.url, icon: <Radio size={20} /> },
       { name: t('social.spotify'), url: artist.social.spotify?.url, icon: <PlayCircle size={20} /> },
       { name: t('social.apple_music'), url: artist.social.appleMusic?.url, icon: <PlayCircle size={20} /> },
-      {
-        name: t('social.musicbrainz'),
-        url: `https://musicbrainz.org/artist/${artist.identifiers.musicbrainz}`,
-        icon: <Database size={20} />
-      },
-      { name: t('social.wikidata'), url: `https://www.wikidata.org/wiki/${artist.identifiers.wikidata}`, icon: <Globe size={20} /> },
-      { name: t('social.discogs'), url: artist.social.discogs?.url, icon: <Database size={20} /> },
       { name: t('social.resident_advisor'), url: artist.social.residentAdvisor?.url, icon: <ExternalLink size={20} /> }
     ].filter(l => !!l.url),
     [t, artist]
@@ -180,26 +175,33 @@ const PressKitPage: React.FC = () => {
       {
         title: t('presskit.media.photos'),
         desc: t('presskit.media.photos_desc'),
-        path: PRESS_LINKS.photos,
+        path: pressLinks.photos,
         icon: <ImageIcon size={32} />,
         isExternal: true
       },
       {
         title: t('presskit.media.bio'),
         desc: t('presskit.media.bio_desc'),
-        path: PRESS_LINKS.epk,
+        path: pressLinks.epk,
+        icon: <FileText size={32} />,
+        isExternal: false
+      },
+      {
+        title: t('presskit.media.markdown'),
+        desc: t('presskit.media.markdown_desc'),
+        path: pressLinks.epkMd,
         icon: <FileText size={32} />,
         isExternal: false
       },
       {
         title: t('presskit.media.logos'),
         desc: t('presskit.media.logos_desc'),
-        path: PRESS_LINKS.logos,
+        path: pressLinks.logos,
         icon: <Music2 size={32} />,
         isExternal: false
       }
     ],
-    [t]
+    [t, pressLinks]
   );
 
   return (
@@ -220,6 +222,9 @@ const PressKitPage: React.FC = () => {
               transition={{ duration: 0.7 }}
               className="mx-auto max-w-4xl text-center"
             >
+              <div className="flex justify-center">
+                <Breadcrumb items={[{ label: t('nav.presskit') }]} className="mb-6" />
+              </div>
               <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-xs font-bold uppercase tracking-[0.28em] text-primary">
                 {t('presskit.tag')}
               </div>
@@ -264,7 +269,7 @@ const PressKitPage: React.FC = () => {
                   >
                     <img
                       src="/images/artist/dj-zen-eyer-smiling-at-deck.jpg"
-                      alt="DJ Zen Eyer"
+                      alt="Zen Eyer"
                       className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0"
                       loading="lazy"
                       width="800"
@@ -406,11 +411,11 @@ const PressKitPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
                 {[
                   { src: '/images/artist/brazilian-zouk-dance-embrace.jpg', alt: 'Brazilian Zouk Dance Embrace' },
-                  { src: '/images/artist/dj-zen-eyer-performing-live.jpg', alt: 'DJ Zen Eyer Performing Live' },
-                  { src: '/images/artist/dj-zen-eyer-club-performance.jpg', alt: 'DJ Zen Eyer Club Performance' },
-                  { src: '/images/artist/dj-zen-eyer-winner-trophy.jpg', alt: 'DJ Zen Eyer Winner Trophy' },
-                  { src: '/images/artist/dj-zen-eyer-beach-brazilian-zouk.png', alt: 'DJ Zen Eyer Beach Zouk' },
-                  { src: '/images/artist/dj-zen-eyer-nature-portrait.jpg', alt: 'DJ Zen Eyer Nature Portrait' }
+                  { src: '/images/artist/dj-zen-eyer-performing-live.jpg', alt: 'Zen Eyer Performing Live' },
+                  { src: '/images/artist/dj-zen-eyer-club-performance.jpg', alt: 'Zen Eyer Club Performance' },
+                  { src: '/images/artist/dj-zen-eyer-winner-trophy.jpg', alt: 'Zen Eyer Winner Trophy' },
+                  { src: '/images/artist/dj-zen-eyer-beach-brazilian-zouk.png', alt: 'Zen Eyer Beach Zouk' },
+                  { src: '/images/artist/dj-zen-eyer-nature-portrait.jpg', alt: 'Zen Eyer Nature Portrait' }
                 ].map((photo, index) => (
                   <motion.div
                     key={index}
@@ -431,13 +436,13 @@ const PressKitPage: React.FC = () => {
 
               <div className="mt-12 text-center">
                 <a
-                  href={PRESS_LINKS.photos}
+                  href={pressLinks.photos}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-primary btn-lg inline-flex items-center gap-2 px-10"
                 >
                   <ImageIcon size={20} />
-                  Acessar Todas as Fotos
+                  {t('presskit.gallery.cta')}
                 </a>
               </div>
             </motion.div>

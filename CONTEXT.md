@@ -22,12 +22,16 @@
 
 ## Regras repetidas com maior valor pratico
 
+- Pronuncia canonica: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta do nome artistico.
+- Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
+
 - Strings visiveis usam i18n.
 - Fetch em componente nao e padrao.
 - SEO por rota usa `HeadlessSEO`.
 - Rotas privadas usam `noindex`.
 - Mudanca em dependencia exige lockfile sincronizado.
 - PR duplicado deve ser consolidado em um branch canonico.
+- Deploy SPA preserva assets Vite hashados antigos para abas abertas e HTML cacheado.
 
 ## Quando este arquivo ajuda
 

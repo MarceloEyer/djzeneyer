@@ -26,7 +26,9 @@
 
 ## Projeto
 
-Site/plataforma oficial do DJ Zen Eyer (Marcelo Eyer Fernandes) — Bicampeão Mundial de Brazilian Zouk.
+Site/plataforma oficial de Zen Eyer (Marcelo Eyer Fernandes), tambem conhecido como DJ Zen Eyer — Bicampeão Mundial de Brazilian Zouk.
+Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
+Pronúncia canônica: **`/zɛn ˈaɪər/`** (IPA) — esta é a única pronúncia correta. Nenhuma outra forma é aceita.
 Arquitetura: WordPress Headless + React SPA com estética MMORPG premium.
 Produção: https://djzeneyer.com
 
@@ -76,7 +78,7 @@ Produção: https://djzeneyer.com
 - Toda nova rota usa `<HeadlessSEO />` com parâmetros corretos.
 - Rotas privadas (`dashboard`, `my-account`) usam `<HeadlessSEO noindex />` com OG image genérica.
 - Avatar do usuário nunca deve aparecer em OG tags.
-- Ao criar nova rota pública: atualizar `scripts/routes-data.json` (SSOT de rotas).
+- Ao criar nova rota pública: atualizar `src/config/routes-slugs.json` (SSOT de rotas).
 
 ### Performance
 - Páginas: lazy loading via `React.lazy()` + `Suspense`.
@@ -94,13 +96,13 @@ Produção: https://djzeneyer.com
 - **`safeUrl(null)`** retorna `'#'` (truthy) → `safeUrl(url) || fallback` NUNCA executa. Sempre: `safeUrl(url, '/fallback.svg')`.
 - **`loadingInitial` vs `loading`** no UserContext: usar `loadingInitial` em guards de rota privada — `loading` é para ações, default `false`, e causa tela branca no CTRL+F5.
 - **lucide-react 1.x**: ícones Facebook, Instagram, Youtube foram removidos → usar `src/components/icons/BrandIcons.tsx`.
-- **Vite base path**: assets em `public/` raiz NÃO chegam ao webroot em produção. Usar `public/images/` para assets que precisam ficar na raiz.
+- **Vite base path / assets públicos**: URLs absolutas como `/images/...` e `/assets/...` só chegam ao webroot quando `public/images/` ou `public/assets/` são copiadas pelo deploy. Não assumir que qualquer arquivo solto em `public/` vai para a raiz; confira `Prepare public assets` em `.github/workflows/deploy.yml`.
 - **Class components**: não podem usar `useTranslation()` → usar `withTranslation()` HOC.
 - **Zod v4 + PHP false returns**: `z.union([z.string(), z.literal(false)])` quebra em `null`/`undefined`. Padrão correto: `z.string().catch('')` (campos obrigatórios) ou `z.string().catch('').optional()` (campos opcionais). Nunca usar o padrão union+literal para campos de imagem/URL.
 - **`rankProgress` ZenGame**: o fallback de progresso por posição de rank retornava `0.0` nos dois lados do ternário — corrigido. Ao alterar lógica de rank, sempre testar o caminho sem `gamipress_get_rank_requirements_progress()`.
 - **URL canônica em páginas**: nunca hardcodar paths como `/about` — usar `getLocalizedRoute('about', currentLang)` para garantir o slug correto (`/about-dj-zen-eyer` em EN, `/pt/sobre-dj-zen-eyer` em PT).
 - **robots.txt AhrefsBot**: `Disallow: /` seguido de `Allow: /` no mesmo bloco — a primeira regra vence (RFC 9309). Sempre colocar `Allow: /` antes dos `Disallow` específicos.
-- **Sitemap**: rotas de checkout/privadas devem ter `excludeFromSitemap: true` em `scripts/routes-data.json`. O `generate-sitemap.js` lê esse campo — não editar o XML manualmente.
+- **Sitemap**: rotas de checkout/privadas devem ter `excludeFromSitemap: true` em `src/config/routes-slugs.json`. O `generate-sitemap.js` lê esse campo — não editar o XML manualmente.
 - **llms-full.txt**: arquivo deve ser UTF-8 limpo. Double-encoding (latin-1 re-encodado como UTF-8) produz mojibake silencioso — validar com `python3 -c "open('public/llms-full.txt').read()"` após edições.
 - **MusicEvent Schema.org — campos OBRIGATÓRIOS** (Google Search Console rejeita eventos sem eles):
   Toda vez que criar ou editar schema MusicEvent — em `HeadlessSEO.tsx`, em `build_event_schema()` (PHP) ou em qualquer outro lugar — os campos abaixo devem estar presentes. Usar fallback, nunca omitir:
@@ -111,7 +113,7 @@ Produção: https://djzeneyer.com
   | `endDate` | Obrigatório. Fallback: `startDate` + 4 horas. |
   | `location.address` | `PostalAddress` com sub-campos preenchidos. **Nunca emitir string vazia** — omitir sub-campo se vazio. Não usar nome do venue como `streetAddress`. |
   | `description` | Obrigatório. Fallback: `"Live Brazilian Zouk DJ set by DJ Zen Eyer at {venue}."` |
-  | `image` | Obrigatório. Fallback: OG image padrão do site (`/og-image.jpg`). |
+  | `image` | Obrigatório. Fallback: OG image padrão do site (`/images/zen-eyer-og-image.png`). |
   | `offers` | Obrigatório. Fallback: `Offer` com `url = canonical_url`, `availability = InStock` (futuro) ou `Discontinued` (passado). |
   | `performer` | Sempre presente — entidade `MusicGroup` DJ Zen Eyer. |
 
@@ -122,6 +124,7 @@ Produção: https://djzeneyer.com
 ### Build e Deploy
 - Minificador: OXC (padrão Vite 8) — nunca `minify: 'esbuild'`.
 - Prerender: `scripts/prerender.js` via Puppeteer — nunca remover.
+- Deploy SPA: preservar assets Vite hashados antigos em `dist/assets` durante a troca `dist-next` → `dist`; abas abertas podem pedir chunks lazy da build anterior.
 - ESLint ignores obrigatórios: `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`.
 - `fetch-depth: 2` no CI — nunca `0`.
 
@@ -236,7 +239,7 @@ Todas as skills estão em `.agents/skills/` (28 skills). Todas têm um arquivo `
 
 ## Checklist: nova rota pública
 
-1. Adicionar entrada em `scripts/routes-data.json` com `excludeFromSitemap: false`
+1. Adicionar entrada em `src/config/routes-slugs.json` com `excludeFromSitemap: false`
 2. Criar chaves i18n em `src/locales/pt/translation.json` **e** `src/locales/en/translation.json`
 3. Adicionar `<HeadlessSEO />` com `title`, `description`, `url` e `schema` corretos
 4. Usar `React.lazy()` + `Suspense` para a página (lazy loading obrigatório)

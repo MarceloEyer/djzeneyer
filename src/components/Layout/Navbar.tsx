@@ -89,7 +89,8 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     }, [isMenuOpen]);
 
     useEffect(() => {
-        setIsMenuOpen(false);
+        const timeoutId = window.setTimeout(() => setIsMenuOpen(false), 0);
+        return () => window.clearTimeout(timeoutId);
     }, [location.pathname]);
 
     useEffect(() => {

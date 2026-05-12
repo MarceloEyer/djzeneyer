@@ -7,7 +7,8 @@
 
 ## Projeto
 
-Site e plataforma oficial de DJ Zen Eyer, nome publico de Marcelo Eyer Fernandes, bicampeao mundial de Brazilian Zouk.
+Site e plataforma oficial de Zen Eyer, nome artistico publico principal de Marcelo Eyer Fernandes, bicampeao mundial de Brazilian Zouk. DJ Zen Eyer e alias importante e historico, mas nao substitui o nome principal.
+Pronuncia canonica: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta. Nenhuma outra forma e aceita.
 Arquitetura: WordPress headless + React SPA.
 Producao: https://djzeneyer.com
 
@@ -73,7 +74,7 @@ Overrides atualmente presentes em `package.json`:
 - Rotas publicas usam `<HeadlessSEO />`.
 - Rotas privadas, como `dashboard` e `my-account`, usam `noindex` e OG image generica.
 - Avatar do usuario nao aparece em OG tags.
-- Nova rota publica exige atualizacao em `scripts/routes-data.json` e sincronizacao de locales.
+- Nova rota publica exige atualizacao em `src/config/routes-slugs.json` e sincronizacao de locales.
 - URLs canonicas usam `getLocalizedRoute()`; paths hardcoded como `/about` viram divida tecnica.
 
 ### Performance
@@ -95,7 +96,7 @@ Overrides atualmente presentes em `package.json`:
 
 Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser re-sugeridos como novidade sem motivo concreto:
 
-- A entidade publica do artista em JSON-LD fica como `Person` apenas.
+- Arquitetura de identidade híbrida: `ARTIST_SCHEMA_BASE` (`@type: Person`, `@id: /#artist`) representa o indivíduo biográfico; `MUSICGROUP_SCHEMA` (`@type: MusicGroup`, `@id: /#musicgroup`) representa a marca artística/projeto musical. Os dois nós coexistem no grafo, ligados por `member`/`memberOf`. `MusicGroup` suporta `album`/`track` — propriedades ausentes em `Person`. Nunca fundir em um único nó com `@type: ['Person', 'MusicGroup']`.
 - ORCID nao entra no grafo do artista.
 - `sameAs` usa apenas URLs oficiais aprovadas.
 - O canal YouTube oficial e o unico canal de YouTube em `sameAs`.
@@ -112,6 +113,7 @@ Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser
 - `loadingInitial` e o estado seguro para guardas de rota privada; `loading` nao substitui esse papel.
 - `lucide-react` 1.x removeu alguns icones de marca, como Facebook, Instagram e YouTube; o projeto usa `BrandIcons.tsx` quando necessario.
 - `localStorage` e `sessionStorage` nao estao proibidos globalmente, mas ficam restritos a sessao e idioma quando ja adotados.
+- `ChunkLoadError` ao clicar em links apos deploy normalmente significa aba aberta/HTML cacheado usando bundle anterior; preservar `dist/assets` antigos no deploy e manter recuperacao client-side antes de culpar rota ou React Router.
 - `speakable` e intencional em algumas paginas; `cssSelector` so faz sentido para seletores que existem no DOM.
 - MusicEvent precisa manter campos obrigatorios, com fallback quando a fonte nao entrega tudo:
   - `eventStatus`
@@ -124,7 +126,7 @@ Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser
 
 ## Aprendizados recentes refletidos em contexto
 
-- `ARTIST_SCHEMA_BASE` ficou centrado em `Person`.
+- `ARTIST_SCHEMA_BASE` (`Person`, `/#artist`) e `MUSICGROUP_SCHEMA` (`MusicGroup`, `/#musicgroup`) são os dois nós canônicos de identidade — ambos exportados de `artistData.ts`. A `MusicPage` usa `MUSICGROUP_SCHEMA` + `ItemList` gerado de `DISCOGRAPHY`. A homepage injeta os dois no `@graph`.
 - FAQ expansivel ficou dependente de `i18n.exists()` para evitar render de chave ausente.
 - Copy de clipboard em Press Kit precisa de `catch` e reset de estado.
 - Dependencia vulneravel sem lockfile sincronizado nao e remediacao completa.

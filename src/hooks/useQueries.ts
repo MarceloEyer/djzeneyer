@@ -10,10 +10,11 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
+import { generatePath } from 'react-router-dom';
 import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
-import { type Language } from '../config/routes';
+import { getLocalizedRoute, type Language } from '../config/routes';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
 import { ZenGameUserDataSchema, ZenGameLeaderboardSchema, EventsApiResponseSchema, ZenBitEventListItemSchema, EventDetailApiResponseSchema } from '../schemas';
 
@@ -27,6 +28,23 @@ interface MenuItem {
   title: string;
   url: string;
   target: string;
+}
+
+export interface MusicTrack {
+  id: number;
+  title: { rendered: string };
+  category_name: string;
+  tag_names: string[];
+  links: {
+    download: string;
+    soundcloud: string;
+    youtube: string;
+  };
+  featured_image_src?: string | null;
+  featured_image_src_full?: string | null;
+  slug: string;
+  content?: { rendered: string };
+  excerpt?: { rendered: string };
 }
 
 export interface ProfileUpdatePayload {
@@ -60,6 +78,15 @@ export interface UserProfile {
   gender?: '' | 'male' | 'female' | 'non-binary';
 }
 
+export interface AuthSessionResponse {
+  authenticated: boolean;
+  user: UserProfile | null;
+  roles?: string[];
+  exp?: number;
+  message?: string;
+  code?: string;
+}
+
 const UserProfileSchema = z.object({
   id: z.number(),
   email: z.string().email(),
@@ -73,6 +100,15 @@ const UserProfileSchema = z.object({
   instagram_url: z.string().optional(),
   dance_role: z.array(z.string()).optional(),
   gender: z.enum(['', 'male', 'female', 'non-binary']).optional(),
+}).catchall(z.unknown());
+
+const AuthSessionResponseSchema = z.object({
+  authenticated: z.boolean(),
+  user: UserProfileSchema.nullable().catch(null),
+  roles: z.array(z.string()).optional(),
+  exp: z.number().optional(),
+  message: z.string().optional(),
+  code: z.string().optional(),
 }).catchall(z.unknown());
 
 export interface WCOrder {
@@ -136,6 +172,8 @@ export interface WPPost {
   title: { rendered: string };
   excerpt: { rendered: string };
   content?: { rendered: string };
+  categories?: number[];
+  tags?: number[];
   featured_image_src?: string | null;
   featured_image_src_full?: string | null;
   author_name?: string;
@@ -143,6 +181,14 @@ export interface WPPost {
     'wp:featuredmedia'?: Array<{ source_url: string }>;
     author?: Array<{ name: string }>;
   };
+}
+
+export interface WPTerm {
+  id: number;
+  name: string;
+  slug: string;
+  count: number;
+  taxonomy: 'category' | 'post_tag';
 }
 
 export interface ArtistProfile {
@@ -260,6 +306,20 @@ export const fetchArtistProfileFn = async (): Promise<ArtistProfile> => {
   return json.data;
 };
 
+export const fetchAuthSessionFn = async (token: string): Promise<AuthSessionResponse> => {
+  const apiUrl = buildApiUrl('zeneyer-auth/v1/session');
+  const res = await fetch(apiUrl, {
+    headers: getAuthHeaders(token),
+  });
+  const text = await res.text();
+
+  if (!res.ok || text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+    throw new Error('Invalid session response');
+  }
+
+  return AuthSessionResponseSchema.parse(JSON.parse(text));
+};
+
 export const fetchEventsFn = async ({
   mode,
   days,
@@ -294,34 +354,78 @@ export const fetchEventsFn = async ({
     }
     const rawData = await res.json();
 
+    let events: ZenBitEventListItem[] = [];
     if (Array.isArray(rawData)) {
-      return z.array(ZenBitEventListItemSchema).parse(rawData);
+      events = z.array(ZenBitEventListItemSchema).parse(rawData);
+    } else if (rawData && typeof rawData === 'object' && 'events' in rawData) {
+      const parsedResponse = EventsApiResponseSchema.parse(rawData);
+      events = parsedResponse.events;
     }
 
-    if (rawData && typeof rawData === 'object' && 'events' in rawData) {
-       const parsedResponse = EventsApiResponseSchema.parse(rawData);
-       return parsedResponse.events;
-    }
+    // Optimization: Pre-process dates and IDs at fetch time to avoid O(N) on render
+    const eventsDetailRoute = getLocalizedRoute('events-detail', (lang || 'en') as Language);
+    
+    return events.map(event => {
+      const eventDate = new Date(event.starts_at);
+      const identifier = event.canonical_path
+        ? event.canonical_path.split('/').pop() || event.event_id
+        : event.event_id;
 
-    return [];
+      return {
+        ...event,
+        _processed: {
+          eventDate,
+          day: eventDate.getDate(),
+          detailHref: generatePath(eventsDetailRoute, { id: identifier })
+        }
+      };
+    });
   } catch (err) {
     console.error('Fetch Events failed:', err);
     return [];
   }
 };
 
-export const fetchNewsFn = async (lang?: string): Promise<WPPost[]> => {
+export interface NewsFilters {
+  category?: string;
+  tag?: string;
+  search?: string;
+}
+
+export const fetchNewsFn = async (lang?: string, filters: NewsFilters = {}): Promise<WPPost[]> => {
+  const hasFilters = Boolean(filters.category || filters.tag || filters.search);
   const prerenderNews = getPrerenderNews(lang);
-  if (prerenderNews && prerenderNews.length > 0) return prerenderNews;
+  if (!hasFilters && prerenderNews && prerenderNews.length > 0) return prerenderNews;
 
   const apiUrl = buildApiUrl('wp/v2/posts', {
     per_page: '10',
     ...(lang ? { lang } : {}),
+    ...(filters.category ? { categories: filters.category } : {}),
+    ...(filters.tag ? { tags: filters.tag } : {}),
+    ...(filters.search ? { search: filters.search } : {}),
     // OPTIMIZATION: Replaced _embed=true with targeted fields
-    _fields: 'id,date,slug,title,excerpt,featured_image_src,featured_image_src_full,author_name',
+    _fields: 'id,date,slug,title,excerpt,categories,tags,featured_image_src,featured_image_src_full,author_name',
   });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch news posts');
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+};
+
+const fetchWpTermsFn = async (
+  taxonomy: 'categories' | 'tags',
+  lang?: string
+): Promise<WPTerm[]> => {
+  const apiUrl = buildApiUrl(`wp/v2/${taxonomy}`, {
+    per_page: '100',
+    hide_empty: 'true',
+    orderby: 'count',
+    order: 'desc',
+    ...(lang ? { lang } : {}),
+    _fields: 'id,name,slug,count,taxonomy',
+  });
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error(`Failed to fetch ${taxonomy}`);
   const data = await res.json();
   return Array.isArray(data) ? data : [];
 };
@@ -430,12 +534,30 @@ export const useEventsQuery = (
 // NEWS QUERY (PÚBLICO)
 // ============================================================================
 
-export const useNewsQuery = (lang?: string, options: { enabled?: boolean } = {}) => {
+export const useNewsQuery = (
+  lang?: string,
+  options: { enabled?: boolean; filters?: NewsFilters } = {}
+) => {
+  const filters = options.filters || {};
   return useQuery({
-    queryKey: QUERY_KEYS.posts.list(lang),
-    queryFn: () => fetchNewsFn(lang),
+    queryKey: QUERY_KEYS.posts.list(lang, filters),
+    queryFn: () => fetchNewsFn(lang, filters),
     staleTime: STALE_TIME.POSTS,
-    ...options,
+    enabled: options.enabled,
+  });
+};
+
+export const useNewsTaxonomiesQuery = (lang?: string) => {
+  return useQuery({
+    queryKey: QUERY_KEYS.posts.taxonomies(lang),
+    queryFn: async () => {
+      const [categories, tags] = await Promise.all([
+        fetchWpTermsFn('categories', lang),
+        fetchWpTermsFn('tags', lang),
+      ]);
+      return { categories, tags };
+    },
+    staleTime: STALE_TIME.POSTS,
   });
 };
 
@@ -840,6 +962,56 @@ export const useSubscriptionMutation = () => {
       if (!res.ok) throw new Error(data.message || 'Subscription failed');
       return data;
     },
+  });
+};
+
+// ============================================================================
+// INTERACTION TRACKING
+// ============================================================================
+
+export const useTrackInteraction = (token?: string) => {
+  return useMutation({
+    mutationFn: async ({ action, objectId }: { action: string; objectId?: number }) => {
+      const apiUrl = buildApiUrl('zengame/v1/track');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ action, object_id: objectId }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Tracking failed');
+      }
+
+      return res.json();
+    },
+  });
+};
+
+export const useTrackBySlug = (slug?: string) => {
+  return useQuery({
+    queryKey: ['tracks', 'detail', slug],
+    queryFn: async (): Promise<MusicTrack | null> => {
+      if (!slug) return null;
+      const apiUrl = buildApiUrl('wp/v2/remixes', {
+        slug,
+        _fields: 'id,title,content,excerpt,links,featured_image_src_full,slug',
+      });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch track');
+      const data = await res.json();
+      return Array.isArray(data) && data.length > 0 ? data[0] : null;
+    },
+    enabled: !!slug,
+    staleTime: STALE_TIME.TRACKS,
   });
 };
 

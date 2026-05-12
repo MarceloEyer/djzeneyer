@@ -1,6 +1,7 @@
-import React, { memo, useState, useMemo } from 'react';
+import React, { memo, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { useParams, Link, generatePath } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
@@ -12,6 +13,7 @@ import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
 import NotFoundPage from './NotFoundPage';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
+import type { EventSchemaData } from '../components/HeadlessSEO';
 
 // ⚡ Bolt: Extracted static MONTH_NAMES array to module scope to prevent reallocation on every render cycle.
 const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
@@ -80,6 +82,14 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
         events={[event]}
+      />
+
+      <Breadcrumb
+        items={[
+          { label: t('nav.events'), path: getLocalizedRoute('events', lang as Language) },
+          { label: event.title },
+        ]}
+        className="mb-8"
       />
 
       <Link
@@ -158,7 +168,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
   const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
-  const { data: events = [] } = useEventsQuery({
+  const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',
     days: 365,
     limit: 50,
@@ -167,6 +177,13 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [showToast, setShowToast] = useState(false);
+  const eventsDetailRoute = useMemo(() => getLocalizedRoute('events-detail', lang as Language), [lang]);
+
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching events:', error);
+    }
+  }, [error]);
 
   // Extrai regiões únicas (Estados)
   const regions = useMemo(() => {
@@ -205,6 +222,10 @@ const EventListContent = ({ lang }: { lang: string }) => {
     }
   };
 
+  if (isLoading && events.length === 0) {
+    return <EventSkeleton />;
+  }
+
   if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
@@ -219,7 +240,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}`}
-        events={events as unknown as EventListItem[]}
+        events={events as EventSchemaData[]}
       />
       {/* Filter Bar */}
       {regions.length > 0 && (
@@ -268,7 +289,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
 
-                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang as Language), { id: identifier });
+                  const detailHref = e._processed?.detailHref || generatePath(eventsDetailRoute, { id: identifier });
                   const loc = e.location;
 
                   return (
@@ -326,6 +347,7 @@ const EventsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto">
+        <Breadcrumb items={[{ label: t('nav.events') }]} className="mb-8" />
         <header className="text-center mb-16 px-4">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 font-display uppercase text-white tracking-tighter">
             {t('events.title_part1')} <span className="text-primary">{t('events.title_part2')}</span>
@@ -341,7 +363,7 @@ const EventsPage: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
             <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">Press Kit</Link>
+            <Link to={getLocalizedRoute('presskit', lang as Language)} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</Link>
           </div>
         </section>
       </div>

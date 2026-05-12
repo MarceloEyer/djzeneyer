@@ -237,9 +237,9 @@ class Zen_SEO_Schema
                 '@type' => 'SearchAction',
                 'target' => [
                     '@type' => 'EntryPoint',
-                    'urlTemplate' => Zen_SEO_Helpers::get_frontend_url(\home_url('/?s={search_term_string}'))
+                    'urlTemplate' => Zen_SEO_Helpers::get_frontend_url(\home_url('/zouk-dance-news')) . '?search={search_term_string}',
                 ],
-                'query-input' => 'required name=search_term_string'
+                'query-input' => 'required name=search_term_string',
             ]
         ];
     }

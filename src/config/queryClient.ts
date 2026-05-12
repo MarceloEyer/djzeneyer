@@ -134,7 +134,8 @@ export const QUERY_KEYS = {
   /** Notícias/Posts */
   posts: {
     all: ['posts'] as const,
-    list: (lang?: string) => ['posts', 'list', lang] as const,
+    list: (lang?: string, filters?: unknown) => ['posts', 'list', lang, filters] as const,
+    taxonomies: (lang?: string) => ['posts', 'taxonomies', lang] as const,
     detail: (slug: string) => ['posts', 'detail', slug] as const,
   },
 
@@ -153,6 +154,7 @@ export const QUERY_KEYS = {
 
   /** Usuário */
   user: {
+    session: (hasToken: boolean) => ['user', 'session', hasToken] as const,
     profile: (userId?: number) => ['user', 'profile', userId] as const,
     orders: (userId?: number, limit?: number) => ['user', 'orders', userId, limit] as const,
     gamipress: (userId: number) => ['user', 'gamipress', userId] as const,

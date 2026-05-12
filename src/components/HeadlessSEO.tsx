@@ -5,9 +5,9 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS } from '../data/artistData';
+import { ARTIST_BUSINESS_SCHEMA, ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
-import { getAlternateLinks, normalizeLanguage } from '../config/routes';
+import { getAlternateLinks, getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { ensureTrailingSlash } from '../utils/seo';
 import { stripHtml } from '../utils/text';
@@ -23,7 +23,7 @@ export interface HrefLang {
 
 export interface PreloadItem {
   href: string;
-  as: 'script' | 'style' | 'font' | 'fetch';
+  as: 'script' | 'style' | 'font' | 'fetch' | 'image';
   media?: string;
   type?: string;
   crossOrigin?: string;
@@ -130,6 +130,14 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const { i18n } = useTranslation();
   const location = useLocation();
   const currentLang = normalizeLanguage(i18n.language || 'en');
+  const siteSearchAction = React.useMemo(() => ({
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${baseUrl}${getLocalizedRoute('news', currentLang)}?search={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  }), [baseUrl, currentLang]);
 
   // 1. Automatic Hreflang Generation
   const computedHrefLang = React.useMemo(() => {
@@ -162,7 +170,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
   // 2. Fallbacks
   const rawDescription = data?.desc || description || artist.site.defaultDescription;
-  const finalTitle = data?.title || title || 'DJ Zen Eyer | World Champion Brazilian Zouk DJ';
+  const finalTitle = data?.title || title || 'Zen Eyer | World Champion Brazilian Zouk DJ';
 
   // AIO Enhancement: Lead Answer logic
   const finalDescription = leadAnswer
@@ -213,12 +221,14 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           '@type': 'WebSite',
           '@id': `${baseUrl}/#website`,
           url: baseUrl,
-          name: 'DJ Zen Eyer - Official Website',
+          name: 'Zen Eyer',
           description: artist.site.defaultDescription,
           publisher: { '@id': `${baseUrl}/#artist` },
           inLanguage: ['en', 'pt-BR'],
+          potentialAction: siteSearchAction,
         },
         ARTIST_SCHEMA_BASE,
+        ARTIST_BUSINESS_SCHEMA,
         {
           '@type': 'WebPage',
           '@id': `${finalUrl}#webpage`,
@@ -341,9 +351,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           eventOffers = {
             ...baseOffer,
             url: (event.event_ticket as string) || canonicalUrl || finalUrl,
-            availability: isPast
-              ? 'https://schema.org/Discontinued'
-              : (event.event_ticket ? 'https://schema.org/InStock' : 'https://schema.org/LimitedAvailability'),
+            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
           };
         }
 
@@ -352,7 +360,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           eventOffers = {
             ...baseOffer,
             url: canonicalUrl || finalUrl,
-            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/LimitedAvailability',
+            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
           };
         }
 
@@ -361,7 +369,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         const eventCountry = event.location?.country || '';
         const isOnline = locName.toLowerCase().includes('online');
         const addressObj: Record<string, string> = { '@type': 'PostalAddress' };
-        if (!isOnline && locName && locName !== 'TBA') addressObj['streetAddress'] = locName;
         if (eventCity) addressObj['addressLocality'] = eventCity;
         if (eventCountry) addressObj['addressCountry'] = eventCountry;
 
@@ -391,12 +398,14 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           image: (event.image as string | undefined) || finalImage,
           description: eventDescription,
           performer: {
+            '@id': `${baseUrl}/#musicgroup`,
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             sameAs: ARTIST_SCHEMA_SAME_AS
           },
           offers: eventOffers,
           organizer: {
+            '@id': `${baseUrl}/#artist`,
             '@type': 'Person',
             name: artist.identity.stageName,
             url: artist.site.baseUrl,
@@ -411,6 +420,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           url: finalUrl,
           description: `Official tour dates and upcoming performances for ${artist.identity.stageName}.`,
           performer: {
+            '@id': `${baseUrl}/#musicgroup`,
             '@type': 'MusicGroup',
             name: artist.identity.stageName,
             url: artist.site.baseUrl,
@@ -466,10 +476,12 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
               '@type': 'WebSite',
               '@id': `${baseUrl}/#website`,
               url: baseUrl,
-              name: 'DJ Zen Eyer',
+              name: 'Zen Eyer',
               publisher: { '@id': `${baseUrl}/#artist` },
+              potentialAction: siteSearchAction,
             },
-            ARTIST_SCHEMA_BASE
+            ARTIST_SCHEMA_BASE,
+            ARTIST_BUSINESS_SCHEMA
           ] : []),
           webPageSchema,
           ...dynamicGraph
@@ -484,12 +496,14 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             '@type': 'WebSite',
             '@id': `${baseUrl}/#website`,
             url: baseUrl,
-            name: 'DJ Zen Eyer - Official Website',
+            name: 'Zen Eyer',
             description: artist.site.defaultDescription,
             publisher: { '@id': `${baseUrl}/#artist` },
             inLanguage: ['en', 'pt-BR'],
+            potentialAction: siteSearchAction,
           },
           ARTIST_SCHEMA_BASE,
+          ARTIST_BUSINESS_SCHEMA,
           webPageSchema,
         ],
       };
@@ -532,7 +546,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       />
 
       {/* Open Graph (Facebook/LinkedIn) */}
-      <meta property="og:site_name" content="DJ Zen Eyer" />
+      <meta property="og:site_name" content="Zen Eyer" />
       <meta property="og:type" content={type} />
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={truncatedDesc} />
@@ -569,7 +583,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Hreflang Tags */}
       {computedHrefLang.map(({ lang, url: hrefUrl }) => (
-        <link key={lang} rel="alternate" hreflang={lang} href={safeUrl(hrefUrl)} />
+        <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl)} />
       ))}
 
       {/* Schema JSON-LD */}

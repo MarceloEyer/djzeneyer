@@ -20,7 +20,7 @@ Metadados, canonical URLs, schema, sitemap e rotas de SEO do site headless.
 - Canonical URL precisa refletir a SPA publica.
 - `sameAs` e `identifier` devem seguir a SSOT do artista.
 - O sitemap PHP cobre apenas conteudo WordPress; rotas React sao geradas no build frontend.
-- `routes-data.json` nao e consumido pelo `Zen_SEO_Sitemap`.
+- As rotas React vivem em `src/config/routes-slugs.json`; o sitemap PHP cobre apenas conteudo WordPress.
 
 ## Observacao
 

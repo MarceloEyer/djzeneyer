@@ -71,7 +71,7 @@ const ResetPasswordPage: React.FC = () => {
     return (
         <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
             <HeadlessSEO
-                title={`${isSettingNewPassword ? t('auth.reset_password.title_set') : t('auth.reset_password.title_request')} | DJ Zen Eyer`}
+                title={`${isSettingNewPassword ? t('auth.reset_password.title_set') : t('auth.reset_password.title_request')} | Zen Eyer`}
                 noindex={true}
             />
 

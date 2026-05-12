@@ -11,6 +11,8 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 
 ## Regras centrais
 
+- Pronuncia canonica do nome artistico: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta. Nenhuma outra forma e aceita.
+- Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
 - Usar `AI_CONTEXT_INDEX.md` como referencia principal para stack, precedencia e regras globais.
 - Ler `AGENTS.md` antes de qualquer tarefa.
 - Ler `docs/AI_LEARNINGS.md` quando a tarefa tocar padroes ja consolidados por PRs ou reviews.
@@ -35,6 +37,7 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 - Rotas publicas usam `<HeadlessSEO />`.
 - Rotas privadas usam `noindex` e OG image generica.
 - `package-lock.json` acompanha `package.json` em mudancas de dependencia.
+- Deploy Vite preserva assets hashados antigos para evitar `ChunkLoadError` em abas abertas apos troca de build.
 - Review de bots e triagem, nao veredito final.
 
 ## O que este arquivo nao faz

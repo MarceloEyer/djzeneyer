@@ -1,6 +1,6 @@
 # Plano de Marketing Internacional — DJ Zen Eyer
-> Versão 2.0 — Abril 2026
-> Arquivo consolidado. Inclui: estratégia de fases, autoridade em IA, Knowledge Panel, GEO/AEO, serviços recomendados, e ações manuais.
+> Versão 2.1 — Maio 2026
+> Arquivo consolidado. Inclui: estratégia de fases, autoridade em IA, Knowledge Panel, GEO, SEO, AEO, VSO, serviços recomendados, e ações manuais.
 > Filosofia: amplificar o que já existe. Não inventar nova identidade.
 
 ---
@@ -48,6 +48,22 @@ Tour internacional com performance confirmada na **República Tcheca (Praga)** �
 ---
 
 ## 2. Posicionamento estratégico
+
+### Prioridade estratégica de marca: Knowledge Panel > GEO > SEO > AEO > VSO
+
+Para construir a marca **DJ Zen Eyer** como entidade reconhecida por buscadores, plataformas musicais e IAs, a prioridade operacional é:
+
+| Ordem | Frente | Função na marca | Como medir |
+|---|---|---|---|
+| 1 | **Knowledge Panel** | Credibilidade imediata: quando alguém pesquisa Zen Eyer, o Google reconhece a entidade e apresenta informações consolidadas. | Painel ativo, foto correta, descrição correta, `sameAs` consistente, Wikidata completo. |
+| 2 | **GEO** (Generative Engine Optimization) | Autoridade em IAs generativas: ChatGPT, Gemini, Perplexity e outros modelos entendem quem é Zen Eyer e quando citá-lo. | Respostas de IA citam o site, Wikidata, MusicBrainz, Spotify, YouTube e fontes confiáveis com fatos corretos. |
+| 3 | **SEO** | Fundação sólida: site rastreável, indexável, rápido, com sitemap, canonical, schema e conteúdo editorial consistente. | Indexação no Search Console, crescimento de impressões, CTR e posições orgânicas. |
+| 4 | **AEO** (Answer Engine Optimization) | Respostas diretas e snippets: o site responde perguntas de forma clara para Google, Bing e assistentes. | Featured snippets, respostas diretas, FAQ/schema válidos e artigos com resposta no primeiro parágrafo. |
+| 5 | **VSO** (Voice Search Optimization) | Descoberta por voz: complemento para buscas faladas e assistentes, sustentado por respostas curtas, `speakable` e linguagem natural. | Respostas acionáveis em consultas de voz e conteúdo com perguntas naturais. |
+
+Todas essas frentes partem da mesma base: **conteúdo estruturado, citações de fontes confiáveis, Schema.org correto e presença consistente em Wikidata, Spotify, YouTube, MusicBrainz, Discogs, plataformas de streaming e no site oficial**.
+
+Regra de decisão: se houver conflito de prioridade, escolher a ação que fortalece primeiro a entidade pública verificável. Exemplo: completar Wikidata e Knowledge Panel vem antes de produzir conteúdo opinativo; conteúdo editorial factual vem antes de posts sociais efêmeros; schema e `sameAs` consistentes vêm antes de otimizações cosméticas.
 
 ### A proposta única de valor
 
@@ -107,7 +123,7 @@ Publicar em PT e EN no WordPress (`djzeneyer.com/news`). Estes artigos preenchem
 - 800–1.200 palavras
 - Schema.org `Article` com `author: Zen Eyer` e data de publicação visível
 - Primeiro parágrafo responde à pergunta do título — sem enrolação
-- Link interno para `djzeneyer.com/about` e `djzeneyer.com/zouk-music`
+- Link interno para `djzeneyer.com/about-dj-zen-eyer` e `djzeneyer.com/zouk-music`
 
 #### 1.2 Wikipedia EN — criar entrada oficial (🔴 AÇÃO MANUAL — URGENTE)
 
@@ -394,7 +410,9 @@ Os itens abaixo já estão ativos no site e funcionando:
 
 #### 6.4 Google Knowledge Panel — estratégia de completude
 
-**Status atual:** Painel já reivindicado (Google KGMID `/g/11ff3mhh10` ativo e confirmado em `sameAs`). Nenhuma ação de reivindicação necessária.
+**Status atual:** Painel já reivindicado (Google KGMID `/g/11ff3mhh10` ativo e confirmado em `sameAs`). Nenhuma ação de reivindicação necessária. O KGMID `/g/11h6s0lfs5` é secundário e deve ser tratado como entidade relacionada de negócio/organização, não como segundo `sameAs` da entidade artística principal.
+
+**Regra para KGMIDs relacionados:** manter `/g/11ff3mhh10` como identificador primário do artista. Relacionar `/g/11h6s0lfs5` por um nó Schema.org `Organization` (`/#business`) conectado ao artista por `founder`/`worksFor`/`brand`. No Wikidata, não colocar os dois IDs no mesmo item se representarem entidades diferentes; usar item separado para o perfil/negócio e relacionar ao item principal.
 
 **Para completar e fortalecer o painel:**
 

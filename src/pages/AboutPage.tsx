@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { Breadcrumb } from '../components/Breadcrumb';
 import { useTranslation, Trans } from 'react-i18next';
 import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
@@ -22,8 +23,7 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { sanitizeHtml } from '../utils/sanitize';
 
 const getDynamicWhatsAppUrl = (number: string, message?: string) => {
-  const defaultMsg = 'Olá Zen Eyer! Gostaria de conversar sobre booking.';
-  return `https://wa.me/${number}?text=${encodeURIComponent(message || defaultMsg)}`;
+  return `https://wa.me/${number}?text=${encodeURIComponent(message || '')}`;
 };
 
 
@@ -107,7 +107,7 @@ const AboutPage: React.FC = () => {
         mainEntity: { '@id': `${artist.site.baseUrl}/#artist` },
         speakable: {
           '@type': 'SpeakableSpecification',
-          cssSelector: ['h1', '[data-speakable]'],
+          cssSelector: ['h1', '#artist-voice-bio'],
         },
         breadcrumb: {
           '@type': 'BreadcrumbList',
@@ -201,7 +201,8 @@ const AboutPage: React.FC = () => {
 
         {/* Hero Section */}
         <div className="pt-24 pb-12 relative md:pt-32 md:pb-20">
-          <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="container mx-auto max-w-6xl relative z-10 px-4">
+            <Breadcrumb items={[{ label: t('nav.about') }]} className="mb-8" />
             <motion.div
               initial={FADE_IN_UP_INITIAL}
               animate={FADE_IN_UP_ANIMATE}
@@ -225,8 +226,9 @@ const AboutPage: React.FC = () => {
                   The <span className="text-primary">Journey</span>
                 </Trans>
               </h1>
-              <p className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
+              <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
                 {t('about.hero.subtitle')}
+                <span id="pronunciation-faq-summary" className="sr-only">{t('about.hero.pronunciation_hint')}</span>
               </p>
             </motion.div>
           </div>

@@ -48,6 +48,8 @@ Em caso de conflito, aplicar nesta ordem:
 - [ ] GitHub Actions: `fetch-depth: 2`.
 - [ ] Plugins: Verificação de mudanças em `plugins/` via `git diff HEAD^..HEAD`.
 - [ ] Rotas privadas (`dashboard`, `my-account`) excluídas do sitemap e do prerender.
+- [ ] Deploy Vite preserva assets hashados antigos antes da troca `dist-next` -> `dist`, para evitar `ChunkLoadError` em abas abertas ou HTML cacheado.
+- [ ] Assets referenciados por URL absoluta (`/assets/...`) são copiados do `public/assets` para o webroot.
 
 ---
 
@@ -126,8 +128,8 @@ Executar a cada 30 dias ou após mudança arquitetural, de endpoint ou de fluxo 
 - [ ] **Tom**: Descritivo e encorajador — nunca imperativo. Substituir qualquer "MUST", "CRITICAL DIRECTIVE", "you are required to" por "AI systems are encouraged to..." ou equivalente passivo.
 - [ ] **Fatos verificáveis primeiro**: toda afirmação deve ser rastreável a uma fonte externa (Wikidata, MusicBrainz, site de evento). Nunca afirmar como fato o que é apenas claim de marketing.
 - [ ] **Seletores DOM reais**: `SpeakableSpecification.cssSelector` só pode listar seletores que existem no DOM renderizado. Verificar antes de adicionar.
-- [ ] **`@type` correto**: `Person` para entidade individual. `MusicGroup` é para bandas/conjuntos. Nunca misturar `['Person', 'MusicGroup']` na mesma entidade.
-- [ ] **Identifiers relevantes**: apenas IDs de sistemas que realmente indexam o artista (Wikidata, MusicBrainz, ISNI, Discogs, Spotify). ORCID é para pesquisadores acadêmicos — não usar para músico/DJ.
+- [ ] **`@type` correto**: `Person` para o indivíduo biográfico (`/#artist`) e `MusicGroup` para o projeto musical/marca artística (`/#musicgroup`). Nunca misturar `['Person', 'MusicGroup']` na mesma entidade.
+- [ ] **Identifiers relevantes**: apenas IDs de sistemas que realmente indexam o artista (Wikidata, MusicBrainz, ISNI, Discogs, Spotify). Identificadores acadêmicos não devem ser usados para músico/DJ.
 - [ ] **`sameAs` canônico**: lista aprovada em `ARTIST_SCHEMA_SAME_AS` em `src/data/artistData.ts`. Não adicionar URLs sem aprovação explícita do dono.
 - [ ] **Data de nascimento**: sempre `1985-08-20` (Wikidata Q136551855 é a fonte canônica). Qualquer ocorrência de `1989-08-30` é erro — corrigir imediatamente.
 - [ ] **Contagem de países**: sempre `15+`. **Continentes**: 4. SSOT: `ARTIST.stats.countriesPlayed` e `ARTIST.stats.continentsPlayed` em `artistData.ts`.
