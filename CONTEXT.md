@@ -23,6 +23,7 @@
 ## Regras repetidas com maior valor pratico
 
 - Pronuncia canonica: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta do nome artistico.
+- Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
 
 - Strings visiveis usam i18n.
 - Fetch em componente nao e padrao.

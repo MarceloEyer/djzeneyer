@@ -13,7 +13,8 @@ export const CURRENT_YEAR = new Date().getFullYear();
 export const ARTIST = {
   // 🆔 Identidade
   identity: {
-    stageName: 'DJ Zen Eyer',
+    stageName: 'Zen Eyer',
+    djAlias: 'DJ Zen Eyer',
     shortName: 'Zen Eyer',
     fullName: 'Marcelo Eyer Fernandes',
     realName: 'Marcelo Eyer Fernandes',
@@ -435,14 +436,8 @@ export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: [
-    'Zen Eyer',
-    'Zen Ayer',
-    'DJ Zen Eyer',
-    'DJ Zen Ayer',
-    'djzeneyer',
-    'zeneyer',
-  ],
+  alternateName: ['DJ Zen Eyer', 'djzeneyer'],
+  birthName: ARTIST.identity.fullName,
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
@@ -951,6 +946,7 @@ export const ARTIST_BUSINESS_SCHEMA = {
   '@type': 'Organization',
   '@id': `${ARTIST.site.baseUrl}/#business`,
   name: ARTIST.identity.stageName,
+  alternateName: [ARTIST.identity.djAlias, 'djzeneyer'],
   legalName: ARTIST.identity.fullName,
   url: ARTIST.site.baseUrl,
   logo: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
@@ -982,9 +978,9 @@ export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.stageName],
+  alternateName: [ARTIST.identity.djAlias, 'djzeneyer'],
   description:
-    'Zen Eyer is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
+    'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is an important historical alias.',
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],

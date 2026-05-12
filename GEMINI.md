@@ -12,6 +12,7 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 ## Regras centrais
 
 - Pronuncia canonica do nome artistico: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta. Nenhuma outra forma e aceita.
+- Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
 - Usar `AI_CONTEXT_INDEX.md` como referencia principal para stack, precedencia e regras globais.
 - Ler `AGENTS.md` antes de qualquer tarefa.
 - Ler `docs/AI_LEARNINGS.md` quando a tarefa tocar padroes ja consolidados por PRs ou reviews.
