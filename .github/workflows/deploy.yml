@@ -390,8 +390,11 @@ jobs:
             # the previous build can 404 until the user refreshes.
             if [ -d "${LIVE_DIST_PATH}/assets" ]; then
               mkdir -p "${NEXT_DIST_PATH}/assets"
-              rsync -a --ignore-existing "${LIVE_DIST_PATH}/assets/" "${NEXT_DIST_PATH}/assets/" || true
-              echo "previous hashed assets preserved for stale clients"
+              if rsync -a --ignore-existing "${LIVE_DIST_PATH}/assets/" "${NEXT_DIST_PATH}/assets/"; then
+                echo "previous hashed assets preserved for stale clients"
+              else
+                echo "WARNING: failed to preserve previous hashed assets; stale open tabs may need refresh" >&2
+              fi
             fi
 
             rm -rf "${PREV_DIST_PATH}"
@@ -400,6 +403,8 @@ jobs:
             fi
 
             mv "${NEXT_DIST_PATH}" "${LIVE_DIST_PATH}"
+            # Cleanup old hashed assets to prevent unlimited growth.
+            find "${LIVE_DIST_PATH}/assets" -type f -mtime +30 -delete 2>/dev/null || true
             rm -rf "${PREV_DIST_PATH}"
             echo "✅ dist activated without deleting the live bundle first"
 
