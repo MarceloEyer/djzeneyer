@@ -443,7 +443,7 @@ export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: ['DJ Zen Eyer', 'djzeneyer', 'Zen Ayer'],
+  alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
@@ -572,10 +572,6 @@ export const ARTIST_SCHEMA_BASE = {
       },
       description:
         'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses in 15+ countries across 4 continents.',
-      faq: {
-         "q": "Quem é Zen Eyer?",
-         "a": "Zen Eyer (pronuncia-se Zen Áier, nome artístico também conhecido como DJ Zen Eyer; nome legal Marcelo Eyer Fernandes) é um DJ e produtor musical brasileiro especializado em Brazilian Zouk. Descobriu a dança aos 15 anos em Niterói (RJ) e hoje é vencedor de dois prêmios mundiais (Melhor Remix e Melhor Performance em 2022). Também é membro da Mensa International. Seus sets priorizam a fluidez e a conexão profunda na pista."
-      },
       skills: 'DJ Mixing, Music Curation, Live Performance, Cremosidade Transitions',
     },
     {
@@ -957,7 +953,7 @@ export const ARTIST_BUSINESS_SCHEMA = {
   '@type': 'Organization',
   '@id': `${ARTIST.site.baseUrl}/#business`,
   name: ARTIST.identity.stageName,
-  alternateName: [ARTIST.identity.djAlias, 'djzeneyer'],
+  alternateName: [ARTIST.identity.djAlias],
   legalName: ARTIST.identity.fullName,
   url: ARTIST.site.baseUrl,
   logo: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
@@ -989,7 +985,7 @@ export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.djAlias, 'djzeneyer'],
+  alternateName: [ARTIST.identity.djAlias],
   description:
     'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is an important historical alias.',
   url: ARTIST.site.baseUrl,

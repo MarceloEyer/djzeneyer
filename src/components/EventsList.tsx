@@ -4,12 +4,12 @@
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Clock } from 'lucide-react';
-import { Link, generatePath } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useEventsQuery } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
-import { getLocalizedRoute } from '../config/routes';
 import patternSvg from '../assets/images/pattern.svg';
 import { getDateTimeFormatter } from '../utils/date';
+import type { ZenBitEventListItem } from '../types/events';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -19,6 +19,23 @@ interface EventsListProps {
   limit?: number;
   showTitle?: boolean;
   variant?: 'compact' | 'full';
+}
+
+interface ProcessedEvent extends ZenBitEventListItem {
+  _processed?: {
+    eventDate: Date;
+    day: number;
+    detailHref: string;
+  };
+}
+
+interface RenderEvent extends ZenBitEventListItem {
+  day: number;
+  month: string;
+  time: string;
+  locationString: string;
+  detailHref: string;
+  sanitizedTitle: string;
 }
 
 // ============================================================================
@@ -32,7 +49,6 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
 
   const monthFormatter = useMemo(() => getDateTimeFormatter(currentLocale, { month: 'short' }), [currentLocale]);
   const timeFormatter = useMemo(() => getDateTimeFormatter(currentLocale, { hour: '2-digit', minute: '2-digit' }), [currentLocale]);
-  const eventsDetailRoute = useMemo(() => getLocalizedRoute('events-detail', lang), [lang]);
 
   // React Query: v2 defaults
   const { data: events = [], isLoading: loading, error } = useEventsQuery({
@@ -50,10 +66,10 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     if (!events || events.length === 0) return [];
 
     const visibleItems = events.slice(0, limit);
-    const results = [];
+    const results: RenderEvent[] = [];
 
     for (const event of visibleItems) {
-      const p = (event as any)._processed;
+      const p = (event as ProcessedEvent)._processed;
       if (!p) continue;
 
       results.push({
@@ -68,7 +84,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
     }
 
     return results;
-  }, [events, limit, currentLocale, lang]);
+  }, [events, limit, monthFormatter, timeFormatter]);
 
   const skeletonElements = useMemo(() => {
     return Array.from({ length: limit }).map((_, i) => {
