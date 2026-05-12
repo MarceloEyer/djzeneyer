@@ -11,7 +11,11 @@ export const lazyWithRetry = <T extends ComponentType<object>>(
   lazy(() =>
     factory().catch((error) => {
       if (recoverFromChunkLoadError(error)) {
-        return new Promise<LazyComponentModule<T>>(() => undefined);
+        return new Promise<LazyComponentModule<T>>((_, reject) => {
+          window.setTimeout(() => {
+            reject(error);
+          }, 1000);
+        });
       }
 
       throw error;
