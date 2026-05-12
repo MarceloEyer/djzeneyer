@@ -26,7 +26,8 @@
 
 ## Projeto
 
-Site/plataforma oficial do DJ Zen Eyer (Marcelo Eyer Fernandes) — Bicampeão Mundial de Brazilian Zouk.
+Site/plataforma oficial de Zen Eyer (Marcelo Eyer Fernandes), tambem conhecido como DJ Zen Eyer — Bicampeão Mundial de Brazilian Zouk.
+Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
 Pronúncia canônica: **`/zɛn ˈaɪər/`** (IPA) — esta é a única pronúncia correta. Nenhuma outra forma é aceita.
 Arquitetura: WordPress Headless + React SPA com estética MMORPG premium.
 Produção: https://djzeneyer.com

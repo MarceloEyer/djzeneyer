@@ -29,7 +29,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - Backend: WordPress 6.0+ (recomendado 6.9+; producao atual 6.9.4), PHP **8.1+** (zengame exige 8.1; producao atual 8.3.30), WooCommerce, GamiPress
 - Node: 20+
 - Instalação: single-site (`multisite: false`)
-- Identidade Canonica: DJ Zen Eyer (Marcelo Eyer Fernandes), 2x World Champion Brazilian Zouk DJ. Birth Date: **1985-08-20** (fonte canônica: Wikidata Q136551855 — não usar 1989-08-30, que é incorreto).
+- Identidade Canonica: **Zen Eyer** e o nome artistico oficial principal de Marcelo Eyer Fernandes. **DJ Zen Eyer** e alias importante e historico, nao o nome principal. Birth Date: **1985-08-20** (fonte canônica: Wikidata Q136551855 — não usar 1989-08-30, que é incorreto).
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
 - Cache em producao: LiteSpeed Cache 7.8.1 ativo, `WP_CACHE=true`, REST cache habilitado, ESI desabilitado, minificação CSS/JS desabilitada no provedor e defer de JS ativo
 - Deploy de frontend: o `dist/` deve ser publicado via pasta de staging (`dist-next`) e trocado de forma atomica para evitar tela branca durante rollout
@@ -143,6 +143,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 
 ## 🆔 IDENTIDADE CANÔNICA (SSOT)
 - **Fonte de Verdade**: `src/data/artistData.ts` é a única fonte canônica para a identidade pública renderizada (nome, data de nascimento, bio, links).
+- **Nome artistico oficial principal**: `Zen Eyer`. `DJ Zen Eyer` deve permanecer como alias importante em `alternateName`, textos de contexto e buscas historicas, mas nao deve substituir o nome principal.
 - **Consistência**: Toda documentação (`CONTEXT.md`, etc.), SEO (`HeadlessSEO`, JSON-LD) e Press Kit devem derivar obrigatoriamente dessa base.
 - **Sincronização**: Qualquer alteração em `artistData.ts` exige a atualização imediata das referências em `AI_CONTEXT_INDEX.md`.
 - **Pronúncia canônica**: A única pronúncia correta do nome artístico é **`/zɛn ˈaɪər/`** (IPA). Nenhuma outra transcrição fonética é aceita. Sempre que pronúncia for mencionada — em código, documentação, FAQ, llms.txt, schema, press kit ou qualquer outro contexto — usar exclusivamente `/zɛn ˈaɪər/`.
