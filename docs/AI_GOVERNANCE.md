@@ -48,6 +48,8 @@ Em caso de conflito, aplicar nesta ordem:
 - [ ] GitHub Actions: `fetch-depth: 2`.
 - [ ] Plugins: Verificação de mudanças em `plugins/` via `git diff HEAD^..HEAD`.
 - [ ] Rotas privadas (`dashboard`, `my-account`) excluídas do sitemap e do prerender.
+- [ ] Deploy Vite preserva assets hashados antigos antes da troca `dist-next` -> `dist`, para evitar `ChunkLoadError` em abas abertas ou HTML cacheado.
+- [ ] Assets referenciados por URL absoluta (`/assets/...`) são copiados do `public/assets` para o webroot.
 
 ---
 

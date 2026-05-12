@@ -113,6 +113,7 @@ Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser
 - `loadingInitial` e o estado seguro para guardas de rota privada; `loading` nao substitui esse papel.
 - `lucide-react` 1.x removeu alguns icones de marca, como Facebook, Instagram e YouTube; o projeto usa `BrandIcons.tsx` quando necessario.
 - `localStorage` e `sessionStorage` nao estao proibidos globalmente, mas ficam restritos a sessao e idioma quando ja adotados.
+- `ChunkLoadError` ao clicar em links apos deploy normalmente significa aba aberta/HTML cacheado usando bundle anterior; preservar `dist/assets` antigos no deploy e manter recuperacao client-side antes de culpar rota ou React Router.
 - `speakable` e intencional em algumas paginas; `cssSelector` so faz sentido para seletores que existem no DOM.
 - MusicEvent precisa manter campos obrigatorios, com fallback quando a fonte nao entrega tudo:
   - `eventStatus`

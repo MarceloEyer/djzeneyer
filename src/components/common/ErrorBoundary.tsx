@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { recoverFromChunkLoadError } from '../../utils/chunkRecovery';
 
 interface OwnProps {
   children: ReactNode;
@@ -22,6 +23,10 @@ class ErrorBoundaryBase extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    if (recoverFromChunkLoadError(error, 'error-boundary')) {
+      return;
+    }
+
     console.error('Uncaught error in route:', error, errorInfo);
   }
 

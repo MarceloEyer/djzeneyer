@@ -385,12 +385,26 @@ jobs:
               exit 1
             fi
 
+            # Keep old hashed Vite assets reachable for users with an already
+            # loaded SPA or cached HTML. Without this, lazy route chunks from
+            # the previous build can 404 until the user refreshes.
+            if [ -d "${LIVE_DIST_PATH}/assets" ]; then
+              mkdir -p "${NEXT_DIST_PATH}/assets"
+              if rsync -a --ignore-existing "${LIVE_DIST_PATH}/assets/" "${NEXT_DIST_PATH}/assets/"; then
+                echo "previous hashed assets preserved for stale clients"
+              else
+                echo "WARNING: failed to preserve previous hashed assets; stale open tabs may need refresh" >&2
+              fi
+            fi
+
             rm -rf "${PREV_DIST_PATH}"
             if [ -d "${LIVE_DIST_PATH}" ]; then
               mv "${LIVE_DIST_PATH}" "${PREV_DIST_PATH}"
             fi
 
             mv "${NEXT_DIST_PATH}" "${LIVE_DIST_PATH}"
+            # Cleanup old hashed assets to prevent unlimited growth.
+            find "${LIVE_DIST_PATH}/assets" -type f -mtime +30 -delete 2>/dev/null || true
             rm -rf "${PREV_DIST_PATH}"
             echo "✅ dist activated without deleting the live bundle first"
 
@@ -423,6 +437,11 @@ jobs:
           if [ -d "public/images" ]; then
              echo "  ✓ Including images/ folder"
              cp -r "public/images" temp_public/
+          fi
+
+          if [ -d "public/assets" ]; then
+             echo "  Including assets/ folder"
+             cp -r "public/assets" temp_public/
           fi
           
           # Copiar .well-known

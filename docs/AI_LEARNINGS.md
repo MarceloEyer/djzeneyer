@@ -46,6 +46,8 @@
 - O JWT canonico do `zeneyer-auth` usa `ZENEYER_JWT_SECRET`; `JWT_AUTH_SECRET_KEY` e `SIMPLE_JWT_PRIVATE_KEY` ficam apenas como compatibilidade legada.
 - O registro protegido do `zeneyer-auth` depende de `ZEN_TURNSTILE_SITE_KEY` e `ZEN_TURNSTILE_SECRET_KEY` no `wp-config.php`.
 - Em LiteSpeed Cache, manter conservador o caminho de SPA: `optm-js_min=false`, `optm-css_min=false`, `optm-js_defer=1`, exclusoes de `react`, `react-dom`, `framer-motion` e bundles do tema.
+- Em deploy de SPA Vite, nunca remover imediatamente os assets hashados antigos de `dist/assets`. Abas abertas e HTML cacheado podem carregar o bundle anterior e pedir chunks lazy antigos; preserve esses arquivos durante a ativacao de `dist-next` e mantenha recuperacao client-side para `ChunkLoadError`.
+- `public/assets/**` precisa ser copiado para o webroot quando URLs absolutas como `/assets/press/...` forem usadas; o `publicDir` do Vite tambem copia para `dist`, mas isso nao substitui assets esperados na raiz publica.
 - Quando a configuracao do LiteSpeed ja estiver estável em producao, nao ligar minificacao/combinacao por impulso; teste antes de mudar.
 - Se o plano de hospedagem nao oferece Redis ou Memcached, manter `object=false` e documentar isso como limitacao da plataforma, nao como omissao de configuracao.
 
