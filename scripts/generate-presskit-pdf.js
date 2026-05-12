@@ -121,7 +121,7 @@ const documents = {
     ],
     page2Title: 'Por que contratar Zen Eyer',
     bookingValue:
-      'Zen Eyer é um DJ de Zouk Brasileiro com foco total na pista. Seus sets sao construidos com transicoes longas, continuidade emocional e leitura precisa da pista, com Cremosidade frequentemente associada aos seus materiais publicos: suave, imersivo e sem pressa.',
+      'Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias no Ilha do Zouk Championship em 2022: Best DJ Performance e Best Remix. O press kit reúne informações para organizadores de festivais, congressos, maratonas e eventos sociais de Zouk Brasileiro.',
     promoterFitTitle: 'Ideal para festivais e maratonas',
     promoterFit: [
       'Experiencia com salas internacionais de Zouk Brasileiro, sociais noturnos e pistas de longa duracao.',
