@@ -1189,6 +1189,10 @@
         "q4": {
           "q": "Onde Zen Eyer se apresenta internacionalmente?",
           "a": "Zen Eyer se apresenta nos principais festivais de Zouk Brasileiro ao redor do mundo. Eventos recentes e futuros incluem o <strong>Dutch International Zouk Congress</strong> (Holanda), <strong>Lisbon Zouk Marathon</strong> (Portugal), <strong>Slovenian Zouk Marathon</strong> (Eslovênia), <strong>Neo Festival</strong> (Brasil) e <strong>Zouk in Rio</strong> (Brasil). Ele também é DJ oficial do histórico <strong>Rio Zouk Congress</strong> no Rio de Janeiro."
+        },
+        "q5": {
+          "q": "Como pronunciar corretamente o nome Zen Eyer?",
+          "a": "A pronúncia oficial de Zen Eyer é <strong>/zɛn ˈaɪər/</strong>. Em português, uma aproximação didática é <strong>Zen Áier</strong>. Zen soa igual ao Zen do budismo, e Eyer tem a sonoridade da palavra inglesa Buyer sem o B (ou 'Eye' seguido de 'er'). Nota: Às vezes grafado incorretamente como <strong>Zen Ayer</strong>."
         }
       },
       "rankings": {
@@ -1519,7 +1523,7 @@
     },
     "canonical_bio": {
       "title": "Bio para Imprensa e Organizadores",
-      "subtitle": "Copie e cole nos materiais de imprensa do seu evento.",
+      "subtitle": "Copie e cole nos materiais de imprensa do seu evento. (Redes sociais: <strong>@djzeneyer</strong>)",
       "copy_button": "Copiar Bio",
       "copied": "Copiado!",
       "whatsapp_default_msg": "Olá Zen Eyer! Gostaria de conversar sobre booking.",
