@@ -10,10 +10,11 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
+import { generatePath } from 'react-router-dom';
 import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
-import { type Language } from '../config/routes';
+import { getLocalizedRoute, type Language } from '../config/routes';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
 import { ZenGameUserDataSchema, ZenGameLeaderboardSchema, EventsApiResponseSchema, ZenBitEventListItemSchema, EventDetailApiResponseSchema } from '../schemas';
 
@@ -330,7 +331,7 @@ export const fetchEventsFn = async ({
     }
 
     // Optimization: Pre-process dates and IDs at fetch time to avoid O(N) on render
-    const eventsDetailRoute = getLocalizedRoute('events-detail', lang || 'en');
+    const eventsDetailRoute = getLocalizedRoute('events-detail', (lang || 'en') as Language);
     
     return events.map(event => {
       const eventDate = new Date(event.starts_at);

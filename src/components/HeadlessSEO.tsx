@@ -583,7 +583,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Hreflang Tags */}
       {computedHrefLang.map(({ lang, url: hrefUrl }) => (
-        <link key={lang} rel="alternate" hreflang={lang} href={safeUrl(hrefUrl)} />
+        <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl)} />
       ))}
 
       {/* Schema JSON-LD */}

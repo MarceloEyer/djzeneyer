@@ -13,6 +13,7 @@ import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
 import NotFoundPage from './NotFoundPage';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
+import type { EventSchemaData } from '../components/HeadlessSEO';
 
 // ⚡ Bolt: Extracted static MONTH_NAMES array to module scope to prevent reallocation on every render cycle.
 const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
@@ -167,7 +168,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
   const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
-  const { data: events = [] } = useEventsQuery({
+  const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',
     days: 365,
     limit: 50,
@@ -176,6 +177,11 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [showToast, setShowToast] = useState(false);
+  const eventsDetailRoute = useMemo(() => getLocalizedRoute('events-detail', lang as Language), [lang]);
+
+  if (error) {
+    console.error('Error fetching events:', error);
+  }
 
   // Extrai regiões únicas (Estados)
   const regions = useMemo(() => {
@@ -214,6 +220,10 @@ const EventListContent = ({ lang }: { lang: string }) => {
     }
   };
 
+  if (isLoading && events.length === 0) {
+    return <EventSkeleton />;
+  }
+
   if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
@@ -228,7 +238,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}`}
-        events={events as unknown as EventListItem[]}
+        events={events as EventSchemaData[]}
       />
       {/* Filter Bar */}
       {regions.length > 0 && (
@@ -277,7 +287,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
 
-                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang as Language), { id: identifier });
+                  const detailHref = generatePath(eventsDetailRoute, { id: identifier });
                   const loc = e.location;
 
                   return (
