@@ -19,6 +19,11 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { stripHtml } from '../utils/text';
 import ManaProgressBar from '../components/ui/ManaProgressBar';
 import { safeUrl } from '../utils/sanitize';
+import type { ZenGameRankRequirement } from '../types/gamification';
+
+// ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
+const EMPTY_STRING_ARRAY: string[] = [];
+const EMPTY_REQUIREMENT_ARRAY: ZenGameRankRequirement[] = [];
 
 // Interfaces
 interface UserStats {
@@ -131,7 +136,7 @@ const MyAccountContent: React.FC = () => {
         preferredName: profileData.preferred_name || '',
         facebookUrl: profileData.facebook_url || '',
         instagramUrl: profileData.instagram_url || '',
-        danceRole: profileData.dance_role || [],
+        danceRole: profileData.dance_role || EMPTY_STRING_ARRAY,
         gender: profileData.gender || '',
       });
     }
@@ -249,7 +254,7 @@ const MyAccountContent: React.FC = () => {
                     subLabel={gamipress.rank.next.title}
                   />
                   <div className="mt-4 flex flex-wrap gap-2">
-                    {(gamipress.rank.requirements || []).slice(0, 3).map((req, idx) => (
+                    {(gamipress.rank.requirements || EMPTY_REQUIREMENT_ARRAY).slice(0, 3).map((req, idx) => (
                       <div key={idx} className="bg-white/5 px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
                         <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{req.title}:</span>

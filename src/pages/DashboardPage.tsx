@@ -15,6 +15,11 @@ import { safeUrl } from '../utils/sanitize';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { CURRENT_YEAR } from '../data/artistData';
 import { getNumberFormatter } from '../utils/number';
+import type { ZenGameAchievement, ZenGameLeaderboardEntry } from '../types/gamification';
+
+// ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
+const EMPTY_ACHIEVEMENT_ARRAY: ZenGameAchievement[] = [];
+const EMPTY_LEADERBOARD_ARRAY: ZenGameLeaderboardEntry[] = [];
 
 // ============================================================================
 // 1. SUB-COMPONENTS (PREMIUM VISUALS)
@@ -199,9 +204,9 @@ const DashboardContent = () => {
   // Stars: dynamic based on rank progress
   const rankStars = rankProgress >= 66 ? 3 : rankProgress >= 33 ? 2 : rankProgress > 0 ? 1 : 0;
 
-  const earnedAchievements = gamipress.achievements_earned || [];
+  const earnedAchievements = gamipress.achievements_earned || EMPTY_ACHIEVEMENT_ARRAY;
   // leaderboardData is Record<pointType, entries[]> — take the first point type
-  const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || [];
+  const leaderboard = (leaderboardData && Object.values(leaderboardData)[0]) || EMPTY_LEADERBOARD_ARRAY;
 
   // ⚡ Bolt: Use static CURRENT_YEAR instead of new Date().getFullYear() on render
   const currentYear = user?.user_registered_year || CURRENT_YEAR;

@@ -28,6 +28,9 @@ import {
 import { InstagramIcon } from '../components/icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../data/artistData';
 
+// ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
+const EMPTY_FESTIVAL_ARRAY: { name: string; country: string; date: string; flag: string }[] = [];
+
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
   ({ icon, number, label, color }) => (
     <motion.div
@@ -357,7 +360,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {(artist.festivals || []).slice(0, 9).map((festival: { name: string; country: string; date: string; flag: string }, index: number) => (
+                {(artist.festivals || EMPTY_FESTIVAL_ARRAY).slice(0, 9).map((festival: { name: string; country: string; date: string; flag: string }, index: number) => (
                   <motion.div
                     key={index}
                     whileHover={{ scale: 1.02 }}
