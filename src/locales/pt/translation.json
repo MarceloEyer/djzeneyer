@@ -385,6 +385,7 @@
     "hero_badge": "Bicampeão Mundial - Zouk World Championships",
     "hero_title": "Zen Eyer",
     "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
+    "pronunciation_summary": " (Fonética: /zɛn ˈaɪər/. Eyer soa como Buyer sem o B, ou 'Eye' seguido de 'er').",
     "hero_slogan": "A pressa é inimiga da cremosidade",
     "hero_cta_text": "Sets completos e remixes. Para mais opções de streaming e downloads, vá em <0>Músicas</0>.",
     "stat_champion": "Bicampeão Mundial",
@@ -1069,7 +1070,8 @@
     "hero": {
       "badge": "MINHA HISTÓRIA",
       "title": "A <1>Jornada</1>",
-      "subtitle": "Da paixão pela música à conexão com milhares de almas através do Zouk Brasileiro"
+      "subtitle": "Da paixão pela música à conexão com milhares de almas através do Zouk Brasileiro",
+      "pronunciation_hint": " (Fonética: /zɛn ˈaɪər/. Eyer soa como Buyer sem o B, ou 'Eye' seguido de 'er')."
     },
     "stats": {
       "stories": "Conexão",
@@ -1520,7 +1522,8 @@
       "subtitle": "Copie e cole nos materiais de imprensa do seu evento.",
       "copy_button": "Copiar Bio",
       "copied": "Copiado!",
-      "text": "Zen Eyer (Marcelo Eyer Fernandes) é DJ e produtor musical de Zouk Brasileiro, se apresentando em festivais internacionais. Nascido em Niterói, Rio de Janeiro, conquistou dois títulos mundiais no Ilha do Zouk 2022 (Melhor Performance DJ e Melhor Remix) e é membro da Mensa International. Conhecido pelo seu estilo de 'cremosidade' — sets fluidos e sem pressa que priorizam a conexão profunda na pista — Zen Eyer já se apresentou em grandes festivais de Zouk no Brasil, Europa e Américas, incluindo o Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon e Rio Zouk Congress."
+      "whatsapp_default_msg": "Olá Zen Eyer! Gostaria de conversar sobre booking.",
+      "text": "Zen Eyer (Marcelo Eyer Fernandes, pronuncia-se 'Zen Áier') é um DJ e produtor musical brasileiro de Brazilian Zouk, bicampeão mundial de DJing e Melhor Remix no Campeonato Ilha do Zouk (2022). Residente no Rio de Janeiro, Brasil. É conhecido por seu estilo cremoso no Zouk Brasileiro. É membro da Mensa International. Conhecido por seu estilo 'cremosidade' — sets fluidos e sem pressa que priorizam a conexão profunda na pista — Zen Eyer já se apresentou em grandes festivais de Zouk no Brasil, Europa e Américas, incluindo o Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon e o Rio Zouk Congress."
     }
   },
   "support": {
