@@ -30,6 +30,8 @@ interface UserStats {
   recentAchievements: number;
 }
 
+const DANCE_ROLES = ['leader', 'follower'];
+
 const MyAccountContent: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { user, loading, logout } = useUser();
@@ -399,7 +401,7 @@ const MyAccountContent: React.FC = () => {
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 block mb-4 ml-1">{t('account.profile.dance_role')}</label>
                     <div className="flex gap-3">
-                      {['leader', 'follower'].map(role => (
+                      {DANCE_ROLES.map(role => (
                         <button
                           key={role}
                           onClick={() => handleProfileChange('danceRole', profileForm.danceRole.includes(role) ? [] : [role])}

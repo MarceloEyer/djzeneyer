@@ -394,6 +394,13 @@ const ShopPage: React.FC = () => {
   const bestSellersIds = useMemo(() => new Set(bestSellers.map(p => p.id)), [bestSellers]);
   const curatedSelectionIds = useMemo(() => new Set(curatedSelection.map(p => p.id)), [curatedSelection]);
 
+  const shopBenefits = useMemo(() => [
+    { icon: Truck, title: t('shop.benefits.instant_delivery'), desc: t('shop.benefits.instant_delivery_desc') },
+    { icon: Shield, title: t('shop.benefits.secure_payment'), desc: t('shop.benefits.secure_payment_desc') },
+    { icon: Gift, title: t('shop.benefits.tribe_perks'), desc: t('shop.benefits.tribe_perks_desc') },
+    { icon: Zap, title: t('shop.benefits.vip_support'), desc: t('shop.benefits.vip_support_desc') },
+  ], [t]);
+
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
       <Loader2 className="animate-spin text-primary" size={48} />
@@ -503,12 +510,7 @@ const ShopPage: React.FC = () => {
       {/* --- Netflix-style Footer Section (Benefits) --- */}
       <section className="px-6 md:px-12 lg:px-20 py-20 bg-background border-t border-white/5">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
-          {[
-            { icon: Truck, title: t('shop.benefits.instant_delivery'), desc: t('shop.benefits.instant_delivery_desc') },
-            { icon: Shield, title: t('shop.benefits.secure_payment'), desc: t('shop.benefits.secure_payment_desc') },
-            { icon: Gift, title: t('shop.benefits.tribe_perks'), desc: t('shop.benefits.tribe_perks_desc') },
-            { icon: Zap, title: t('shop.benefits.vip_support'), desc: t('shop.benefits.vip_support_desc') },
-          ].map((item, idx) => (
+          {shopBenefits.map((item, idx) => (
             <div key={idx} className="flex flex-col space-y-3 group cursor-default">
               <div className="text-primary group-hover:scale-110 transition-transform duration-300 w-fit">
                 <item.icon size={32} />
