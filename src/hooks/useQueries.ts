@@ -8,7 +8,7 @@
  * - Queries de dashboard via API façade (sem nonce)
  */
 
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
@@ -388,7 +388,7 @@ export const useMenuQuery = (lang: string) => {
 // ============================================================================
 
 export const useZenSeoSettings = () => {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ['zen-seo', 'settings'],
     queryFn: async (): Promise<ZenGlobalSettings> => {
       const apiUrl = buildApiUrl('zen-seo/v1/settings');

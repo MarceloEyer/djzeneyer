@@ -126,3 +126,7 @@
 
 **Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
 **Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.
+## 2026-06-28 - useSuspenseQuery for SSR/SSG SEO Metadata
+
+**Learning:** When fetching global SEO settings or metadata (like `useZenSeoSettings`) in a React application that relies on Server-Side Rendering (SSR) or Static Site Generation (SSG), using the standard `useQuery` hook can lead to search engine crawlers indexing fallback or loading state values because `useQuery` does not block the initial render.
+**Action:** Always use `useSuspenseQuery` from `@tanstack/react-query` instead of `useQuery` for critical SEO metadata fetching. This integrates properly with React's `<Suspense>` boundaries, pausing the initial render until the data is fully resolved, ensuring crawlers receive the complete and correct HTML.
