@@ -185,6 +185,9 @@ const HomePage: React.FC = () => {
         schema={schemaData}
         keywords={t('home.seo.keywords')}
         leadAnswer={t('home.seo.lead_answer')}
+        preload={[
+          { href: '/images/hero-background.webp', as: 'image' }
+        ]}
       />
 
       {/* HERO SECTION */}

@@ -23,7 +23,7 @@ export interface HrefLang {
 
 export interface PreloadItem {
   href: string;
-  as: 'script' | 'style' | 'font' | 'fetch';
+  as: 'script' | 'style' | 'font' | 'fetch' | 'image';
   media?: string;
   type?: string;
   crossOrigin?: string;

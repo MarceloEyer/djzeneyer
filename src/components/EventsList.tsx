@@ -30,6 +30,10 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
+  const monthFormatter = useMemo(() => getDateTimeFormatter(currentLocale, { month: 'short' }), [currentLocale]);
+  const timeFormatter = useMemo(() => getDateTimeFormatter(currentLocale, { hour: '2-digit', minute: '2-digit' }), [currentLocale]);
+  const eventsDetailRoute = useMemo(() => getLocalizedRoute('events-detail', lang), [lang]);
+
   // React Query: v2 defaults
   const { data: events = [], isLoading: loading, error } = useEventsQuery({
     mode: 'upcoming',
@@ -44,10 +48,6 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   // Optimization: Pre-process and stabilize event data for rendering
   const processedEvents = useMemo(() => {
     if (!events || events.length === 0) return [];
-
-    const timeFormatter = getDateTimeFormatter(currentLocale, { hour: '2-digit', minute: '2-digit' });
-    const monthFormatter = getDateTimeFormatter(currentLocale, { month: 'short' });
-    const eventsDetailRoute = getLocalizedRoute('events-detail', lang);
 
     const visibleItems = events.slice(0, limit);
     const results = [];
