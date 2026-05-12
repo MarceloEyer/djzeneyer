@@ -77,7 +77,7 @@
     }
   },
   "common": {
-    "artist_name": "DJ Zen Eyer",
+    "artist_name": "Zen Eyer",
     "legal_name": "Marcelo Eyer Fernandes",
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
@@ -153,7 +153,7 @@
     "footer_subscribe": "Subscribe",
     "footer_subscribe_success": "Subscription successful!",
     "footer_subscribe_error": "Error during subscription.",
-    "footer_copyright": "Â© {{year}} DJ Zen Eyer. All rights reserved.",
+    "footer_copyright": "Â© {{year}} Zen Eyer. All rights reserved.",
     "friend": "Zen Friend",
     "all": "All",
     "back_to_list": "Back to list"
@@ -183,7 +183,7 @@
     "lastUpdated": "2025-12-03",
     "language": "en-US",
     "maintainers": [
-      "DJ Zen Eyer Team"
+      "Zen Eyer Team"
     ],
     "notes": "Official English translations. LEGACY FILE - Do not change key names without updating all components."
   },
@@ -289,7 +289,7 @@
   "zenlink": {
     "listen_now": "Listen Now",
     "choose_platform": "Choose your platform",
-    "seo_description": "Connect with DJ Zen Eyer — 2x World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!",
+    "seo_description": "Connect with Zen Eyer — 2x World Champion Brazilian Zouk DJ. Listen, book, and follow the cremosidade!",
     "soundcloud_subtitle": "Sets & Remixes",
     "youtube_subtitle": "Live sets & tutorials",
     "book_title": "Book Me",
@@ -333,12 +333,12 @@
   "play_featured_mix": "Play Featured Mix",
   "upcoming_events": "Upcoming Events",
   "home": {
-    "site_desc": "Official website of Zen Eyer, also known as DJ Zen Eyer, 2x World Champion Brazilian Zouk DJ and music producer",
-    "page_title": "DJ Zen Eyer | 2x World Champion Brazilian Zouk DJ & Producer",
-    "page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
+    "site_desc": "Official website of Zen Eyer, also known as Zen Eyer, 2x World Champion Brazilian Zouk DJ and music producer",
+    "page_title": "Zen Eyer | 2x World Champion Brazilian Zouk DJ & Producer",
+    "page_meta_desc": "Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
     "headline": "Experience the <1>Zen</1> in Brazilian Zouk",
     "subheadline": "Transforming dance floors into immersive audio experiences",
-    "welcome": "Welcome to DJ Zen Eyer",
+    "welcome": "Welcome to Zen Eyer",
     "tagline": "Brazilian Zouk DJ & Producer",
     "cta": "Explore My Music",
     "features_title": "Why Join the Zen Tribe?",
@@ -348,11 +348,11 @@
     "feat_achievements_title": "Achievements & Rewards",
     "feat_achievements_desc": "Earn XP, unlock badges, and level up",
     "feat_community_title": "Active Community",
-    "feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
+    "feat_community_desc": "Connect with music lovers and Zen Eyer",
     "cta_title": "Ready to Join the Zen Tribe?",
     "cta_subtitle": "Join thousands of members and transform your experience",
     "hero_badge": "2x World Champion - Zouk World Championships",
-    "hero_title": "DJ Zen Eyer",
+    "hero_title": "Zen Eyer",
     "hero_subtitle": "2x World Champion Brazilian Zouk DJ & Producer",
     "hero_slogan": "Haste is the enemy of creaminess",
     "hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
@@ -376,14 +376,14 @@
     "tribe": {
       "title": "Join the <1>Zen Tribe</1>",
       "subtitle": "No rush here. Just prolonged melting.",
-      "desc": "Access exclusive content, behind-the-scenes, and be part of the official DJ Zen Eyer community.",
+      "desc": "Access exclusive content, behind-the-scenes, and be part of the official Zen Eyer community.",
       "cta": "Join the Tribe"
     },
     "cta_soundcloud": "Listen on SoundCloud",
     "cta_booking": "Booking / Press Kit",
     "cta_music": "Explore Music",
-    "bio_title": "Who is DJ Zen Eyer?",
-    "bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>Brazilian Zouk DJ</strong> and music producer. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.",
+    "bio_title": "Who is Zen Eyer?",
+    "bio_intro": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>Brazilian Zouk DJ</strong> and music producer. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.",
     "bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zen? Zen? Zen? Eyer? Eyer?\"</em> is already a classic at festivals.",
     "bio_mensa": "Member of <strong>Mensa International</strong>, he creates perfect emotional journeys for the \"flow\" in dance. He is a regular at major stages like Rio Zouk Congress.",
     "verified": "Verified Profiles",
@@ -393,8 +393,8 @@
       "cta": "REQUEST QUOTE"
     },
     "seo": {
-      "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music Producer, Zen Tribe",
-      "lead_answer": "DJ Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance."
+      "keywords": "Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music Producer, Zen Tribe",
+      "lead_answer": "Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance."
     },
     "shows": {
       "title": "Upcoming Events",
@@ -411,7 +411,7 @@
     }
   },
   "news_page_title": "Zen News | Insights & Updates",
-  "news_page_meta_desc": "Official news, releases, and articles about the Brazilian Zouk universe by DJ Zen Eyer.",
+  "news_page_meta_desc": "Official news, releases, and articles about the Brazilian Zouk universe by Zen Eyer.",
   "news": {
     "title": "Zen News",
     "subtitle": "Latest stories, music production tips, and insights on Zouk culture.",
@@ -439,13 +439,13 @@
     "no_posts_for_filter": "No posts found for this filter yet."
   },
   "music_page_title": "Music Hub",
-  "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
+  "music_page_meta_desc": "Listen to the latest mixes and productions by Zen Eyer",
   "music": {
     "pageTitle": "Music Hub",
-    "pageDesc": "Listen and download exclusive tracks, remixes, and sets by DJ Zen Eyer.",
+    "pageDesc": "Listen and download exclusive tracks, remixes, and sets by Zen Eyer.",
     "hub_title_rich": "<0>Streaming</0> Hub",
     "back": "Back to Hub",
-    "artist_tag": "A DJ Zen Eyer Production",
+    "artist_tag": "A Zen Eyer Production",
     "about_track": "About the Track",
     "steal_button": "Grab & Go",
     "steal_cta": "Grab Music",
@@ -453,7 +453,7 @@
     "dj_tool_kit_desc": "Access high-quality downloads, edits and exclusive tools for DJs.",
     "dj_tool_kit_cta": "Access Downloads",
     "collections_title": "Music Collection",
-    "collections_desc": "Exclusive tracks, mixes and playlists curated by DJ Zen Eyer",
+    "collections_desc": "Exclusive tracks, mixes and playlists curated by Zen Eyer",
     "hero": {
       "badge": "Original Productions & Remixes",
       "title": "My",
@@ -488,12 +488,12 @@
     "releases_title": "Music releases",
     "releases_subtitle": "Release notes, credits, and official links published in Zen News.",
     "read_release": "Read release notes",
-    "discography_schema_name": "DJ Zen Eyer Discography",
-    "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing."
+    "discography_schema_name": "Zen Eyer Discography",
+    "discography_schema_desc": "Official releases by Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing."
   },
   "press": {
     "page_title": "Press Kit",
-    "page_meta_desc": "Official press kit for DJ Zen Eyer. Download high-res photos, bio, and technical rider.",
+    "page_meta_desc": "Official press kit for Zen Eyer. Download high-res photos, bio, and technical rider.",
     "bio_title": "The Artist",
     "bio_subtitle": "Two-Time World Champion & Music Curator",
     "stats_title": "Quick Stats",
@@ -585,7 +585,7 @@
     "viewMemberships": "View Memberships",
     "whyJoin": "Why Join the Zen Tribe?",
     "chooseMembership": "Choose Your Tribe Membership",
-    "selectTier": "Select the membership tier that fits your journey with DJ Zen Eyer's music",
+    "selectTier": "Select the membership tier that fits your journey with Zen Eyer's music",
     "levelUpTitle": "Level Up Your Music Journey",
     "levelUpDesc": "The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.",
     "xpTitle": "Experience Points (XP)",
@@ -670,7 +670,7 @@
       },
       "attendEvents": {
         "title": "Attend 3 Events",
-        "desc": "Attend 3 DJ Zen Eyer events"
+        "desc": "Attend 3 Zen Eyer events"
       },
       "shareContent": {
         "title": "Share 10 Times",
@@ -706,7 +706,7 @@
         "feature1": "All Zen Voyager features",
         "feature2": "VIP access to all live events",
         "feature3": "Monthly exclusive live streams",
-        "feature4": "Personalized playlists from DJ Zen Eyer",
+        "feature4": "Personalized playlists from Zen Eyer",
         "feature5": "Zen Master digital badge collection",
         "feature6": "Meet & greet opportunities"
       }
@@ -745,7 +745,7 @@
   "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
   "media_page": {
     "title": "Media & Press Kit",
-    "subtitle": "Official media resources and press information for DJ Zen Eyer",
+    "subtitle": "Official media resources and press information for Zen Eyer",
     "quick_facts": "Quick Facts",
     "artist_name": "Artist Name",
     "legal_name": "Legal Name",
@@ -755,9 +755,9 @@
     "isni": "ISNI",
     "press_highlights": "Press Highlights",
     "world_champion": "2x World Champion Brazilian Zouk DJ",
-    "world_champion_desc": "Marcelo Eyer, known as DJ Zen Eyer, is a two-time World Champion in Brazilian Zouk, bringing unique energy to dance floors worldwide.",
+    "world_champion_desc": "Marcelo Eyer, known as Zen Eyer, is a two-time World Champion in Brazilian Zouk, bringing unique energy to dance floors worldwide.",
     "international_performances": "International Performances",
-    "international_performances_desc": "DJ Zen Eyer has performed at major festivals and events across Brazil, Europe, and the Americas, specializing in Brazilian Zouk music.",
+    "international_performances_desc": "Zen Eyer has performed at major festivals and events across Brazil, Europe, and the Americas, specializing in Brazilian Zouk music.",
     "media_assets": "Media Assets",
     "high_res_photos": "High-Resolution Photos",
     "high_res_photos_desc": "Professional photos for press and promotional use",
@@ -783,7 +783,7 @@
     "last_updated": "Last updated",
     "last_updated_date": "January 2026",
     "commitment": "Our Commitment",
-    "commitment_intro": "DJ Zen Eyer is committed to creating a welcoming, safe, and inclusive environment for all members of our community. This Code of Conduct applies to all interactions within our community, including events, online platforms, and any spaces associated with DJ Zen Eyer.",
+    "commitment_intro": "Zen Eyer is committed to creating a welcoming, safe, and inclusive environment for all members of our community. This Code of Conduct applies to all interactions within our community, including events, online platforms, and any spaces associated with Zen Eyer.",
     "commitment_participation": "By participating in our community, you agree to abide by this Code of Conduct. We expect all community members to help create a positive environment where everyone feels respected and valued.",
     "principles": "Core Principles",
     "respect_title": "Respect & Inclusion",
@@ -842,14 +842,14 @@
     "consequence_repeated_desc": "Temporary removal from events, platform, or community spaces",
     "consequence_severe": "Severe or Persistent Violation",
     "consequence_severe_action": "Permanent Ban",
-    "consequence_severe_desc": "Permanent removal from all DJ Zen Eyer events and community spaces",
+    "consequence_severe_desc": "Permanent removal from all Zen Eyer events and community spaces",
     "scope": "Scope",
-    "scope_intro": "This Code of Conduct applies to all spaces managed by DJ Zen Eyer, including but not limited to:",
+    "scope_intro": "This Code of Conduct applies to all spaces managed by Zen Eyer, including but not limited to:",
     "scope_events": "Live events and performances",
     "scope_online": "Online communities and social media groups",
     "scope_website": "Official website and digital platforms",
     "scope_workshops": "Workshops, classes, and educational content",
-    "scope_representing": "Any space representing DJ Zen Eyer",
+    "scope_representing": "Any space representing Zen Eyer",
     "contact": "Questions or Concerns?",
     "contact_intro": "If you have questions about this Code of Conduct or need to report a violation:",
     "contact_button": "Contact Us",
@@ -859,12 +859,12 @@
   "privacy_page": {
     "title": "Privacy Policy",
     "seo": {
-      "title": "Privacy Policy | DJ Zen Eyer",
-      "description": "Privacy Policy for DJ Zen Eyer official website. Learn how we collect, use, and protect your personal information."
+      "title": "Privacy Policy | Zen Eyer",
+      "description": "Privacy Policy for Zen Eyer official website. Learn how we collect, use, and protect your personal information."
     },
     "last_updated": "Last updated",
     "last_updated_date": "January 2026",
-    "intro_p1": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.",
+    "intro_p1": "Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.",
     "intro_p2": "By using our website, you consent to the data practices described in this policy. If you do not agree with the terms of this Privacy Policy, please do not access the website.",
     "sections": {
       "collection": {
@@ -945,12 +945,12 @@
   "terms_page": {
     "title": "Terms of Use",
     "seo": {
-      "title": "Terms of Use | DJ Zen Eyer",
-      "description": "Terms of Use for DJ Zen Eyer official website. Read the terms and conditions governing the use of our services."
+      "title": "Terms of Use | Zen Eyer",
+      "description": "Terms of Use for Zen Eyer official website. Read the terms and conditions governing the use of our services."
     },
     "last_updated": "Last updated",
     "last_updated_date": "January 2026",
-    "intro_p1": "Welcome to the official website of DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). These Terms of Use govern your access to and use of our website, services, and content.",
+    "intro_p1": "Welcome to the official website of Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). These Terms of Use govern your access to and use of our website, services, and content.",
     "intro_p2": "By accessing or using our website, you agree to comply with and be bound by these terms. If you do not agree to these terms, please do not use our website.",
     "sections": {
       "acceptance": {
@@ -959,22 +959,22 @@
       },
       "license": {
         "title": "2. Use License",
-        "content": "Permission is granted to temporarily access the materials (information or software) on DJ Zen Eyer's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not: (a) modify or copy the materials; (b) use the materials for any commercial purpose, or for any public display (commercial or non-commercial); (c) attempt to decompile or reverse engineer any software contained on DJ Zen Eyer's website; (d) remove any copyright or other proprietary notations from the materials; or (e) transfer the materials to another person or \"mirror\" the materials on any other server."
+        "content": "Permission is granted to temporarily access the materials (information or software) on Zen Eyer's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not: (a) modify or copy the materials; (b) use the materials for any commercial purpose, or for any public display (commercial or non-commercial); (c) attempt to decompile or reverse engineer any software contained on Zen Eyer's website; (d) remove any copyright or other proprietary notations from the materials; or (e) transfer the materials to another person or \"mirror\" the materials on any other server."
       },
       "disclaimer": {
         "title": "3. Disclaimer",
-        "content": "The materials on DJ Zen Eyer's website are provided on an 'as is' basis. DJ Zen Eyer makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, DJ Zen Eyer does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its website or otherwise relating to such materials or on any sites linked to this site."
+        "content": "The materials on Zen Eyer's website are provided on an 'as is' basis. Zen Eyer makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, Zen Eyer does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its website or otherwise relating to such materials or on any sites linked to this site."
       },
       "limitations": {
         "title": "4. Limitations",
-        "content": "In no event shall DJ Zen Eyer or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on DJ Zen Eyer's website, even if DJ Zen Eyer or a DJ Zen Eyer authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you."
+        "content": "In no event shall Zen Eyer or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Zen Eyer's website, even if Zen Eyer or a Zen Eyer authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you."
       }
     },
     "additional": {
       "ip": {
         "title": "Intellectual Property",
         "items": [
-          "All content, including but not limited to text, graphics, logos, images, audio clips, and software, is the property of DJ Zen Eyer (Marcelo Eyer Fernandes) or its content suppliers.",
+          "All content, including but not limited to text, graphics, logos, images, audio clips, and software, is the property of Zen Eyer (Marcelo Eyer Fernandes) or its content suppliers.",
           "The content is protected by Brazilian and international copyright laws.",
           "Unauthorized use of any materials may violate copyright, trademark, and other laws.",
           "You may not reproduce, distribute, display, or create derivative works without express written permission."
@@ -1014,7 +1014,7 @@
         "title": "Third-Party Links",
         "items": [
           "This website may contain links to third-party websites.",
-          "DJ Zen Eyer has no control over and assumes no responsibility for third-party content.",
+          "Zen Eyer has no control over and assumes no responsibility for third-party content.",
           "The presence of links does not imply endorsement.",
           "You access third-party sites at your own risk.",
           "Please review the terms and privacy policies of any third-party sites."
@@ -1025,7 +1025,7 @@
     "governing_law_p1": "These Terms of Use shall be governed by and construed in accordance with the laws of Brazil, without regard to its conflict of law provisions. Any legal action or proceeding arising under these terms will be brought exclusively in the courts located in São Paulo, Brazil.",
     "governing_law_p2": "By using this website, you consent to the jurisdiction and venue of such courts in São Paulo, Brazil.",
     "modifications_title": "11. Modifications to Terms",
-    "modifications_p1": "DJ Zen Eyer reserves the right to revise these Terms of Use at any time without prior notice. By continuing to use this website after changes are posted, you agree to be bound by the revised terms. We encourage you to periodically review this page for the latest information on our terms.",
+    "modifications_p1": "Zen Eyer reserves the right to revise these Terms of Use at any time without prior notice. By continuing to use this website after changes are posted, you agree to be bound by the revised terms. We encourage you to periodically review this page for the latest information on our terms.",
     "contact_questions": "Questions About These Terms?",
     "contact_intro": "If you have any questions about these Terms of Use, please contact us:",
     "acceptance_p1": "By using this website, you acknowledge that you have read and understood these Terms of Use",
@@ -1064,13 +1064,13 @@
   "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
+  "footer_copyright": "© {{year}} Zen Eyer. All rights reserved.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
   "events_categories": "Categories",
-  "events_page_title": "DJ Zen Eyer Events | 2x World Champion Brazilian Zouk",
-  "events_page_meta_desc": "Follow DJ Zen Eyer's global schedule. Experience the 'cremosidade' at the world's top Brazilian Zouk festivals. Book your tickets and join the Zen Tribe! ✓",
+  "events_page_title": "Zen Eyer Events | 2x World Champion Brazilian Zouk",
+  "events_page_meta_desc": "Follow Zen Eyer's global schedule. Experience the 'cremosidade' at the world's top Brazilian Zouk festivals. Book your tickets and join the Zen Tribe! ✓",
   "events_filter_placeholder": "Filter by city or event...",
   "events_back": "Back to Events",
   "events_not_found": "Event not found",
@@ -1096,16 +1096,16 @@
     "title": "Frequent <1>Questions</1>",
     "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
     "seo": {
-      "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
-      "keywords": "Brazilian Zouk FAQ, what is zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, zouk musicality, book Brazilian Zouk DJ, zouk classes, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bonus zouk, Renata Peçanha, Adílio Porto, lambada history"
+      "lead_answer": "Find definitive answers to the most common questions about Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
+      "keywords": "Brazilian Zouk FAQ, what is zouk, Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, zouk musicality, book Brazilian Zouk DJ, zouk classes, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bonus zouk, Renata Peçanha, Adílio Porto, lambada history"
     },
     "categories": {
       "djzeneyer": {
-        "title": "DJ Zen Eyer & Career",
+        "title": "Zen Eyer & Career",
         "desc": "The journey of the Two-Time World Champion and Mensa International member.",
         "q1": {
-          "q": "Who is DJ Zen Eyer?",
-          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in Niterói (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor."
+          "q": "Who is Zen Eyer?",
+          "a": "Zen Eyer (pronounced like <strong>Buyer</strong> without the 'B', legal name Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in Niterói (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor."
         },
         "q2": {
           "q": "What does \"Cremosidade\" (Creaminess) mean in the context of Zouk?",
@@ -1153,11 +1153,11 @@
         },
         "q4": {
           "q": "What is the ideal BPM for Brazilian Zouk?",
-          "a": "The ideal BPM range for Brazilian Zouk is typically <strong>90–110 BPM</strong> for beginner to intermediate dancers, and <strong>75–95 BPM</strong> for advanced dancers who prefer slower, more musical sets. DJ Zen Eyer's Cremosidade philosophy prioritizes emotional flow over tempo — a well-curated set at 80 BPM can feel more energizing than a careless one at 100 BPM. The BPM must serve the music, not the other way around."
+          "a": "The ideal BPM range for Brazilian Zouk is typically <strong>90–110 BPM</strong> for beginner to intermediate dancers, and <strong>75–95 BPM</strong> for advanced dancers who prefer slower, more musical sets. Zen Eyer's Cremosidade philosophy prioritizes emotional flow over tempo — a well-curated set at 80 BPM can feel more energizing than a careless one at 100 BPM. The BPM must serve the music, not the other way around."
         },
         "q5": {
           "q": "What is the difference between Brazilian Zouk and Lambazouk?",
-          "a": "Brazilian Zouk and Lambazouk share common roots but are distinct styles. <strong>Lambazouk</strong> is an earlier hybrid — Lambada footwork patterns danced to Caribbean Zouk music (1990s). <strong>Brazilian Zouk</strong> evolved from Lambazouk into its own codified style with distinct head movements, body waves, improvisation principles, and a broader musical vocabulary. The Brazilian Zouk Council (BZC) maintains the official technical definitions. DJ Zen Eyer's Cremosidade style is a musical philosophy built on Brazilian Zouk foundations."
+          "a": "Brazilian Zouk and Lambazouk share common roots but are distinct styles. <strong>Lambazouk</strong> is an earlier hybrid — Lambada footwork patterns danced to Caribbean Zouk music (1990s). <strong>Brazilian Zouk</strong> evolved from Lambazouk into its own codified style with distinct head movements, body waves, improvisation principles, and a broader musical vocabulary. The Brazilian Zouk Council (BZC) maintains the official technical definitions. Zen Eyer's Cremosidade style is a musical philosophy built on Brazilian Zouk foundations."
         }
       },
       "culture": {
@@ -1184,7 +1184,7 @@
           "a": "The <strong>Zen Tribe</strong> is the project where we unite with other people who enjoy the dance floor vibe. Participants of the project get behind-the-scenes access (edits, full sets, and career content)."
         },
         "q2": {
-          "q": "How to book DJ Zen Eyer for my event?",
+          "q": "How to book Zen Eyer for my event?",
           "a": "We travel the world playing, just send a message via email or official WhatsApp, no matter where it is. Regarding workshops on DJing and music in dance, we also teach them."
         },
         "q3": {
@@ -1298,7 +1298,7 @@
       "page_title": "Return & Refund Policy",
       "page_meta_desc": "Our policy on returns and refunds for products and tickets.",
       "h1": "Return & Refund Policy",
-      "intro": "At DJ Zen Eyer, we want you to be completely satisfied with your purchase. However, we understand that sometimes things don't work out. Please read our policy below regarding returns and refunds.",
+      "intro": "At Zen Eyer, we want you to be completely satisfied with your purchase. However, we understand that sometimes things don't work out. Please read our policy below regarding returns and refunds.",
       "digital_title": "1. Digital Products",
       "digital_text": "Due to the nature of digital products (music downloads, sample packs, presets), all sales are final. Once a file has been downloaded, we cannot offer a refund. If you have technical issues with a file, please contact support.",
       "tickets_title": "2. Event Tickets",
@@ -1378,11 +1378,11 @@
   },
   "presskit": {
     "download_page_title": "Press Kit PDF",
-    "download_page_desc": "Direct download of DJ Zen Eyer's official press kit PDF.",
+    "download_page_desc": "Direct download of Zen Eyer's official press kit PDF.",
     "redirecting_pdf": "Opening the press kit PDF.",
     "download_pdf_now": "Download PDF",
-    "page_title": "Official Press Kit | DJ Zen Eyer",
-    "page_meta_desc": "Official EPK of DJ Zen Eyer. Two-time Brazilian Zouk world champion. Photos, bio, logos, and contact information for booking.",
+    "page_title": "Official Press Kit | Zen Eyer",
+    "page_meta_desc": "Official EPK of Zen Eyer. Two-time Brazilian Zouk world champion. Photos, bio, logos, and contact information for booking.",
     "tag": "Official Press Kit 2026",
     "title_prefix": "Official",
     "title_suffix": "EPK",
@@ -1396,7 +1396,7 @@
     },
     "bio": {
       "title": "The Sonic Journey",
-      "p1": "<strong>DJ Zen Eyer</strong> is a Brazilian Zouk DJ and music producer, known for his approach that prioritizes connection and 'flow' on the dance floor.",
+      "p1": "<strong>Zen Eyer</strong> is a Brazilian Zouk DJ and music producer, known for his approach that prioritizes connection and 'flow' on the dance floor.",
       "p2": "Having performed in 15+ countries and won international awards, known for his cremoso style — sets that evolve gradually, respecting the dancer's timing.",
       "p3": "A member of Mensa International, Zen uses his keen perception to curate perfect emotional journeys, whether at major festivals or intimate Zen Tribe sessions.",
       "quickStats": {
@@ -1444,7 +1444,7 @@
       "subtitle": "Copy and paste for your event's press materials.",
       "copy_button": "Copy Bio",
       "copied": "Copied!",
-      "text": "Zen Eyer (Marcelo Eyer Fernandes) is a Brazilian Zouk DJ and music producer performing at international festivals. Born in Niterói, Rio de Janeiro, he won two world titles at Ilha do Zouk 2022 (Best DJ Performance and Best Remix) and is a member of Mensa International. Known for his signature 'cremosidade' style — fluid, unhurried sets that prioritize deep connection on the dance floor — Zen Eyer has performed at major Zouk festivals across Brazil, Europe, and the Americas, including the Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon, and Rio Zouk Congress."
+      "text": "Zen Eyer (Marcelo Eyer Fernandes, pronounced 'Buyer') is a Brazilian Zouk DJ and music producer, two-time World Champion in DJing and Best Remix at the Ilha do Zouk Championship (2022). Based in Rio de Janeiro, Brazil. He is known for his cremoso style in Brazilian Zouk DJing. He is a member of Mensa International. Known for his signature 'cremosidade' style — fluid, unhurried sets that prioritize deep connection on the dance floor — Zen Eyer has performed at major Zouk festivals across Brazil, Europe, and the Americas, including the Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon, and Rio Zouk Congress."
     }
   },
   "events_add_google": "Add to Calendar",
@@ -1497,8 +1497,8 @@
       }
     },
     "seo": {
-      "title": "Support DJ Zen Eyer | Payment Information",
-      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.",
+      "title": "Support Zen Eyer | Payment Information",
+      "description": "Support Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.",
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
@@ -1619,11 +1619,11 @@
   },
   "about": {
     "seo": {
-      "title": "About DJ Zen Eyer | Brazilian Zouk DJ & Producer",
-      "description": "Discover the personal story of DJ Zen Eyer, a Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his 'cremosidade' musical style.",
-      "name": "About DJ Zen Eyer",
-      "keywords": "DJ Zen Eyer, world champion DJ, music philosophy, cremosidade, Brazilian Zouk history, Mensa member, music producer biography",
-      "lead_answer": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a Mensa member and award-winning DJ who brings emotional depth and technical precision to Brazilian Zouk music globally."
+      "title": "About Zen Eyer | Brazilian Zouk DJ & Producer",
+      "description": "Discover the personal story of Zen Eyer, a Brazilian Zouk DJ and music producer from Rio de Janeiro, and the philosophy behind his 'cremosidade' musical style.",
+      "name": "About Zen Eyer",
+      "keywords": "Zen Eyer, world champion DJ, music philosophy, cremosidade, Brazilian Zouk history, Mensa member, music producer biography",
+      "lead_answer": "Zen Eyer (Marcelo Eyer Fernandes) is a Mensa member and award-winning DJ who brings emotional depth and technical precision to Brazilian Zouk music globally."
     },
     "hero": {
       "badge": "MY STORY",
