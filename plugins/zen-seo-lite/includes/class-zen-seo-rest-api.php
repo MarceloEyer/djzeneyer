@@ -467,11 +467,17 @@ class Zen_SEO_REST_API
 
             $translations = Zen_SEO_Helpers::get_translations($post->ID);
 
+            // ⚡ Bolt: Fast date formatting instead of get_post_modified_time to avoid overhead
+            $time = $post->post_modified_gmt;
+            $modified_date = (empty($time) || '0000-00-00 00:00:00' === $time)
+                ? false
+                : str_replace(' ', 'T', $time) . '+00:00';
+
             $data['posts'][] = [
                 'id' => $post->ID,
                 'type' => $post->post_type,
                 'slug' => $post->post_name,
-                'modified' => \get_post_modified_time('c', true, $post),
+                'modified' => $modified_date,
                 'translations' => $translations,
                 'lang' => $pll_exists ? \pll_get_post_language($post->ID) : 'en'
             ];
