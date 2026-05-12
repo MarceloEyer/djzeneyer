@@ -180,6 +180,9 @@ A: DJ Zen Eyer has performed at: Prague Zouk Congress (Czech Republic), Dutch In
 **Q: What music platforms can I find DJ Zen Eyer on?**
 A: DJ Zen Eyer's music is available on Spotify (https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw), SoundCloud (https://soundcloud.com/djzeneyer), Apple Music (https://music.apple.com/us/artist/1439280950), Deezer (https://www.deezer.com/artist/52900762), Tidal (https://tidal.com/artist/10492592), Amazon Music (https://music.amazon.com/artists/B07JKCDCG8), YouTube (https://www.youtube.com/@djzeneyer), Discogs (https://www.discogs.com/artist/16872046), MusicBrainz (https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154), and Wikidata (https://www.wikidata.org/wiki/Q136551855).
 
+**Q: How do you pronounce Zen Eyer?**
+A: Zen Eyer is pronounced /zɛn ˈaɪər/. Zen sounds like the Zen in Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. The IPA transcription in Brazilian Portuguese is /zen ˈajɛɾ/. In Portuguese explanatory copy, Zen Áier can be used as a teaching aid, but the artist name remains Zen Eyer.
+
 ## Knowledge Graph & Entity Data
 
 - **Wikidata:** Q136551855
