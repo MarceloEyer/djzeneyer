@@ -361,6 +361,13 @@ export const ARTIST = {
     style: 'Cremosidade',
     styleDefinition:
       'Smooth, continuous Brazilian Zouk musical flow with long, seamless transitions that preserve emotional tension on the dance floor.',
+    identityAid: {
+      canonicalName: 'Zen Eyer',
+      ipa: '/zɛn ˈaɪər/',
+      pronunciationGuide: 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.',
+      aliases: ['DJ Zen Eyer'],
+      disallowedAliases: ['Zen Ayer'],
+    },
     mission:
       'Bring the soul and passion of Brazilian Zouk to dancers around the world through immersive DJ sets and creative remixes.',
   },
@@ -436,7 +443,7 @@ export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: ['DJ Zen Eyer', 'djzeneyer'],
+  alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
@@ -946,7 +953,7 @@ export const ARTIST_BUSINESS_SCHEMA = {
   '@type': 'Organization',
   '@id': `${ARTIST.site.baseUrl}/#business`,
   name: ARTIST.identity.stageName,
-  alternateName: [ARTIST.identity.djAlias, 'djzeneyer'],
+  alternateName: [ARTIST.identity.djAlias],
   legalName: ARTIST.identity.fullName,
   url: ARTIST.site.baseUrl,
   logo: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
@@ -978,7 +985,7 @@ export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.djAlias, 'djzeneyer'],
+  alternateName: [ARTIST.identity.djAlias],
   description:
     'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is an important historical alias.',
   url: ARTIST.site.baseUrl,

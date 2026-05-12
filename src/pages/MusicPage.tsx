@@ -7,6 +7,8 @@ import { Breadcrumb } from '../components/Breadcrumb';
 import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
 import { YoutubeIcon } from '../components/icons/BrandIcons';
 import { Link, generatePath } from 'react-router-dom';
+import { useUser } from '../contexts/UserContext';
+import { useTrackInteraction } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST, MUSICGROUP_SCHEMA, DISCOGRAPHY } from '../data/artistData';
 import { safeUrl } from '../utils/sanitize';
@@ -64,8 +66,17 @@ const SECONDARY_PLATFORMS = [
 
 const MusicPage: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { user } = useUser();
   const currentLang = normalizeLanguage(i18n.language);
   const prefersReducedMotion = useReducedMotion();
+  const trackInteraction = useTrackInteraction(user?.token);
+
+  const handleTrackInteraction = (action: string, objectId?: number, url?: string) => {
+    trackInteraction.mutate({ action, objectId });
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   const releaseCards = useMemo(() => {
     const newsDetailRoute = getLocalizedRoute('news-detail', currentLang);
@@ -201,7 +212,7 @@ const MusicPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={`${t('music_page_title')} | DJ Zen Eyer`}
+        title={`${t('music_page_title')} | Zen Eyer`}
         description={t('music_page_meta_desc')}
         url={`${ARTIST.site.baseUrl}${getLocalizedRoute('music', currentLang)}`}
         schema={musicListingSchema}
@@ -234,21 +245,19 @@ const MusicPage: React.FC = () => {
 
           <div className="space-y-6 mb-16">
             {/* Spotify - Featured Hero */}
-            <motion.a
+            <motion.button
               variants={SPOTIFY_VARIANTS}
               initial={prefersReducedMotion ? false : 'hidden'}
               animate={prefersReducedMotion ? undefined : 'visible'}
-              href={safeUrl(SPOTIFY_PLATFORM.url)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between p-5 sm:p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
+              onClick={() => handleTrackInteraction('spotify_hub', 0, SPOTIFY_PLATFORM.url)}
+              className="w-full flex items-center justify-between p-5 sm:p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="flex items-center gap-6 relative z-10">
                 <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-black rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
                   <SpotifyIcon />
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col text-left">
                   <span className="text-xl sm:text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
                     {SPOTIFY_PLATFORM.name}
                   </span>
@@ -260,34 +269,78 @@ const MusicPage: React.FC = () => {
               <div className="flex items-center gap-4 relative z-10">
                 <ExternalLink size={24} className="text-[#1DB954] group-hover:text-white transition-colors" />
               </div>
-            </motion.a>
+            </motion.button>
 
             {/* Other Platforms Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {SECONDARY_PLATFORMS.map((platform, index) => (
-                <motion.a
+                <motion.button
                   key={platform.name}
                   custom={index}
                   variants={SECONDARY_ITEM_VARIANTS}
                   initial={prefersReducedMotion ? false : 'hidden'}
                   animate={prefersReducedMotion ? undefined : 'visible'}
-                  href={safeUrl(platform.url)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`flex items-center justify-between p-5 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
+                  onClick={() => handleTrackInteraction(`${platform.name.toLowerCase().replace(' ', '_')}_hub`, 0, platform.url)}
+                  className={`w-full flex items-center justify-between p-5 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 flex justify-center opacity-70 group-hover:opacity-100 transition-opacity">{platform.icon}</div>
                     <span className="text-sm font-bold font-display uppercase tracking-wider">{platform.name}</span>
                   </div>
                   <ExternalLink size={16} className="text-white/10 group-hover:text-white/40 transition-colors" />
-                </motion.a>
+                </motion.button>
               ))}
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+            {/* Download / Grab & Go Card */}
+            <motion.div
+              variants={CARD_VARIANTS(0.7)}
+              initial={prefersReducedMotion ? false : 'hidden'}
+              animate={prefersReducedMotion ? undefined : 'visible'}
+              className="bg-red-500/5 border border-red-500/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
+            >
+              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Download size={160} />
+              </div>
+              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
+                <Download className="text-red-500" /> {t('music.steal_button')}
+              </h3>
+              <p className="text-white/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
+              <button
+                onClick={() => handleTrackInteraction('download_hub', 0, 'https://download.djzeneyer.com')}
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
+              >
+                {t('music.steal_cta')} <ExternalLink size={16} />
+              </button>
+            </motion.div>
+
+            {/* Support / Coffee Card */}
+            <motion.div
+              variants={CARD_VARIANTS(0.8)}
+              initial={prefersReducedMotion ? false : 'hidden'}
+              animate={prefersReducedMotion ? undefined : 'visible'}
+              className="bg-primary/5 border border-primary/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
+            >
+              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <Coffee size={160} />
+              </div>
+              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
+                <Coffee className="text-primary" /> {t('music.support_button')}
+              </h3>
+              <p className="text-white/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
+              <Link
+                to={getLocalizedRoute('support', currentLang)}
+                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+              >
+                {t('music.support_cta')} <ExternalLink size={16} />
+              </Link>
+            </motion.div>
+          </div>
+
           {releaseCards.length > 0 && (
-            <section className="mb-16" aria-labelledby="music-releases-title">
+            <section aria-labelledby="music-releases-title">
               <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h2 id="music-releases-title" className="text-2xl font-black font-display text-white">
@@ -316,7 +369,7 @@ const MusicPage: React.FC = () => {
                     />
                     <div className="min-w-0 flex-1">
                       <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-                        {release.type}
+                        {t(`music.release_type.${release.type}`, { defaultValue: release.type })}
                       </div>
                       <h3 className="line-clamp-2 text-lg font-black text-white transition-colors group-hover:text-primary">
                         {release.name}
@@ -328,54 +381,6 @@ const MusicPage: React.FC = () => {
               </div>
             </section>
           )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Download / Grab & Go Card */}
-            <motion.div
-              variants={CARD_VARIANTS(0.7)}
-              initial={prefersReducedMotion ? false : 'hidden'}
-              animate={prefersReducedMotion ? undefined : 'visible'}
-              className="bg-red-500/5 border border-red-500/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
-            >
-              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Download size={160} />
-              </div>
-              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
-                <Download className="text-red-500" /> {t('music.steal_button')}
-              </h3>
-              <p className="text-white/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
-              <a
-                href="https://download.djzeneyer.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
-              >
-                {t('music.steal_cta')} <ExternalLink size={16} />
-              </a>
-            </motion.div>
-
-            {/* Support / Coffee Card */}
-            <motion.div
-              variants={CARD_VARIANTS(0.8)}
-              initial={prefersReducedMotion ? false : 'hidden'}
-              animate={prefersReducedMotion ? undefined : 'visible'}
-              className="bg-primary/5 border border-primary/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
-            >
-              <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                <Coffee size={160} />
-              </div>
-              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
-                <Coffee className="text-primary" /> {t('music.support_button')}
-              </h3>
-              <p className="text-white/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
-              <Link
-                to={getLocalizedRoute('support', currentLang)}
-                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
-              >
-                {t('music.support_cta')} <ExternalLink size={16} />
-              </Link>
-            </motion.div>
-          </div>
 
         </div>
       </div>

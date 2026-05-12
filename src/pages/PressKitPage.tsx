@@ -272,7 +272,7 @@ const PressKitPage: React.FC = () => {
                   >
                     <img
                       src="/images/artist/dj-zen-eyer-smiling-at-deck.jpg"
-                      alt="DJ Zen Eyer"
+                      alt="Zen Eyer"
                       className="h-full w-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0"
                       loading="lazy"
                       width="800"
@@ -414,11 +414,11 @@ const PressKitPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
                 {[
                   { src: '/images/artist/brazilian-zouk-dance-embrace.jpg', alt: 'Brazilian Zouk Dance Embrace' },
-                  { src: '/images/artist/dj-zen-eyer-performing-live.jpg', alt: 'DJ Zen Eyer Performing Live' },
-                  { src: '/images/artist/dj-zen-eyer-club-performance.jpg', alt: 'DJ Zen Eyer Club Performance' },
-                  { src: '/images/artist/dj-zen-eyer-winner-trophy.jpg', alt: 'DJ Zen Eyer Winner Trophy' },
-                  { src: '/images/artist/dj-zen-eyer-beach-brazilian-zouk.png', alt: 'DJ Zen Eyer Beach Zouk' },
-                  { src: '/images/artist/dj-zen-eyer-nature-portrait.jpg', alt: 'DJ Zen Eyer Nature Portrait' }
+                  { src: '/images/artist/dj-zen-eyer-performing-live.jpg', alt: 'Zen Eyer Performing Live' },
+                  { src: '/images/artist/dj-zen-eyer-club-performance.jpg', alt: 'Zen Eyer Club Performance' },
+                  { src: '/images/artist/dj-zen-eyer-winner-trophy.jpg', alt: 'Zen Eyer Winner Trophy' },
+                  { src: '/images/artist/dj-zen-eyer-beach-brazilian-zouk.png', alt: 'Zen Eyer Beach Zouk' },
+                  { src: '/images/artist/dj-zen-eyer-nature-portrait.jpg', alt: 'Zen Eyer Nature Portrait' }
                 ].map((photo, index) => (
                   <motion.div
                     key={index}

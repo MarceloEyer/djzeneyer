@@ -77,7 +77,7 @@
     }
   },
   "common": {
-    "artist_name": "DJ Zen Eyer",
+    "artist_name": "Zen Eyer",
     "legal_name": "Marcelo Eyer Fernandes",
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
@@ -153,7 +153,7 @@
     "footer_subscribe": "Subscribe",
     "footer_subscribe_success": "Subscription successful!",
     "footer_subscribe_error": "Error during subscription.",
-    "footer_copyright": "Â© {{year}} DJ Zen Eyer. All rights reserved.",
+    "footer_copyright": "© {{year}} Zen Eyer. All rights reserved.",
     "friend": "Zen Friend",
     "all": "All",
     "back_to_list": "Back to list"
@@ -338,7 +338,7 @@
     "page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
     "headline": "Experience the <1>Zen</1> in Brazilian Zouk",
     "subheadline": "Transforming dance floors into immersive audio experiences",
-    "welcome": "Welcome to DJ Zen Eyer",
+    "welcome": "Welcome to Zen Eyer",
     "tagline": "Brazilian Zouk DJ & Producer",
     "cta": "Explore My Music",
     "features_title": "Why Join the Zen Tribe?",
@@ -348,12 +348,13 @@
     "feat_achievements_title": "Achievements & Rewards",
     "feat_achievements_desc": "Earn XP, unlock badges, and level up",
     "feat_community_title": "Active Community",
-    "feat_community_desc": "Connect with music lovers and DJ Zen Eyer",
+    "feat_community_desc": "Connect with music lovers and Zen Eyer",
     "cta_title": "Ready to Join the Zen Tribe?",
     "cta_subtitle": "Join thousands of members and transform your experience",
     "hero_badge": "2x World Champion - Zouk World Championships",
-    "hero_title": "DJ Zen Eyer",
+    "hero_title": "Zen Eyer",
     "hero_subtitle": "2x World Champion Brazilian Zouk DJ & Producer",
+    "pronunciation_summary": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B, or like 'Eye' followed by 'er').",
     "hero_slogan": "Haste is the enemy of creaminess",
     "hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
     "stat_champion": "World Champion",
@@ -488,6 +489,12 @@
     "releases_title": "Music releases",
     "releases_subtitle": "Release notes, credits, and official links published in Zen News.",
     "read_release": "Read release notes",
+    "release_type": {
+      "album": "Album",
+      "ep": "EP",
+      "remix": "Remix",
+      "single": "Single"
+    },
     "discography_schema_name": "DJ Zen Eyer Discography",
     "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing."
   },
@@ -1064,7 +1071,7 @@
   "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
+  "footer_copyright": "© {{year}} Zen Eyer. All rights reserved.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
@@ -1104,8 +1111,8 @@
         "title": "DJ Zen Eyer & Career",
         "desc": "The journey of the Two-Time World Champion and Mensa International member.",
         "q1": {
-          "q": "Who is DJ Zen Eyer?",
-          "a": "DJ Zen Eyer (Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in Niterói (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor."
+          "q": "Who is Zen Eyer?",
+          "a": "Zen Eyer (pronounced like <strong>Buyer</strong> without the 'B', or like 'Eye' followed by 'er'; also known by his primary alias <strong>DJ Zen Eyer</strong>; legal name Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in Niterói (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor."
         },
         "q2": {
           "q": "What does \"Cremosidade\" (Creaminess) mean in the context of Zouk?",
@@ -1118,6 +1125,10 @@
         "q4": {
           "q": "Where does Zen Eyer perform internationally?",
           "a": "Zen Eyer performs at top Brazilian Zouk festivals around the world. Recent and upcoming events include the <strong>Dutch International Zouk Congress</strong> (Netherlands), <strong>Lisbon Zouk Marathon</strong> (Portugal), <strong>Slovenian Zouk Marathon</strong> (Slovenia), <strong>Neo Festival</strong> (Brazil), and <strong>Zouk in Rio</strong> (Brazil). He is also an official DJ for the historic <strong>Rio Zouk Congress</strong> in Rio de Janeiro."
+        },
+        "q5": {
+          "q": "How do you pronounce Zen Eyer correctly?",
+          "a": "Zen Eyer is pronounced with the official IPA transcription <strong>/zɛn ˈaɪər/</strong>. The word Zen sounds exactly like Zen Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. Note: <strong>Zen Ayer</strong> is a common misspelling, not an official name or alias."
         }
       },
       "rankings": {
@@ -1441,10 +1452,11 @@
     },
     "canonical_bio": {
       "title": "Bio for Press & Organizers",
-      "subtitle": "Copy and paste for your event's press materials.",
+      "subtitle": "Copy and paste for your event's press materials. (Social handle: <strong>@djzeneyer</strong>)",
       "copy_button": "Copy Bio",
       "copied": "Copied!",
-      "text": "Zen Eyer (Marcelo Eyer Fernandes) is a Brazilian Zouk DJ and music producer performing at international festivals. Born in Niterói, Rio de Janeiro, he won two world titles at Ilha do Zouk 2022 (Best DJ Performance and Best Remix) and is a member of Mensa International. Known for his signature 'cremosidade' style — fluid, unhurried sets that prioritize deep connection on the dance floor — Zen Eyer has performed at major Zouk festivals across Brazil, Europe, and the Americas, including the Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon, and Rio Zouk Congress."
+      "whatsapp_default_msg": "Hello Zen Eyer! I'd like to talk about booking.",
+      "text": "Zen Eyer (Marcelo Eyer Fernandes, pronounced 'Buyer') is a Brazilian Zouk DJ and music producer, two-time World Champion in DJing and Best Remix at the Ilha do Zouk Championship (2022). Based in Rio de Janeiro, Brazil. He is known for his cremoso style in Brazilian Zouk DJing. He is a member of Mensa International. Known for his signature 'cremosidade' style — fluid, unhurried sets that prioritize deep connection on the dance floor — Zen Eyer has performed at major Zouk festivals across Brazil, Europe, and the Americas, including the Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon, and Rio Zouk Congress."
     }
   },
   "events_add_google": "Add to Calendar",
@@ -1628,7 +1640,8 @@
     "hero": {
       "badge": "MY STORY",
       "title": "The <1>Journey</1>",
-      "subtitle": "From a passion for music to connecting with thousands of souls through Brazilian Zouk"
+      "subtitle": "From a passion for music to connecting with thousands of souls through Brazilian Zouk",
+      "pronunciation_hint": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B, or like 'Eye' followed by 'er')."
     },
     "stats": {
       "stories": "Connection",

@@ -1,6 +1,6 @@
 {
   "id": "/",
-  "name": "DJ Zen Eyer",
+  "name": "Zen Eyer",
   "short_name": "Zen Eyer",
   "description": "Brazilian Zouk DJ & Producer | Live Events, Shows & Classes worldwide",
   "start_url": "/",
@@ -96,9 +96,9 @@
       ]
     },
     {
-      "name": "Book DJ Zen Eyer",
+      "name": "Book Zen Eyer",
       "short_name": "Booking",
-      "description": "Book DJ Zen Eyer for your event",
+      "description": "Book Zen Eyer for your event",
       "url": "/work-with-me",
       "icons": [
         {

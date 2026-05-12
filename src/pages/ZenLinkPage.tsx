@@ -150,8 +150,8 @@ const ZenLinkPageComponent = () => {
   return (
     <>
       <HeadlessSEO
-        title="Zen Link | DJ Zen Eyer"
-        description="Página oficial de links do DJ Zen Eyer para Instagram bio."
+        title="Zen Link | Zen Eyer"
+        description="Página oficial de links de Zen Eyer para Instagram bio."
         url={`${artist.site.baseUrl}/zenlink`}
         robots="noindex, follow"
       />

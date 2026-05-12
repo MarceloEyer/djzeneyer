@@ -4,12 +4,12 @@
 import React, { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, Clock } from 'lucide-react';
-import { Link, generatePath } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useEventsQuery } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
-import { getLocalizedRoute } from '../config/routes';
 import patternSvg from '../assets/images/pattern.svg';
 import { getDateTimeFormatter } from '../utils/date';
+import type { ZenBitEventListItem } from '../types/events';
 
 // ============================================================================
 // 1. TYPES & INTERFACES
@@ -21,6 +21,23 @@ interface EventsListProps {
   variant?: 'compact' | 'full';
 }
 
+interface ProcessedEvent extends ZenBitEventListItem {
+  _processed?: {
+    eventDate: Date;
+    day: number;
+    detailHref: string;
+  };
+}
+
+interface RenderEvent extends ZenBitEventListItem {
+  day: number;
+  month: string;
+  time: string;
+  locationString: string;
+  detailHref: string;
+  sanitizedTitle: string;
+}
+
 // ============================================================================
 // 2. COMPONENT
 // ============================================================================
@@ -29,6 +46,9 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const { t, i18n } = useTranslation();
   const currentLocale = i18n.language.startsWith('pt') ? 'pt-BR' : 'en-US';
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
+
+  const monthFormatter = useMemo(() => getDateTimeFormatter(currentLocale, { month: 'short' }), [currentLocale]);
+  const timeFormatter = useMemo(() => getDateTimeFormatter(currentLocale, { hour: '2-digit', minute: '2-digit' }), [currentLocale]);
 
   // React Query: v2 defaults
   const { data: events = [], isLoading: loading, error } = useEventsQuery({
@@ -45,35 +65,26 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   const processedEvents = useMemo(() => {
     if (!events || events.length === 0) return [];
 
-    const timeFormatter = getDateTimeFormatter(currentLocale, { hour: '2-digit', minute: '2-digit' });
-    const monthFormatter = getDateTimeFormatter(currentLocale, { month: 'short' });
-    const eventsDetailRoute = getLocalizedRoute('events-detail', lang);
-
     const visibleItems = events.slice(0, limit);
-    const results = [];
+    const results: RenderEvent[] = [];
 
     for (const event of visibleItems) {
-      const startDate = event.starts_at;
-      const eventDate = new Date(startDate);
-      const loc = event.location;
-
-      const identifier = event.canonical_path
-        ? event.canonical_path.split('/').pop() || event.event_id
-        : event.event_id;
+      const p = (event as ProcessedEvent)._processed;
+      if (!p) continue;
 
       results.push({
         ...event,
-        day: eventDate.getDate(),
-        month: monthFormatter.format(eventDate),
-        time: timeFormatter.format(eventDate),
-        locationString: `${loc.city}, ${loc.country || ''}`,
-        detailHref: generatePath(eventsDetailRoute, { id: identifier }),
+        day: p.day,
+        month: monthFormatter.format(p.eventDate),
+        time: timeFormatter.format(p.eventDate),
+        locationString: `${event.location.city}, ${event.location.country || ''}`,
+        detailHref: p.detailHref,
         sanitizedTitle: sanitizeHtml(event.title)
       });
     }
 
     return results;
-  }, [events, limit, currentLocale, lang]);
+  }, [events, limit, monthFormatter, timeFormatter]);
 
   const skeletonElements = useMemo(() => {
     return Array.from({ length: limit }).map((_, i) => {

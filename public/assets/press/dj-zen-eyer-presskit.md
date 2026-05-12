@@ -1,4 +1,4 @@
-# DJ Zen Eyer Press Kit
+# Zen Eyer Press Kit
 
 Brazilian Zouk DJ and music producer for festivals, congresses and dance marathons that need a musical journey built for dancers.
 
@@ -54,4 +54,4 @@ For festival, congress and marathon bookings, send the event city, country, date
 
 ## Suggested Credit
 
-DJ Zen Eyer (Marcelo Eyer Fernandes), Brazilian Zouk DJ and music producer.
+Zen Eyer (Marcelo Eyer Fernandes), Brazilian Zouk DJ and music producer.

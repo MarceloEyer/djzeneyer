@@ -455,6 +455,8 @@ class Zen_SEO_REST_API
         $batch_ids = \wp_list_pluck($posts, 'ID');
         \_prime_post_caches($batch_ids, true, true);
 
+        $pll_exists = \function_exists('pll_get_post_language');
+
         foreach ($posts as $post) {
             $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
 
@@ -471,7 +473,7 @@ class Zen_SEO_REST_API
                 'slug' => $post->post_name,
                 'modified' => \get_post_modified_time('c', true, $post),
                 'translations' => $translations,
-                'lang' => \function_exists('pll_get_post_language') ? \pll_get_post_language($post->ID) : 'en'
+                'lang' => $pll_exists ? \pll_get_post_language($post->ID) : 'en'
             ];
             $data['total_urls']++;
         }

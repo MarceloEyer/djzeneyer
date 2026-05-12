@@ -1,4 +1,4 @@
-# Press Kit DJ Zen Eyer
+# Press Kit Zen Eyer
 
 DJ e produtor musical de Zouk Brasileiro para festivais, congressos e maratonas que precisam de uma jornada musical feita para quem dança.
 
@@ -54,4 +54,4 @@ Para bookings em festivais, congressos e maratonas, envie cidade, pais, datas, f
 
 ## Credito sugerido
 
-DJ Zen Eyer (Marcelo Eyer Fernandes), DJ e produtor musical de Zouk Brasileiro.
+Zen Eyer (Marcelo Eyer Fernandes), DJ e produtor musical de Zouk Brasileiro.

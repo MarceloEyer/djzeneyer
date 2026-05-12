@@ -65,7 +65,7 @@ const MediaPage: React.FC = () => {
               Press & Media
             </h1>
             <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
-              Explore media coverage, press mentions, and the official press kit of DJ Zen Eyer.
+              Explore media coverage, press mentions, and the official press kit of Zen Eyer.
             </p>
           </motion.div>
 
