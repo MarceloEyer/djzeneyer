@@ -148,6 +148,21 @@ add_filter('the_posts', function($posts, $query) {
         return $posts;
     }
 
+    // ⚡ Bolt: Bulk prime post metadata cache to prevent N+1 query when fetching thumbnail IDs
+    $post_ids = array();
+    foreach ($posts as $post) {
+        if ($post instanceof WP_Post) {
+            $post_ids[] = $post->ID;
+        }
+    }
+    if (!empty($post_ids)) {
+        if (function_exists('_prime_post_caches')) {
+            _prime_post_caches($post_ids, false, true);
+        } else {
+            update_meta_cache('post', $post_ids);
+        }
+    }
+
     // 3. Collect thumbnail IDs from the posts
     $img_ids = array();
     foreach ($posts as $post) {
