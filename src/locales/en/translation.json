@@ -77,7 +77,7 @@
     }
   },
   "common": {
-    "artist_name": "DJ Zen Eyer",
+    "artist_name": "Zen Eyer",
     "legal_name": "Marcelo Eyer Fernandes",
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
@@ -153,7 +153,7 @@
     "footer_subscribe": "Subscribe",
     "footer_subscribe_success": "Subscription successful!",
     "footer_subscribe_error": "Error during subscription.",
-    "footer_copyright": "Â© {{year}} DJ Zen Eyer. All rights reserved.",
+    "footer_copyright": "© {{year}} Zen Eyer. All rights reserved.",
     "friend": "Zen Friend",
     "all": "All",
     "back_to_list": "Back to list"
@@ -1065,7 +1065,7 @@
   "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
-  "footer_copyright": "© {{year}} DJ Zen Eyer. All rights reserved.",
+  "footer_copyright": "© {{year}} Zen Eyer. All rights reserved.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
@@ -1122,7 +1122,7 @@
         },
         "q5": {
           "q": "How do you pronounce Zen Eyer correctly?",
-          "a": "Zen Eyer is pronounced with the official IPA transcription <strong>/zɛn ˈaɪər/</strong>. The word Zen sounds exactly like Zen Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. (Note: Sometimes misspelled as <strong>Zen Ayer</strong>)."
+          "a": "Zen Eyer is pronounced with the official IPA transcription <strong>/zɛn ˈaɪər/</strong>. The word Zen sounds exactly like Zen Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. Note: <strong>Zen Ayer</strong> is a common misspelling, not an official name or alias."
         }
       },
       "rankings": {
