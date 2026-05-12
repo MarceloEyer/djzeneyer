@@ -29,6 +29,23 @@ interface MenuItem {
   target: string;
 }
 
+export interface MusicTrack {
+  id: number;
+  title: { rendered: string };
+  category_name: string;
+  tag_names: string[];
+  links: {
+    download: string;
+    soundcloud: string;
+    youtube: string;
+  };
+  featured_image_src?: string | null;
+  featured_image_src_full?: string | null;
+  slug: string;
+  content?: { rendered: string };
+  excerpt?: { rendered: string };
+}
+
 export interface ProfileUpdatePayload {
   display_name?: string;
   email?: string;
@@ -912,6 +929,56 @@ export const useSubscriptionMutation = () => {
       if (!res.ok) throw new Error(data.message || 'Subscription failed');
       return data;
     },
+  });
+};
+
+// ============================================================================
+// INTERACTION TRACKING
+// ============================================================================
+
+export const useTrackInteraction = (token?: string) => {
+  return useMutation({
+    mutationFn: async ({ action, objectId }: { action: string; objectId?: number }) => {
+      const apiUrl = buildApiUrl('zengame/v1/track');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ action, object_id: objectId }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Tracking failed');
+      }
+
+      return res.json();
+    },
+  });
+};
+
+export const useTrackBySlug = (slug?: string) => {
+  return useQuery({
+    queryKey: ['tracks', 'detail', slug],
+    queryFn: async (): Promise<MusicTrack | null> => {
+      if (!slug) return null;
+      const apiUrl = buildApiUrl('wp/v2/remixes', {
+        slug,
+        _fields: 'id,title,content,excerpt,links,featured_image_src_full,slug',
+      });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch track');
+      const data = await res.json();
+      return Array.isArray(data) && data.length > 0 ? data[0] : null;
+    },
+    enabled: !!slug,
+    staleTime: STALE_TIME.TRACKS,
   });
 };
 
