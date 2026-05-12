@@ -189,7 +189,7 @@ class Zen_SEO_Sitemap
 
             $xml .= '  <url>' . "\n";
             $xml .= '    <loc>' . \esc_url($primary_url) . '</loc>' . "\n";
-            $xml .= '    <lastmod>' . \get_post_modified_time('c', true, $post) . '</lastmod>' . "\n";
+            $xml .= '    <lastmod>' . \gmdate('c', \strtotime($post->post_modified_gmt . 'Z')) . '</lastmod>' . "\n"; // ⚡ Bolt: Prevent N+1 query by accessing post_modified_gmt directly
 
             // Priority based on post type
             $priority = $this->get_priority_for_post_type($post->post_type);
