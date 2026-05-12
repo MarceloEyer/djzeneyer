@@ -148,18 +148,28 @@ add_filter('the_posts', function($posts, $query) {
         return $posts;
     }
 
-    // 3. Collect thumbnail IDs from the posts
+    // 3. Collect thumbnail IDs and post IDs for term caching
     $img_ids = array();
+    $remix_ids = array();
+    $post_ids = array();
+
     foreach ($posts as $post) {
         if ($post instanceof WP_Post) {
             $thumb_id = get_post_thumbnail_id($post->ID);
             if ($thumb_id) {
                 $img_ids[] = (int) $thumb_id;
             }
+            if ($post->post_type === 'remixes') {
+                $remix_ids[] = $post->ID;
+            }
+            if ($post->post_type === 'post') {
+                $post_ids[] = $post->ID;
+            }
         }
     }
 
-    // 4. Prime caches in bulk (2 queries total)
+    // 4. Prime caches in bulk
+    // Prime image caches
     if (!empty($img_ids)) {
         $img_ids = array_unique($img_ids);
         // Prime metadata cache
@@ -168,6 +178,16 @@ add_filter('the_posts', function($posts, $query) {
         if (function_exists('_prime_post_caches')) {
             _prime_post_caches($img_ids, false, false);
         }
+    }
+
+    // ⚡ Bolt: Prime term caches for 'remixes' to prevent N+1 queries on 'music_tags' and 'music_type'
+    if (!empty($remix_ids) && function_exists('update_object_term_cache')) {
+        update_object_term_cache(array_unique($remix_ids), 'remixes');
+    }
+
+    // ⚡ Bolt: Prime term caches for 'post' to prevent N+1 queries
+    if (!empty($post_ids) && function_exists('update_object_term_cache')) {
+        update_object_term_cache(array_unique($post_ids), 'post');
     }
 
     return $posts;
