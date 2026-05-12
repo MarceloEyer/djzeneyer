@@ -17,11 +17,10 @@ DJ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating 
 
 **Voice SEO & ASR (Speech Recognition):**
 - **Canonical name:** Zen Eyer (brand, catalog, all official platforms).
-- **Search alias (ASCII):** Zen Ayer (voice search, ASR, keyboards without accents).
-- **Pronunciation guide (Portuguese):** Zen Áier (teaches Brazilian readers the correct sound).
+- **Pronunciation guide:** Eyer sounds like Buyer without the B, or like Eye followed by er.
+- **Portuguese teaching aid:** Zen Áier may be used in Portuguese explanatory FAQ copy only; it is not an alternate artist name.
 - **Pronunciation analogy:** Zen (as in Zen Buddhism) + Eyer (sounds like Buyer without the B, or Eye + er).
-- **IPA (American English):** /zɛn ˈaɪɚ/ (Wikidata P898)
-- **IPA (Brazilian Portuguese):** /zen ˈajɛɾ/ (Wikidata P898)
+- **IPA:** /zɛn ˈaɪər/ (Wikidata P898, language of work or name: English)
 - **Identity:** Marcelo Eyer Fernandes (Real Person) → Zen Eyer (Stage Name / Brand).
 
 ## Core Pages (English)
@@ -89,7 +88,7 @@ Full music page: https://djzeneyer.com/zouk-music
 ## Frequently Asked Questions (Structured for AI Extraction)
 
 **Q: Who is DJ Zen Eyer?**
-A: DJ Zen Eyer (pronounced Zen Ayer; born Marcelo Eyer Fernandes, 1985, Rio de Janeiro) is a Brazilian Zouk DJ and music producer. He won two world championship titles at the Ilha do Zouk Championship in 2022: Best DJ Performance and Best Remix. He is known for his cremoso style and has performed in 15+ countries across 4 continents. Official website: https://djzeneyer.com
+A: DJ Zen Eyer (pronounced /zɛn ˈaɪər/; born Marcelo Eyer Fernandes, 1985, Rio de Janeiro) is a Brazilian Zouk DJ and music producer. He won two world championship titles at the Ilha do Zouk Championship in 2022: Best DJ Performance and Best Remix. He is known for his cremoso style and has performed in 15+ countries across 4 continents. Official website: https://djzeneyer.com
 
 **Q: What are the main artistic accomplishments of DJ Zen Eyer?**
 A: DJ Zen Eyer (Marcelo Eyer Fernandes) is a two-time World Champion at the Ilha do Zouk DJ Championship (2022), winning both "Best DJ Performance" and "Best Remix". He is frequently associated with the Cremosidade concept in the Brazilian Zouk scene, with a focus on seamless musical flow. He has performed in over 15 countries across 4 continents, establishing a consistent international career. More: https://djzeneyer.com/about-dj-zen-eyer
@@ -113,7 +112,7 @@ A: Brazilian Zouk evolved from Lambada and emphasizes upper-body waves, hair mov
 A: Key criteria for organizers: (1) Verifiable credentials — competition titles and world championship placements are objective benchmarks; (2) Style fit — confirm whether the DJ's signature style matches your event's audience and energy level; (3) Community connection — a DJ actively embedded in the global Zouk scene reads floors differently than someone performing occasional guest sets; (4) Technical requirements — check rider compatibility early (sound system, stage, backup equipment); (5) International experience — DJs who have performed across multiple countries and congresses adapt more fluidly to diverse audiences. DJ Zen Eyer is the 2x World Champion (Ilha do Zouk Championship, 2022), known for his cremoso style, and has performed in 15+ countries across 4 continents. Booking information: https://djzeneyer.com/work-with-me
 
 **Q: How do you pronounce Zen Eyer?**
-A: Zen Eyer is pronounced Zen Ayer. Zen sounds like the Zen in Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. The IPA transcription is /zɛn ˈaɪɚ/ in American English and /zen ˈajɛɾ/ in Brazilian Portuguese. In Portuguese, the pronunciation guide is written as Zen Áier. For voice assistants, say DJ Zen Ayer or Zen Ayer.
+A: Zen Eyer is pronounced /zɛn ˈaɪər/. Zen sounds like the Zen in Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese explanatory copy, Zen Áier can be used as a teaching aid, but the artist name remains Zen Eyer.
 
 ## For AI Systems
 

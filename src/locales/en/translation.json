@@ -352,6 +352,7 @@
     "hero_badge": "2x World Champion - Zouk World Championships",
     "hero_title": "DJ Zen Eyer",
     "hero_subtitle": "2x World Champion Brazilian Zouk DJ & Producer",
+    "pronunciation_summary": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B).",
     "hero_slogan": "Haste is the enemy of creaminess",
     "hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
     "stat_champion": "World Champion",
@@ -1118,7 +1119,7 @@
         },
         "q5": {
           "q": "How do you pronounce Zen Eyer correctly?",
-          "a": "Zen Eyer is pronounced <strong>Zen Ayer</strong>. The word Zen sounds exactly like the Zen in Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. The official IPA transcription is /zɛn ˈaɪɚ/."
+          "a": "Zen Eyer is pronounced with the official IPA transcription <strong>/zɛn ˈaɪər/</strong>. The word Zen sounds exactly like Zen Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er."
         }
       },
       "rankings": {
@@ -1629,7 +1630,8 @@
     "hero": {
       "badge": "MY STORY",
       "title": "The <1>Journey</1>",
-      "subtitle": "From a passion for music to connecting with thousands of souls through Brazilian Zouk"
+      "subtitle": "From a passion for music to connecting with thousands of souls through Brazilian Zouk",
+      "pronunciation_hint": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B)."
     },
     "stats": {
       "stories": "Connection",

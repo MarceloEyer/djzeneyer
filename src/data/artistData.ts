@@ -19,11 +19,7 @@ export const ARTIST = {
     realName: 'Marcelo Eyer Fernandes',
     birthDate: '1985-08-20',
     taxId: '44.063.765/0001-46',
-    pronunciation: 'Zen Ayer', // Simplified for AI reading
-    phoneticIPA: {
-      en: '/zɛn ˈaɪɚ/', // American English (Wikidata P898)
-      pt: '/zen ˈajɛɾ/',  // Brazilian Portuguese (Wikidata P898)
-    },
+    pronunciationIPA: '/zɛn ˈaɪər/',
     city: 'Niterói',
     state: 'RJ',
     country: 'Brasil',
@@ -438,17 +434,9 @@ export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
   '@id': `${ARTIST.site.baseUrl}/#artist`,
   name: 'Zen Eyer',
-  alternateName: [
-    'Zen Eyer',
-    'Zen Ayer',
-    'Zen Áier',
-    'DJ Zen Eyer',
-    'DJ Zen Ayer',
-    'djzeneyer',
-    'zeneyer',
-    'Marcelo Eyer Fernandes',
-  ],
-  description: 'Zen Eyer, pronounced Zen Ayer, is a Brazilian Zouk DJ and music producer. Born Marcelo Eyer Fernandes in Rio de Janeiro, Brazil.',
+  alternateName: ['DJ Zen Eyer', 'djzeneyer'],
+  birthName: ARTIST.identity.fullName,
+  description: 'Zen Eyer, pronounced /zɛn ˈaɪər/, is a Brazilian Zouk DJ and music producer. Born Marcelo Eyer Fernandes in Rio de Janeiro, Brazil.',
   genre: [
     'Brazilian Zouk',
     'Zouk',
@@ -992,9 +980,9 @@ export const MUSICGROUP_SCHEMA = {
   '@type': 'MusicGroup',
   '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
   name: 'Zen Eyer',
-  alternateName: [ARTIST.identity.stageName, 'Zen Ayer', 'Zen Áier', 'DJ Zen Ayer'],
+  alternateName: ['DJ Zen Eyer', 'djzeneyer'],
   description:
-    'Zen Eyer, pronounced Zen Ayer, is the musical project and stage name used by DJ Zen Eyer for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
+    'Zen Eyer, pronounced /zɛn ˈaɪər/, is the musical project used for Brazilian Zouk DJ performances, remixes, edits, and official releases.',
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   genre: [
