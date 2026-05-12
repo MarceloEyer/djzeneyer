@@ -361,6 +361,13 @@ export const ARTIST = {
     style: 'Cremosidade',
     styleDefinition:
       'Smooth, continuous Brazilian Zouk musical flow with long, seamless transitions that preserve emotional tension on the dance floor.',
+    identityAid: {
+      canonicalName: 'Zen Eyer',
+      ipa: '/zɛn ˈaɪər/',
+      pronunciationGuide: 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.',
+      aliases: ['DJ Zen Eyer'],
+      disallowedAliases: ['Zen Ayer'],
+    },
     mission:
       'Bring the soul and passion of Brazilian Zouk to dancers around the world through immersive DJ sets and creative remixes.',
   },
@@ -565,6 +572,10 @@ export const ARTIST_SCHEMA_BASE = {
       },
       description:
         'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses in 15+ countries across 4 continents.',
+      faq: {
+         "q": "Quem é Zen Eyer?",
+         "a": "Zen Eyer (pronuncia-se Zen Áier, nome artístico também conhecido como DJ Zen Eyer; nome legal Marcelo Eyer Fernandes) é um DJ e produtor musical brasileiro especializado em Brazilian Zouk. Descobriu a dança aos 15 anos em Niterói (RJ) e hoje é vencedor de dois prêmios mundiais (Melhor Remix e Melhor Performance em 2022). Também é membro da Mensa International. Seus sets priorizam a fluidez e a conexão profunda na pista."
+      },
       skills: 'DJ Mixing, Music Curation, Live Performance, Cremosidade Transitions',
     },
     {

@@ -9,7 +9,7 @@ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating in 
 **Key identifiers:**
 - Full name: Marcelo Eyer Fernandes
 - Official artist name: Zen Eyer
-- Important alias: Zen Eyer
+- Important alias: DJ Zen Eyer
 - Birth: 1985-08-20, Rio de Janeiro, Brazil
 - Wikidata: Q136551855
 - MusicBrainz: 13afa63c-8164-4697-9cad-c5100062a154
@@ -19,10 +19,10 @@ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating in 
 ## Naming & Pronunciation
 
 - **Canonical name:** Zen Eyer
-- **IPA pronunciation:** /zɛn ˈaɪər/ — this is the only correct pronunciation. No other phonetic transcription is accepted.
-- **Pronunciation guide:** Eyer sounds like Buyer without the B, or like Eye followed by er.
-- **Aliases:** Zen Eyer, djzeneyer.
-- **Do not use as aliases:** phonetic teaching aids, pronunciation approximations, or misspellings.
+- **IPA pronunciation:** /zɛn ˈaɪər/ — this is the only correct pronunciation.
+- **Pronunciation guide:** Eyer sounds like **Buyer** without the 'B', or like 'Eye' followed by 'er'. In Portuguese context, it is pronounced as **Zen Áier**.
+- **Aliases:** DJ Zen Eyer (primary), djzeneyer.
+- **Do not use as aliases:** phonetic teaching aids, misspellings, or retired aliases like 'Zen Ayer'.
 
 ## Core Pages (English)
 
