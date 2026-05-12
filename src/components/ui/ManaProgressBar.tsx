@@ -12,6 +12,13 @@ const toPercent = (value: number): number => {
   return value > 0 && value <= 1 ? value * 100 : value;
 };
 
+// ─── Framer Motion Variants ─────────────────────────────────────────────────────
+// ⚡ Bolt: Extracted static Framer Motion variants to module scope to prevent object reallocation on every render.
+const SHINE_VARIANTS = {
+  hidden: { left: '-100%' },
+  visible: { left: '200%', transition: { repeat: Infinity, duration: 2.5, ease: 'linear', repeatDelay: 1 } },
+};
+
 const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
   progress,
   label,
@@ -60,9 +67,9 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
 
           {clampedProgress > 0 && (
             <motion.div
-              initial={{ left: '-100%' }}
-              animate={{ left: '200%' }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: 'linear', repeatDelay: 1 }}
+              variants={SHINE_VARIANTS}
+              initial="hidden"
+              animate="visible"
               className="absolute top-0 bottom-0 z-20 w-32 skew-x-[-25deg] bg-gradient-to-r from-transparent via-white/30 to-transparent blur-md"
             />
           )}

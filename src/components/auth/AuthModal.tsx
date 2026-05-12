@@ -31,6 +31,24 @@ interface GoogleCredentialResponse {
   select_by?: string;
 }
 
+// ─── Framer Motion Variants ─────────────────────────────────────────────────────
+// ⚡ Bolt: Extracted static Framer Motion variants to module scope to prevent object reallocation on every render.
+const OVERLAY_VARIANTS = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1 },
+};
+
+const MODAL_VARIANTS = {
+  hidden: { opacity: 0, scale: 0.95, y: 20 },
+  visible: { opacity: 1, scale: 1, y: 0, transition: { type: 'spring', duration: 0.5, bounce: 0.3 } },
+  exit: { opacity: 0, scale: 0.95, y: 20, transition: { type: 'spring', duration: 0.5, bounce: 0.3 } },
+};
+
+const ERROR_VARIANTS = {
+  hidden: { opacity: 0, height: 0 },
+  visible: { opacity: 1, height: 'auto' },
+};
+
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -170,17 +188,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         onClick={handleOverlayClick}
       >
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          variants={OVERLAY_VARIANTS}
+          initial="hidden"
+          animate="visible"
+          exit="hidden"
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
+          variants={MODAL_VARIANTS}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           className="relative w-full max-w-md"
           onClick={(e) => e.stopPropagation()}
         >
@@ -207,8 +226,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
             <div className="px-8 pb-8">
               {error && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  variants={ERROR_VARIANTS}
+                  initial="hidden"
+                  animate="visible"
                   className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm flex items-start gap-3"
                 >
                   <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
