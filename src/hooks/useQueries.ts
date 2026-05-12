@@ -78,6 +78,15 @@ export interface UserProfile {
   gender?: '' | 'male' | 'female' | 'non-binary';
 }
 
+export interface AuthSessionResponse {
+  authenticated: boolean;
+  user: UserProfile | null;
+  roles?: string[];
+  exp?: number;
+  message?: string;
+  code?: string;
+}
+
 const UserProfileSchema = z.object({
   id: z.number(),
   email: z.string().email(),
@@ -91,6 +100,15 @@ const UserProfileSchema = z.object({
   instagram_url: z.string().optional(),
   dance_role: z.array(z.string()).optional(),
   gender: z.enum(['', 'male', 'female', 'non-binary']).optional(),
+}).catchall(z.unknown());
+
+const AuthSessionResponseSchema = z.object({
+  authenticated: z.boolean(),
+  user: UserProfileSchema.nullable().catch(null),
+  roles: z.array(z.string()).optional(),
+  exp: z.number().optional(),
+  message: z.string().optional(),
+  code: z.string().optional(),
 }).catchall(z.unknown());
 
 export interface WCOrder {
@@ -286,6 +304,20 @@ export const fetchArtistProfileFn = async (): Promise<ArtistProfile> => {
   if (!res.ok) throw new Error('Failed to fetch artist profile');
   const json = await res.json();
   return json.data;
+};
+
+export const fetchAuthSessionFn = async (token: string): Promise<AuthSessionResponse> => {
+  const apiUrl = buildApiUrl('zeneyer-auth/v1/session');
+  const res = await fetch(apiUrl, {
+    headers: getAuthHeaders(token),
+  });
+  const text = await res.text();
+
+  if (!res.ok || text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+    throw new Error('Invalid session response');
+  }
+
+  return AuthSessionResponseSchema.parse(JSON.parse(text));
 };
 
 export const fetchEventsFn = async ({

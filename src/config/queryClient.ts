@@ -154,6 +154,7 @@ export const QUERY_KEYS = {
 
   /** Usuário */
   user: {
+    session: (hasToken: boolean) => ['user', 'session', hasToken] as const,
     profile: (userId?: number) => ['user', 'profile', userId] as const,
     orders: (userId?: number, limit?: number) => ['user', 'orders', userId, limit] as const,
     gamipress: (userId: number) => ['user', 'gamipress', userId] as const,
