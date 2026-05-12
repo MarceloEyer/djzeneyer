@@ -1,4 +1,4 @@
-import React, { memo, useState, useMemo } from 'react';
+import React, { memo, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
@@ -179,9 +179,11 @@ const EventListContent = ({ lang }: { lang: string }) => {
   const [showToast, setShowToast] = useState(false);
   const eventsDetailRoute = useMemo(() => getLocalizedRoute('events-detail', lang as Language), [lang]);
 
-  if (error) {
-    console.error('Error fetching events:', error);
-  }
+  useEffect(() => {
+    if (error) {
+      console.error('Error fetching events:', error);
+    }
+  }, [error]);
 
   // Extrai regiões únicas (Estados)
   const regions = useMemo(() => {
@@ -287,7 +289,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
 
-                  const detailHref = generatePath(eventsDetailRoute, { id: identifier });
+                  const detailHref = e._processed?.detailHref || generatePath(eventsDetailRoute, { id: identifier });
                   const loc = e.location;
 
                   return (
