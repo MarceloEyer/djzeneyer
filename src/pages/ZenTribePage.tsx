@@ -41,7 +41,7 @@ const getOrganizationSchema = (t: (key: string) => string) => ({
     "name": "Worldwide"
   },
   "slogan": t('zenTribe.schema.organization_slogan'),
-  "knowsAbout": ["Brazilian Zouk Community", "DJ Zen Eyer Music", "Zouk Dance Culture"],
+  "knowsAbout": ["Brazilian Zouk Community", "Zen Eyer Music", "Zouk Dance Culture"],
   "memberOf": {
     "@type": "Organization",
     "name": "International Brazilian Zouk Community"
@@ -276,7 +276,7 @@ const ZenTribePage: React.FC = () => {
         image="https://djzeneyer.com/images/zen-tribe-og.jpg"
         ogType="website"
         schema={schema}
-        keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, DJ Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
+        keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
       />
 
       {/* ====================================================================== */}

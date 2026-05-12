@@ -15,7 +15,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     const getDetails = () => {
         try {
-            const title = event.title ? event.title.replace(/<\/?[^>]+(>|$)/g, "") : 'DJ Zen Eyer Event';
+            const title = event.title ? event.title.replace(/<\/?[^>]+(>|$)/g, "") : 'Zen Eyer Event';
 
             // Validação de data v2 (starts_at)
             const rawDate = event.starts_at || '';

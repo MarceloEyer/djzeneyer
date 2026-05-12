@@ -10,10 +10,11 @@
 
 import { useQuery, useMutation } from '@tanstack/react-query';
 import type { UseQueryOptions } from '@tanstack/react-query';
+import { generatePath } from 'react-router-dom';
 import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME, invalidateQueries } from '../config/queryClient';
-import { type Language } from '../config/routes';
+import { getLocalizedRoute, type Language } from '../config/routes';
 import type { ZenGameUserData, ZenGameLeaderboard } from '../types/gamification';
 import { ZenGameUserDataSchema, ZenGameLeaderboardSchema, EventsApiResponseSchema, ZenBitEventListItemSchema, EventDetailApiResponseSchema } from '../schemas';
 
@@ -27,6 +28,23 @@ interface MenuItem {
   title: string;
   url: string;
   target: string;
+}
+
+export interface MusicTrack {
+  id: number;
+  title: { rendered: string };
+  category_name: string;
+  tag_names: string[];
+  links: {
+    download: string;
+    soundcloud: string;
+    youtube: string;
+  };
+  featured_image_src?: string | null;
+  featured_image_src_full?: string | null;
+  slug: string;
+  content?: { rendered: string };
+  excerpt?: { rendered: string };
 }
 
 export interface ProfileUpdatePayload {
@@ -304,16 +322,32 @@ export const fetchEventsFn = async ({
     }
     const rawData = await res.json();
 
+    let events: ZenBitEventListItem[] = [];
     if (Array.isArray(rawData)) {
-      return z.array(ZenBitEventListItemSchema).parse(rawData);
+      events = z.array(ZenBitEventListItemSchema).parse(rawData);
+    } else if (rawData && typeof rawData === 'object' && 'events' in rawData) {
+      const parsedResponse = EventsApiResponseSchema.parse(rawData);
+      events = parsedResponse.events;
     }
 
-    if (rawData && typeof rawData === 'object' && 'events' in rawData) {
-       const parsedResponse = EventsApiResponseSchema.parse(rawData);
-       return parsedResponse.events;
-    }
+    // Optimization: Pre-process dates and IDs at fetch time to avoid O(N) on render
+    const eventsDetailRoute = getLocalizedRoute('events-detail', (lang || 'en') as Language);
+    
+    return events.map(event => {
+      const eventDate = new Date(event.starts_at);
+      const identifier = event.canonical_path
+        ? event.canonical_path.split('/').pop() || event.event_id
+        : event.event_id;
 
-    return [];
+      return {
+        ...event,
+        _processed: {
+          eventDate,
+          day: eventDate.getDate(),
+          detailHref: generatePath(eventsDetailRoute, { id: identifier })
+        }
+      };
+    });
   } catch (err) {
     console.error('Fetch Events failed:', err);
     return [];
@@ -896,6 +930,56 @@ export const useSubscriptionMutation = () => {
       if (!res.ok) throw new Error(data.message || 'Subscription failed');
       return data;
     },
+  });
+};
+
+// ============================================================================
+// INTERACTION TRACKING
+// ============================================================================
+
+export const useTrackInteraction = (token?: string) => {
+  return useMutation({
+    mutationFn: async ({ action, objectId }: { action: string; objectId?: number }) => {
+      const apiUrl = buildApiUrl('zengame/v1/track');
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ action, object_id: objectId }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Tracking failed');
+      }
+
+      return res.json();
+    },
+  });
+};
+
+export const useTrackBySlug = (slug?: string) => {
+  return useQuery({
+    queryKey: ['tracks', 'detail', slug],
+    queryFn: async (): Promise<MusicTrack | null> => {
+      if (!slug) return null;
+      const apiUrl = buildApiUrl('wp/v2/remixes', {
+        slug,
+        _fields: 'id,title,content,excerpt,links,featured_image_src_full,slug',
+      });
+      const res = await fetch(apiUrl);
+      if (!res.ok) throw new Error('Failed to fetch track');
+      const data = await res.json();
+      return Array.isArray(data) && data.length > 0 ? data[0] : null;
+    },
+    enabled: !!slug,
+    staleTime: STALE_TIME.TRACKS,
   });
 };
 

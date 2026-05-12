@@ -1,5 +1,5 @@
 // src/types/index.ts
-// Central type definitions for the DJ Zen Eyer application
+// Central type definitions for the Zen Eyer application
 
 export interface Festival {
   name: string;

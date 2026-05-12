@@ -1,7 +1,7 @@
 export const siteConfig = {
   siteUrl: 'https://djzeneyer.com',
-  defaultTitle: 'DJ Zen Eyer | Brazilian Zouk Music Producer & Live Events',
-  defaultDescription: 'Experience exclusive Brazilian Zouk remixes by DJ Zen Eyer. Join the Zen Tribe for live events, private mixes, and connect with fellow Zouk enthusiasts worldwide.',
+  defaultTitle: 'Zen Eyer | Brazilian Zouk Music Producer & Live Events',
+  defaultDescription: 'Experience exclusive Brazilian Zouk remixes by Zen Eyer. Join the Zen Tribe for live events, private mixes, and connect with fellow Zouk enthusiasts worldwide.',
   ogImage: 'https://djzeneyer.com/images/zen-eyer-og-image.png',
   twitterHandle: '@djzeneyer', // Substitua pelo seu @ do Twitter/X
   twitterImage: 'https://djzeneyer.com/images/twitter-image.jpg', // Crie uma imagem de 1200x600 pixels
