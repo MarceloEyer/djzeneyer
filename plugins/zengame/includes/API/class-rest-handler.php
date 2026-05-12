@@ -579,6 +579,7 @@ final class REST_Handler
 
         if (!empty($batch)) {
             $batch_ids = \array_values(\array_unique(\array_map(static fn($p) => $p->ID, $batch)));
+            \_prime_post_caches($batch_ids, false, true);
             \update_meta_cache('post', $batch_ids);
         }
 

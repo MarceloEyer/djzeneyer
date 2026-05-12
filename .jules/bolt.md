@@ -121,3 +121,11 @@
 ## 2024-05-18 - Replacing `String.prototype.split()` with zero-allocation alternatives
 **Learning:** `String.prototype.split()` creates an intermediate array, which adds overhead and garbage collection pressure, particularly in hot paths like routing maps or render loops.
 **Action:** When extracting substrings or indices in performance-critical code paths, utilize zero-allocation native string methods like `indexOf()` combined with `slice()` instead of chained `.split()` calls. Focus primarily on hot paths and leave isolated, infrequent calls alone.
+
+## 2024-04-30 - Avoid architectural micro-optimizations
+**Learning:** In a performance agent persona, trying to convert useQuery to useSuspenseQuery without verifying React Suspense boundaries will be rejected as an unsafe architectural change rather than a performance win. Also, avoiding inline empty arrays conditionally with useMemo (e.g. `useMemo(() => data || [], [data])`) is unnecessary when you can use a module-scoped constant.
+**Action:** When asked for a small, safe, and measurable performance win, stick to standard React memoizations (like wrapping Context Values in useMemo) or fixing N+1 database queries, ensuring the optimizations are local and don't change app architecture.
+
+## 2024-04-30 - N+1 in GamiPress Logs
+**Learning:** Found an N+1 query issue in GamiPress REST handler where it iterated over a batch of log objects and called `get_post_meta` without first preloading the post objects themselves.
+**Action:** Always call `\_prime_post_caches($batch_ids, false, true)` before iterating over WordPress post objects to fetch meta or post titles to preload caches efficiently.
