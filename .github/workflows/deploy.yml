@@ -390,8 +390,11 @@ jobs:
             # the previous build can 404 until the user refreshes.
             if [ -d "${LIVE_DIST_PATH}/assets" ]; then
               mkdir -p "${NEXT_DIST_PATH}/assets"
-              rsync -a --ignore-existing "${LIVE_DIST_PATH}/assets/" "${NEXT_DIST_PATH}/assets/"
-              echo "previous hashed assets preserved for stale clients"
+              if rsync -a --ignore-existing "${LIVE_DIST_PATH}/assets/" "${NEXT_DIST_PATH}/assets/"; then
+                echo "previous hashed assets preserved for stale clients"
+              else
+                echo "WARNING: failed to preserve previous hashed assets; stale open tabs may need refresh" >&2
+              fi
             fi
 
             rm -rf "${PREV_DIST_PATH}"
