@@ -201,7 +201,7 @@ const MusicPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={`${t('music_page_title')} | DJ Zen Eyer`}
+        title={`${t('music_page_title')} | Zen Eyer`}
         description={t('music_page_meta_desc')}
         url={`${ARTIST.site.baseUrl}${getLocalizedRoute('music', currentLang)}`}
         schema={musicListingSchema}

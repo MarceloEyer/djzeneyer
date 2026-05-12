@@ -29,7 +29,7 @@ export function getLogTypeLabel(type: string): string {
 
 /**
  * Retorna cor para progress bar baseada no percentual
- * Mapeado para classes de cores do tema DJ Zen Eyer
+ * Mapeado para classes de cores do tema Zen Eyer
  */
 export function getProgressColor(percent: number): string {
     if (percent < 25) return 'bg-red-500';
