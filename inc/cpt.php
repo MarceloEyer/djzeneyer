@@ -149,6 +149,22 @@ add_filter('the_posts', function($posts, $query) {
     }
 
     // 3. Collect thumbnail IDs from the posts
+    // ⚡ Bolt: Prevent N+1 queries for post meta
+    $post_ids = array();
+    foreach ($posts as $post) {
+        if ($post instanceof WP_Post) {
+            $post_ids[] = $post->ID;
+        }
+    }
+
+    if (!empty($post_ids)) {
+        if (function_exists('_prime_post_caches')) {
+            _prime_post_caches($post_ids, false, true);
+        } else {
+            update_meta_cache('post', $post_ids);
+        }
+    }
+
     $img_ids = array();
     foreach ($posts as $post) {
         if ($post instanceof WP_Post) {
