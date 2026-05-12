@@ -22,6 +22,8 @@
 
 ## Regras repetidas com maior valor pratico
 
+- Pronuncia canonica: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta do nome artistico.
+
 - Strings visiveis usam i18n.
 - Fetch em componente nao e padrao.
 - SEO por rota usa `HeadlessSEO`.

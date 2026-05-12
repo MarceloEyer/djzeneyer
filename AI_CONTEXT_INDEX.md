@@ -145,6 +145,7 @@ Se houver divergencia: siga a ordem acima e atualize o arquivo inferior.
 - **Fonte de Verdade**: `src/data/artistData.ts` é a única fonte canônica para a identidade pública renderizada (nome, data de nascimento, bio, links).
 - **Consistência**: Toda documentação (`CONTEXT.md`, etc.), SEO (`HeadlessSEO`, JSON-LD) e Press Kit devem derivar obrigatoriamente dessa base.
 - **Sincronização**: Qualquer alteração em `artistData.ts` exige a atualização imediata das referências em `AI_CONTEXT_INDEX.md`.
+- **Pronúncia canônica**: A única pronúncia correta do nome artístico é **`/zɛn ˈaɪər/`** (IPA). Nenhuma outra transcrição fonética é aceita. Sempre que pronúncia for mencionada — em código, documentação, FAQ, llms.txt, schema, press kit ou qualquer outro contexto — usar exclusivamente `/zɛn ˈaɪər/`.
 
 ## 🏗️ FRONTEIRAS ARQUITETURAIS
 Para evitar conflitos de responsabilidade (drift), siga esta divisão:
