@@ -65,6 +65,7 @@ export const recoverFromChunkLoadError = (
     getCurrentEntryMarker(),
     window.location.pathname,
     window.location.search,
+    window.location.hash,
     source,
   ].join('|');
 
@@ -72,6 +73,11 @@ export const recoverFromChunkLoadError = (
     return false;
   }
 
-  window.location.reload();
-  return true;
+  try {
+    window.location.reload();
+    return true;
+  } catch (reloadError) {
+    console.error('Chunk recovery reload failed', reloadError);
+    return false;
+  }
 };
