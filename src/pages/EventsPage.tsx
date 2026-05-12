@@ -263,6 +263,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
           const monthShort = MONTH_NAMES[Number(m) - 1];
           const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
+          // ⚡ Bolt: Precompute events-detail route template outside inner loop to avoid O(N) recalculations
+          const eventsDetailRouteBase = getLocalizedRoute('events-detail', lang as Language);
           return (
             <section key={key}>
               <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
@@ -277,7 +279,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     ? e.canonical_path.split('/').pop() || e.event_id
                     : e.event_id;
 
-                  const detailHref = generatePath(getLocalizedRoute('events-detail', lang as Language), { id: identifier });
+                  const detailHref = generatePath(eventsDetailRouteBase, { id: identifier });
                   const loc = e.location;
 
                   return (
