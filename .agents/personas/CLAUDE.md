@@ -20,9 +20,9 @@ Referencias de versao devem ser conferidas em `package.json` antes de assumir al
 
 | Camada | Tecnologia atual |
 |---|---|
-| Frontend | React 19.2.5, React DOM 19.2.5, TypeScript 6.0.3, Vite 8.0.9, Tailwind 4.2.1, React Query 5.99.2, React Router 7.14.1, i18next 26.0.6, react-i18next 17.0.4, Framer Motion 12.38.0 |
-| Build e qualidade | ESLint 10.2.1, Prettier 3.8.2, Puppeteer 24.42.0, OXC como minificador padrao do Vite 8 |
-| Dependencias basicas | dompurify 3.4.1, zod 4.3.6, lucide-react 1.8.0 |
+| Frontend | React 19.2.4, React DOM 19.2.4, TypeScript 6.0.2, Vite 8.0.3, Tailwind 4.2.1, React Query 5.95.2, React Router 7.13.2, i18next 25.10.10, react-i18next 16.6.6, Framer Motion 12.38.0 |
+| Build e qualidade | ESLint 10.1.0, Prettier 3.8.1, Puppeteer 24.40.0, OXC como minificador padrao do Vite 8 |
+| Dependencias basicas | dompurify 3.3.3, zod 4.3.6, lucide-react 1.7.0 |
 | Backend | WordPress 6.9+ / PHP 8.3+ / WooCommerce 10.5+ com HPOS ativo / GamiPress |
 | Infra | Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions |
 | Node | 20+ |
@@ -30,9 +30,6 @@ Referencias de versao devem ser conferidas em `package.json` antes de assumir al
 Overrides atualmente presentes em `package.json`:
 - `minimatch`: `^10.2.3`
 - `yauzl`: `3.2.1`
-- `flatted`: `>=3.4.2`
-- `brace-expansion`: `>=5.0.5`
-- `basic-ftp`: `>=5.2.2`
 
 ## Relacao com os outros arquivos de contexto
 
@@ -137,6 +134,7 @@ Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser
 Scripts disponiveis no `package.json`:
 
 - `npm run lint`
+- `npm run type-check`
 - `npm run build`
 - `npm run build:full`
 - `npm run i18n:check`

@@ -24,8 +24,8 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 
 | Camada | Estado atual |
 |---|---|
-| Frontend | React 19.2.5, TypeScript 6.0.3, Vite 8.0.9, Tailwind 4.2.1, React Query 5.99.2, React Router 7.14.1, i18next 26.0.6 |
-| Build | ESLint 10.2.1, Prettier 3.8.2, Puppeteer 24.42.0, OXC como minificador padrao |
+| Frontend | React 19.2.4, TypeScript 6.0.2, Vite 8.0.3, Tailwind 4.2.1, React Query 5.95.2, React Router 7.13.2, i18next 25.10.10 |
+| Build | ESLint 10.1.0, Prettier 3.8.1, Puppeteer 24.40.0, OXC como minificador padrao |
 | Backend | WordPress 6.9+, PHP 8.3+, WooCommerce 10.5+ com HPOS ativo, GamiPress |
 | Infra | Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions |
 | Node | 20+ |
