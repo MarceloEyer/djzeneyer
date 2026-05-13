@@ -7,6 +7,7 @@ import { FacebookIcon, InstagramIcon, YouTubeIcon } from '../icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
 import { useSubscriptionMutation } from '../../hooks/useQueries';
+import { safeUrl } from '../../utils/sanitize';
 
 
 const Footer: React.FC = () => {
@@ -70,7 +71,7 @@ const Footer: React.FC = () => {
               <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="SoundCloud">
                 <Music2 size={22} />
               </a>
-              <a href={ARTIST.social.YouTube.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="YouTube">
+              <a href={safeUrl(ARTIST.social.YouTube.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.YouTube')}>
                 <YouTubeIcon size={22} />
               </a>
               <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Facebook">

@@ -125,7 +125,7 @@ const ZenLinkPageComponent = () => {
   const MUSIC_PLATFORMS = [
     { name: 'Spotify', icon: <SpotifyIcon />, url: artist.social.spotify?.url, color: '#1DB954' },
     { name: 'Apple Music', icon: <AppleMusicIcon />, url: artist.social.appleMusic?.url, color: '#FA243C' },
-    { name: 'YouTube Music', icon: <YouTubeMusicIcon />, url: artist.social.YouTubeMusic?.url, color: '#FF0000' },
+    { name: t('social.youtube_music'), icon: <YouTubeMusicIcon />, url: artist.social.YouTubeMusic?.url, color: '#FF0000' },
   ].filter(p => !!p.url);
 
   const microFacts = [
@@ -139,7 +139,7 @@ const ZenLinkPageComponent = () => {
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
     { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: quizUrl, icon: <Wand2 className="h-5 w-5" />, highlight: true },
     { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
-    { title: 'YouTube', subtitle: t('zenlink.YouTube_subtitle'), url: artist.social.YouTube?.url, icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
+    { title: t('social.YouTube'), subtitle: t('zenlink.YouTube_subtitle'), url: artist.social.YouTube?.url, icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
     { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), icon: <MessageCircle className="h-5 w-5" /> },
     { title: 'E-mail', subtitle: ARTIST.contact.email, url: `mailto:${ARTIST.contact.email}`, icon: <Mail className="h-5 w-5" /> },
     // Payment links from Dashboard

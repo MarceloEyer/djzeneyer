@@ -127,7 +127,7 @@ const GamificationWidget: React.FC = () => {
               >
                 {achievement?.image ? (
                   <img
-                    src={safeUrl(achievement.image, '')}
+                    src={safeUrl(achievement.image, '/images/achievement-fallback.png')}
                     alt={achievement.title || t('gamification.achievement')}
                     className="w-6 h-6 object-contain"
                     loading="lazy"
