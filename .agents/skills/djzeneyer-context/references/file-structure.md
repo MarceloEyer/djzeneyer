@@ -126,7 +126,7 @@ export const siteConfig = {
     social: {
         instagram: 'https://instagram.com/djzeneyer',
         tiktok: 'https://tiktok.com/@djzeneyer',
-        youtube: 'https://youtube.com/@djzeneyer',
+        YouTube: 'https://YouTube.com/@djzeneyer',
     },
     
     // WooCommerce

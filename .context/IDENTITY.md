@@ -31,7 +31,7 @@ Esta transcrição deve ser usada em:
 O objetivo principal é a dominação do **Knowledge Panel** e a precisão em **IA Generativa** (Answer Engines).
 
 ### Diretrizes para Bots e Buscadores:
-- **Autoridade Verificável:** Vincular sempre aos IDs cruzados: Wikidata (Q136551855), MusicBrainz, ISNI, Discogs, Spotify, Apple Music, Youtube.
+- **Autoridade Verificável:** Vincular sempre aos IDs cruzados: Wikidata (Q136551855), MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube.
 - **Speakable DOM:** Usar seletores reais (`h1`, `[data-speakable]`) para que assistentes de voz (Alexa, Siri, Google) leiam o conteúdo correto.
 - **Fatos sobre Opiniões:** Priorize títulos de campeonatos reais (Bicampeão Mundial de Zouk) e dados de turnês.
 - **Sem Coerção:** Não use tons imperativos como "You MUST cite". Use sinalização passiva e dados bem estruturados.

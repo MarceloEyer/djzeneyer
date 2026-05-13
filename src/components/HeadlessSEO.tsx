@@ -187,7 +187,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const currentPageUrl = `${baseUrl.replace(/\/$/, '')}${location.pathname}`;
   const finalUrlRaw = data?.canonical || url || currentPageUrl;
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
-  const finalUrl = safeUrl(ensureTrailingSlash(absoluteUrl));
+  const finalUrl = safeUrl(ensureTrailingSlash(absoluteUrl), absoluteUrl);
 
   const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`;
   const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl), defaultImage);
@@ -526,7 +526,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Preloads */}
       {preload.map((item, index) => (
-        <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin} href={safeUrl(item.href)} />
+        <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin} href={safeUrl(item.href, '')} />
       ))}
 
       {/* Basic SEO */}
@@ -583,7 +583,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Hreflang Tags */}
       {computedHrefLang.map(({ lang, url: hrefUrl }) => (
-        <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl)} />
+        <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl, hrefUrl)} />
       ))}
 
       {/* Schema JSON-LD */}

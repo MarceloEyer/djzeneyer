@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
-import { YoutubeIcon } from '../components/icons/BrandIcons';
+import { YouTubeIcon } from '../components/icons/BrandIcons';
 import { Link, generatePath } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { useTrackInteraction } from '../hooks/useQueries';
@@ -58,8 +58,8 @@ const SECONDARY_PLATFORMS = [
   },
   {
     name: 'YouTube',
-    icon: <YoutubeIcon className="text-[#FF0000]" />,
-    url: ARTIST.social.youtube.url,
+    icon: <YouTubeIcon className="text-[#FF0000]" />,
+    url: ARTIST.social.YouTube.url,
     color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50',
   },
 ];
@@ -135,8 +135,8 @@ const MusicPage: React.FC = () => {
         release.deezerUrl,
         release.tidalUrl,
         release.amazonMusicUrl,
-        release.youtubeMusicUrl,
-        release.youtubeUrl,
+        release.YouTubeMusicUrl,
+        release.YouTubeUrl,
         release.soundcloudUrl,
       ].filter(isReleaseSpecificUrl);
       if (sameAsLinks.length > 0) releaseNode.sameAs = sameAsLinks;
@@ -152,7 +152,7 @@ const MusicPage: React.FC = () => {
           // Only emit duration if it's a real value (not placeholder)
           if (track.duration) trackNode.duration = track.duration;
           if (track.isrcCode) trackNode.isrcCode = track.isrcCode;
-          const trackSameAs = [track.spotifyUrl, track.youtubeMusicUrl].filter(isReleaseSpecificUrl);
+          const trackSameAs = [track.spotifyUrl, track.YouTubeMusicUrl].filter(isReleaseSpecificUrl);
           if (trackSameAs.length > 0) trackNode.sameAs = trackSameAs;
           return trackNode;
         });

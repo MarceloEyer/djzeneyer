@@ -104,7 +104,7 @@ const PressKitPage: React.FC = () => {
   const relevantLinks = useMemo(
     () => [
       { name: t('social.instagram'), url: artist.social.instagram?.url, icon: <InstagramIcon size={20} /> },
-      { name: t('social.youtube'), url: artist.social.youtube?.url, icon: <Radio size={20} /> },
+      { name: t('social.YouTube'), url: artist.social.YouTube?.url, icon: <Radio size={20} /> },
       { name: t('social.spotify'), url: artist.social.spotify?.url, icon: <PlayCircle size={20} /> },
       { name: t('social.apple_music'), url: artist.social.appleMusic?.url, icon: <PlayCircle size={20} /> },
       { name: t('social.resident_advisor'), url: artist.social.residentAdvisor?.url, icon: <ExternalLink size={20} /> }

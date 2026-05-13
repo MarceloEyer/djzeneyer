@@ -9,7 +9,7 @@ import {
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
   Sparkles, Trophy, ArrowUpRight, MessageCircle, Wand2
 } from 'lucide-react';
-import { YoutubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
+import { YouTubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useBranding } from '../contexts/BrandingContext';
 import { ARTIST } from '../data/artistData';
@@ -33,7 +33,7 @@ const AppleMusicIcon = () => (
   </svg>
 );
 
-const YoutubeMusicIcon = () => (
+const YouTubeMusicIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 17.5c-3.038 0-5.5-2.462-5.5-5.5S8.962 6.5 12 6.5s5.5 2.462 5.5 5.5-2.462 5.5-5.5 5.5zm0-8.5c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3-1.343-3-3-3zM9.5 15l5-3-5-3v6z" />
   </svg>
@@ -125,7 +125,7 @@ const ZenLinkPageComponent = () => {
   const MUSIC_PLATFORMS = [
     { name: 'Spotify', icon: <SpotifyIcon />, url: artist.social.spotify?.url, color: '#1DB954' },
     { name: 'Apple Music', icon: <AppleMusicIcon />, url: artist.social.appleMusic?.url, color: '#FA243C' },
-    { name: 'YouTube Music', icon: <YoutubeMusicIcon />, url: artist.social.youtubeMusic?.url, color: '#FF0000' },
+    { name: 'YouTube Music', icon: <YouTubeMusicIcon />, url: artist.social.YouTubeMusic?.url, color: '#FF0000' },
   ].filter(p => !!p.url);
 
   const microFacts = [
@@ -139,7 +139,7 @@ const ZenLinkPageComponent = () => {
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
     { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: quizUrl, icon: <Wand2 className="h-5 w-5" />, highlight: true },
     { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
-    { title: 'YouTube', subtitle: t('zenlink.youtube_subtitle'), url: artist.social.youtube?.url, icon: <YoutubeIcon size={20} className="h-5 w-5" /> },
+    { title: 'YouTube', subtitle: t('zenlink.YouTube_subtitle'), url: artist.social.YouTube?.url, icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
     { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), icon: <MessageCircle className="h-5 w-5" /> },
     { title: 'E-mail', subtitle: ARTIST.contact.email, url: `mailto:${ARTIST.contact.email}`, icon: <Mail className="h-5 w-5" /> },
     // Payment links from Dashboard

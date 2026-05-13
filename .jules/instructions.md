@@ -61,8 +61,8 @@ Em caso de divergência, siga esta ordem:
 - Rotas privadas (dashboard, my-account) usam `<HeadlessSEO noindex />` com OG image genérica — nunca avatar do usuário.
 
 **Ícones de marca:**
-- Facebook, Instagram, Youtube não existem no lucide-react 1.x.
-- Usar `src/components/icons/BrandIcons.tsx` (FacebookIcon, InstagramIcon, YoutubeIcon).
+- Facebook, Instagram, YouTube não existem no lucide-react 1.x.
+- Usar `src/components/icons/BrandIcons.tsx` (FacebookIcon, InstagramIcon, YouTubeIcon).
 
 **Guards de rota:**
 - Usar `loadingInitial` (não `loading`) do UserContext para guards de rota privada.
