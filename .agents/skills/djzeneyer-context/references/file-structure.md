@@ -212,7 +212,7 @@ scripts/
 ├── verify-namespaces.sh         → Validação de namespacing
 ├── new-page.sh                  → Blueprint para nova página
 ├── pre-deploy-check.sh          → Validações antes de deploy
-└── routes-config.json           → Configuração de rotas para prerender
+└── routes-slugs.json            → SSOT de slugs para React Router, sitemap e prerender
 
 public/
 ├── robots.txt                   → Para buscadores
