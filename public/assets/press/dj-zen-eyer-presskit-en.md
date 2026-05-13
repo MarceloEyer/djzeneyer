@@ -40,7 +40,7 @@ Official music profiles, remixes and releases are available on the main streamin
 
 - Spotify: https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw
 - Apple Music: https://music.apple.com/us/artist/1439280950
-- YouTube: https://youtube.com/@djzeneyer
+- YouTube: https://YouTube.com/@djzeneyer
 - Instagram: https://www.instagram.com/djzeneyer/
 - Photos: https://photos.djzeneyer.com
 

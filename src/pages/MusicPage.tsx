@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Music2, Cloud, ExternalLink, Download, Coffee } from 'lucide-react';
-import { YoutubeIcon } from '../components/icons/BrandIcons';
+import { YouTubeIcon } from '../components/icons/BrandIcons';
 import { Link, generatePath } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { useTrackInteraction } from '../hooks/useQueries';
@@ -39,7 +39,7 @@ const CARD_VARIANTS = (delay: number) => ({
 // --- Static platform data (module scope) ---
 const SPOTIFY_PLATFORM = {
   name: 'Spotify',
-  url: ARTIST.social.spotify.url,
+  url: safeUrl(ARTIST.social.spotify.url, '/'),
   color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50',
 };
 
@@ -47,19 +47,19 @@ const SECONDARY_PLATFORMS = [
   {
     name: 'Apple Music',
     icon: <Music2 className="text-[#FA243C]" />,
-    url: ARTIST.social.appleMusic.url,
+    url: safeUrl(ARTIST.social.appleMusic.url, '/'),
     color: 'hover:bg-[#FA243C]/20 border-[#FA243C]/20 hover:border-[#FA243C]/50',
   },
   {
     name: 'SoundCloud',
     icon: <Cloud className="text-[#FF5500]" />,
-    url: ARTIST.social.soundcloud.url,
+    url: safeUrl(ARTIST.social.soundcloud.url, '/'),
     color: 'hover:bg-[#FF5500]/20 border-[#FF5500]/20 hover:border-[#FF5500]/50',
   },
   {
     name: 'YouTube',
-    icon: <YoutubeIcon className="text-[#FF0000]" />,
-    url: ARTIST.social.youtube.url,
+    icon: <YouTubeIcon className="text-[#FF0000]" />,
+    url: safeUrl(ARTIST.social.YouTube.url, '/'),
     color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50',
   },
 ];
@@ -135,8 +135,8 @@ const MusicPage: React.FC = () => {
         release.deezerUrl,
         release.tidalUrl,
         release.amazonMusicUrl,
-        release.youtubeMusicUrl,
-        release.youtubeUrl,
+        release.YouTubeMusicUrl,
+        release.YouTubeUrl,
         release.soundcloudUrl,
       ].filter(isReleaseSpecificUrl);
       if (sameAsLinks.length > 0) releaseNode.sameAs = sameAsLinks;
@@ -152,7 +152,7 @@ const MusicPage: React.FC = () => {
           // Only emit duration if it's a real value (not placeholder)
           if (track.duration) trackNode.duration = track.duration;
           if (track.isrcCode) trackNode.isrcCode = track.isrcCode;
-          const trackSameAs = [track.spotifyUrl, track.youtubeMusicUrl].filter(isReleaseSpecificUrl);
+          const trackSameAs = [track.spotifyUrl, track.YouTubeMusicUrl].filter(isReleaseSpecificUrl);
           if (trackSameAs.length > 0) trackNode.sameAs = trackSameAs;
           return trackNode;
         });

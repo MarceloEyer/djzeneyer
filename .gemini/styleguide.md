@@ -25,7 +25,7 @@ Backend: WordPress 6.9 Headless + PHP 8.3 + WooCommerce 10.5+ (HPOS ativo) + Gam
    `loadingInitial` é para restauração de sessão, default `true`.
    Usar `loading` em guards causa tela branca no F5.
 
-5. **Ícones de marca**: Facebook, Instagram, Youtube NÃO existem no lucide-react 1.x.
+5. **Ícones de marca**: Facebook, Instagram, YouTube NÃO existem no lucide-react 1.x.
    Usar `src/components/icons/BrandIcons.tsx`.
 
 6. **Framer Motion variants**: Objetos `variants`, `whileHover`, `whileTap` NUNCA inline no

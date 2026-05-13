@@ -24,10 +24,8 @@ reviews:
     - "!dist/**"
     - "!dist-debug/**"
     - "!.claude/**"
-    - "!.agents/**"
     - "!.bolt/**"
     - "!.gemini/**"
-    - "!.jules/**"
     - "!plugins/gamipress/**"
     - "!**/*.lock"
     - "!public/sitemap*.xml"
@@ -117,7 +115,7 @@ reviews:
     - path: "scripts/**"
       instructions: |
         - scripts/prerender.js NUNCA deve ser removido — é o que evita tela branca em produção.
-        - scripts/routes-config.json é SSOT de rotas (React Router + sitemap + CI). Mudanças aqui refletem em 3 sistemas.
+        - src/config/routes-slugs.json é SSOT de rotas (React Router + sitemap + CI). Mudanças aqui refletem em 3 sistemas.
         - Puppeteer: .puppeteerrc.cjs tem skipDownload:true — Chrome só é instalado no CI via `npx puppeteer browsers install chrome`.
 
 chat:

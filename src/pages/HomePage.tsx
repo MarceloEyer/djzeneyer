@@ -13,7 +13,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_BUSINESS_SCHEMA, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-import { sanitizeHtml } from '../utils/sanitize';
+import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 
 // ============================================================================
 // 1. INTERFACES (Type Safety)
@@ -242,7 +242,7 @@ const HomePage: React.FC = () => {
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center mb-6">
               <a
-                href={ARTIST.social.soundcloud.url}
+                href={safeUrl(ARTIST.social.soundcloud.url, '/')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 min-h-[44px] shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
@@ -327,7 +327,7 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} />
                 <span>{t('home.shows.cta')}</span>
               </Link>
-              <a href={ARTIST.social.bandsintown?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow Zen Eyer on Bandsintown">
+              <a href={safeUrl(ARTIST.social.bandsintown?.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow Zen Eyer on Bandsintown">
                 <ExternalLink size={18} />
                 <span>Bandsintown</span>
               </a>
@@ -396,9 +396,9 @@ const HomePage: React.FC = () => {
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
             <p className="text-xs font-semibold text-white/55 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href={`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
-              <a href={`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
-              <a href={ARTIST.social.spotify.url} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
+              <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
+              <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
+              <a href={safeUrl(ARTIST.social.spotify.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
             </div>
           </motion.div>
         </div>

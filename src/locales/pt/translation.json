@@ -322,7 +322,7 @@
     "choose_platform": "Escolha sua plataforma",
     "seo_description": "Conecte-se com Zen Eyer — 2x Campeão Mundial de Brazilian Zouk. Ouça, reserve e siga a cremosidade!",
     "soundcloud_subtitle": "Sets e Remixes",
-    "youtube_subtitle": "Live sets e tutoriais",
+    "YouTube_subtitle": "Live sets e tutoriais",
     "book_title": "Contrate-me",
     "book_subtitle": "Festival, congressos e eventos privados",
     "shop_subtitle": "Merchandising e tracks exclusivas",
@@ -346,7 +346,8 @@
   "events_add_google": "Adicionar à Agenda",
   "social": {
     "instagram": "Instagram",
-    "youtube": "YouTube",
+    "YouTube": "YouTube",
+    "youtube_music": "YouTube Music",
     "tiktok": "TikTok",
     "soundcloud": "SoundCloud",
     "spotify": "Spotify",

@@ -43,7 +43,7 @@ export const InstagramIcon: React.FC<BrandIconProps> = ({ size = 24, className }
   </svg>
 );
 
-export const YoutubeIcon: React.FC<BrandIconProps> = ({ size = 24, className }) => (
+export const YouTubeIcon: React.FC<BrandIconProps> = ({ size = 24, className }) => (
   <svg
     width={size}
     height={size}
