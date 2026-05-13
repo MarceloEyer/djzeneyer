@@ -471,7 +471,7 @@ class Zen_SEO_REST_API
                 'id' => $post->ID,
                 'type' => $post->post_type,
                 'slug' => $post->post_name,
-                'modified' => \get_post_modified_time('c', true, $post),
+                'modified' => \str_replace(' ', 'T', $post->post_modified_gmt) . '+00:00',
                 'translations' => $translations,
                 'lang' => $pll_exists ? \pll_get_post_language($post->ID) : 'en'
             ];

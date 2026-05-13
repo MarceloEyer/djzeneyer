@@ -391,7 +391,7 @@ function djz_query_products(array $options = [])
                 'images' => $images,
                 'short_description' => $product->get_short_description(),
                 'description' => !empty($slug) ? $product->get_description() : '',
-                'permalink' => get_permalink($product->get_id()),
+                'permalink' => $product->get_permalink(), // ⚡ Bolt: Use WooCommerce native get_permalink instead of core get_permalink
                 'categories' => array_map(function ($term) {
                     return [
                         'id' => $term->term_id,
@@ -696,7 +696,7 @@ function djz_get_shop_page($request)
                     'images' => $images,
                     'short_description' => $product->get_short_description(),
                     'description' => '',
-                    'permalink' => get_permalink($product->get_id()),
+                    'permalink' => $product->get_permalink(), // ⚡ Bolt: Use WooCommerce native get_permalink instead of core get_permalink
                     'categories' => !is_wp_error($categories) ? array_map(function ($term) {
                         return ['id' => $term->term_id, 'name' => $term->name, 'slug' => $term->slug];
                     }, $categories) : [],
