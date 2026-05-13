@@ -5,6 +5,7 @@ import { Newspaper, ExternalLink, Download, Image as ImageIcon } from 'lucide-re
 import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { safeUrl } from '../utils/sanitize';
 
 type MediaClippingItem = {
   type: string;
@@ -190,15 +191,15 @@ const MediaPage: React.FC = () => {
 
           {/* Social Proof / Footer IDs */}
           <div className="mt-32 pt-16 border-t border-white/5 flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 hover:opacity-100 transition-opacity">
-            <a href={ARTIST.identifiers.wikidataUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
+            <a href={safeUrl(ARTIST.identifiers.wikidataUrl, '/')} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
               <span className="font-display font-black text-xl tracking-tighter">Wikidata</span>
               <ExternalLink size={14} />
             </a>
-            <a href={ARTIST.identifiers.musicbrainzUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
+            <a href={safeUrl(ARTIST.identifiers.musicbrainzUrl, '/')} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
                <span className="font-display font-black text-xl tracking-tighter">MusicBrainz</span>
                <ExternalLink size={14} />
              </a>
-             <a href={ARTIST.identifiers.discogsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
+             <a href={safeUrl(ARTIST.identifiers.discogsUrl, '/')} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
                <span className="font-display font-black text-xl tracking-tighter">Discogs</span>
                <ExternalLink size={14} />
              </a>

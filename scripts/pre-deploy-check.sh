@@ -5,16 +5,14 @@ echo "🚀 Iniciando verificações pré-deploy..."
 
 # 1. Verificar erros de sintaxe JSX/TSX
 echo "🔍 Verificando lint..."
-npm run lint
-if [ $? -ne 0 ]; then
+if ! npm run lint; then
     echo "❌ Erro no lint detectado. Abortando."
     exit 1
 fi
 
 # 2. Verificar tipos TypeScript
 echo "🔍 Verificando tipos TypeScript..."
-npm run type-check
-if [ $? -ne 0 ]; then
+if ! npm run type-check; then
     echo "❌ Erro de tipos detectado. Abortando."
     exit 1
 fi
@@ -23,10 +21,13 @@ fi
 if [ ! -f "public/robots.txt" ]; then
     echo "⚠️ robots.txt não encontrado em public/"
 fi
+if [ ! -f "public/sitemap.xml" ]; then
+    echo "⚠️ sitemap.xml não encontrado em public/"
+fi
 
 # 4. Verificar se todas as rotas de prerender estão configuradas
-if [ ! -f "scripts/routes-config.json" ]; then
-    echo "❌ scripts/routes-config.json não encontrado. Abortando."
+if [ ! -f "src/config/routes-slugs.json" ]; then
+    echo "❌ src/config/routes-slugs.json não encontrado. Abortando."
     exit 1
 fi
 

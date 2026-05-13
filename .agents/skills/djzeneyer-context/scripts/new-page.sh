@@ -21,7 +21,7 @@ export const ${PAGE_NAME}: React.FC = () => {
 
     return (
         <div className="page-container">
-            <HeadlessSEO 
+            <HeadlessSEO
                 title={t('page.${PAGE_NAME}.title') + ' — DJ Zen Eyer'}
                 description={t('page.${PAGE_NAME}.description')}
                 url="/path-to-change"

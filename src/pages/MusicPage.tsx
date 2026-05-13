@@ -39,7 +39,7 @@ const CARD_VARIANTS = (delay: number) => ({
 // --- Static platform data (module scope) ---
 const SPOTIFY_PLATFORM = {
   name: 'Spotify',
-  url: ARTIST.social.spotify.url,
+  url: safeUrl(ARTIST.social.spotify.url, '/'),
   color: 'hover:bg-[#1DB954]/20 border-[#1DB954]/20 hover:border-[#1DB954]/50',
 };
 
@@ -47,19 +47,19 @@ const SECONDARY_PLATFORMS = [
   {
     name: 'Apple Music',
     icon: <Music2 className="text-[#FA243C]" />,
-    url: ARTIST.social.appleMusic.url,
+    url: safeUrl(ARTIST.social.appleMusic.url, '/'),
     color: 'hover:bg-[#FA243C]/20 border-[#FA243C]/20 hover:border-[#FA243C]/50',
   },
   {
     name: 'SoundCloud',
     icon: <Cloud className="text-[#FF5500]" />,
-    url: ARTIST.social.soundcloud.url,
+    url: safeUrl(ARTIST.social.soundcloud.url, '/'),
     color: 'hover:bg-[#FF5500]/20 border-[#FF5500]/20 hover:border-[#FF5500]/50',
   },
   {
     name: 'YouTube',
     icon: <YouTubeIcon className="text-[#FF0000]" />,
-    url: ARTIST.social.YouTube.url,
+    url: safeUrl(ARTIST.social.YouTube.url, '/'),
     color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50',
   },
 ];

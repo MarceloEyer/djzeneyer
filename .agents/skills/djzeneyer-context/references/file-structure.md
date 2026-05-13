@@ -117,22 +117,22 @@ export const siteConfig = {
     siteName: 'DJ Zen Eyer',
     siteUrl: 'https://djzeneyer.com',
     description: 'Bicampeão Mundial de Brazilian Zouk',
-    
+
     // Branding
     primaryColor: '#1f2937',
     accentColor: '#f97316',
-    
+
     // Redes sociais
     social: {
         instagram: 'https://instagram.com/djzeneyer',
         tiktok: 'https://tiktok.com/@djzeneyer',
         YouTube: 'https://YouTube.com/@djzeneyer',
     },
-    
+
     // WooCommerce
     wcConsumerKey: process.env.VITE_WC_CONSUMER_KEY,
     wcConsumerSecret: process.env.VITE_WC_CONSUMER_SECRET,
-    
+
     // Contato
     email: 'booking@djzeneyer.com',
     phone: '+55 (XX) XXXX-XXXX',

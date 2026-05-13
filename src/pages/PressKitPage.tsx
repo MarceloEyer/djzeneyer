@@ -103,12 +103,14 @@ const PressKitPage: React.FC = () => {
 
   const relevantLinks = useMemo(
     () => [
-      { name: t('social.instagram'), url: artist.social.instagram?.url, icon: <InstagramIcon size={20} /> },
-      { name: t('social.YouTube'), url: safeUrl(artist.social.YouTube?.url, '/'), icon: <Radio size={20} /> },
-      { name: t('social.spotify'), url: artist.social.spotify?.url, icon: <PlayCircle size={20} /> },
-      { name: t('social.apple_music'), url: artist.social.appleMusic?.url, icon: <PlayCircle size={20} /> },
-      { name: t('social.resident_advisor'), url: artist.social.residentAdvisor?.url, icon: <ExternalLink size={20} /> }
-    ].filter(l => !!l.url),
+      { name: t('social.instagram'), rawUrl: artist.social.instagram?.url, icon: <InstagramIcon size={20} /> },
+      { name: t('social.YouTube'), rawUrl: artist.social.YouTube?.url, icon: <Radio size={20} /> },
+      { name: t('social.spotify'), rawUrl: artist.social.spotify?.url, icon: <PlayCircle size={20} /> },
+      { name: t('social.apple_music'), rawUrl: artist.social.appleMusic?.url, icon: <PlayCircle size={20} /> },
+      { name: t('social.resident_advisor'), rawUrl: artist.social.residentAdvisor?.url, icon: <ExternalLink size={20} /> }
+    ]
+      .filter((link) => !!link.rawUrl)
+      .map(({ rawUrl, ...link }) => ({ ...link, url: safeUrl(rawUrl, '/') })),
     [t, artist]
   );
 
@@ -471,7 +473,7 @@ const PressKitPage: React.FC = () => {
                   <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline btn-lg flex items-center justify-center gap-3">
                     <Mail size={20} /> Email
                   </a>
-                  <a href={artist.social.instagram?.url} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center justify-center gap-3">
+                  <a href={safeUrl(artist.social.instagram?.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center justify-center gap-3">
                     <InstagramIcon size={20} /> Instagram
                   </a>
                 </div>

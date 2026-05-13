@@ -29,7 +29,7 @@ gh api "/repos/MarceloEyer/djzeneyer/secret-scanning/alerts?state=open&per_page=
 gh api "/repos/MarceloEyer/djzeneyer/actions/permissions" | ConvertFrom-Json | Format-List
 ```
 
-> **Resultado esperado (estado seguro):** CodeQL=0, Dependabot=0, Secret Scanning=0.  
+> **Resultado esperado (estado seguro):** CodeQL=0, Dependabot=0, Secret Scanning=0.
 > `allowed_actions=all` e `sha_pinning_required=false` são aceitáveis para este projeto.
 
 ---

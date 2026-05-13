@@ -524,10 +524,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta charSet="utf-8" />
       <meta name="theme-color" content="#0A0E27" />
 
-      {/* Preloads — skip rendering if href resolves to an invalid/empty URL */}
+      {/* Preloads — skip rendering if href resolves to the link fallback */}
       {preload.map((item, index) => {
-        const safeHref = safeUrl(item.href, '');
-        return safeHref ? (
+        const safeHref = safeUrl(item.href, '/');
+        return safeHref !== '/' ? (
           <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin} href={safeHref} />
         ) : null;
       })}

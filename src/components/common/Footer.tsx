@@ -65,19 +65,19 @@ const Footer: React.FC = () => {
               {t('footer_bio')}
             </p>
             <div className="flex space-x-4">
-              <a href={ARTIST.social.instagram.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Instagram">
+              <a href={safeUrl(ARTIST.social.instagram.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Instagram">
                 <InstagramIcon size={22} />
               </a>
-              <a href={ARTIST.social.soundcloud.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="SoundCloud">
+              <a href={safeUrl(ARTIST.social.soundcloud.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="SoundCloud">
                 <Music2 size={22} />
               </a>
               <a href={safeUrl(ARTIST.social.YouTube.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.YouTube')}>
                 <YouTubeIcon size={22} />
               </a>
-              <a href={ARTIST.social.facebook.url} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Facebook">
+              <a href={safeUrl(ARTIST.social.facebook.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Facebook">
                 <FacebookIcon size={22} />
               </a>
-              <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="WhatsApp">
+              <a href={safeUrl(whatsappLink, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="WhatsApp">
                 <MessageCircle size={22} />
               </a>
             </div>
@@ -159,10 +159,10 @@ const Footer: React.FC = () => {
           </div>
 
           <div className="mt-4 text-xs opacity-50 flex justify-center gap-4">
-            <a href={ARTIST.identifiers.wikidataUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href={safeUrl(ARTIST.identifiers.wikidataUrl, '/')} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Wikidata
             </a>
-            <a href={ARTIST.identifiers.musicbrainzUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href={safeUrl(ARTIST.identifiers.musicbrainzUrl, '/')} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               MusicBrainz
             </a>
           </div>

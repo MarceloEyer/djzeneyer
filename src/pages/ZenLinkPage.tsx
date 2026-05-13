@@ -13,6 +13,7 @@ import { YouTubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useBranding } from '../contexts/BrandingContext';
 import { ARTIST } from '../data/artistData';
+import { safeUrl } from '../utils/sanitize';
 
 // Helper for WhatsApp (recreated here with dynamic data)
 const getDynamicWhatsAppUrl = (number: string, message?: string) => {
@@ -123,10 +124,12 @@ const ZenLinkPageComponent = () => {
   const quizUrl = `${artist.site.baseUrl}${i18n.language === 'pt' ? '/pt' : ''}/${quizSlug}`;
 
   const MUSIC_PLATFORMS = [
-    { name: 'Spotify', icon: <SpotifyIcon />, url: artist.social.spotify?.url, color: '#1DB954' },
-    { name: 'Apple Music', icon: <AppleMusicIcon />, url: artist.social.appleMusic?.url, color: '#FA243C' },
-    { name: t('social.youtube_music'), icon: <YouTubeMusicIcon />, url: artist.social.YouTubeMusic?.url, color: '#FF0000' },
-  ].filter(p => !!p.url);
+    { name: 'Spotify', icon: <SpotifyIcon />, rawUrl: artist.social.spotify?.url, color: '#1DB954' },
+    { name: 'Apple Music', icon: <AppleMusicIcon />, rawUrl: artist.social.appleMusic?.url, color: '#FA243C' },
+    { name: t('social.youtube_music'), icon: <YouTubeMusicIcon />, rawUrl: artist.social.YouTubeMusic?.url, color: '#FF0000' },
+  ]
+    .filter((platform) => !!platform.rawUrl)
+    .map(({ rawUrl, ...platform }) => ({ ...platform, url: safeUrl(rawUrl, '/') }));
 
   const microFacts = [
     {
@@ -136,16 +139,16 @@ const ZenLinkPageComponent = () => {
   ];
 
   const MAIN_LINKS = [
-    { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: `${artist.site.baseUrl}/work-with-me`, icon: <Calendar className="h-5 w-5" />, highlight: true },
-    { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: quizUrl, icon: <Wand2 className="h-5 w-5" />, highlight: true },
-    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: artist.social.instagram?.url, icon: <InstagramIcon size={20} className="h-5 w-5" /> },
-    { title: t('social.YouTube'), subtitle: t('zenlink.YouTube_subtitle'), url: artist.social.YouTube?.url, icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
-    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), icon: <MessageCircle className="h-5 w-5" /> },
-    { title: 'E-mail', subtitle: ARTIST.contact.email, url: `mailto:${ARTIST.contact.email}`, icon: <Mail className="h-5 w-5" /> },
+    { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: safeUrl(`${artist.site.baseUrl}/work-with-me`, '/'), icon: <Calendar className="h-5 w-5" />, highlight: true },
+    { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: safeUrl(quizUrl, '/'), icon: <Wand2 className="h-5 w-5" />, highlight: true },
+    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: safeUrl(artist.social.instagram?.url, '/'), icon: <InstagramIcon size={20} className="h-5 w-5" /> },
+    { title: t('social.YouTube'), subtitle: t('zenlink.YouTube_subtitle'), url: safeUrl(artist.social.YouTube?.url, '/'), icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
+    { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: safeUrl(getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), '/'), icon: <MessageCircle className="h-5 w-5" /> },
+    { title: 'E-mail', subtitle: ARTIST.contact.email, url: safeUrl(`mailto:${ARTIST.contact.email}`, '/'), icon: <Mail className="h-5 w-5" /> },
     // Payment links from Dashboard
-    ...(artist.payment.paypal.me ? [{ title: 'PayPal', subtitle: 'Support my music', url: artist.payment.paypal.me, icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
-    ...(artist.payment.wise.url ? [{ title: 'Wise', subtitle: 'International support', url: artist.payment.wise.url, icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
-  ].filter(l => !!l.url);
+    ...(artist.payment.paypal.me ? [{ title: 'PayPal', subtitle: 'Support my music', url: safeUrl(artist.payment.paypal.me, '/'), icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
+    ...(artist.payment.wise.url ? [{ title: 'Wise', subtitle: 'International support', url: safeUrl(artist.payment.wise.url, '/'), icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
+  ].filter((link) => link.url !== '/');
 
   return (
     <>

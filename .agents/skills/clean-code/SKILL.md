@@ -38,7 +38,7 @@ Use this skill when:
 
 ## 3. Comments
 - **Don't Comment Bad Code—Rewrite It**: Most comments are a sign of failure to express ourselves in code.
-- **Explain Yourself in Code**: 
+- **Explain Yourself in Code**:
   ```python
   # Check if employee is eligible for full benefits
   if employee.flags & HOURLY and employee.age > 65:
