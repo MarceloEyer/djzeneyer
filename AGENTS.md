@@ -1,18 +1,39 @@
-# Zen Eyer Project Agents
+# Zen Eyer Project Agents — Master Instructions
 
-Este repositório é gerenciado por uma equipe de agentes de IA em parceria com o **Orquestrador Humano (Zen Eyer)**.
+Este é o ponto de entrada principal para todos os agentes de IA. A conformidade com estas diretrizes é **obrigatória**.
 
-## 🚪 Ponto de Entrada para IAs
-Se você é uma IA, siga estas diretrizes imediatamente:
-1. Leia `.agents/GUIDELINES.md` para regras de comportamento.
-2. Leia `.context/PROJECT.md` para entender o ecossistema.
-3. **NUNCA** tome decisões de branding sem consultar `.context/IDENTITY.md`.
-
-## 📂 Arquitetura de Contexto
-- **`.agents/`**: Instruções específicas por agente e personas.
-- **`.context/`**: Conhecimento de domínio, engenharia e identidade.
-- **`.human/`**: Sugestões e tarefas para execução humana.
-- **`LEARNINGS.md`**: Memória operacional e lições aprendidas.
+## 🏛️ Camadas de Contexto
+1. Leia `.agents/GUIDELINES.md` para o manual técnico completo.
+2. Leia `.context/IDENTITY.md` para branding e pronúncia (`/zɛn ˈaɪər/`).
+3. Leia `AI_CONTEXT_INDEX.md` para entender a hierarquia de SSOT.
 
 ---
-*Assinado: Equipe Zen Eyer (IA + Humano)*
+
+## 🚨 Regras Críticas (Bypass Proibido)
+
+### 1. Sanitização de URLs (`safeUrl`)
+A função `safeUrl(url)` retorna `'#'` (que é truthy).
+- **ERRADO:** `safeUrl(url) || '/fallback.svg'`
+- **CORRETO:** `safeUrl(url, '/fallback.svg')` (Sempre use o segundo argumento).
+
+### 2. Guards de Rota & Autenticação
+- Use sempre `loadingInitial` (não `loading`) do `UserContext` para proteger rotas privadas.
+- `loadingInitial` garante que a sessão foi restaurada antes de decidir pelo redirect.
+
+### 3. SEO & MusicEvent (Schema JSON-LD)
+Para eventos de música (`MusicEvent`), os seguintes campos são **obrigatórios** para evitar erros no Search Console:
+- `eventStatus`, `endDate`, `location.address`, `description`, `image`, `offers`, `performer`.
+
+### 4. GamiPress & PHP
+- `gamipress_get_rank_types()` e similares retornam arrays associativos.
+- **LEI:** Use sempre `array_values($array)[0]` ou `reset($array)` para acessar o primeiro elemento. Nunca use `$array[0]` direto.
+
+---
+
+## 📂 Organização
+- **`.agents/`**: Personas e Skills especializadas.
+- **`.context/`**: Conhecimento técnico de domínio.
+- **`.human/`**: Backlog para o Orquestrador Humano.
+- **`LEARNINGS.md`**: Anti-erros e lições aprendidas.
+
+*Assinado: Zen Eyer — Orquestrador Humano*
