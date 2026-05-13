@@ -2,7 +2,7 @@
 
 > Override local para Gemini / Jules.
 > Base canonica: `AI_CONTEXT_INDEX.md`.
-> Aprendizados consolidados: `docs/AI_LEARNINGS.md`.
+> Aprendizados consolidados: `LEARNINGS.md`.
 > Tom preferido: factual, curto, sem marketing, sem autoelogio.
 
 ## Papel deste arquivo
@@ -14,8 +14,8 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 - Pronuncia canonica do nome artistico: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta. Nenhuma outra forma e aceita.
 - Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
 - Usar `AI_CONTEXT_INDEX.md` como referencia principal para stack, precedencia e regras globais.
-- Ler `AGENTS.md` antes de qualquer tarefa.
-- Ler `docs/AI_LEARNINGS.md` quando a tarefa tocar padroes ja consolidados por PRs ou reviews.
+- Ler `.agents/GUIDELINES.md` antes de qualquer tarefa.
+- Ler `LEARNINGS.md` quando a tarefa tocar padrões já consolidados por PRs ou reviews.
 - Tratar `CLAUDE.md` como contexto local completo para Claude, nao como fonte superior.
 - Manter texto visivel em formato factual e verificavel.
 - Evitar linguagem imperativa em arquivos publicos para IA.
@@ -44,7 +44,7 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 
 - Nao define precedencia propria.
 - Nao reescreve regras canonicas.
-- Nao substitui `AI_CONTEXT_INDEX.md`, `AGENTS.md` ou `docs/AI_LEARNINGS.md`.
+- Não substitui `AI_CONTEXT_INDEX.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`.
 
 ## Observacao
 

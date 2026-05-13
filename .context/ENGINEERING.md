@@ -30,7 +30,7 @@ Este documento define os princípios de desenvolvimento e as restrições operac
 
 ## 🌐 WordPress & PHP
 - **HPOS:** Nunca usar SQL direto em `wp_posts` para pedidos; usar `wc_get_orders()`.
-- **GamiPress:** Arrays associativos exigem `array_keys()` ou `reset()`.
+- **GamiPress SSOT:** `gamipress_get_rank_types()` retorna array associativo (slug como chave). **Sempre use `array_values()` antes de `[0]` ou `reset()`**.
 - **Segurança:** SQL sempre preparado e inputs sanitizados.
 
 ---

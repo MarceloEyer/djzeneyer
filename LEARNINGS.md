@@ -12,7 +12,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 ## ⚠️ Armadilhas & "Anti-Erros" (Obrigatório Ler)
 - **Identity Drift:** O nome "Zen Ayer" foi banido de metadados. Nome canônico: **Zen Eyer**. Alias: **DJ Zen Eyer**.
 - **Pronúncia Única:** Sempre use `/zɛn ˈaɪər/` (IPA). Nunca inventar outras transcrições.
-- **GamiPress Arrays:** `gamipress_get_points_types()` e similares retornam arrays associativos. Sempre use `array_keys()` ou `reset()` para evitar resultados vazios.
+- **GamiPress Associative Arrays:** `gamipress_get_rank_types()` retorna slugs como chaves. Usar `array_values()` antes de `[0]` é obrigatório. Sempre use `array_values()` ou `reset()` para evitar resultados vazios.
 - **Mojibake:** Arquivos JSON de locale e logs de IA devem ser UTF-8 limpo. Cuidado com `Ã§` e `Â©`.
 - **Lockfile Sync:** Alterações em `package.json` SEMPRE exigem atualização do `package-lock.json` no mesmo commit.
 - **Vite Build:** Use sempre o minificador OXC (Vite 8 padrão). Nunca remover assets hashados antigos de `dist/assets` durante o deploy para evitar `ChunkLoadError`.

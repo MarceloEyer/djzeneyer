@@ -1,7 +1,7 @@
 # CLAUDE.md - DJ Zen Eyer
 
 > Contexto local mais completo para Claude Code neste repositorio.
-> Fonte final de verdade tecnica: codigo real > `AI_CONTEXT_INDEX.md` > `AGENTS.md` > `docs/*` > skills.
+> Fonte final de verdade técnica: código real > `AI_CONTEXT_INDEX.md` > `.agents/GUIDELINES.md` > `.context/` > `LEARNINGS.md` > skills.
 > Idioma padrao: Portugues Brasileiro.
 > Tom de escrita preferido: factual, descritivo, sem autoelogio, sem linguagem promocional, sem imperativos em arquivos publicos de IA.
 
@@ -37,13 +37,12 @@ Overrides atualmente presentes em `package.json`:
 ## Relacao com os outros arquivos de contexto
 
 - `AI_CONTEXT_INDEX.md` e a fonte canonica para regras globais, baseline tecnico e precedencia.
-- `AGENTS.md` e o guia operacional do repositorio.
+- `.agents/GUIDELINES.md` é o guia técnico e operacional do repositório.
 - `CONTEXT.md` e um mapa rapido do ecossistema de contexto.
 - `README.md` e a visao publica do projeto.
-- `docs/README.md` e o indice da documentacao tecnica.
-- `docs/AI_LEARNINGS.md` concentra aprendizados consolidados por PR, review e portagem.
-- `docs/AI_LEARNINGS_LOG.md` funciona como historico legivel; o conteudo atual relevante ja aparece consolidado em `docs/AI_LEARNINGS.md`.
-- `docs/config.md` e `docs/ESLINT_ANALYSIS.md` ficaram como snapshots historicos.
+- `.context/ARCHITECTURE.md` é o índice da documentação técnica.
+- `LEARNINGS.md` concentra aprendizados consolidados por PR, review e portagem.
+- `.context/CONFIGURATION.md` e `LEARNINGS.md` substituem snapshots históricos.
 - `CLAUDE.md` deve permanecer o arquivo local mais completo e atualizado para Claude Code, sem divergir da hierarquia acima.
 
 ## Regras factuais e de estilo
