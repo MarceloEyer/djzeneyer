@@ -424,6 +424,13 @@ final class REST_Handler
             ],
         ]);
 
+        // ⚡ Bolt: Prime meta caches for all ranks at once to prevent N+1 queries
+        if (!empty($ranks)) {
+            $rank_ids = \array_column($ranks, 'ID');
+            \_prime_post_caches($rank_ids, false, true);
+            \update_meta_cache('post', $rank_ids);
+        }
+
         if (empty($ranks)) {
             return null;
         }
@@ -591,6 +598,7 @@ final class REST_Handler
 
         if (!empty($batch)) {
             $batch_ids = \array_values(\array_unique(\array_map(static fn($p) => $p->ID, $batch)));
+            \_prime_post_caches($batch_ids, false, true);
             \update_meta_cache('post', $batch_ids);
         }
 

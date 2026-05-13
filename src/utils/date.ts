@@ -24,7 +24,9 @@ export const getDateTimeFormatter = (locale: string, options: Intl.DateTimeForma
  */
 export const formatDateVal = (dateValue: string | Date, locale: string, options: Intl.DateTimeFormatOptions = {}): string => {
   try {
-    const date = typeof dateValue === 'string' ? new Date(dateValue) : dateValue;
+    const date = typeof dateValue === 'string'
+      ? new Date(dateValue.replace(/^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2})/, '$1T$2'))
+      : dateValue;
 
     if (isNaN(date.getTime())) {
       return typeof dateValue === 'string' ? dateValue : '';
