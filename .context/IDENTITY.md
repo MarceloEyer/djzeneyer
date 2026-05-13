@@ -9,9 +9,9 @@ Este documento é a fonte única de verdade (SSOT) para a identidade de marca e 
 - **Nome de Batismo:** `Marcelo Eyer Fernandes`.
 - **Data de Nascimento:** `1985-08-20` (Fonte: Wikidata Q136551855).
 
-### 🚫 Regras de Nomenclatura (Críticas)
-1. **NUNCA** use `Zen Ayer` em metadados, schema ou descrições (exceto se for para captura estratégica de typos em campos específicos de busca, sob demanda).
-2. **NUNCA** crie tautologias como "Zen Eyer, também conhecido como Zen Eyer".
+### ⚠️ Observações sobre Nomenclatura
+1. **Zen Ayer:** Esta é uma forma **incorreta** e **não-oficial** de grafia. Não deve ser usada em campos de `alternateName`, descrições biográficas ou metadados oficiais. Seu uso é desencorajado, exceto se houver uma decisão futura de SEO para captura de erros de busca (typos).
+2. **Tautologia:** Evite descrições como "Zen Eyer, também conhecido como Zen Eyer".
 3. No campo `common.artist_name` (i18n), use `Zen Eyer` para ambos os idiomas (EN/PT) para manter autoridade de marca.
 
 ---
