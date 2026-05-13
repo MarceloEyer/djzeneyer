@@ -314,8 +314,8 @@ class Zen_SEO_Schema
             'url' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post)),
             'name' => \sanitize_text_field((string) $title),
             'description' => \sanitize_text_field((string) $description),
-            'datePublished' => \get_post_time('c', true, $post),
-            'dateModified' => \get_post_modified_time('c', true, $post),
+            'datePublished' => \str_replace(' ', 'T', $post->post_date_gmt) . '+00:00',
+            'dateModified' => \str_replace(' ', 'T', $post->post_modified_gmt) . '+00:00',
             'publisher' => [
                 '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
             ],
@@ -408,7 +408,7 @@ class Zen_SEO_Schema
             '@type' => 'MusicRecording',
             'name' => \sanitize_text_field((string) $title),
             'description' => \sanitize_text_field((string) $description),
-            'datePublished' => \get_post_time('c', true, $post),
+            'datePublished' => \str_replace(' ', 'T', $post->post_date_gmt) . '+00:00',
             'byArtist' => [
                 '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
             ],

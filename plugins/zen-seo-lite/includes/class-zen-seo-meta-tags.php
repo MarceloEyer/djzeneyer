@@ -252,8 +252,8 @@ class Zen_SEO_Meta_Tags
             'translations' => Zen_SEO_Helpers::get_translations($post_id),
             'og_type' => 'article',
             'locale' => 'en_US',
-            'published_time' => \get_post_time('c', true, $post),
-            'modified_time' => \get_post_modified_time('c', true, $post),
+            'published_time' => \str_replace(' ', 'T', $post->post_date_gmt) . '+00:00',
+            'modified_time' => \str_replace(' ', 'T', $post->post_modified_gmt) . '+00:00',
         ];
 
         // Locale from Polylang
