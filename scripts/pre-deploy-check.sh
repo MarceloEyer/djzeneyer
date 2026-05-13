@@ -17,7 +17,11 @@ if ! npm run type-check; then
     exit 1
 fi
 
-# 3. Verificar se robots.txt e sitemap.xml existem em public/
+# 3. Sincronizar contexto de IA (versões)
+echo "🔍 Sincronizando contexto de IA..."
+npm run context:sync
+
+# 4. Verificar se robots.txt e sitemap.xml existem em public/
 if [ ! -f "public/robots.txt" ]; then
     echo "⚠️ robots.txt não encontrado em public/"
 fi
