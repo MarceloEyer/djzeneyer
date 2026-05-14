@@ -14,6 +14,7 @@
     "type-check": "tsc --noEmit",
     "context:sync": "node scripts/sync-context-versions.mjs",
     "i18n:check": "node scripts/check-i18n-parity.mjs",
+    "utf8:check": "node scripts/check-utf8-content.mjs",
     "format": "prettier --write .",
     "perf:baseline": "node scripts/perf-baseline.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
