@@ -82,6 +82,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
         events={[event]}
+        leadAnswer={event.description?.substring(0, 300) || undefined}
       />
 
       <Breadcrumb
