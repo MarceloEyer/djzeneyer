@@ -561,7 +561,12 @@ export const ARTIST_SCHEMA_BASE = {
     'Festival DJ Sets',
     'Lambazouk',
     'Zouk Music History',
+    'Dance Floor Energy Management',
+    'DJ Technical Rider Design',
+    'High-IQ Music Theory',
   ],
+  publishingPrinciples: 'https://djzeneyer.com/philosophy',
+  unnamedSourcesPolicy: 'https://djzeneyer.com/privacy',
   hasOccupation: [
     {
       '@type': 'Occupation',
