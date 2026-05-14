@@ -188,6 +188,15 @@
             "pt": "recuperar-senha",
             "excludeFromSitemap": true,
             "excludeFromPrerender": true
+        },
+        {
+            "key": "encyclopedia",
+            "en": "zouk-encyclopedia",
+            "pt": "enciclopedia-zouk",
+            "aliases": {
+                "en": ["zouk-terms", "zouk-wiki"],
+                "pt": ["termos-zouk", "wiki-zouk"]
+            }
         }
     ]
 }

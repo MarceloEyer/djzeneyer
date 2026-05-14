@@ -81,6 +81,7 @@ const TicketsCheckoutPage = lazyWithRetry(() => import('../pages/TicketsCheckout
 const ResetPasswordPage = lazyWithRetry(() => import('../pages/ResetPasswordPage'), 'route:reset-password');
 const ZenLinkPage = lazyWithRetry(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })), 'route:zenlink');
 const ZoukPersonaQuizPage = lazyWithRetry(() => import('../pages/ZoukPersonaQuizPage'), 'route:quiz');
+const EncyclopediaPage = lazyWithRetry(() => import('../pages/EncyclopediaPage'), 'route:encyclopedia');
 const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'), 'route:not-found');
 
 import routesSlugs from './routes-slugs.json';
@@ -295,6 +296,13 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'quiz',
     component: ZoukPersonaQuizPage,
     paths: { en: slug('quiz', 'en') as string, pt: slug('quiz', 'pt') as string },
+  },
+  
+  // Zouk Encyclopedia
+  {
+    key: 'encyclopedia',
+    component: EncyclopediaPage,
+    paths: { en: slug('encyclopedia', 'en'), pt: slug('encyclopedia', 'pt') },
   },
 
   // Password Reset
