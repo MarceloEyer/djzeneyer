@@ -18,8 +18,8 @@ Bandsintown bridge for event data, schema, and cache management.
 
 - `GET /events`
 - `GET /events/schema`
-- `GET /events/{event_id}`
-- `GET /events/{event_id}/schema`
+- `GET /events/{event_id}` or `GET /events/{canonical-slug-ending-in-event_id}`
+- `GET /events/{event_id}/schema` or `GET /events/{canonical-slug-ending-in-event_id}/schema`
 - `POST /admin/fetch-now`
 - `POST /admin/clear-cache`
 - `GET /admin/health`

@@ -123,22 +123,22 @@ if (!class_exists('Zen_BIT')) {
             ]);
 
             // Detalhe de evento (event_id numérico)
-            register_rest_route($ns, '/events/(?P<event_id>\d+)', [
+            register_rest_route($ns, '/events/(?P<event_id>[^/]+)', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'get_event'],
                 'permission_callback' => '__return_true',
                 'args' => [
-                    'event_id' => ['type' => 'integer', 'required' => true, 'minimum' => 1],
+                    'event_id' => ['type' => 'string', 'required' => true],
                 ],
             ]);
 
             // Schema JSON-LD — evento individual
-            register_rest_route($ns, '/events/(?P<event_id>\d+)/schema', [
+            register_rest_route($ns, '/events/(?P<event_id>[^/]+)/schema', [
                 'methods' => 'GET',
                 'callback' => [$api_class, 'get_event_schema'],
                 'permission_callback' => '__return_true',
                 'args' => [
-                    'event_id' => ['type' => 'integer', 'required' => true],
+                    'event_id' => ['type' => 'string', 'required' => true],
                 ],
             ]);
 
