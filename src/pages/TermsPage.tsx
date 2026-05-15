@@ -167,7 +167,7 @@ const TermsPage: React.FC = () => {
               <ul className="space-y-3">
                 {term.points.map((point, i) => (
                   <li key={i} className="flex items-start gap-3">
-                    <span className="text-primary mt-1.5">â€¢</span>
+                    <span className="text-primary mt-1.5">•</span>
                     <span className="text-white/70 leading-relaxed">{point}</span>
                   </li>
                 ))}
