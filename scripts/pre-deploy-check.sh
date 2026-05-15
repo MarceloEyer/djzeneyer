@@ -1,39 +1,44 @@
 #!/bin/bash
 # Pre-deploy check script for DJ Zen Eyer
 
-echo "🚀 Iniciando verificações pré-deploy..."
+echo "Starting pre-deploy checks..."
 
-# 1. Verificar erros de sintaxe JSX/TSX
-echo "🔍 Verificando lint..."
+echo "Checking lint..."
 if ! npm run lint; then
-    echo "❌ Erro no lint detectado. Abortando."
+    echo "Lint failed. Aborting."
     exit 1
 fi
 
-# 2. Verificar tipos TypeScript
-echo "🔍 Verificando tipos TypeScript..."
+echo "Checking TypeScript..."
 if ! npm run type-check; then
-    echo "❌ Erro de tipos detectado. Abortando."
+    echo "Type check failed. Aborting."
     exit 1
 fi
 
-# 3. Sincronizar contexto de IA (versões)
-echo "🔍 Sincronizando contexto de IA..."
-npm run context:sync
+echo "Synchronizing AI context..."
+if ! npm run context:sync; then
+    echo "Context sync failed. Aborting."
+    exit 1
+fi
 
-# 4. Verificar se robots.txt e sitemap.xml existem em public/
+echo "Checking UTF-8 content integrity..."
+if ! npm run utf8:check; then
+    echo "UTF-8/mojibake check failed. Aborting."
+    exit 1
+fi
+
 if [ ! -f "public/robots.txt" ]; then
-    echo "⚠️ robots.txt não encontrado em public/"
-fi
-if [ ! -f "public/sitemap.xml" ]; then
-    echo "⚠️ sitemap.xml não encontrado em public/"
+    echo "Warning: public/robots.txt was not found."
 fi
 
-# 4. Verificar se todas as rotas de prerender estão configuradas
+if [ ! -f "public/sitemap.xml" ]; then
+    echo "Warning: public/sitemap.xml was not found."
+fi
+
 if [ ! -f "src/config/routes-slugs.json" ]; then
-    echo "❌ src/config/routes-slugs.json não encontrado. Abortando."
+    echo "src/config/routes-slugs.json was not found. Aborting."
     exit 1
 fi
 
-echo "✅ Verificações concluídas com sucesso!"
+echo "Pre-deploy checks completed successfully."
 exit 0

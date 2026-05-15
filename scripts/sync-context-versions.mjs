@@ -1,66 +1,90 @@
+#!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-/**
- * sync-context-versions.mjs
- * 
- * Sincroniza as versões do package.json com as tabelas de stack nos arquivos de persona.
- * Isso garante que CLAUDE.md e GEMINI.md reflitam sempre a realidade técnica.
- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const root = path.resolve(__dirname, '..');
 
-const PACKAGE_JSON_PATH = path.resolve('package.json');
-const CLAUDE_MD_PATH = path.resolve('.agents/personas/CLAUDE.md');
-const GEMINI_MD_PATH = path.resolve('.agents/personas/GEMINI.md');
+const packageJsonPath = path.join(root, 'package.json');
+const claudeMdPath = path.join(root, '.agents/personas/CLAUDE.md');
+const geminiMdPath = path.join(root, '.agents/personas/GEMINI.md');
 
-function sync() {
-    try {
-        const pkg = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf8'));
-        const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-
-        // 1. Atualizar CLAUDE.md
-        if (fs.existsSync(CLAUDE_MD_PATH)) {
-            let claudeContent = fs.readFileSync(CLAUDE_MD_PATH, 'utf8');
-            
-            // Versões principais
-            const stackLine = `| Frontend | React ${deps['react']?.replace('^', '')}, React DOM ${deps['react-dom']?.replace('^', '')}, TypeScript ${deps['typescript']?.replace('^', '')}, Vite ${deps['vite']?.replace('^', '')}, Tailwind ${deps['tailwindcss']?.replace('^', '')}, React Query ${deps['@tanstack/react-query']?.replace('^', '')}, React Router ${deps['react-router-dom']?.replace('^', '')}, i18next ${deps['i18next']?.replace('^', '')}, react-i18next ${deps['react-i18next']?.replace('^', '')}, Framer Motion ${deps['framer-motion']?.replace('^', '')} |`;
-            const buildLine = `| Build e qualidade | ESLint ${deps['eslint']?.replace('^', '')}, Prettier ${deps['prettier']?.replace('^', '')}, Puppeteer ${deps['puppeteer']?.replace('^', '')}, OXC como minificador padrao do Vite 8 |`;
-            const baseDepsLine = `| Dependencias basicas | dompurify ${deps['dompurify']?.replace('^', '')}, zod ${deps['zod']?.replace('^', '')}, lucide-react ${deps['lucide-react']?.replace('^', '')} |`;
-
-            claudeContent = claudeContent.replace(/\| Frontend \| React.*\|/, stackLine);
-            claudeContent = claudeContent.replace(/\| Build e qualidade \| ESLint.*\|/, buildLine);
-            claudeContent = claudeContent.replace(/\| Dependencias basicas \| dompurify.*\|/, baseDepsLine);
-
-            // Overrides
-            let overridesBlock = 'Overrides atualmente presentes em `package.json`:\n';
-            if (pkg.overrides) {
-                Object.entries(pkg.overrides).forEach(([name, version]) => {
-                    overridesBlock += `- \`${name}\`: \`${version}\`\n`;
-                });
-            }
-            claudeContent = claudeContent.replace(/Overrides atualmente presentes em `package\.json`:\n(- `.*`:\n)*/g, overridesBlock);
-
-            fs.writeFileSync(CLAUDE_MD_PATH, claudeContent);
-            console.log('✅ CLAUDE.md sincronizado.');
-        }
-
-        // 2. Atualizar GEMINI.md
-        if (fs.existsSync(GEMINI_MD_PATH)) {
-            let geminiContent = fs.readFileSync(GEMINI_MD_PATH, 'utf8');
-            
-            const stackLine = `| Frontend | React ${deps['react']?.replace('^', '')}, TypeScript ${deps['typescript']?.replace('^', '')}, Vite ${deps['vite']?.replace('^', '')}, Tailwind ${deps['tailwindcss']?.replace('^', '')}, React Query ${deps['@tanstack/react-query']?.replace('^', '')}, React Router ${deps['react-router-dom']?.replace('^', '')}, i18next ${deps['i18next']?.replace('^', '')} |`;
-            const buildLine = `| Build | ESLint ${deps['eslint']?.replace('^', '')}, Prettier ${deps['prettier']?.replace('^', '')}, Puppeteer ${deps['puppeteer']?.replace('^', '')}, OXC como minificador padrao |`;
-
-            geminiContent = geminiContent.replace(/\| Frontend \| React.*\|/, stackLine);
-            geminiContent = geminiContent.replace(/\| Build \| ESLint.*\|/, buildLine);
-
-            fs.writeFileSync(GEMINI_MD_PATH, geminiContent);
-            console.log('✅ GEMINI.md sincronizado.');
-        }
-
-    } catch (err) {
-        console.error('❌ Erro na sincronização:', err.message);
-        process.exit(1);
-    }
+function cleanVersion(value) {
+  return typeof value === 'string' ? value.replace(/^[~^]/, '') : 'N/A';
 }
 
-sync();
+function replaceRequired(content, pattern, replacement, label, filePath) {
+  if (!pattern.test(content)) {
+    throw new Error(`${path.relative(root, filePath)}: missing expected ${label} block`);
+  }
+
+  return content.replace(pattern, replacement);
+}
+
+function syncClaude(pkg, deps) {
+  if (!fs.existsSync(claudeMdPath)) {
+    return;
+  }
+
+  let content = fs.readFileSync(claudeMdPath, 'utf8');
+  const stackLine = `| Frontend | React ${cleanVersion(deps.react)}, React DOM ${cleanVersion(deps['react-dom'])}, TypeScript ${cleanVersion(deps.typescript)}, Vite ${cleanVersion(deps.vite)}, Tailwind ${cleanVersion(deps.tailwindcss)}, React Query ${cleanVersion(deps['@tanstack/react-query'])}, React Router ${cleanVersion(deps['react-router-dom'])}, i18next ${cleanVersion(deps.i18next)}, react-i18next ${cleanVersion(deps['react-i18next'])}, Framer Motion ${cleanVersion(deps['framer-motion'])} |`;
+  const buildLine = `| Build e qualidade | ESLint ${cleanVersion(deps.eslint)}, Prettier ${cleanVersion(deps.prettier)}, Puppeteer ${cleanVersion(deps.puppeteer)}, OXC como minificador padrao do Vite 8 |`;
+  const baseDepsLine = `| Dependencias basicas | dompurify ${cleanVersion(deps.dompurify)}, zod ${cleanVersion(deps.zod)}, lucide-react ${cleanVersion(deps['lucide-react'])} |`;
+
+  content = replaceRequired(content, /^\| Frontend \| React.*\|$/m, stackLine, 'Frontend', claudeMdPath);
+  content = replaceRequired(content, /^\| Build e qualidade \| ESLint.*\|$/m, buildLine, 'Build e qualidade', claudeMdPath);
+  content = replaceRequired(content, /^\| Dependencias basicas \| dompurify.*\|$/m, baseDepsLine, 'Dependencias basicas', claudeMdPath);
+
+  const overrides = Object.entries(pkg.overrides ?? {});
+  const overridesBlock = [
+    'Overrides atualmente presentes em `package.json`:',
+    ...(overrides.length > 0
+      ? overrides.map(([name, version]) => `- \`${name}\`: \`${version}\``)
+      : ['- Nenhum override ativo.']),
+    '',
+  ].join('\n');
+
+  content = replaceRequired(
+    content,
+    /Overrides atualmente presentes em `package\.json`:\r?\n(?:- .*\r?\n)*/m,
+    overridesBlock,
+    'package overrides',
+    claudeMdPath,
+  );
+
+  fs.writeFileSync(claudeMdPath, content);
+  console.log('[context-sync] CLAUDE.md synchronized.');
+}
+
+function syncGemini(deps) {
+  if (!fs.existsSync(geminiMdPath)) {
+    return;
+  }
+
+  let content = fs.readFileSync(geminiMdPath, 'utf8');
+  const stackLine = `| Frontend | React ${cleanVersion(deps.react)}, TypeScript ${cleanVersion(deps.typescript)}, Vite ${cleanVersion(deps.vite)}, Tailwind ${cleanVersion(deps.tailwindcss)}, React Query ${cleanVersion(deps['@tanstack/react-query'])}, React Router ${cleanVersion(deps['react-router-dom'])}, i18next ${cleanVersion(deps.i18next)} |`;
+  const buildLine = `| Build | ESLint ${cleanVersion(deps.eslint)}, Prettier ${cleanVersion(deps.prettier)}, Puppeteer ${cleanVersion(deps.puppeteer)}, OXC como minificador padrao |`;
+
+  content = replaceRequired(content, /^\| Frontend \| React.*\|$/m, stackLine, 'Frontend', geminiMdPath);
+  content = replaceRequired(content, /^\| Build \| ESLint.*\|$/m, buildLine, 'Build', geminiMdPath);
+
+  fs.writeFileSync(geminiMdPath, content);
+  console.log('[context-sync] GEMINI.md synchronized.');
+}
+
+function sync() {
+  const pkg = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+
+  syncClaude(pkg, deps);
+  syncGemini(deps);
+}
+
+try {
+  sync();
+} catch (err) {
+  console.error(`[context-sync] ${err.message}`);
+  process.exit(1);
+}
