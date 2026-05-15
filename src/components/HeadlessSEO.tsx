@@ -16,6 +16,9 @@ import { stripHtml } from '../utils/text';
 // 1. INTERFACES
 // ============================================================================
 
+// ⚡ Bolt: Extracted `DEFAULT_SPEAKABLE` to module scope to preserve reference equality and eliminate array reallocation overhead during React render cycles.
+const DEFAULT_SPEAKABLE = ['h1', '[data-speakable]'];
+
 export interface HrefLang {
   lang: string;
   url: string;
@@ -439,7 +442,6 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   if (!schema) {
     // Speakable spec — injeta seletores CSS para Google Assistant / LLMs de voz
     // Sanitiza: trim + remove strings vazias + fallback para defaults se array vazio
-    const DEFAULT_SPEAKABLE = ['h1', '[data-speakable]'];
     const normalizedSpeakableSelectors = Array.isArray(speakable)
       ? speakable.map((s) => s.trim()).filter(Boolean)
       : DEFAULT_SPEAKABLE;
