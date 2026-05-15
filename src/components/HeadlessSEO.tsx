@@ -16,7 +16,6 @@ import { stripHtml } from '../utils/text';
 // 1. INTERFACES
 // ============================================================================
 
-// ⚡ Bolt: Extracted `DEFAULT_SPEAKABLE` to module scope to preserve reference equality and eliminate array reallocation overhead during React render cycles.
 const DEFAULT_SPEAKABLE = ['h1', '[data-speakable]'];
 
 export interface HrefLang {

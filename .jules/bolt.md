@@ -126,6 +126,6 @@
 
 **Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
 **Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.
-## 2026-06-28 - Extracted DEFAULT_SPEAKABLE out of render in HeadlessSEO
+## 2026-05-15 - Extracted DEFAULT_SPEAKABLE out of render in HeadlessSEO
 **Learning:** Arrays declared inside a React component render function, like `DEFAULT_SPEAKABLE = ['h1', '[data-speakable]']` in `HeadlessSEO.tsx`, are re-allocated on every single render. This unnecessary array allocation adds garbage collection overhead, especially for heavily used components.
 **Action:** Move static array declarations to the module scope (outside the component) to preserve referential equality and avoid array reallocation on each render cycle.
