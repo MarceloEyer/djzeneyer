@@ -27,6 +27,7 @@ Este documento define os princípios de desenvolvimento e as restrições operac
 
 - **i18n:** Nunca usar strings hardcoded. Toda UI deve usar `t('chave')`. Ao adicionar chave nova: adicionar em AMBOS `src/locales/pt/translation.json` E `src/locales/en/translation.json`.
 - **Higiene de Texto:** Zero Mojibake (ex: `Â©`). Salvar sempre em UTF-8 limpo.
+- **Aspas:** Use aspas retas (`"` e `'`) em codigo, contexto e documentos humanos. Evite aspas tipograficas (U+201C/U+201D/U+2018/U+2019) porque dificultam diff, busca e reaproveitamento em JSX/JSON.
 - **Lint & Build:** O código deve passar em `npm run lint` e `npm run build` (com prerender) antes de qualquer push.
 - **Hooks:** Dependências de `useMemo` e `useCallback` devem estar completas.
 - **safeUrl:** SEMPRE usar com fallback explícito: `safeUrl(url, '/fallback.svg')` para imagens, `safeUrl(url, '/')` para links. `safeUrl(null)` retorna `'#'` (truthy) — o padrão `safeUrl(url) || fallback` NUNCA executa.
