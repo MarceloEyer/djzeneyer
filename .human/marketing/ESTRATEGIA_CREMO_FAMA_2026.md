@@ -20,11 +20,11 @@ A oportunidade é rara porque Zen Eyer já tem ativos que muitos artistas famoso
 | 🧈 Cremosidade | Conceito proprietário e memorável | Meme cultural, assinatura artística e comunidade |
 | 🏰 Ecossistema próprio | Site, SEO, loja, newsletter e Zen Tribe | Captura demanda em vez de depender de algoritmo |
 
-**Tese central:** Zen Eyer não deve competir como “mais um DJ”. Ele deve ocupar uma categoria própria: **o arquiteto emocional da Cremosidade no Brazilian Zouk**.
+**Tese central:** Zen Eyer não deve competir como "mais um DJ". Ele deve ocupar uma categoria própria: **o arquiteto emocional da Cremosidade no Brazilian Zouk**.
 
 ---
 
-## 1. 🎯 A Big Idea: transformar “Cremosidade” em movimento cultural
+## 1. 🎯 A Big Idea: transformar "Cremosidade" em movimento cultural
 
 ### Nome da campanha
 
@@ -32,7 +32,7 @@ A oportunidade é rara porque Zen Eyer já tem ativos que muitos artistas famoso
 
 ### Mensagem-mãe
 
-> **“A pressa é inimiga da cremosidade.”**
+> **"A pressa é inimiga da cremosidade."**
 
 ### Promessa pública
 
@@ -43,7 +43,7 @@ Zen Eyer cria músicas, remixes e sets que fazem a dança desacelerar por dentro
 | Antes | Depois |
 |---|---|
 | Zen Eyer é conhecido por quem já está no Zouk | Zen Eyer vira a porta de entrada emocional para curiosos descobrirem o Zouk |
-| “Cremosidade” é um conceito de nicho | “Cremosidade” vira frase repetível, hashtag, filtro, challenge e linguagem de comunidade |
+| "Cremosidade" é um conceito de nicho | "Cremosidade" vira frase repetível, hashtag, filtro, challenge e linguagem de comunidade |
 | Conteúdo depende de agenda de eventos | Conteúdo nasce de uma máquina semanal com música, micro-histórias e participação dos fãs |
 | Booking depende de networking manual | Organizadores passam a ver demanda pública e prova social antes do convite |
 
@@ -86,7 +86,7 @@ A fama vem quando 5 motores giram juntos. Se um deles fica parado, o crescimento
 | Newsletter Tribo Zen | base a validar | 500–1.500 | 3.000–7.000 | 15.000+ |
 | Bookings internacionais/ano | base a validar | +20% | +50% | +100% |
 | Cachê médio por booking | base a validar | +10–20% | +25–50% | +75%+ |
-| Buscas por “Zen Eyer” | base a validar | +50% | +150% | +400% |
+| Buscas por "Zen Eyer" | base a validar | +50% | +150% | +400% |
 
 ### Estimativa de melhoria por frente
 
@@ -112,13 +112,13 @@ Deixar claro para humanos, algoritmos e IAs que Zen Eyer é uma entidade artíst
 ### Ações
 
 1. **Definir a narrativa curta oficial**
-   - PT: “Zen Eyer é DJ, produtor e Bicampeão Mundial de Brazilian Zouk, criador da Cremosidade — a arte de fazer a música abraçar o dançarino.”
-   - EN: “Zen Eyer is a Brazilian Zouk DJ, producer, and two-time World Champion, creator of Cremosidade — the art of making music embrace the dancer.”
+   - PT: "Zen Eyer é DJ, produtor e Bicampeão Mundial de Brazilian Zouk, criador da Cremosidade — a arte de fazer a música abraçar o dançarino."
+   - EN: "Zen Eyer is a Brazilian Zouk DJ, producer, and two-time World Champion, creator of Cremosidade — the art of making music embrace the dancer."
 
 2. **Padronizar bios em todas as plataformas**
    - Instagram, TikTok, YouTube, Spotify, SoundCloud, Mixcloud, Resident Advisor, Bandsintown, Linktree/Beacons se existir.
    - Nunca usar grafia incorreta do nome artístico.
-   - Sempre reforçar “2× World Champion” + “Cremosidade”.
+   - Sempre reforçar "2× World Champion" + "Cremosidade".
 
 3. **Criar o kit público da campanha**
    - 1 foto horizontal premium.
@@ -149,7 +149,7 @@ Deixar claro para humanos, algoritmos e IAs que Zen Eyer é uma entidade artíst
 
 ---
 
-## Fase 2 — Máquina de conteúdo “Cremosidade em série” (dias 15–60)
+## Fase 2 — Máquina de conteúdo "Cremosidade em série" (dias 15–60)
 
 ### Objetivo
 
@@ -159,38 +159,38 @@ Criar repetição. Repetição gera familiaridade. Familiaridade gera fama.
 
 | Pilar | Formato | Frequência | Exemplo |
 |---|---|---:|---|
-| 🧈 Cremosidade | Reels/TikTok/Shorts | 3×/semana | “Essa transição não acelera seu corpo. Ela abre espaço.” |
+| 🧈 Cremosidade | Reels/TikTok/Shorts | 3×/semana | "Essa transição não acelera seu corpo. Ela abre espaço." |
 | 🎧 Antes/depois | Vídeo curto | 2×/semana | Original vs versão Zen Eyer |
 | 🕺 Reação de pista | Reels/Stories | 2×/semana | Dançarinos reagindo ao drop assinatura |
 | 🧠 Por que funciona | Carrossel/Reel | 1×/semana | Explicar uma escolha musical em 30s |
 | 🌍 Tour diary | Stories/Shorts | Em eventos | Bastidor, aeroporto, soundcheck, abraço pós-set |
-| 👑 Autoridade sem arrogância | Post/LinkedIn | 1×/semana | “O que aprendi sendo 2× campeão mundial...” |
+| 👑 Autoridade sem arrogância | Post/LinkedIn | 1×/semana | "O que aprendi sendo 2× campeão mundial..." |
 
 ### Fórmula dos vídeos
 
 | Segundo | Função | Exemplo |
 |---:|---|---|
-| 0–2 | Gancho | “O erro que mata a cremosidade no Zouk...” |
+| 0–2 | Gancho | "O erro que mata a cremosidade no Zouk..." |
 | 3–10 | Demonstração | Mostrar trecho musical ou pista reagindo |
-| 11–20 | Explicação simples | “Aqui eu tirei a pressa da transição.” |
-| 21–30 | CTA leve | “Se isso te abraçou, entra na Tribo Zen.” |
+| 11–20 | Explicação simples | "Aqui eu tirei a pressa da transição." |
+| 21–30 | CTA leve | "Se isso te abraçou, entra na Tribo Zen." |
 
 ### 10 ganchos prontos
 
-1. “A maioria dos DJs acelera quando deveria respirar.”
-2. “Essa transição mudou a energia da pista em 8 segundos.”
-3. “Cremosidade não é lentidão. É intenção.”
-4. “Se o corpo precisa correr, a música falhou.”
-5. “Esse é o momento em que a pista parou de pensar.”
-6. “O Zouk começa no espaço entre duas notas.”
-7. “Um drop pode abraçar em vez de atacar.”
-8. “A pressa é inimiga da cremosidade.”
-9. “O DJ não toca música. Ele toca o estado emocional da sala.”
-10. “Você dançaria isso de olhos fechados?”
+1. "A maioria dos DJs acelera quando deveria respirar."
+2. "Essa transição mudou a energia da pista em 8 segundos."
+3. "Cremosidade não é lentidão. É intenção."
+4. "Se o corpo precisa correr, a música falhou."
+5. "Esse é o momento em que a pista parou de pensar."
+6. "O Zouk começa no espaço entre duas notas."
+7. "Um drop pode abraçar em vez de atacar."
+8. "A pressa é inimiga da cremosidade."
+9. "O DJ não toca música. Ele toca o estado emocional da sala."
+10. "Você dançaria isso de olhos fechados?"
 
 ### Regra de ouro
 
-Nunca postar só para “manter presença”. Cada post deve ensinar, emocionar, provocar ou fazer alguém querer dançar.
+Nunca postar só para "manter presença". Cada post deve ensinar, emocionar, provocar ou fazer alguém querer dançar.
 
 ---
 
@@ -209,14 +209,14 @@ Dançarinos gravam 10–20 segundos mostrando o momento mais cremoso da dança u
 1. Zen Eyer publica o vídeo fundador.
 2. Convida 10 dançarinos/professores de Zouk para participar.
 3. Reposta todos os vídeos nos Stories.
-4. Premia semanalmente o “Momento Mais Cremoso”.
+4. Premia semanalmente o "Momento Mais Cremoso".
 5. O prêmio pode ser simples: repost, chamada de vídeo curta, nome em playlist, acesso antecipado a música, ingresso parceiro quando houver.
 
 ### Roteiro do post fundador
 
-> “Eu acredito que a melhor dança não é a mais rápida. É a que respira.
+> "Eu acredito que a melhor dança não é a mais rápida. É a que respira.
 > Grave 10 segundos do seu momento mais cremoso com uma música minha, marque **@ZenEyer** e use **#CremosidadeChallenge**.
-> Toda semana vou escolher um vídeo para repostar para a Tribo Zen. 🧈”
+> Toda semana vou escolher um vídeo para repostar para a Tribo Zen. 🧈"
 
 ### Estimativa de efeito
 
@@ -238,16 +238,16 @@ Parar de depender de lançamentos soltos e criar uma narrativa musical contínua
 
 | Mês | Entrega principal | Conteúdo de apoio | Meta |
 |---|---|---|---|
-| 1 | Single/remix “Cremosidade Anthem” | 10 vídeos curtos | Criar assinatura da campanha |
+| 1 | Single/remix "Cremosidade Anthem" | 10 vídeos curtos | Criar assinatura da campanha |
 | 2 | Edit para aulas de Zouk | Professores dançando | Entrar em salas de aula |
-| 3 | Live set “Cremosidade Global Vol. 1” | Clips por transição | Construir tempo de escuta |
+| 3 | Live set "Cremosidade Global Vol. 1" | Clips por transição | Construir tempo de escuta |
 | 4 | Collab com cantor/produtor | Bastidores da collab | Expandir audiência |
 | 5 | Remix de música conhecida no nicho | Antes/depois | Shares por reconhecimento |
 | 6 | EP curto com 3 faixas | Mini-doc de produção | Autoridade artística |
 | 7 | Live set de festival | Reação de pista | Prova social |
 | 8 | Collab internacional | Conteúdo em EN | Europa e EUA |
 | 9 | Versão acústica/slow | Conteúdo emocional | Diferenciação |
-| 10 | “Cremosidade Global Vol. 2” | Challenge renovado | Continuidade |
+| 10 | "Cremosidade Global Vol. 2" | Challenge renovado | Continuidade |
 | 11 | Remix com comunidade | Fãs votam elementos | Engajamento |
 | 12 | Retrospectiva + best moments | Press release anual | Fechar ciclo com autoridade |
 
@@ -277,7 +277,7 @@ Usar audiências existentes para acelerar confiança.
 
 ### Script de abordagem
 
-> “Oi, [nome]. Vi seu trabalho em [contexto específico] e senti que sua dança tem uma qualidade que combina muito com a Cremosidade. Estou criando um movimento global para mostrar um Zouk mais respirado, emocional e conectado. Posso te enviar um trecho exclusivo para você dançar do seu jeito? Sem obrigação — se abraçar você, a gente publica junto.”
+> "Oi, [nome]. Vi seu trabalho em [contexto específico] e senti que sua dança tem uma qualidade que combina muito com a Cremosidade. Estou criando um movimento global para mostrar um Zouk mais respirado, emocional e conectado. Posso te enviar um trecho exclusivo para você dançar do seu jeito? Sem obrigação — se abraçar você, a gente publica junto."
 
 ### Regra
 
@@ -300,7 +300,7 @@ Fazer organizadores sentirem que chamar Zen Eyer é menos risco e mais oportunid
 | 🌍 Festival Content Pack | Organizadores com marketing fraco | Set + reels + collab posts | DJ que também gera mídia |
 | 👑 Champion Night | Eventos premium | Set especial + narrativa de campeão | Noite memorável |
 
-### Tática “demanda antes do pitch”
+### Tática "demanda antes do pitch"
 
 1. Escolher festival-alvo.
 2. Criar 3 posts geolocalizados com conteúdo de Zouk para aquela cidade.
@@ -310,7 +310,7 @@ Fazer organizadores sentirem que chamar Zen Eyer é menos risco e mais oportunid
 
 ### Mensagem de booking
 
-> “Oi, [nome]. Estou acompanhando o trabalho de vocês em [evento] e preparei uma ideia específica: levar a **Cremosidade Experience** para a pista — um set de Brazilian Zouk com assinatura emocional, apoiado por conteúdo pré-evento para aquecer a comunidade local. Já comecei a testar conteúdo com público de [cidade/país] e acredito que pode somar valor real ao festival. Posso te enviar um EPK curto?”
+> "Oi, [nome]. Estou acompanhando o trabalho de vocês em [evento] e preparei uma ideia específica: levar a **Cremosidade Experience** para a pista — um set de Brazilian Zouk com assinatura emocional, apoiado por conteúdo pré-evento para aquecer a comunidade local. Já comecei a testar conteúdo com público de [cidade/país] e acredito que pode somar valor real ao festival. Posso te enviar um EPK curto?"
 
 ---
 
@@ -324,20 +324,20 @@ Sair da bolha do Zouk sem abandonar a raiz.
 
 | Ângulo | Título sugerido | Veículos possíveis |
 |---|---|---|
-| Campeão mundial | “O DJ brasileiro bicampeão mundial que está levando o Zouk para o mundo” | Cultura, música, dança |
-| Mensa + música | “Como um membro da Mensa pensa a emoção de uma pista de dança” | Podcasts, tecnologia, comportamento |
-| Cremosidade | “A filosofia brasileira que quer desacelerar a dança” | Lifestyle, wellness, cultura |
-| Internacionalização | “De festivais de Zouk à Europa: a jornada global de Zen Eyer” | Imprensa local e brasileira |
+| Campeão mundial | "O DJ brasileiro bicampeão mundial que está levando o Zouk para o mundo" | Cultura, música, dança |
+| Mensa + música | "Como um membro da Mensa pensa a emoção de uma pista de dança" | Podcasts, tecnologia, comportamento |
+| Cremosidade | "A filosofia brasileira que quer desacelerar a dança" | Lifestyle, wellness, cultura |
+| Internacionalização | "De festivais de Zouk à Europa: a jornada global de Zen Eyer" | Imprensa local e brasileira |
 
 ### Conteúdos evergreen para IA e buscadores
 
 | Artigo | Objetivo |
 |---|---|
-| “Quem é Zen Eyer?” | Resposta factual para Google e IAs |
-| “O que é Cremosidade no Brazilian Zouk?” | Dominar o conceito proprietário |
-| “O que faz um DJ de Brazilian Zouk?” | Capturar busca educacional |
-| “Como escolher músicas para dançar Zouk?” | Atrair professores e alunos |
-| “Brazilian Zouk DJ: guia para organizadores” | Converter booking |
+| "Quem é Zen Eyer?" | Resposta factual para Google e IAs |
+| "O que é Cremosidade no Brazilian Zouk?" | Dominar o conceito proprietário |
+| "O que faz um DJ de Brazilian Zouk?" | Capturar busca educacional |
+| "Como escolher músicas para dançar Zouk?" | Atrair professores e alunos |
+| "Brazilian Zouk DJ: guia para organizadores" | Converter booking |
 
 ### Regra editorial
 
@@ -365,11 +365,11 @@ Fãs não devem apenas consumir. Devem participar.
 
 | Dia | Assunto | Objetivo |
 |---:|---|---|
-| 0 | “Bem-vindo à Tribo Zen 🧈” | Promessa e identidade |
-| 2 | “O que é Cremosidade?” | Educação emocional |
-| 5 | “A faixa que mudou minha forma de tocar” | História pessoal |
-| 9 | “Quer me ajudar a escolher o próximo remix?” | Participação |
-| 14 | “Como levar Zen Eyer para sua cidade” | Booking indireto |
+| 0 | "Bem-vindo à Tribo Zen 🧈" | Promessa e identidade |
+| 2 | "O que é Cremosidade?" | Educação emocional |
+| 5 | "A faixa que mudou minha forma de tocar" | História pessoal |
+| 9 | "Quer me ajudar a escolher o próximo remix?" | Participação |
+| 14 | "Como levar Zen Eyer para sua cidade" | Booking indireto |
 
 ---
 
@@ -426,11 +426,11 @@ O plano consolidado atual está correto ao priorizar **Knowledge Panel → GEO �
 | 4 | Primeiro lançamento | Teaser + pré-save + newsletter |
 | 5 | Challenge | #CremosidadeChallenge lançado |
 | 6 | Colabs | 10 convites enviados |
-| 7 | Artigo evergreen | “O que é Cremosidade?” publicado |
+| 7 | Artigo evergreen | "O que é Cremosidade?" publicado |
 | 8 | Booking alvo | 5 festivais priorizados |
 | 9 | Ads geolocalizados | 1 campanha teste |
 | 10 | Podcast/imprensa | 10 pitches enviados |
-| 11 | Live set | “Cremosidade Global Vol. 1” |
+| 11 | Live set | "Cremosidade Global Vol. 1" |
 | 12 | Revisão | Dashboard + próximos experimentos |
 
 ---
@@ -472,7 +472,7 @@ A fama começa quando outras pessoas conseguem explicar você melhor do que voc�
 
 A frase que todo fã deve conseguir repetir:
 
-> **“Zen Eyer é o DJ bicampeão mundial de Brazilian Zouk que criou a Cremosidade — a música que abraça o dançarino.”**
+> **"Zen Eyer é o DJ bicampeão mundial de Brazilian Zouk que criou a Cremosidade — a música que abraça o dançarino."**
 
 Se essa frase aparecer em bios, posts, entrevistas, artigos, vídeos, comentários, newsletters e conversas de festival, Zen Eyer deixa de ser apenas um artista conhecido por alguns e passa a ser uma ideia circulando pelo mundo.
 
