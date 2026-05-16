@@ -254,8 +254,10 @@ Existing custom plugins:
 Strategic conclusion:
 
 - Do not create a new plugin for music releases yet.
-- Use WordPress posts + categories/tags first.
-- Extend `zen-seo-lite` only if release metadata needs structured fields beyond normal posts.
+- Use WordPress posts + Polylang for release content and translation.
+- Use WordPress categories/tags for editorial organization.
+- `zen-seo-lite` now owns optional structured music release metadata/schema for posts (PR #513), because releases need ISRC, platform links, MusicBrainz and `MusicRecording`/`MusicAlbum` markup beyond normal post fields.
+- Do not create a separate releases plugin unless release metadata grows beyond the SEO/schema responsibility of `zen-seo-lite`.
 - For Encyclopedia, start in frontend/data only if needed for the first PR, but plan a future WordPress-managed content model if the glossary grows.
 - If Encyclopedia becomes WordPress-managed, prefer a small custom post type or REST extension over editing static frontend data.
 
@@ -265,10 +267,13 @@ Strategic conclusion:
 - Existing philosophy URLs may redirect to About.
 - Low traffic means this is not urgent, but redirects are still cleaner than 404s.
 
-## Open Questions
+## Open Questions / Next Decisions
 
-- Exact first 10-20 Encyclopedia terms.
-- Whether Releases URL should permanently replace old News URLs or only labels should change.
-- Whether music release metadata can be handled entirely with WordPress categories/tags/custom fields.
-- What Zen Tribe promises at launch.
-- Whether the first Zen Tribe public CTA emphasizes free entry, premium membership, or both.
+- Validate #494 on a real PHP/WordPress environment before merging: `php -l`, plugin activation, canonical event route tests, schema endpoint tests.
+- Confirm #504 auto-merge/base-branch policy state; do not use admin bypass unless the human explicitly asks.
+- Test PR #513 behavior in WordPress admin with a real release post and Polylang translation pair.
+- Decide release category slugs in WordPress: at minimum Music Releases and Event Releases.
+- Decide whether the release detail frontend needs distinct visual templates for music releases vs event releases after metadata is available via REST.
+- Define Zen Tribe launch promise without changing layout: free entry first, optional supporter tier, higher tier with points/benefits.
+- Apply Seth Godin Tribes principles to Zen Tribe copy: community identity, leader-to-member connection, member-to-member connection, shared movement, low-friction first commitment.
+- Expand Zouk Encyclopedia gradually in neutral "Zen Eyer explains" style, with authority general to the page rather than self-promotion in every term.
