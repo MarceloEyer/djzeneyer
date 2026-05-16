@@ -6,24 +6,28 @@ import path from 'path';
 
 export default defineConfig(({ command, mode }) => {
   const isProduction = command === 'build' || mode === 'production';
+  const shouldCompressAssets = isProduction && process.platform !== 'win32';
+  const compressibleAssetPattern = /\.(js|mjs|css|html|svg|json|xml|txt|webmanifest)$/i;
 
   return {
     plugins: [
       react(),
       tailwindcss(),
       // Gzip compression (suportado pelo servidor Hostinger)
-      isProduction && viteCompression({
+      shouldCompressAssets && viteCompression({
         algorithm: 'gzip',
         ext: '.gz',
         threshold: 1024, // Só comprime arquivos > 1KB
         deleteOriginFile: false,
+        filter: compressibleAssetPattern,
       }),
       // Brotli compression (melhor taxa para Cloudflare/CDN)
-      isProduction && viteCompression({
+      shouldCompressAssets && viteCompression({
         algorithm: 'brotliCompress',
         ext: '.br',
         threshold: 1024,
         deleteOriginFile: false,
+        filter: compressibleAssetPattern,
       }),
     ].filter(Boolean),
 

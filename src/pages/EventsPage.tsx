@@ -6,6 +6,7 @@ import { useParams, Link, generatePath } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/routes';
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
+import { stripHtml } from '../utils/text';
 import { ARTIST } from '../data/artistData';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
@@ -63,6 +64,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const eventDate = new Date(event.starts_at);
   const isValidDate = !isNaN(eventDate.getTime());
   const loc = event.location;
+  const cleanDescription = stripHtml(event.description || '');
 
   const share = () => {
     const canonical = event.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
@@ -78,10 +80,11 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
     <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
       <HeadlessSEO
         title={event.title}
-        description={event.description?.substring(0, 160) || ''}
+        description={cleanDescription.substring(0, 160)}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
         events={[event]}
+        leadAnswer={cleanDescription ? cleanDescription.substring(0, 300) : undefined}
       />
 
       <Breadcrumb

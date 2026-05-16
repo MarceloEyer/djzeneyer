@@ -39,14 +39,16 @@
         },
         {
             "key": "news",
-            "en": "zouk-dance-news",
-            "pt": "noticias-zouk",
+            "en": "releases",
+            "pt": "lancamentos",
             "aliases": {
                 "en": [
-                    "news"
+                    "news",
+                    "zouk-dance-news"
                 ],
                 "pt": [
-                    "noticias"
+                    "noticias",
+                    "noticias-zouk"
                 ]
             }
         },

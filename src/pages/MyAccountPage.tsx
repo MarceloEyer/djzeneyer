@@ -50,7 +50,6 @@ const MyAccountContent: React.FC = () => {
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab && tab !== activeTab) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveTab(tab);
     }
   }, [searchParams, activeTab]);
@@ -130,7 +129,6 @@ const MyAccountContent: React.FC = () => {
   // Sync profile data to form state
   useEffect(() => {
     if (profileData) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProfileForm({
         realName: profileData.real_name || user?.name || '',
         preferredName: profileData.preferred_name || '',

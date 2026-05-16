@@ -47,7 +47,8 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
 
 1. **Vite & Build:**
    - O minificador padrão é o **OXC**. Nunca force `esbuild` no `vite.config.ts`.
-   - Aspas tipográficas (“ ”) em JSX quebram o parser OXC. Use aspas retas (" ") ou entidades HTML (`&ldquo;`).
+   - Aspas tipográficas (U+201C/U+201D) em JSX quebram o parser OXC. Use aspas retas (" ") ou entidades HTML (`&ldquo;`).
+   - Aspas tipográficas também não devem ser usadas em documentos humanos (`.human/`). Use aspas retas para manter diffs, buscas e ingestão por IA previsíveis.
 
 2. **Git & Workflows:**
    - `fetch-depth` nos workflows deve ser `2`.
