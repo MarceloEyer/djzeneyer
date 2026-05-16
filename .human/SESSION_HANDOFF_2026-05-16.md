@@ -11,12 +11,15 @@ Este handoff registra as decisoes e proximos passos para continuar sem depender 
 - #511 Encyclopedia i18n namespace: mergeado.
 - #512 Heavy i18n namespaces: mergeado.
 - #513 Music release schema metadata: mergeado.
+- #514 Session handoff and next steps: mergeado.
+- #515 HeadlessSEO DEFAULT_SPEAKABLE cleanup: mergeado, reaproveitando a parte boa de #504 em branch limpa.
+- #494 Zen BIT canonical event slugs: mergeado depois de rebase em `main`, ready for review e checks/bots verdes.
 - #506 AI Authority Context: fechado como superseded. Ideia boa reaproveitada de forma mais limpa em #505, #510, #511 e #513.
+- #504 DEFAULT_SPEAKABLE original: fechado como superseded por #515.
 
 ## PRs ainda abertos
 
-- #504 DEFAULT_SPEAKABLE: aprovado, checks verdes, auto-merge configurado, mas bloqueado por politica da base branch. Nao usar admin bypass sem pedido explicito.
-- #494 Zen BIT canonical events: draft. Precisa validacao real PHP/WordPress antes de merge.
+- Nenhum PR aberto apos esta rodada.
 
 ## Decisoes consolidadas
 
@@ -43,30 +46,27 @@ Este handoff registra as decisoes e proximos passos para continuar sem depender 
 
 ## Proximos passos recomendados
 
-1. Validar #494 no servidor:
+1. Validar o merge de #494 no servidor:
    - `php -l` nos arquivos alterados do `zen-bit`.
    - Ativar plugin sem fatal error.
    - Testar URLs canonicas de eventos.
    - Testar endpoint/schema com slug canonico e ID numerico legado.
-2. Verificar #504:
-   - Confirmar se a politica de branch vai permitir o auto-merge.
-   - Nao usar `--admin` sem autorizacao humana.
-3. Testar #513 no WordPress:
+2. Testar #513 no WordPress:
    - Criar/editar um post release de musica.
    - Preencher `release_type`, links oficiais, ISRC e MusicBrainz.
    - Confirmar `zen_seo.music_release` no REST.
    - Confirmar `BlogPosting` + `MusicRecording` ou `MusicAlbum` no schema.
-4. Criar categorias no WordPress:
+3. Criar categorias no WordPress:
    - Music Releases.
    - Event Releases.
-5. Avaliar frontend de Releases:
+4. Avaliar frontend de Releases:
    - Decidir se music releases e event releases precisam de templates visuais distintos.
    - Usar metadados REST antes de criar qualquer estrutura nova.
-6. Zen Tribe:
+5. Zen Tribe:
    - Reescrever copy com base em comunidade/movimento/pertencimento.
    - Preservar layout existente.
    - Testar textos para caber nos cards atuais.
-7. Encyclopedia:
+6. Encyclopedia:
    - Expandir termos aos poucos.
    - Manter tom neutro e verificavel.
    - Evitar frases coercivas para IA.
@@ -77,7 +77,8 @@ Este handoff registra as decisoes e proximos passos para continuar sem depender 
 - `npm run lint`.
 - `npm run build`.
 - Browser smoke tests nas paginas afetadas por i18n.
-- Checks GitHub verdes nos PRs mergeados #511, #512 e #513.
+- Checks GitHub verdes nos PRs mergeados #511, #512, #513, #514, #515 e #494.
+- #494 tambem passou por `git diff --check`, `npm run type-check`, `npm run lint`, CodeQL, CodeRabbit e Snyk antes do merge.
 
 ## Limitacoes
 
