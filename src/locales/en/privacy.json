@@ -1,0 +1,88 @@
+{
+  "privacy_page": {
+    "title": "Privacy Policy",
+    "seo": {
+      "title": "Privacy Policy | DJ Zen Eyer",
+      "description": "Privacy Policy for DJ Zen Eyer official website. Learn how we collect, use, and protect your personal information."
+    },
+    "last_updated": "Last updated",
+    "last_updated_date": "January 2026",
+    "intro_p1": "DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.",
+    "intro_p2": "By using our website, you consent to the data practices described in this policy. If you do not agree with the terms of this Privacy Policy, please do not access the website.",
+    "sections": {
+      "collection": {
+        "title": "1. Information We Collect",
+        "items": [
+          "Personal identification information (name, email address, phone number)",
+          "Usage data and analytics (pages visited, time spent, interactions)",
+          "Device information (browser type, operating system, IP address)",
+          "Cookies and tracking technologies for enhanced user experience",
+          "Payment information (processed securely through third-party processors)"
+        ]
+      },
+      "usage": {
+        "title": "2. How We Use Your Information",
+        "items": [
+          "To provide and maintain our services",
+          "To notify you about changes to our services",
+          "To provide customer support and respond to inquiries",
+          "To send promotional emails and newsletters (with your consent)",
+          "To analyze usage patterns and improve our website and services",
+          "To detect, prevent, and address technical issues and security threats"
+        ]
+      },
+      "security": {
+        "title": "3. Data Security",
+        "items": [
+          "We implement industry-standard security measures to protect your data",
+          "SSL/TLS encryption for all data transmission",
+          "Regular security audits and vulnerability assessments",
+          "Restricted access to personal information on a need-to-know basis",
+          "However, no method of transmission over the Internet is 100% secure"
+        ]
+      },
+      "sharing": {
+        "title": "4. Data Sharing and Disclosure",
+        "items": [
+          "We do not sell your personal information to third parties",
+          "We may share data with trusted service providers who assist in operations",
+          "We may disclose information when required by law or to protect our rights",
+          "Analytics partners may receive aggregated, anonymized data",
+          "Payment processors handle transaction data according to their own policies"
+        ]
+      },
+      "rights": {
+        "title": "5. Your Rights",
+        "items": [
+          "Access: Request a copy of your personal data",
+          "Correction: Request correction of inaccurate or incomplete data",
+          "Deletion: Request deletion of your personal data (subject to legal obligations)",
+          "Opt-out: Unsubscribe from marketing communications at any time",
+          "Data portability: Request transfer of your data to another service"
+        ]
+      }
+    },
+    "cookies_title": "6. Cookies and Tracking Technologies",
+    "cookies_p1": "We use cookies and similar tracking technologies to track activity on our website and hold certain information. Cookies are files with a small amount of data that may include an anonymous unique identifier.",
+    "cookies_p2": "You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our website.",
+    "third_party_title": "7. Third-Party Services",
+    "third_party_p1": "We may employ third-party companies and individuals to facilitate our services, provide services on our behalf, or assist us in analyzing how our service is used. These third parties may have access to your personal information to perform tasks on our behalf and are obligated not to disclose or use it for any other purpose.",
+    "third_party_analytics": "Analytics: Google Analytics",
+    "third_party_payments": "Payment Processing: Stripe, PayPal",
+    "third_party_email": "Email Services: MailPoet",
+    "lgpd_title": "8. LGPD Compliance (Brazilian Law)",
+    "lgpd_p1": "We comply with the Brazilian General Data Protection Law (LGPD - Lei Geral de Proteção de Dados). As a Brazilian entity, we are committed to:",
+    "lgpd_items": [
+      "Processing data lawfully, fairly, and transparently",
+      "Collecting data only for specified, explicit, and legitimate purposes",
+      "Keeping data accurate and up to date",
+      "Retaining data only as long as necessary"
+    ],
+    "changes_title": "9. Changes to This Privacy Policy",
+    "changes_p1": "We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the \"Last updated\" date. You are advised to review this Privacy Policy periodically for any changes.",
+    "contact_title": "10. Contact Us",
+    "contact_p1": "If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us at:",
+    "contact_name": "Marcelo Eyer Fernandes",
+    "contact_location": "Niterói, RJ - Brazil"
+  }
+}

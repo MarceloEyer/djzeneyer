@@ -67,7 +67,7 @@ const FAQ_QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'];
 // COMPONENTE PRINCIPAL
 // ============================================================================
 const FAQPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'faq', 'about']);
   const location = useLocation();
   const [openIndex, setOpenIndex] = useState<string | null>(null);
 
@@ -89,8 +89,8 @@ const FAQPage: React.FC = () => {
             <Users size={24} />,
     questions: FAQ_QUESTIONS
       .filter(qKey =>
-        i18n.exists(`faq.categories.${cat}.${qKey}.q`) &&
-        i18n.exists(`faq.categories.${cat}.${qKey}.a`)
+        i18n.exists(`faq.categories.${cat}.${qKey}.q`, { ns: 'faq' }) &&
+        i18n.exists(`faq.categories.${cat}.${qKey}.a`, { ns: 'faq' })
       )
       .map(qKey => ({
         question: t(`faq.categories.${cat}.${qKey}.q`),
@@ -149,7 +149,7 @@ const FAQPage: React.FC = () => {
             <BookOpen size={16} /> {t('faq.badge')}
           </div>
           <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white leading-tight">
-            <Trans i18nKey="faq.title">
+            <Trans i18nKey="faq.title" ns="faq">
               Perguntas <span className="text-primary">Frequentes</span>
             </Trans>
           </h1>

@@ -3,7 +3,16 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 type SupportedLang = 'en' | 'pt';
-type SupportedNamespace = 'translation' | 'quiz' | 'encyclopedia';
+type SupportedNamespace =
+  | 'translation'
+  | 'quiz'
+  | 'encyclopedia'
+  | 'faq'
+  | 'legal'
+  | 'conduct'
+  | 'privacy'
+  | 'about'
+  | 'zentribe';
 type TranslationLoader = () => Promise<Record<string, unknown>>;
 
 const normalizeLanguage = (lang: string): SupportedLang => {
@@ -16,16 +25,28 @@ const namespaceLoaders: Record<SupportedLang, Record<SupportedNamespace, Transla
     translation: async () => (await import('./locales/en/translation.json')).default as Record<string, unknown>,
     quiz: async () => (await import('./locales/en/quiz.json')).default as Record<string, unknown>,
     encyclopedia: async () => (await import('./locales/en/encyclopedia.json')).default as Record<string, unknown>,
+    faq: async () => (await import('./locales/en/faq.json')).default as Record<string, unknown>,
+    legal: async () => (await import('./locales/en/legal.json')).default as Record<string, unknown>,
+    conduct: async () => (await import('./locales/en/conduct.json')).default as Record<string, unknown>,
+    privacy: async () => (await import('./locales/en/privacy.json')).default as Record<string, unknown>,
+    about: async () => (await import('./locales/en/about.json')).default as Record<string, unknown>,
+    zentribe: async () => (await import('./locales/en/zentribe.json')).default as Record<string, unknown>,
   },
   pt: {
     translation: async () => (await import('./locales/pt/translation.json')).default as Record<string, unknown>,
     quiz: async () => (await import('./locales/pt/quiz.json')).default as Record<string, unknown>,
     encyclopedia: async () => (await import('./locales/pt/encyclopedia.json')).default as Record<string, unknown>,
+    faq: async () => (await import('./locales/pt/faq.json')).default as Record<string, unknown>,
+    legal: async () => (await import('./locales/pt/legal.json')).default as Record<string, unknown>,
+    conduct: async () => (await import('./locales/pt/conduct.json')).default as Record<string, unknown>,
+    privacy: async () => (await import('./locales/pt/privacy.json')).default as Record<string, unknown>,
+    about: async () => (await import('./locales/pt/about.json')).default as Record<string, unknown>,
+    zentribe: async () => (await import('./locales/pt/zentribe.json')).default as Record<string, unknown>,
   },
 };
 
 const normalizeNamespace = (ns: string): SupportedNamespace => {
-  if (ns === 'quiz' || ns === 'encyclopedia') return ns;
+  if (ns in namespaceLoaders.en) return ns as SupportedNamespace;
   return 'translation';
 };
 
@@ -56,7 +77,7 @@ i18n
     debug: false,
     showSupportNotice: false,
     supportedLngs: ['en', 'pt'],
-    ns: ['translation', 'quiz', 'encyclopedia'],
+    ns: ['translation', 'quiz', 'encyclopedia', 'faq', 'legal', 'conduct', 'privacy', 'about', 'zentribe'],
     defaultNS: 'translation',
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,

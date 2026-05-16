@@ -6,7 +6,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const PrivacyPolicyPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'privacy']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const canonicalUrl = useMemo(
     () => `https://djzeneyer.com/${getLocalizedRoute('privacy', currentLang).replace(/^\//, '')}`,
