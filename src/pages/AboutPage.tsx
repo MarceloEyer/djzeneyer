@@ -185,7 +185,7 @@ const AboutPage: React.FC = () => {
         type="profile"
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}
-        leadAnswer={t('about.seo.lead_answer') || t('about.hero.subtitle')}
+        leadAnswer={t('about.seo.lead_answer')}
       />
 
       {/* Layout visual */}
