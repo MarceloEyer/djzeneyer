@@ -107,7 +107,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-2.5">
               <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
               <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
-              <li><Link to={getLocalizedRoute('philosophy', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('philosophy.page_title')}</Link></li>
+              <li><Link to={getLocalizedRoute('encyclopedia', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('encyclopedia.nav_label')}</Link></li>
               <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
               <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/75 hover:text-primary transition-colors">FAQ</Link></li>
             </ul>

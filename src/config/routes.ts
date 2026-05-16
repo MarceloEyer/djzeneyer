@@ -69,7 +69,6 @@ const CheckoutPage = lazyWithRetry(() => import('../pages/CheckoutPage'), 'route
 const DashboardPage = lazyWithRetry(() => import('../pages/DashboardPage'), 'route:dashboard');
 const MyAccountPage = lazyWithRetry(() => import('../pages/MyAccountPage'), 'route:my-account');
 const FAQPage = lazyWithRetry(() => import('../pages/FAQPage'), 'route:faq');
-const PhilosophyPage = lazyWithRetry(() => import('../pages/PhilosophyPage'), 'route:philosophy');
 const NewsPage = lazyWithRetry(() => import('../pages/NewsPage'), 'route:news');
 const PrivacyPolicyPage = lazyWithRetry(() => import('../pages/PrivacyPolicyPage'), 'route:privacy');
 const ReturnPolicyPage = lazyWithRetry(() => import('../pages/ReturnPolicyPage'), 'route:returns');
@@ -81,6 +80,7 @@ const TicketsCheckoutPage = lazyWithRetry(() => import('../pages/TicketsCheckout
 const ResetPasswordPage = lazyWithRetry(() => import('../pages/ResetPasswordPage'), 'route:reset-password');
 const ZenLinkPage = lazyWithRetry(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })), 'route:zenlink');
 const ZoukPersonaQuizPage = lazyWithRetry(() => import('../pages/ZoukPersonaQuizPage'), 'route:quiz');
+const EncyclopediaPage = lazyWithRetry(() => import('../pages/EncyclopediaPage'), 'route:encyclopedia');
 const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'), 'route:not-found');
 
 import routesSlugs from './routes-slugs.json';
@@ -237,7 +237,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Philosophy
   {
     key: 'philosophy',
-    component: PhilosophyPage,
+    component: AboutPage,
     paths: { en: slug('philosophy', 'en') as string, pt: slug('philosophy', 'pt') as string },
   },
 
@@ -295,6 +295,13 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'quiz',
     component: ZoukPersonaQuizPage,
     paths: { en: slug('quiz', 'en') as string, pt: slug('quiz', 'pt') as string },
+  },
+  
+  // Zouk Encyclopedia
+  {
+    key: 'encyclopedia',
+    component: EncyclopediaPage,
+    paths: { en: slug('encyclopedia', 'en'), pt: slug('encyclopedia', 'pt') },
   },
 
   // Password Reset

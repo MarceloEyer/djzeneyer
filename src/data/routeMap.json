@@ -20,8 +20,12 @@
     "pt": "/pt/lancamentos"
   },
   "philosophy": {
-    "en": "/zouk-philosophy",
-    "pt": "/pt/filosofia-zouk"
+    "en": "/about-dj-zen-eyer",
+    "pt": "/pt/sobre-dj-zen-eyer"
+  },
+  "encyclopedia": {
+    "en": "/zouk-encyclopedia",
+    "pt": "/pt/enciclopedia-zouk"
   },
   "zentribe": {
     "en": "/zentribe",
