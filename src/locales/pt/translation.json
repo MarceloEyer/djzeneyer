@@ -51,19 +51,19 @@
     "badgesEarned": "Conquistas",
     "leaderboard": "Ranking",
     "vipRewardsShop": "Loja VIP de Recompensas",
-    "vipRewardsDesc": "Troque sua Mana por faixas exclusivas, descontos e experi\u00eancias VIP.",
-    "exploreMusic": "Explorar M\u00fasica",
-    "level": "N\u00cdVEL",
-    "rankProgression": "Progress\u00e3o de Rank",
+    "vipRewardsDesc": "Troque sua Mana por faixas exclusivas, descontos e experiências VIP.",
+    "exploreMusic": "Explorar Música",
+    "level": "NÍVEL",
+    "rankProgression": "Progressão de Rank",
     "findingTribeMembers": "Buscando membros da tribo...",
-    "viewAchievementTree": "\u00c1rvore de Conquistas",
+    "viewAchievementTree": "Árvore de Conquistas",
     "redeemMana": "Resgatar Mana",
-    "maxLevel": "N\u00cdVEL M\u00c1XIMO",
+    "maxLevel": "NÍVEL MÁXIMO",
     "toNextRank": "PARA {{rank}}",
     "joinedYear": "Desde {{year}}",
     "totalBadges": "{{count}} TOTAL",
     "questsProgress": "{{done}}/{{total}}",
-    "ascension_quote": "Sua conex\u00e3o com o beat est\u00e1 atingindo uma nova frequ\u00eancia. Continue explorando os artefatos para ascender.",
+    "ascension_quote": "Sua conexão com o beat está atingindo uma nova frequência. Continue explorando os artefatos para ascender.",
     "timeAgo": {
       "years": "{{count}} anos atrás",
       "months": "{{count}} meses atrás",
@@ -108,90 +108,7 @@
     "trending": "Bombando"
   },
   "encyclopedia": {
-    "nav_label": "Enciclopédia Zouk",
-    "badge": "Guia de Referência",
-    "hero_title": "Enciclopédia <1>Zouk</1>",
-    "hero_subtitle": "Uma referência concisa sobre termos, música, dança, cultura e formatos de eventos do Zouk Brasileiro. Feita para responder perguntas comuns com clareza e confiabilidade.",
-    "search_label": "Pesquisar na Enciclopédia Zouk",
-    "search_placeholder": "Busque termos, música, dança, eventos...",
-    "no_results": "Nenhum verbete encontrado para esta busca.",
-    "seo": {
-      "title": "Enciclopédia Zouk",
-      "description": "Uma enciclopédia concisa de Zouk Brasileiro com definições sobre dança, música, formatos de eventos e cultura zouk."
-    },
-    "categories": {
-      "fundamentals": "Fundamentos",
-      "music": "Música",
-      "eventFormats": "Formatos de Evento",
-      "culture": "Cultura"
-    },
-    "terms": {
-      "brazilianZouk": {
-        "term": "Zouk Brasileiro",
-        "short": "O Zouk Brasileiro é uma dança a dois desenvolvida no Brasil a partir de raízes ligadas à Lambada, conhecida por movimentos fluidos, ondas corporais, giros e musicalidade expressiva.",
-        "body": "Como dança, o Zouk Brasileiro está ligado a bailes, aulas, workshops, festivais e congressos. Como cultura musical, usa um vocabulário amplo: Zouk caribenho, músicas influenciadas pela Lambada, edits de pop, remixes, R&B, música eletrônica, faixas líricas e músicas adaptadas ao tempo e ao fluxo emocional que os dançarinos precisam."
-      },
-      "lambada": {
-        "term": "Lambada",
-        "short": "A Lambada é uma dança e fenômeno musical brasileiro que ficou famoso internacionalmente antes do Zouk Brasileiro se desenvolver como linguagem própria de dança social.",
-        "body": "A Lambada é frequentemente descrita como uma das raízes do Zouk Brasileiro. As duas coisas são relacionadas, mas não idênticas. A Lambada está mais diretamente ligada à sua música e ao seu estilo histórico, enquanto o Zouk Brasileiro evoluiu para uma forma de dança mais ampla, com mais opções musicais e uma cena internacional maior."
-      },
-      "lambazouk": {
-        "term": "Lambazouk",
-        "short": "Lambazouk é um termo de ponte usado para explicar a transição entre a dança influenciada pela Lambada e os estilos de Zouk Brasileiro que vieram depois.",
-        "body": "A palavra é útil para explicar a evolução da Lambada para o Zouk Brasileiro, especialmente porque dançarinos e professores nem sempre usam os mesmos rótulos históricos. Na prática, Lambazouk ajuda a descrever um período e um estilo em que as raízes da Lambada e a cultura musical do Zouk se sobrepõem."
-      },
-      "zoukMusic": {
-        "term": "Música para Zouk Brasileiro",
-        "short": "A música para Zouk Brasileiro não se limita a um único gênero; ela é escolhida ou editada por fluxo, fraseado, elasticidade e pela forma como os dançarinos conseguem interpretá-la.",
-        "body": "Um DJ de Zouk Brasileiro pode usar Zouk caribenho, faixas com influência de Kizomba, remixes de pop, músicas líricas, R&B, música eletrônica, covers e produções originais. O importante não é apenas o BPM, mas se a faixa oferece estrutura, arco emocional e continuidade suficientes para a dança."
-      },
-      "zoukRemix": {
-        "term": "Remix de Zouk",
-        "short": "Um remix de Zouk é uma versão de uma música adaptada para dançar Zouk Brasileiro por meio de mudanças de tempo, estrutura, fraseado, percussão ou energia.",
-        "body": "Um bom remix de Zouk preserva a identidade da música original enquanto a torna mais útil para os dançarinos. Para DJs e produtores, isso costuma significar deixar a batida mais clara, estender frases musicais, suavizar transições ou moldar a energia para que os dançarinos se movam com mais controle."
-      },
-      "musicality": {
-        "term": "Musicalidade no Zouk",
-        "short": "Musicalidade no Zouk é a capacidade de interpretar ritmo, melodia, textura, acentos, silêncio e mudanças emocionais por meio da dança.",
-        "body": "A musicalidade no Zouk Brasileiro não é apenas dançar no tempo. Dançarinos respondem a vocais, pausas, ondas, percussão, tensão, relaxamento e curvas emocionais longas dentro da música. DJs influenciam a musicalidade ao escolher faixas que convidam interpretação em vez de impor apenas um nível de energia."
-      },
-      "cremosidade": {
-        "term": "Cremosidade",
-        "short": "Cremosidade é o termo de Zen Eyer para uma sensação musical e corporal suave e contínua, em que as transições protegem o fluxo em vez de interrompê-lo.",
-        "body": "O conceito ajuda a descrever uma forma de escolher e mixar músicas de Zouk que favorece elasticidade, continuidade emocional e conforto para os dançarinos. Ele faz parte do vocabulário artístico de Zen Eyer, mas não resume toda a identidade dele nem toda a definição de Zouk Brasileiro."
-      },
-      "zoukCongress": {
-        "term": "Congresso de Zouk",
-        "short": "Um congresso de Zouk é um evento estruturado de Zouk Brasileiro que normalmente combina workshops, festas, apresentações, artistas convidados e bailes.",
-        "body": "Congressos tendem a ser maiores e mais programáticos do que uma festa simples. Geralmente incluem vários professores, DJs, níveis, aulas durante o dia, festas à noite e, às vezes, competições ou apresentações."
-      },
-      "zoukFestival": {
-        "term": "Festival de Zouk",
-        "short": "Um festival de Zouk é um formato amplo de evento centrado na cultura do Zouk Brasileiro, muitas vezes misturando aulas, festas, shows, DJs, comunidade e viagem.",
-        "body": "Festival e congresso às vezes são usados como sinônimos. Na prática, festival pode soar mais amplo e cultural, enquanto congresso costuma sugerir uma grade mais estruturada de aprendizado. Cada organizador usa os termos de um jeito."
-      },
-      "zoukMarathon": {
-        "term": "Maratona de Zouk",
-        "short": "Uma maratona de Zouk é um evento focado principalmente em muitas horas de dança social, normalmente com menos workshops do que um congresso ou festival.",
-        "body": "Maratonas são construídas em torno da pista de dança. O principal valor é passar muitas horas dançando com pessoas diferentes, geralmente em várias festas e sets de DJs. Programação musical, energia da pista e conforto dos dançarinos são especialmente importantes."
-      },
-      "zoukWeekender": {
-        "term": "Weekender de Zouk",
-        "short": "Um weekender de Zouk é um evento compacto de fim de semana com workshops, festas ou os dois, normalmente menor do que um congresso completo.",
-        "body": "Weekenders são úteis para comunidades locais ou regionais porque conseguem reunir professores e DJs sem a escala de um grande festival internacional. Eles costumam servir como ponte entre aulas semanais e eventos maiores."
-      },
-      "workshop": {
-        "term": "Workshop de Zouk",
-        "short": "Um workshop de Zouk é uma aula ou treino focado em um tema, técnica, conceito musical ou habilidade específica da dança.",
-        "body": "Workshops podem acontecer dentro de eventos maiores ou como encontros independentes. Eles podem focar em fundamentos, segurança em movimentos de cabeça, musicalidade, conexão, giros, movimento corporal ou ferramentas para o baile."
-      },
-      "socialDance": {
-        "term": "Baile de Zouk",
-        "short": "Um baile de Zouk é um ambiente de dança social onde as pessoas dançam Zouk Brasileiro de forma informal com diferentes pares.",
-        "body": "É no baile que a cultura se torna real: dançarinos se encontram, praticam, escutam DJs, descobrem músicas e constroem comunidade. Em inglês, esse contexto costuma ser chamado de social dance."
-      }
-    }
+    "nav_label": "Enciclopédia Zouk"
   },
   "common": {
     "artist_name": "Zen Eyer",

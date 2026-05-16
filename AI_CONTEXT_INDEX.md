@@ -26,6 +26,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **`API_ENDPOINTS.md`**: Referência de rotas REST.
 - **`PROJECT.md`**: Metas de negócio e visão geral do projeto.
 - **`SITE_PAGES_STRATEGY.md`**: SSOT estratégico para função, linguagem, marketing, SEO/GEO/IA e relação entre páginas públicas.
+- **`I18N_CONTENT_ARCHITECTURE.md`**: Regras para separar namespaces de tradução, manter releases no WordPress/Polylang e evoluir metadados/schema via plugin.
 
 ### 2. `.agents/` (Instruções para IAs)
 

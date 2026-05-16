@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 type SupportedLang = 'en' | 'pt';
-type SupportedNamespace = 'translation' | 'quiz';
+type SupportedNamespace = 'translation' | 'quiz' | 'encyclopedia';
 type TranslationLoader = () => Promise<Record<string, unknown>>;
 
 const normalizeLanguage = (lang: string): SupportedLang => {
@@ -15,15 +15,18 @@ const namespaceLoaders: Record<SupportedLang, Record<SupportedNamespace, Transla
   en: {
     translation: async () => (await import('./locales/en/translation.json')).default as Record<string, unknown>,
     quiz: async () => (await import('./locales/en/quiz.json')).default as Record<string, unknown>,
+    encyclopedia: async () => (await import('./locales/en/encyclopedia.json')).default as Record<string, unknown>,
   },
   pt: {
     translation: async () => (await import('./locales/pt/translation.json')).default as Record<string, unknown>,
     quiz: async () => (await import('./locales/pt/quiz.json')).default as Record<string, unknown>,
+    encyclopedia: async () => (await import('./locales/pt/encyclopedia.json')).default as Record<string, unknown>,
   },
 };
 
 const normalizeNamespace = (ns: string): SupportedNamespace => {
-  return ns === 'quiz' ? 'quiz' : 'translation';
+  if (ns === 'quiz' || ns === 'encyclopedia') return ns;
+  return 'translation';
 };
 
 i18n
@@ -53,7 +56,7 @@ i18n
     debug: false,
     showSupportNotice: false,
     supportedLngs: ['en', 'pt'],
-    ns: ['translation', 'quiz'],
+    ns: ['translation', 'quiz', 'encyclopedia'],
     defaultNS: 'translation',
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,
