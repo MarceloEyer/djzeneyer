@@ -69,7 +69,6 @@ const CheckoutPage = lazyWithRetry(() => import('../pages/CheckoutPage'), 'route
 const DashboardPage = lazyWithRetry(() => import('../pages/DashboardPage'), 'route:dashboard');
 const MyAccountPage = lazyWithRetry(() => import('../pages/MyAccountPage'), 'route:my-account');
 const FAQPage = lazyWithRetry(() => import('../pages/FAQPage'), 'route:faq');
-const PhilosophyPage = lazyWithRetry(() => import('../pages/PhilosophyPage'), 'route:philosophy');
 const NewsPage = lazyWithRetry(() => import('../pages/NewsPage'), 'route:news');
 const PrivacyPolicyPage = lazyWithRetry(() => import('../pages/PrivacyPolicyPage'), 'route:privacy');
 const ReturnPolicyPage = lazyWithRetry(() => import('../pages/ReturnPolicyPage'), 'route:returns');
@@ -238,7 +237,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
   // Philosophy
   {
     key: 'philosophy',
-    component: PhilosophyPage,
+    component: AboutPage,
     paths: { en: slug('philosophy', 'en') as string, pt: slug('philosophy', 'pt') as string },
   },
 

@@ -1,157 +1,206 @@
-import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { HeadlessSEO } from '../components/HeadlessSEO';
+import React, { useMemo, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { BookOpen, ChevronRight, Search, Sparkles } from 'lucide-react';
+import { useTranslation, Trans } from 'react-i18next';
 import { Breadcrumb } from '../components/Breadcrumb';
-import { Book, Search, Sparkles, ChevronRight } from 'lucide-react';
-import { ZOUK_ENCYCLOPEDIA } from '../data/zoukEncyclopedia';
-import { useTranslation } from 'react-i18next';
-import { ARTIST } from '../data/artistData';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { ARTIST } from '../data/artistData';
+import { ZOUK_ENCYCLOPEDIA, type EncyclopediaCategory } from '../data/zoukEncyclopedia';
+
+const HERO_VARIANTS = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const CATEGORY_ORDER: EncyclopediaCategory[] = ['fundamentals', 'music', 'eventFormats', 'culture'];
 
 const EncyclopediaPage: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const [query, setQuery] = useState('');
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const prefersReducedMotion = useReducedMotion();
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', currentLang)}`;
+
+  const visibleTerms = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) return ZOUK_ENCYCLOPEDIA;
+
+    return ZOUK_ENCYCLOPEDIA.filter((item) => {
+      const haystack = [
+        t(`encyclopedia.terms.${item.key}.term`),
+        t(`encyclopedia.terms.${item.key}.short`),
+        t(`encyclopedia.terms.${item.key}.body`),
+        t(`encyclopedia.categories.${item.category}`),
+      ].join(' ').toLowerCase();
+
+      return haystack.includes(normalizedQuery);
+    });
+  }, [query, t]);
+
+  const groupedTerms = useMemo(
+    () => CATEGORY_ORDER.map((category) => ({
+      category,
+      terms: visibleTerms.filter((item) => item.category === category),
+    })).filter((group) => group.terms.length > 0),
+    [visibleTerms]
+  );
+
+  const leadAnswer = t('encyclopedia.terms.brazilianZouk.short');
 
   const encyclopediaSchema = useMemo(() => ({
     '@context': 'https://schema.org',
     '@graph': [
       {
+        '@type': 'DefinedTermSet',
+        '@id': `${pageUrl}#defined-term-set`,
+        name: t('encyclopedia.seo.title'),
+        description: t('encyclopedia.seo.description'),
+        url: pageUrl,
+        creator: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+        hasDefinedTerm: ZOUK_ENCYCLOPEDIA.map((item) => ({
+          '@type': 'DefinedTerm',
+          '@id': `${pageUrl}#${item.key}`,
+          name: t(`encyclopedia.terms.${item.key}.term`),
+          description: t(`encyclopedia.terms.${item.key}.short`),
+          inDefinedTermSet: { '@id': `${pageUrl}#defined-term-set` },
+        })),
+      },
+      {
         '@type': 'WebPage',
         '@id': `${pageUrl}#webpage`,
         url: pageUrl,
-        name: currentLang === 'pt' ? 'Enciclopédia do Zouk Brasileiro' : 'Brazilian Zouk Encyclopedia',
-        description: currentLang === 'pt' ? 'O guia definitivo sobre termos, história e técnica do Zouk Brasileiro por Zen Eyer.' : 'The definitive guide to Brazilian Zouk terms, history, and technique by Zen Eyer.',
+        name: t('encyclopedia.seo.title'),
+        description: t('encyclopedia.seo.description'),
+        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+        about: [
+          { '@type': 'Thing', name: 'Brazilian Zouk' },
+          { '@type': 'Thing', name: 'Zouk music' },
+          { '@id': `${pageUrl}#defined-term-set` },
+        ],
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: t('home'), item: `${ARTIST.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
-            { '@type': 'ListItem', position: 2, name: 'Encyclopedia', item: pageUrl },
+            { '@type': 'ListItem', position: 1, name: t('home'), item: ARTIST.site.baseUrl },
+            { '@type': 'ListItem', position: 2, name: t('encyclopedia.nav_label'), item: pageUrl },
           ],
         },
       },
-      ...ZOUK_ENCYCLOPEDIA.map(item => ({
-        '@type': 'DefinedTerm',
-        'name': item.term[currentLang],
-        'description': item.definition[currentLang],
-        'inDefinedTermSet': pageUrl
-      }))
     ],
-  }), [t, pageUrl, currentLang]);
+  }), [pageUrl, t]);
 
   return (
     <>
       <HeadlessSEO
-        title={`${currentLang === 'pt' ? 'Enciclopédia Zouk' : 'Zouk Encyclopedia'} | ${ARTIST.identity.stageName}`}
-        description={currentLang === 'pt' ? 'Aprenda tudo sobre o Zouk Brasileiro: termos, história e a filosofia da cremosidade.' : 'Learn everything about Brazilian Zouk: terms, history, and the philosophy of cremosidade.'}
+        title={`${t('encyclopedia.seo.title')} | ${ARTIST.identity.stageName}`}
+        description={t('encyclopedia.seo.description')}
         url={pageUrl}
         schema={encyclopediaSchema}
-        leadAnswer={ZOUK_ENCYCLOPEDIA[0].definition[currentLang]}
+        leadAnswer={leadAnswer}
       />
 
-      <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
+      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
         <div className="container mx-auto max-w-5xl">
-          <Breadcrumb items={[{ label: 'Encyclopedia' }]} className="mb-12" />
+          <Breadcrumb items={[{ label: t('encyclopedia.nav_label') }]} className="mb-10" />
 
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-16"
+          <motion.header
+            variants={HERO_VARIANTS}
+            initial={prefersReducedMotion ? false : 'hidden'}
+            animate={prefersReducedMotion ? undefined : 'visible'}
+            className="mb-14 text-center"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-widest mb-6">
-              <Book size={14} /> {currentLang === 'pt' ? 'Base de Conhecimento' : 'Knowledge Base'}
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary">
+              <BookOpen size={14} />
+              {t('encyclopedia.badge')}
             </div>
-            <h1 className="text-4xl md:text-6xl font-black font-display mb-6 tracking-tight">
-              {currentLang === 'pt' ? 'Enciclopédia' : 'Encyclopedia'}{' '}
-              <span className="text-primary">Zouk</span>
+            <h1 className="mb-6 font-display text-4xl font-black tracking-tight md:text-6xl">
+              <Trans i18nKey="encyclopedia.hero_title">
+                Zouk <span className="text-primary">Encyclopedia</span>
+              </Trans>
             </h1>
-            <p className="text-lg text-white/60 max-w-2xl mx-auto leading-relaxed">
-              {currentLang === 'pt' 
-                ? 'Explore os fundamentos, a história e a terminologia da dança que está conquistando o mundo.' 
-                : 'Explore the foundations, history, and terminology of the dance taking the world by storm.'}
+            <p className="mx-auto max-w-3xl text-lg leading-relaxed text-white/65">
+              {t('encyclopedia.hero_subtitle')}
             </p>
-          </motion.div>
+          </motion.header>
 
-          {/* Search Placeholder */}
-          <div className="relative max-w-xl mx-auto mb-20">
-            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/30">
-              <Search size={20} />
+          <section aria-label={t('encyclopedia.search_label')} className="mx-auto mb-14 max-w-2xl">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35" size={20} />
+              <input
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={t('encyclopedia.search_placeholder')}
+                aria-label={t('encyclopedia.search_label')}
+                className="h-14 w-full rounded-xl border border-white/10 bg-surface/50 pl-12 pr-4 text-white outline-none transition-colors placeholder:text-white/35 focus:border-primary/60"
+              />
             </div>
-            <input 
-              type="text" 
-              placeholder={currentLang === 'pt' ? 'Buscar termos...' : 'Search terms...'}
-              className="w-full bg-surface/50 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white focus:outline-none focus:border-primary/50 transition-colors"
-            />
-          </div>
+          </section>
 
-          <div className="grid gap-8">
-            {ZOUK_ENCYCLOPEDIA.map((item, index) => (
-              <motion.div
-                key={item.key}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="group p-8 rounded-[2rem] bg-surface/30 border border-white/5 hover:border-primary/30 transition-all duration-300"
-              >
-                <div className="flex flex-col md:flex-row md:items-start gap-6">
-                  <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform flex-shrink-0">
-                    <Sparkles size={24} />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <h2 className="text-2xl font-bold font-display text-white group-hover:text-primary transition-colors">
-                        {item.term[currentLang]}
-                      </h2>
-                      <span className="px-3 py-1 rounded-full bg-white/5 text-[10px] font-bold uppercase tracking-widest text-white/40">
-                        {item.category}
-                      </span>
-                    </div>
-                    <p className="text-lg text-white/70 leading-relaxed mb-6" data-speakable>
-                      {item.definition[currentLang]}
-                    </p>
-
-                    {item.expertInsight && (
-                      <div className="mb-6 p-4 rounded-2xl bg-primary/5 border-l-4 border-primary italic text-white/80 text-sm">
-                        <div className="font-bold text-primary mb-1 uppercase tracking-widest text-[10px]">
-                          {currentLang === 'pt' ? 'Insight do Expert' : 'Expert Insight'}
-                        </div>
-                        "{item.expertInsight[currentLang]}"
-                      </div>
-                    )}
-
-                    {item.relatedTerms && (
-                      <div className="flex flex-wrap gap-2">
-                        {item.relatedTerms.map(related => (
-                          <span key={related} className="text-xs text-primary/60 font-medium flex items-center gap-1 hover:text-primary transition-colors cursor-pointer bg-white/5 px-2 py-1 rounded-lg">
-                            <ChevronRight size={10} /> {related.replace(/-/g, ' ')}
+          {groupedTerms.length > 0 ? (
+            <div className="space-y-12">
+              {groupedTerms.map((group) => (
+                <section key={group.category} aria-labelledby={`encyclopedia-${group.category}`}>
+                  <h2 id={`encyclopedia-${group.category}`} className="mb-5 font-display text-2xl font-black text-white">
+                    {t(`encyclopedia.categories.${group.category}`)}
+                  </h2>
+                  <div className="grid gap-5">
+                    {group.terms.map((item) => (
+                      <article
+                        id={item.key}
+                        key={item.key}
+                        className="rounded-2xl border border-white/10 bg-surface/35 p-5 transition-colors hover:border-primary/35 md:p-7"
+                      >
+                        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-primary/10 text-primary">
+                              <Sparkles size={20} />
+                            </div>
+                            <h3 className="font-display text-2xl font-black text-white">
+                              {t(`encyclopedia.terms.${item.key}.term`)}
+                            </h3>
+                          </div>
+                          <span className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white/45">
+                            {t(`encyclopedia.categories.${item.category}`)}
                           </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                        </div>
 
-          {/* Expert Quote */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            className="mt-24 p-12 rounded-[3rem] bg-gradient-to-br from-primary/10 to-transparent border border-white/5 text-center"
-          >
-            <blockquote className="text-2xl md:text-3xl font-display font-light italic text-white/80 mb-6">
-              "{currentLang === 'pt' ? 'O Zouk não é apenas uma dança, é um estado de espírito cremoso.' : 'Zouk is not just a dance, it is a creamy state of mind.'}"
-            </blockquote>
-            <cite className="text-primary font-bold uppercase tracking-widest not-italic">
-              — Zen Eyer
-            </cite>
-          </motion.div>
+                        <p className="mb-4 text-base font-semibold leading-relaxed text-white/85" data-speakable>
+                          {t(`encyclopedia.terms.${item.key}.short`)}
+                        </p>
+                        <p className="text-base leading-relaxed text-white/62">
+                          {t(`encyclopedia.terms.${item.key}.body`)}
+                        </p>
+
+                        {item.relatedTerms && item.relatedTerms.length > 0 && (
+                          <div className="mt-5 flex flex-wrap gap-2">
+                            {item.relatedTerms.map((related) => (
+                              <a
+                                key={related}
+                                href={`#${related}`}
+                                className="inline-flex items-center gap-1 rounded-lg bg-white/5 px-2.5 py-1.5 text-xs font-bold text-primary/75 transition-colors hover:bg-primary/10 hover:text-primary"
+                              >
+                                <ChevronRight size={12} />
+                                {t(`encyclopedia.terms.${related}.term`)}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-white/10 bg-surface/35 p-8 text-center text-white/60">
+              {t('encyclopedia.no_results')}
+            </div>
+          )}
         </div>
       </div>
     </>
   );
 };
 
-export default EncyclopediaPage;
+export default React.memo(EncyclopediaPage);

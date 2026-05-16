@@ -55,7 +55,9 @@
         {
             "key": "philosophy",
             "en": "zouk-philosophy",
-            "pt": "filosofia-zouk"
+            "pt": "filosofia-zouk",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "zentribe",
