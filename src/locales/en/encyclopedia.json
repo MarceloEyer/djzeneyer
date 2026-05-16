@@ -1,0 +1,86 @@
+{
+  "nav_label": "Zouk Encyclopedia",
+  "badge": "Reference Guide",
+  "hero_title": "Zouk <1>Encyclopedia</1>",
+  "hero_subtitle": "A concise reference for Brazilian Zouk terms, music, dance culture, and event formats. Built to answer common questions clearly and reliably.",
+  "search_label": "Search Zouk Encyclopedia",
+  "search_placeholder": "Search terms, music, dance, events...",
+  "no_results": "No encyclopedia terms found for this search.",
+  "seo": {
+    "title": "Zouk Encyclopedia",
+    "description": "A concise Brazilian Zouk encyclopedia with definitions for dance, music, event formats, and Zouk culture."
+  },
+  "categories": {
+    "fundamentals": "Foundations",
+    "music": "Music",
+    "eventFormats": "Event Formats",
+    "culture": "Culture"
+  },
+  "terms": {
+    "brazilianZouk": {
+      "term": "Brazilian Zouk",
+      "short": "Brazilian Zouk is a partner dance that developed in Brazil from Lambada-related roots and became known for flowing movement, body waves, turns, and expressive musicality.",
+      "body": "As a dance, Brazilian Zouk is usually connected to social dancing, classes, workshops, festivals, and congresses. As a music culture, it uses a broad vocabulary: Caribbean Zouk, Lambada-influenced music, pop edits, remixes, R&B, electronic music, lyrical songs, and tracks adapted for the timing and emotional flow dancers need."
+    },
+    "lambada": {
+      "term": "Lambada",
+      "short": "Lambada is a Brazilian dance and music phenomenon that became internationally famous before Brazilian Zouk developed into its own social dance language.",
+      "body": "Lambada is often described as one of the roots of Brazilian Zouk. The two are related, but not identical. Lambada is more directly tied to its original music and historical style, while Brazilian Zouk evolved into a wider dance form with different musical options and a larger international event scene."
+    },
+    "lambazouk": {
+      "term": "Lambazouk",
+      "short": "Lambazouk is a bridge term often used for the transition between Lambada-influenced dancing and the Brazilian Zouk styles that followed.",
+      "body": "The word is useful when explaining the evolution from Lambada to Brazilian Zouk, especially because dancers and teachers do not always use the same historical labels. In practical terms, Lambazouk helps describe a period and style where Lambada roots and Zouk music culture overlap."
+    },
+    "zoukMusic": {
+      "term": "Zouk Music for Brazilian Zouk",
+      "short": "Music for Brazilian Zouk is not limited to one genre; it is selected or edited for flow, phrasing, elasticity, and the way dancers can interpret it.",
+      "body": "A Brazilian Zouk DJ may use Caribbean Zouk, Kizomba-influenced tracks, pop remixes, lyrical songs, R&B, electronic music, covers, and original productions. What matters is not only BPM, but whether the track gives dancers enough structure, emotional arc, and continuity for the dance."
+    },
+    "zoukRemix": {
+      "term": "Zouk Remix",
+      "short": "A Zouk remix is a version of a song adapted for Brazilian Zouk dancing through tempo, structure, phrasing, percussion, or energy changes.",
+      "body": "A strong Zouk remix keeps the identity of the original song while making it more useful for dancers. For DJs and producers, this often means clarifying the beat, extending musical phrases, smoothing transitions, or shaping the energy so dancers can move with more control."
+    },
+    "musicality": {
+      "term": "Zouk Musicality",
+      "short": "Zouk musicality is the ability to interpret rhythm, melody, texture, accents, silence, and emotional changes through the dance.",
+      "body": "Musicality in Brazilian Zouk is not just dancing on beat. Dancers respond to vocals, breaks, waves, percussion, tension, release, and the long emotional curves inside a song. DJs influence musicality by choosing tracks that invite interpretation instead of forcing only one energy level."
+    },
+    "cremosidade": {
+      "term": "Cremosidade",
+      "short": "Cremosidade is Zen Eyer's term for a smooth, continuous musical and dance feeling where transitions protect flow instead of interrupting it.",
+      "body": "The concept is useful for describing a style of Zouk music selection and mixing that favors elasticity, emotional continuity, and dancer comfort. It is part of Zen Eyer's artistic vocabulary, but not the whole of his identity or the whole definition of Brazilian Zouk."
+    },
+    "zoukCongress": {
+      "term": "Zouk Congress",
+      "short": "A Zouk congress is a structured Brazilian Zouk event that usually combines workshops, parties, performances, guest artists, and social dancing.",
+      "body": "Congresses tend to be larger and more programmatic than a simple party. They often include multiple teachers, DJs, levels, daytime classes, night parties, and sometimes competitions or showcases."
+    },
+    "zoukFestival": {
+      "term": "Zouk Festival",
+      "short": "A Zouk festival is a broad event format centered on Brazilian Zouk culture, often mixing classes, parties, shows, DJs, community, and travel.",
+      "body": "Festival and congress are sometimes used interchangeably. In practice, festival can feel broader and more cultural, while congress often implies a structured learning schedule. Each organizer uses the terms differently."
+    },
+    "zoukMarathon": {
+      "term": "Zouk Marathon",
+      "short": "A Zouk marathon is an event focused mainly on long hours of social dancing, usually with fewer workshops than a congress or festival.",
+      "body": "Marathons are built around the dance floor. The main value is time dancing with many people, often across several parties and DJ sets. Music programming, floor energy, and dancer comfort are especially important."
+    },
+    "zoukWeekender": {
+      "term": "Zouk Weekender",
+      "short": "A Zouk weekender is a compact weekend event with workshops, parties, or both, usually smaller than a full congress.",
+      "body": "Weekenders are useful for local or regional communities because they can bring teachers and DJs together without the scale of a large international festival. They often serve as a bridge between weekly classes and bigger events."
+    },
+    "workshop": {
+      "term": "Zouk Workshop",
+      "short": "A Zouk workshop is a focused class or training session on a specific topic, technique, musical concept, or dance skill.",
+      "body": "Workshops can happen inside larger events or as standalone sessions. They may focus on fundamentals, head movement safety, musicality, connection, turns, body movement, or social dance tools."
+    },
+    "socialDance": {
+      "term": "Zouk Social Dance",
+      "short": "A Zouk social dance is a party or dance floor setting where people dance Brazilian Zouk informally with different partners.",
+      "body": "Social dances are where the culture becomes real: dancers meet, practice, listen to DJs, discover music, and build community. A baile is one common Portuguese word for this kind of dance party."
+    }
+  }
+}

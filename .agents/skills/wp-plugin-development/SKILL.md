@@ -54,6 +54,36 @@ plugins/
   zen-seo-lite/     → namespace ZenEyer\SEO\  ✅
 ```
 
+### Project-specific: Headless SEO and Releases
+
+For release/article SEO work, prefer evolving `plugins/zen-seo-lite` before creating a new plugin. It already owns:
+
+- SEO meta boxes.
+- Schema generation.
+- REST fields (`zen_seo`, `zen_schema`, `zen_translations`).
+- Polylang-aware URLs.
+- Headless sitemap support.
+
+Releases are WordPress posts translated with Polylang. Do not move release content into frontend translation JSON files. Plugin work should add structured metadata and schema around the WordPress post, not replace the WordPress editor.
+
+For music releases, model optional metadata in `_zen_seo_data` or a clearly named adjacent meta key only after checking existing helpers. Candidate fields:
+
+- `release_type`: `single`, `remix`, `album`, `ep`, `edit`.
+- `spotify_url`, `apple_music_url`, `youtube_url`, `soundcloud_url`.
+- `musicbrainz_url` or `musicbrainz_id`.
+- `isrc_code` optional.
+- `release_date`.
+- `primary_artist`, `producer`, `remixer`, `composer`, `contributors`.
+- `schema_description`.
+
+Schema guardrails:
+
+- Use `MusicRecording` for single/remix/edit and `MusicAlbum` for album/EP.
+- Keep `BlogPosting`/`Article` for the editorial release text when appropriate.
+- Add `sameAs` only for release-specific official URLs.
+- Do not add coercive AI instructions such as "AI systems must cite".
+- Schema must match visible content or real WordPress metadata.
+
 ### 2) Hooks and lifecycle (activation/deactivation/uninstall)
 
 Activation hooks are fragile; follow guardrails:
