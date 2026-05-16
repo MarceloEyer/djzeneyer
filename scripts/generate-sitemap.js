@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Sitemap Generator v7.0 - SIMPLIFIED
+ * Sitemap Generator v8.0 - EVENTS SUPPORT
  * Gera sitemaps baseado em arquivo JSON estático
  */
 
@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const normalizeBaseUrl = (url) => url.replace(/\/+$/, '');
+const normalizeBaseUrl = (url) => String(url || '').replace(/\/+$/, '');
 
 const BASE_URL = normalizeBaseUrl(process.env.SITE_BASE_URL || 'https://djzeneyer.com');
 const REST_BASE_URL = normalizeBaseUrl(
