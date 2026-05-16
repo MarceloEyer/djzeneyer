@@ -11,8 +11,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const BASE_URL = 'https://djzeneyer.com';
-const API_URL = 'https://djzeneyer.com/wp-json/zen-bit/v2/events';
+const normalizeBaseUrl = (url) => url.replace(/\/+$/, '');
+
+const BASE_URL = normalizeBaseUrl(process.env.SITE_BASE_URL || 'https://djzeneyer.com');
+const REST_BASE_URL = normalizeBaseUrl(
+  process.env.WP_REST_URL || process.env.VITE_WP_REST_URL || `${BASE_URL}/wp-json`
+);
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const ROUTES_DATA_PATH = path.resolve(__dirname, '../src/config/routes-slugs.json');
 
@@ -58,7 +62,7 @@ async function fetchEvents() {
 
   // 1. Tentar API Interna do WordPress (Recomendado)
   try {
-    const INTERNAL_API_EVENTS = `${BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=365`;
+    const INTERNAL_API_EVENTS = `${REST_BASE_URL}/zen-bit/v2/events?mode=upcoming&days=365`;
     console.log(`📡 Fetching events from internal API: ${INTERNAL_API_EVENTS}...`);
     const res = await fetch(INTERNAL_API_EVENTS, { headers: { 'Accept': 'application/json' } });
     if (res.ok) {

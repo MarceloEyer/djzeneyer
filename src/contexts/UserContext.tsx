@@ -1,6 +1,7 @@
 // src/contexts/UserContext.tsx - VERSÃO ATUALIZADA COM TURNSTILE
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { clearAllCache, queryClient, QUERY_KEYS } from '../config/queryClient';
+import { buildApiUrl } from '../config/api';
 import { fetchAuthSessionFn } from '../hooks/useQueries';
 
 interface WordPressUser {
@@ -42,7 +43,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const API_URL = `${window.location.origin}/wp-json/zeneyer-auth/v1`;
+  const API_URL = useMemo(() => buildApiUrl('zeneyer-auth/v1'), []);
 
   // ========================================================================
   // HELPERS & LOGOUT (HOISTED FOR INITIALIZATION)
