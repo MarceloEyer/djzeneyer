@@ -73,6 +73,8 @@ class Zen_SEO_Meta_Box
 
                 .zen-seo-field input[type="text"],
                 .zen-seo-field input[type="url"],
+                .zen-seo-field input[type="date"],
+                .zen-seo-field select,
                 .zen-seo-field textarea {
                     width: 100%;
                     padding: 8px;
@@ -197,6 +199,95 @@ class Zen_SEO_Meta_Box
                 </div>
             <?php endif; ?>
 
+            <?php if ($post_type === 'post'): ?>
+                <!-- Music release fields for WordPress posts used as Releases -->
+                <hr style="margin: 20px 0;">
+                <h3><?php _e('Music Release Schema', 'zen-seo'); ?></h3>
+                <p class="description">
+                    <?php _e('Optional structured data for release posts. Fill only when this post is a music release.', 'zen-seo'); ?>
+                </p>
+
+                <div class="zen-seo-field">
+                    <label for="zen_seo_release_type">
+                        <?php _e('Release Type', 'zen-seo'); ?>
+                    </label>
+                    <select id="zen_seo_release_type" name="zen_seo[release_type]">
+                        <?php
+                        $release_type = (string) ($meta['release_type'] ?? '');
+                        $release_types = [
+                            '' => __('Not a music release', 'zen-seo'),
+                            'single' => __('Single', 'zen-seo'),
+                            'remix' => __('Remix', 'zen-seo'),
+                            'edit' => __('Edit', 'zen-seo'),
+                            'ep' => __('EP', 'zen-seo'),
+                            'album' => __('Album', 'zen-seo'),
+                        ];
+                        foreach ($release_types as $value => $label):
+                            ?>
+                            <option value="<?php echo \esc_attr($value); ?>" <?php \selected($release_type, $value); ?>>
+                                <?php echo \esc_html($label); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="zen-seo-field">
+                    <label for="zen_seo_release_date">
+                        <?php _e('Release Date', 'zen-seo'); ?>
+                    </label>
+                    <input type="date" id="zen_seo_release_date" name="zen_seo[release_date]"
+                        value="<?php echo \esc_attr($meta['release_date'] ?? ''); ?>">
+                </div>
+
+                <div class="zen-seo-field">
+                    <label for="zen_seo_isrc_code">
+                        <?php _e('ISRC Code', 'zen-seo'); ?>
+                    </label>
+                    <input type="text" id="zen_seo_isrc_code" name="zen_seo[isrc_code]"
+                        value="<?php echo \esc_attr($meta['isrc_code'] ?? ''); ?>"
+                        placeholder="BRXXX2500001">
+                    <p class="description">
+                        <?php _e('Optional. Leave empty for unofficial remixes or releases without ISRC.', 'zen-seo'); ?>
+                    </p>
+                </div>
+
+                <div class="zen-seo-field">
+                    <label for="zen_seo_primary_artist">
+                        <?php _e('Primary Artist', 'zen-seo'); ?>
+                    </label>
+                    <input type="text" id="zen_seo_primary_artist" name="zen_seo[primary_artist]"
+                        value="<?php echo \esc_attr($meta['primary_artist'] ?? ''); ?>"
+                        placeholder="Zen Eyer">
+                </div>
+
+                <div class="zen-seo-field">
+                    <label for="zen_seo_contributors">
+                        <?php _e('Contributors', 'zen-seo'); ?>
+                    </label>
+                    <textarea id="zen_seo_contributors" name="zen_seo[contributors]" rows="3"
+                        placeholder="<?php echo \esc_attr__('One name per line: producer, remixer, composer, vocalist...', 'zen-seo'); ?>"><?php echo \esc_textarea($meta['contributors'] ?? ''); ?></textarea>
+                </div>
+
+                <?php
+                $release_urls = [
+                    'spotify_url' => __('Spotify URL', 'zen-seo'),
+                    'apple_music_url' => __('Apple Music URL', 'zen-seo'),
+                    'youtube_url' => __('YouTube URL', 'zen-seo'),
+                    'soundcloud_url' => __('SoundCloud URL', 'zen-seo'),
+                    'musicbrainz_url' => __('MusicBrainz URL', 'zen-seo'),
+                ];
+                foreach ($release_urls as $field => $label):
+                    ?>
+                    <div class="zen-seo-field">
+                        <label for="zen_seo_<?php echo \esc_attr($field); ?>">
+                            <?php echo \esc_html($label); ?>
+                        </label>
+                        <input type="url" id="zen_seo_<?php echo \esc_attr($field); ?>" name="zen_seo[<?php echo \esc_attr($field); ?>]"
+                            value="<?php echo \esc_url($meta[$field] ?? ''); ?>" placeholder="https://...">
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+
             <!-- Preview -->
             <hr style="margin: 20px 0;">
             <h3><?php _e('Search Preview', 'zen-seo'); ?></h3>
@@ -281,11 +372,23 @@ class Zen_SEO_Meta_Box
 
                     case 'image':
                     case 'event_ticket':
+                    case 'spotify_url':
+                    case 'apple_music_url':
+                    case 'youtube_url':
+                    case 'soundcloud_url':
+                    case 'musicbrainz_url':
                         $sanitized[$key] = Zen_SEO_Helpers::sanitize_url($value);
                         break;
 
                     case 'desc':
+                    case 'contributors':
                         $sanitized[$key] = \sanitize_textarea_field($value);
+                        break;
+
+                    case 'release_type':
+                        $allowed_release_types = ['single', 'remix', 'edit', 'ep', 'album'];
+                        $release_type = \sanitize_key($value);
+                        $sanitized[$key] = \in_array($release_type, $allowed_release_types, true) ? $release_type : '';
                         break;
 
                     default:

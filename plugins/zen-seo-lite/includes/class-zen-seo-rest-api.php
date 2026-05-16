@@ -56,6 +56,10 @@ class Zen_SEO_REST_API
                         'type' => 'boolean',
                         'description' => \__('No index flag', 'zen-seo')
                     ],
+                    'music_release' => [
+                        'type' => 'object',
+                        'description' => \__('Music release metadata for structured data', 'zen-seo')
+                    ],
                 ]
             ]
         ]);
@@ -239,6 +243,19 @@ class Zen_SEO_REST_API
     {
         $meta = Zen_SEO_Helpers::get_post_meta($object['id']);
 
+        $music_release = [
+            'release_type' => $meta['release_type'] ?? '',
+            'release_date' => $meta['release_date'] ?? '',
+            'isrc_code' => $meta['isrc_code'] ?? '',
+            'primary_artist' => $meta['primary_artist'] ?? '',
+            'contributors' => $meta['contributors'] ?? '',
+            'spotify_url' => $meta['spotify_url'] ?? '',
+            'apple_music_url' => $meta['apple_music_url'] ?? '',
+            'youtube_url' => $meta['youtube_url'] ?? '',
+            'soundcloud_url' => $meta['soundcloud_url'] ?? '',
+            'musicbrainz_url' => $meta['musicbrainz_url'] ?? '',
+        ];
+
         // Ensure all fields exist
         return [
             'title' => $meta['title'] ?? '',
@@ -248,6 +265,7 @@ class Zen_SEO_REST_API
             'event_date' => $meta['event_date'] ?? '',
             'event_location' => $meta['event_location'] ?? '',
             'event_ticket' => $meta['event_ticket'] ?? '',
+            'music_release' => $music_release,
         ];
     }
 

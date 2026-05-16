@@ -72,6 +72,17 @@ class Zen_SEO_Schema
 
         // Type-specific logic
         switch ($post->post_type) {
+            case 'post':
+                $article_schema = $this->generate_article_schema($post);
+                if ($article_schema) {
+                    $schema['@graph'][] = $article_schema;
+                }
+
+                $music_release_schema = $this->generate_music_release_schema($post);
+                if ($music_release_schema) {
+                    $schema['@graph'][] = $music_release_schema;
+                }
+                break;
             case 'flyers':
                 $event_schema = $this->generate_event_schema($post);
                 if ($event_schema)
@@ -326,6 +337,56 @@ class Zen_SEO_Schema
     }
 
     /**
+     * Generate Article schema for WordPress posts.
+     *
+     * @param \WP_Post $post
+     * @return array
+     */
+    private function generate_article_schema($post)
+    {
+        $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
+
+        $title = !empty($meta['title']) ? $meta['title'] : \get_the_title($post);
+        $description = !empty($meta['desc']) ? $meta['desc'] : Zen_SEO_Helpers::generate_excerpt(\get_post_field(
+            'post_content',
+            $post
+        ));
+        $image = !empty($meta['image']) ? $meta['image'] : Zen_SEO_Helpers::get_featured_image($post->ID);
+        $url = Zen_SEO_Helpers::get_frontend_url(\get_permalink($post));
+
+        $article = [
+            '@type' => 'BlogPosting',
+            '@id' => $url . '#article',
+            'headline' => \sanitize_text_field((string) $title),
+            'description' => \sanitize_text_field((string) $description),
+            'url' => $url,
+            'datePublished' => \str_replace(' ', 'T', $post->post_date_gmt) . '+00:00',
+            'dateModified' => \str_replace(' ', 'T', $post->post_modified_gmt) . '+00:00',
+            'author' => [
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
+            ],
+            'publisher' => [
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
+            ],
+            'mainEntityOfPage' => [
+                '@id' => $url . '#webpage'
+            ],
+        ];
+
+        if ($image) {
+            $article['image'] = \esc_url((string) ($image ?? ''));
+        }
+
+        if (!empty($meta['release_type'])) {
+            $article['about'] = [
+                '@id' => $url . '#music-release'
+            ];
+        }
+
+        return $article;
+    }
+
+    /**
      * Generate Event schema
      *
      * @param \WP_Post $post
@@ -385,6 +446,119 @@ class Zen_SEO_Schema
         ];
 
         return $event;
+    }
+
+    /**
+     * Generate MusicRecording or MusicAlbum schema for release posts.
+     *
+     * @param \WP_Post $post
+     * @return array|null
+     */
+    private function generate_music_release_schema($post)
+    {
+        $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
+        $release_type = \sanitize_key((string) ($meta['release_type'] ?? ''));
+
+        if (empty($release_type)) {
+            return null;
+        }
+
+        $album_types = ['album', 'ep'];
+        $schema_type = \in_array($release_type, $album_types, true) ? 'MusicAlbum' : 'MusicRecording';
+        $title = !empty($meta['title']) ? $meta['title'] : \get_the_title($post);
+        $description = !empty($meta['desc']) ? $meta['desc'] : Zen_SEO_Helpers::generate_excerpt(\get_post_field(
+            'post_content',
+            $post
+        ));
+        $image = !empty($meta['image']) ? $meta['image'] : Zen_SEO_Helpers::get_featured_image($post->ID);
+        $url = Zen_SEO_Helpers::get_frontend_url(\get_permalink($post));
+        $artist_name = !empty($meta['primary_artist']) ? \sanitize_text_field((string) $meta['primary_artist']) : '';
+
+        $music = [
+            '@type' => $schema_type,
+            '@id' => $url . '#music-release',
+            'name' => \sanitize_text_field((string) $title),
+            'description' => \sanitize_text_field((string) $description),
+            'url' => $url,
+            'datePublished' => !empty($meta['release_date'])
+                ? \sanitize_text_field((string) $meta['release_date'])
+                : \str_replace(' ', 'T', $post->post_date_gmt) . '+00:00',
+            'byArtist' => $artist_name ? [
+                '@type' => 'MusicGroup',
+                'name' => $artist_name,
+            ] : [
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#musicgroup'))
+            ],
+            'mainEntityOfPage' => [
+                '@id' => $url . '#webpage'
+            ],
+        ];
+
+        if ($image) {
+            $music['image'] = \esc_url((string) ($image ?? ''));
+        }
+
+        if (!empty($meta['isrc_code']) && $schema_type === 'MusicRecording') {
+            $music['isrcCode'] = \sanitize_text_field((string) $meta['isrc_code']);
+        }
+
+        $same_as = $this->get_music_release_same_as($meta);
+        if (!empty($same_as)) {
+            $music['sameAs'] = $same_as;
+        }
+
+        $contributors = $this->get_music_release_contributors((string) ($meta['contributors'] ?? ''));
+        if (!empty($contributors)) {
+            $music['contributor'] = $contributors;
+        }
+
+        return $music;
+    }
+
+    /**
+     * Get official release-specific URLs for sameAs.
+     *
+     * @param array $meta
+     * @return array<string>
+     */
+    private function get_music_release_same_as($meta)
+    {
+        $fields = [
+            'spotify_url',
+            'apple_music_url',
+            'youtube_url',
+            'soundcloud_url',
+            'musicbrainz_url',
+        ];
+
+        $urls = [];
+        foreach ($fields as $field) {
+            $value = \trim((string) ($meta[$field] ?? ''));
+            if ($value !== '') {
+                $urls[] = \esc_url($value);
+            }
+        }
+
+        return \array_values(\array_filter(\array_unique($urls)));
+    }
+
+    /**
+     * Normalize line-separated contributor names.
+     *
+     * @param string $contributors
+     * @return array<int, array<string, string>>
+     */
+    private function get_music_release_contributors($contributors)
+    {
+        $contributors = \str_replace(',', "\n", $contributors);
+        $names = \array_filter(\array_map('trim', \explode("\n", $contributors)));
+
+        return \array_values(\array_map(function ($name) {
+            return [
+                '@type' => 'Person',
+                'name' => \sanitize_text_field((string) $name),
+            ];
+        }, $names));
     }
 
     /**
