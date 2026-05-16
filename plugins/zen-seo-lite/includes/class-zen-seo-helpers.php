@@ -282,6 +282,8 @@ class Zen_SEO_Helpers
             'zentribe' => 'zen-tribe',
             'events' => 'zouk-events',
             'eventos' => 'eventos-zouk',
+            'releases' => 'zouk-dance-news',
+            'lancamentos' => 'noticias-zouk',
             'music' => 'zouk-music',
             'musica' => 'musica-zouk',
         ]);
