@@ -67,6 +67,28 @@ class Zen_BIT_API_V2
         return max(1, (int) \get_option('zen_bit_default_days', 365));
     }
 
+    /**
+     * Accepts a raw Bandsintown ID or the canonical public route slug and returns
+     * the final numeric ID segment used by Bandsintown.
+     */
+    private static function extract_event_id(string $route_param): string
+    {
+        $route_param = trim($route_param);
+        if ($route_param === '') {
+            return '';
+        }
+
+        if (ctype_digit($route_param)) {
+            return $route_param;
+        }
+
+        if (preg_match('/(?:^|[-\/])(\d+)$/', $route_param, $matches)) {
+            return $matches[1];
+        }
+
+        return '';
+    }
+
     // =========================================================================
     // PARAMETER PARSING
     // =========================================================================
@@ -398,9 +420,10 @@ class Zen_BIT_API_V2
      */
     public static function get_event(\WP_REST_Request $req)
     {
-        $event_id = sanitize_text_field((string) $req->get_param('event_id'));
-        if ($event_id === '' || !ctype_digit($event_id)) {
-            return new \WP_Error('invalid_event_id', 'event_id deve ser numérico.', ['status' => 400]);
+        $route_param = sanitize_text_field((string) $req->get_param('event_id'));
+        $event_id = self::extract_event_id($route_param);
+        if ($event_id === '') {
+            return new \WP_Error('invalid_event_id', 'event_id deve ser numerico ou slug canonico terminado em ID numerico.', ['status' => 400]);
         }
 
         $include_raw = (bool) \get_option('zen_bit_include_raw_debug', false);

@@ -20,7 +20,7 @@ if (!defined('ABSPATH'))
 class Zen_BIT_Normalizer
 {
     // Versão — mudar invalida todos os caches de payload
-    const VERSION = 'v2.1';
+    const VERSION = 'v2.2';
 
     // =========================================================================
     // CANONICAL PATH
@@ -266,6 +266,9 @@ class Zen_BIT_Normalizer
 
         // endDate: fallback startDate + 4h quando não fornecido
         $start_ts = strtotime($event['starts_at']);
+        if (!$start_ts) {
+            return [];
+        }
         $end_date = !empty($event['ends_at'])
             ? $event['ends_at']
             : gmdate('c', $start_ts + 4 * 3600);
@@ -356,13 +359,20 @@ class Zen_BIT_Normalizer
         return [
             '@type' => 'MusicGroup',
             '@id' => home_url('/') . '#musicgroup',
-            'name' => 'DJ Zen Eyer',
+            'name' => 'Zen Eyer',
+            'alternateName' => ['DJ Zen Eyer'],
             'genre' => 'Brazilian Zouk',
             'url' => home_url('/'),
             'sameAs' => [
+                'https://www.wikidata.org/wiki/Q136551855',
+                'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+                'https://www.discogs.com/artist/16872046',
+                'https://isni.org/isni/0000000528931015',
+                'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+                'https://music.apple.com/us/artist/1439280950',
+                'https://www.youtube.com/@djzeneyer',
                 'https://www.instagram.com/djzeneyer/',
                 'https://soundcloud.com/djzeneyer',
-                'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
             ],
         ];
     }
