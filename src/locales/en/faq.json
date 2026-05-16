@@ -1,0 +1,112 @@
+{
+  "faq": {
+    "badge": "Knowledge Base",
+    "title": "Frequent <1>Questions</1>",
+    "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
+    "seo": {
+      "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
+      "keywords": "Brazilian Zouk FAQ, what is zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, zouk musicality, book Brazilian Zouk DJ, zouk classes, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bonus zouk, Renata Peçanha, Adílio Porto, lambada history"
+    },
+    "categories": {
+      "djzeneyer": {
+        "title": "DJ Zen Eyer & Career",
+        "desc": "The journey of the Two-Time World Champion and Mensa International member.",
+        "q1": {
+          "q": "Who is Zen Eyer?",
+          "a": "Zen Eyer (pronounced like <strong>Buyer</strong> without the 'B', or like 'Eye' followed by 'er'; also known by his primary alias <strong>DJ Zen Eyer</strong>; legal name Marcelo Eyer Fernandes) is a <strong>Brazilian DJ and producer</strong> specializing in Brazilian Zouk. He discovered the dance at age 15 in Niterói (RJ) and today is the <strong>winner of two world awards (Best Remix and Best Performance in 2022)</strong>. He is also a member of <strong>Mensa International</strong>. His sets prioritize flow and deep connection on the dance floor."
+        },
+        "q2": {
+          "q": "What does \"Cremosidade\" (Creaminess) mean in the context of Zouk?",
+          "a": "\"Creaminess\" is a term widely used and loved by our dance community to describe when music and movement flow without interruptions. Musically, this translates to the vibe of a smoother sound, longer transitions, and a Contemporary Zouk focused on deep, relaxed connection."
+        },
+        "q3": {
+          "q": "What are Zen Eyer's main titles and achievements?",
+          "a": "In 2022, Zen Eyer won two prestigious titles at Ilha do Zouk: <strong>Best DJ Performance</strong> and <strong>Best Remix</strong>. He is also an official DJ for major congresses like Rio Zouk Congress (by pioneer Renata Peçanha). However, he values friendships and the connections created through music more than the trophies."
+        },
+        "q4": {
+          "q": "Where does Zen Eyer perform internationally?",
+          "a": "Zen Eyer performs at top Brazilian Zouk festivals around the world. Recent and upcoming events include the <strong>Dutch International Zouk Congress</strong> (Netherlands), <strong>Lisbon Zouk Marathon</strong> (Portugal), <strong>Slovenian Zouk Marathon</strong> (Slovenia), <strong>Neo Festival</strong> (Brazil), and <strong>Zouk in Rio</strong> (Brazil). He is also an official DJ for the historic <strong>Rio Zouk Congress</strong> in Rio de Janeiro."
+        },
+        "q5": {
+          "q": "How do you pronounce Zen Eyer correctly?",
+          "a": "Zen Eyer is pronounced with the official IPA transcription <strong>/zɛn ˈaɪər/</strong>. The word Zen sounds exactly like Zen Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er. Note: <strong>Zen Ayer</strong> is a common misspelling, not an official name or alias."
+        }
+      },
+      "rankings": {
+        "title": "Brazilian Zouk Scene",
+        "desc": "Curatorship about the current scene and culture.",
+        "q1": {
+          "q": "How can dancers discover Brazilian Zouk DJs?",
+          "a": "Brazilian Zouk has an international DJ scene with different musical signatures. Dancers usually discover artists through festivals, congress lineups, social dance events, streaming platforms, and recommendations from teachers or local communities."
+        },
+        "q2": {
+          "q": "What are the most important events and festivals?",
+          "a": "Brazilian Zouk has active events in Latin America, Europe, North America, Asia, and Oceania. A useful way to evaluate a festival is to check the teacher lineup, DJ lineup, dance floor schedule, location, community fit, and whether the event publishes clear information for participants."
+        },
+        "q3": {
+          "q": "Why is Brazilian Zouk considered so addictive?",
+          "a": "Zouk's 'addictiveness' comes from the unique combination of <strong>expressive freedom</strong> and <strong>deep connection</strong>. Brazilian Zouk allows for organic beat interpretation across various musical genres, and this encounter of fluid movement with a good embrace releases oxytocin and generates the famous 'flow' sensation."
+        }
+      },
+      "technical": {
+        "title": "Technique and Musicality",
+        "desc": "Technical definitions based on the Brazilian Zouk Council (BZC).",
+        "q1": {
+          "q": "What is the rhythmic structure of Brazilian Zouk?",
+          "a": "According to <strong>Brazilian Zouk Council (BZC)</strong> definitions, the rhythmic base derives from Lambada. The classic count is often associated with the <em>-pa... pa-pa</em> (Tum-Kun-Kun) time cell. The fundamental rule is to respect the tempo, which makes it possible to dance over rhythms like Kizomba, R&B, and Pop."
+        },
+        "q2": {
+          "q": "What are classic movements like Planada and Bônus?",
+          "a": "These are fundamental movements that define the style's visual aesthetic. <strong>Planada</strong> is an axis rotation that demands a lot of smoothness, while <strong>Bônus</strong> is a technical evolution of the classic Lambada 'Boomerang', now with the continuous flow typical of Zouk."
+        },
+        "q3": {
+          "q": "What is the importance of Lambada in Zouk history?",
+          "a": "Brazilian Zouk would not exist without Lambada. The fundamentals and head movements were systematized by pioneers like <strong>Renata Peçanha</strong> and <strong>Adílio Porto</strong>. As the BZC defines, the dance adapted to slow Caribbean songs, evolving into the flow we know today."
+        },
+        "q4": {
+          "q": "What is the ideal BPM for Brazilian Zouk?",
+          "a": "The ideal BPM range for Brazilian Zouk is typically <strong>90–110 BPM</strong> for beginner to intermediate dancers, and <strong>75–95 BPM</strong> for advanced dancers who prefer slower, more musical sets. DJ Zen Eyer's Cremosidade philosophy prioritizes emotional flow over tempo — a well-curated set at 80 BPM can feel more energizing than a careless one at 100 BPM. The BPM must serve the music, not the other way around."
+        },
+        "q5": {
+          "q": "What is the difference between Brazilian Zouk and Lambazouk?",
+          "a": "Brazilian Zouk and Lambazouk share common roots but are distinct styles. <strong>Lambazouk</strong> is an earlier hybrid — Lambada footwork patterns danced to Caribbean Zouk music (1990s). <strong>Brazilian Zouk</strong> evolved from Lambazouk into its own codified style with distinct head movements, body waves, improvisation principles, and a broader musical vocabulary. The Brazilian Zouk Council (BZC) maintains the official technical definitions. DJ Zen Eyer's Cremosidade style is a musical philosophy built on Brazilian Zouk foundations."
+        }
+      },
+      "culture": {
+        "title": "Culture and History",
+        "desc": "Curiosities, milestones and etiquette of the movement.",
+        "q1": {
+          "q": "Why did the name change to 'Brazilian Zouk' outside the country?",
+          "a": "In Brazil, this whole evolution of Lambada movements danced to Caribbean Zouk music affectionately became just 'Let's dance Zouk'. When exporting the dance, the term 'Brazilian' helped differentiate that the dance we do comes from Brazil, even though it's frequently danced to Caribbean music and, more recently, to global contemporary songs."
+        },
+        "q2": {
+          "q": "Is Brazilian Zouk the same as Lambada?",
+          "a": "No, but they are blood relatives. Brazilian Zouk shares DNA and pure fundamentals from Lambada, but evolved in parallel through the 90s and 2000s in slower musical tempos, nowadays prioritizing a more elongated fluidity and different breathing and connection dynamics."
+        },
+        "q3": {
+          "q": "Is there specific etiquette on the Zouk floor?",
+          "a": "Yes, and the main one is <strong>consent and care</strong>! It's a very close connection dance with head movements. Leading must be safe, pleasant, and never forced. The best dance floor is the one where everyone respects each other, invites different friends to dance, and shares smiles."
+        }
+      },
+      "community": {
+        "title": "Zen Tribe & Booking",
+        "desc": "How to join the movement and send a message.",
+        "q1": {
+          "q": "What is the Zen Tribe?",
+          "a": "The <strong>Zen Tribe</strong> is the project where we unite with other people who enjoy the dance floor vibe. Participants of the project get behind-the-scenes access (edits, full sets, and career content)."
+        },
+        "q2": {
+          "q": "How to book DJ Zen Eyer for my event?",
+          "a": "We travel the world playing, just send a message via email or official WhatsApp, no matter where it is. Regarding workshops on DJing and music in dance, we also teach them."
+        },
+        "q3": {
+          "q": "Can I use your music in Instagram/YouTube videos?",
+          "a": "<strong>Yes!</strong> Usage is free for dancers and teachers. I just ask that you tag <strong>@djzeneyer</strong> so I can repost and promote your work. For large-scale commercial use, please contact for licensing."
+        }
+      }
+    },
+    "not_found": "Didn't find what you were looking for?",
+    "cta_whatsapp": "Talk on WhatsApp",
+    "cta_email": "Send Email"
+  }
+}

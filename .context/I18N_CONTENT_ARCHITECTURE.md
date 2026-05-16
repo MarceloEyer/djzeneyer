@@ -18,7 +18,12 @@ O frontend usa `i18next` com namespaces carregados sob demanda.
 Conteudo longo, enciclopedico ou altamente especifico de pagina deve ir para namespace proprio:
 
 - `encyclopedia.json`: verbetes da Zouk Encyclopedia.
-- `faq.json`: candidato futuro, pois tende a crescer com perguntas e respostas.
+- `faq.json`: perguntas e respostas.
+- `legal.json`: termos, politica de retorno e textos legais.
+- `conduct.json`: codigo de conduta.
+- `privacy.json`: politica de privacidade.
+- `about.json`: historia, timeline e copy longa do About.
+- `zentribe.json`: copy da pagina Zen Tribe.
 - `quiz.json`: ja separado.
 
 ### O que deve ficar em `translation.json`
@@ -31,7 +36,7 @@ Textos curtos e compartilhados:
 - Mensagens reutilizadas.
 - Pequenos blocos de paginas que nao tendem a crescer.
 
-Zen Tribe continua em `translation.json` por enquanto: apesar de ter muitas linhas, e uma unica pagina com volume moderado de texto e o layout atual depende de copy compacta.
+Ao criar uma pagina com bastante texto, adicione um namespace dedicado e carregue-o no componente com `useTranslation(['translation', 'nome-do-namespace'])`.
 
 ## Releases
 

@@ -6,7 +6,7 @@ import { ARTIST } from '../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const ReturnPolicyPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'legal']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   return (

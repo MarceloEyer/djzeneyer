@@ -1,0 +1,88 @@
+{
+  "privacy_page": {
+    "title": "Política de Privacidade",
+    "seo": {
+      "title": "Política de Privacidade | Zen Eyer",
+      "description": "Política de Privacidade do site oficial de Zen Eyer. Saiba como coletamos, usamos e protegemos suas informações pessoais."
+    },
+    "last_updated": "Última atualização",
+    "last_updated_date": "Janeiro 2024",
+    "intro_p1": "Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46) está comprometido em proteger sua privacidade. Esta Política de Privacidade explica como coletamos, usamos, divulgamos e protegemos suas informações quando você visita nosso site.",
+    "intro_p2": "Ao usar nosso site, você concorda com as práticas de dados descritas nesta política. Se você não concordar com os termos desta Política de Privacidade, por favor não acesse o site.",
+    "sections": {
+      "collection": {
+        "title": "1. Informações que Coletamos",
+        "items": [
+          "Informações de identificação pessoal (nome, endereço de e-mail, número de telefone)",
+          "Dados de uso e análises (páginas visitadas, tempo gasto, interações)",
+          "Informações do dispositivo (tipo de navegador, sistema operacional, endereço IP)",
+          "Cookies e tecnologias de rastreamento para uma melhor experiência do usuário",
+          "Informações de pagamento (processadas com segurança através de processadores de terceiros)"
+        ]
+      },
+      "usage": {
+        "title": "2. Como Usamos Suas Informações",
+        "items": [
+          "Para fornecer e manter nossos serviços",
+          "Para notificá-lo sobre alterações em nossos serviços",
+          "Para fornecer suporte ao cliente e responder a consultas",
+          "Para enviar e-mails promocionais e newsletters (com seu consentimento)",
+          "Para analisar padrões de uso e melhorar nosso site e serviços",
+          "Para detectar, prevenir e abordar problemas técnicos e ameaças de segurança"
+        ]
+      },
+      "security": {
+        "title": "3. Segurança de Dados",
+        "items": [
+          "Implementamos medidas de segurança padrão da indústria para proteger seus dados",
+          "Criptografia SSL/TLS para toda transmissão de dados",
+          "Auditorias de segurança regulares e avaliações de vulnerabilidade",
+          "Acesso restrito a informações pessoais por necessidade de conhecimento",
+          "No entanto, nenhum método de transmissão pela Internet é 100% seguro"
+        ]
+      },
+      "sharing": {
+        "title": "4. Compartilhamento e Divulgação de Dados",
+        "items": [
+          "Não vendemos suas informações pessoais a terceiros",
+          "Podemos compartilhar dados com provedores de serviços confiáveis que auxiliam nas operações",
+          "Podemos divulgar informações quando exigido por lei ou para proteger nossos direitos",
+          "Parceiros de análise podem receber dados agregados e anonimizados",
+          "Processadores de pagamento lidam com dados de transação de acordo com suas próprias políticas"
+        ]
+      },
+      "rights": {
+        "title": "5. Seus Direitos",
+        "items": [
+          "Acesso: Solicite uma cópia de seus dados pessoais",
+          "Correção: Solicite a correção de dados imprecisos ou incompletos",
+          "Exclusão: Solicite a exclusão de seus dados pessoais (sujeito a obrigações legais)",
+          "Opt-out: Cancele a assinatura de comunicações de marketing a qualquer momento",
+          "Portabilidade de dados: Solicite a transferência de seus dados para outro serviço"
+        ]
+      }
+    },
+    "cookies_title": "6. Cookies e Tecnologias de Rastreamento",
+    "cookies_p1": "Usamos cookies e tecnologias de rastreamento semelhantes para rastrear a atividade em nosso site e manter certas informações. Cookies são arquivos com uma pequena quantidade de dados que podem incluir um identificador exclusivo anônimo.",
+    "cookies_p2": "Você pode instruir seu navegador a recusar todos os cookies ou indicar quando um cookie está sendo enviado. No entanto, se você não aceitar cookies, poderá não conseguir usar algumas partes de nosso site.",
+    "third_party_title": "7. Serviços de Terceiros",
+    "third_party_p1": "Podemos empregar empresas e indivíduos terceiros para facilitar nossos serviços, fornecer serviços em nosso nome ou nos ajudar a analisar como nosso serviço é usado. Esses terceiros podem ter acesso às suas informações pessoais para realizar tarefas em nosso nome e são obrigados a não divulgá-las ou usá-las para qualquer outra finalidade.",
+    "third_party_analytics": "Analytics: Google Analytics",
+    "third_party_payments": "Processamento de Pagamento: Stripe, PayPal",
+    "third_party_email": "Serviços de E-mail: MailPoet",
+    "lgpd_title": "8. Conformidade com a LGPD (Lei Brasileira)",
+    "lgpd_p1": "Cumprimos a Lei Geral de Proteção de Dados (LGPD). Como uma entidade brasileira, estamos comprometidos em:",
+    "lgpd_items": [
+      "Processar dados de forma lícita, justa e transparente",
+      "Coletar dados apenas para fins especificados, explícitos e legítimos",
+      "Manter os dados precisos e atualizados",
+      "Reter dados apenas pelo tempo necessário"
+    ],
+    "changes_title": "9. Alterações nesta Política de Privacidade",
+    "changes_p1": "Podemos atualizar nossa Política de Privacidade de tempos em tempos. Iremos notificá-lo de quaisquer alterações postando a nova Política de Privacidade nesta página e atualizando a data de \"Última atualização\". Recomendamos que você revise esta Política de Privacidade periodicamente para quaisquer alterações.",
+    "contact_title": "10. Contate-nos",
+    "contact_p1": "Se você tiver alguma dúvida sobre esta Política de Privacidade ou desejar exercer seus direitos, entre em contato conosco em:",
+    "contact_name": "Marcelo Eyer Fernandes",
+    "contact_location": "Niterói, RJ - Brasil"
+  }
+}

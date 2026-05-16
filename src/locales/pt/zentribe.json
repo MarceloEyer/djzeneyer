@@ -1,0 +1,154 @@
+{
+  "zenTribe": {
+    "pageTitle": "Zen Tribe - Comunidade Exclusiva",
+    "pageDesc": "Junte-se à Zen Tribe e tenha acesso a conteúdo exclusivo, eventos VIP e muito mais!",
+    "badge": "Comunidade Exclusiva",
+    "welcome": "Bem-vindo à",
+    "tribe": "Zen Tribe",
+    "subtitle": "Uma comunidade exclusiva para verdadeiros amantes de música. Ganhe pontos, desbloqueie conquistas e aproveite benefícios incríveis.",
+    "schema": {
+      "organization_name": "Zen Tribe - Comunidade Global de Zouk Brasileiro",
+      "organization_desc": "Comunidade exclusiva para amantes do Zouk Brasileiro, oferecendo acesso antecipado a músicas, eventos VIP e sistema de recompensas gamificado.",
+      "organization_slogan": "Conectando almas através do Zouk Brasileiro"
+    },
+    "joinNow": "Entrar Agora",
+    "learnMore": "Saiba Mais",
+    "unlockAtLevel": "Desbloquear no nível {{level}}",
+    "mostPopular": "Mais Popular",
+    "upgradeNow": "Fazer Upgrade Agora",
+    "unlocked": "Desbloqueado",
+    "viewMemberships": "Ver Planos",
+    "whyJoin": "Por Que Entrar na Zen Tribe?",
+    "chooseMembership": "Escolha Seu Plano Zen Tribe",
+    "selectTier": "Selecione o plano que se encaixa na sua jornada com a música do Zen Eyer",
+    "levelUpTitle": "Evolua Sua Jornada Musical",
+    "levelUpDesc": "A Zen Tribe possui um sistema completo de conquistas que recompensa você por interagir com a música, participar de eventos e ser um membro ativo da comunidade.",
+    "xpTitle": "Pontos de Experiência (XP)",
+    "xpDesc": "Ganhe XP por cada ação que você toma, desde ouvir tracks até participar de eventos.",
+    "badgesTitle": "Badges Digitais",
+    "badgesDesc": "Desbloqueie badges colecionáveis por conquistas especiais e marcos na sua jornada.",
+    "rewardsTitle": "Recompensas & Benefícios",
+    "rewardsDesc": "Ganhe benefícios reais como descontos em merchandise, conteúdo exclusivo e upgrades VIP.",
+    "streaksTitle": "Sequências Diárias",
+    "streaksDesc": "Mantenha sua sequência de engajamento para XP bônus e recompensas exclusivas de sequência.",
+    "achievementShowcase": "Vitrine de Conquistas",
+    "currentLevel": "Nível Atual",
+    "zenApprentice": "Aprendiz Zen",
+    "progressToLevel": "Progresso para Nível 4",
+    "stats": {
+      "members": "Membros",
+      "tracks": "Tracks",
+      "events": "Eventos",
+      "achievements": "Conquistas"
+    },
+    "tabs": {
+      "benefits": "Benefícios",
+      "achievements": "Conquistas",
+      "challenges": "Desafios"
+    },
+    "benefits": {
+      "exclusiveMusic": {
+        "title": "Música Exclusiva",
+        "desc": "Acesso antecipado a lançamentos e remixes exclusivos antes de todos."
+      },
+      "earlyAccess": {
+        "title": "Acesso Antecipado",
+        "desc": "Compre ingressos para eventos antes da venda geral."
+      },
+      "merchandise": {
+        "title": "Merchandise Exclusivo",
+        "desc": "Descontos em produtos oficiais e edições limitadas."
+      },
+      "community": {
+        "title": "Comunidade Privada",
+        "desc": "Acesso ao grupo exclusivo de membros da Tribe."
+      },
+      "vipStatus": {
+        "title": "Status VIP",
+        "desc": "Privilégios especiais em eventos ao vivo."
+      },
+      "behindScenes": {
+        "title": "Bastidores",
+        "desc": "Conteúdo exclusivo dos bastidores e processo criativo."
+      }
+    },
+    "achievements": {
+      "firstTrack": {
+        "title": "Primeira Track",
+        "desc": "Baixou sua primeira música"
+      },
+      "firstEvent": {
+        "title": "Primeiro Evento",
+        "desc": "Participou do seu primeiro evento"
+      },
+      "collector": {
+        "title": "Colecionador",
+        "desc": "Baixou 10 tracks"
+      },
+      "legend": {
+        "title": "Lenda",
+        "desc": "Alcançou o nível máximo"
+      },
+      "streak": {
+        "title": "Sequência de Fogo",
+        "desc": "7 dias consecutivos ativos"
+      },
+      "marketer": {
+        "title": "Embaixador",
+        "desc": "Compartilhou 5 vezes"
+      }
+    },
+    "challenges": {
+      "downloadTracks": {
+        "title": "Baixe 5 Tracks",
+        "desc": "Baixe 5 músicas diferentes"
+      },
+      "attendEvents": {
+        "title": "Participe de 3 Eventos",
+        "desc": "Participe de 3 eventos do Zen Eyer"
+      },
+      "shareContent": {
+        "title": "Compartilhe 10 Vezes",
+        "desc": "Compartilhe conteúdo 10 vezes nas redes sociais"
+      }
+    },
+    "cta": {
+      "title": "Pronto para Evoluir Sua Experiência?",
+      "subtitle": "Junte-se a milhares de membros da Zen Tribe e desbloqueie todos os benefícios exclusivos!",
+      "button": "Entrar na Tribe Agora"
+    },
+    "tiers": {
+      "novice": {
+        "name": "Novato Zen",
+        "price": "Grátis",
+        "feature1": "Acesso a lançamentos públicos de música",
+        "feature2": "Criar e compartilhar playlists",
+        "feature3": "Participar de discussões da comunidade",
+        "feature4": "Perfil básico e badges"
+      },
+      "voyager": {
+        "name": "Viajante Zen",
+        "price": "R$49,99/mês",
+        "feature1": "Todos os recursos de Novato Zen",
+        "feature2": "Lançamentos musicais semanais exclusivos",
+        "feature3": "Acesso antecipado a ingressos de eventos",
+        "feature4": "Sistema de conquistas avançado",
+        "feature5": "Descontos em merchandise"
+      },
+      "master": {
+        "name": "Mestre Zen",
+        "price": "R$99,99/mês",
+        "feature1": "Todos os recursos de Viajante Zen",
+        "feature2": "Acesso VIP a todos os eventos ao vivo",
+        "feature3": "Lives mensais exclusivas",
+        "feature4": "Playlists personalizadas do Zen Eyer",
+        "feature5": "Coleção de badges digitais Mestre Zen",
+        "feature6": "Oportunidades de meet & greet"
+      }
+    },
+    "aria": {
+      "learnMore": "Saiba Mais",
+      "viewMemberships": "Ver Planos"
+    }
+  }
+}

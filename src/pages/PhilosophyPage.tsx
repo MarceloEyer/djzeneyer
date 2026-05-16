@@ -38,7 +38,7 @@ const VIEWPORT_ONCE = { once: true, amount: 0.15 };
 
 // ─── Component ────────────────────────────────────────────────────────────────
 const PhilosophyPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'about']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('philosophy', currentLang)}`;
 

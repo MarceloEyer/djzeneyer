@@ -1,0 +1,174 @@
+{
+  "legal": {
+    "return_policy": {
+      "page_title": "Política de Devolução e Reembolso",
+      "page_meta_desc": "Nossa política de devoluções e reembolsos para produtos e ingressos.",
+      "h1": "Política de Devolução e Reembolso",
+      "intro": "Na Zen Eyer, queremos que você esteja completamente satisfeito com sua compra. No entanto, entendemos que às vezes as coisas não funcionam. Leia nossa política abaixo sobre devoluções e reembolsos.",
+      "digital_title": "1. Produtos Digitais",
+      "digital_text": "Devido à natureza dos produtos digitais (downloads de música, sample packs, presets), todas as vendas são finais. Uma vez que o arquivo foi baixado, não podemos oferecer reembolso. Se você tiver problemas técnicos com um arquivo, entre em contato com o suporte.",
+      "tickets_title": "2. Ingressos de Eventos",
+      "tickets_text": "Os ingressos para eventos geralmente não são reembolsáveis, a menos que o evento seja cancelado ou significativamente reagendado.",
+      "cancellations_label": "Cancelamentos:",
+      "cancellations_text": "Se um evento for cancelado, você receberá um reembolso total automaticamente.",
+      "transfers_label": "Transferências:",
+      "transfers_text": "Você pode transferir seu ingresso para outra pessoa até 24 horas antes do início do evento. Entre em contato conosco para processar a alteração do nome.",
+      "rescheduling_label": "Reagendamento:",
+      "rescheduling_text": "Se um evento for reagendado, seu ingresso será válido para a nova data. Se você não puder comparecer à nova data, poderá solicitar um reembolso em até 14 dias após o anúncio.",
+      "merch_title": "3. Mercadorias Físicas",
+      "merch_text": "Para itens físicos (camisetas, moletons, acessórios), aceitamos devoluções em até 30 dias após a entrega.",
+      "merch_c1": "Os itens devem estar sem uso, lavados e em suas condições originais.",
+      "merch_c2": "Você é responsável pelos custos de envio da devolução, a menos que o item tenha chegado danificado ou incorreto.",
+      "merch_c3": "Os reembolsos são processados no método de pagamento original em 5 a 10 dias úteis após recebermos a devolução.",
+      "request_title": "4. Como solicitar um reembolso",
+      "request_text": "Para iniciar uma solicitação de devolução ou reembolso, envie um e-mail para",
+      "request_text_2": "com o número do seu pedido e detalhes do problema.",
+      "last_updated": "Última atualização",
+      "last_updated_date": "Janeiro 2026"
+    },
+    "terms_page": {
+      "title": "Termos de Uso",
+      "subtitle": "Termos e condicoes para uso do site oficial de Zen Eyer, loja, comunidade, produtos digitais e servicos relacionados a eventos.",
+      "last_updated": "Ultima atualizacao",
+      "last_updated_date": "Janeiro de 2026",
+      "introduction": "Bem-vindo ao site oficial de Zen Eyer. Estes Termos de Uso regulam o acesso e uso do site, conteudos, recursos de comunidade, produtos digitais, servicos relacionados a eventos e experiencias de loja disponiveis em djzeneyer.com.",
+      "introduction_agreement": "Ao usar este site ou comprar qualquer produto ou servico, voce concorda em seguir estes termos, as leis aplicaveis e eventuais condicoes adicionais exibidas no checkout ou em paginas especificas de produtos, eventos ou comunidade.",
+      "acceptance": "Aceitacao dos Termos",
+      "acceptance_desc": "Ao acessar este site, criar uma conta, entrar na Zen Tribe, comprar produtos, baixar recursos musicais ou interagir com qualquer servico, voce confirma que leu e aceitou estes Termos de Uso.",
+      "license": "Licenca Limitada de Uso do Site",
+      "license_desc": "Voce pode acessar e usar o site para fins pessoais, licitos e nao comerciais. Essa permissao nao transfere propriedade sobre musicas, imagens, textos, design, marca, software ou outros materiais protegidos.",
+      "disclaimer": "Aviso Sobre Informacoes",
+      "disclaimer_desc": "O conteudo do site e fornecido para informacao geral, promocao, educacao, entretenimento e comercio. Informacoes de eventos, disponibilidade de produtos, precos e beneficios da comunidade podem mudar ao longo do tempo.",
+      "limitations": "Limitacao de Responsabilidade",
+      "limitations_desc": "Na maxima extensao permitida por lei, Zen Eyer nao se responsabiliza por perdas indiretas, interrupcoes tecnicas, problemas de plataformas terceiras ou decisoes tomadas com base em informacoes incompletas, desatualizadas ou fornecidas por terceiros.",
+      "intellectual_property": "Propriedade Intelectual",
+      "ip_content": "Musicas, sets, remixes, fotos, videos, logos, textos, designs e elementos de marca sao protegidos por direitos autorais, marcas e direitos relacionados.",
+      "ip_protected": "O nome Zen Eyer, a identidade artistica, a identidade visual e as obras criativas originais nao podem ser copiadas ou reutilizadas sem permissao.",
+      "ip_unauthorized": "E proibido raspar, republicar, revender, impersonar ou redistribuir conteudo protegido sem autorizacao.",
+      "ip_reproduce": "Voce pode compartilhar links oficiais para paginas publicas, lancamentos, plataformas de musica e perfis sociais, desde que preserve atribuicao e contexto.",
+      "user_conduct": "Conduta do Usuario",
+      "conduct_lawful": "Use o site e os espacos de comunidade apenas para fins licitos.",
+      "conduct_access": "Nao tente burlar autenticacao, acessar areas privadas ou interferir em contas, pedidos, pontos ou dados de membros.",
+      "conduct_bots": "Nao use bots, crawlers ou sistemas automatizados de forma que sobrecarregue o site ou extraia conteudo protegido fora do comportamento normal de indexacao.",
+      "conduct_malware": "Nao envie, transmita ou vincule codigo malicioso, paginas de phishing, spam ou material enganoso.",
+      "conduct_respect": "Respeite outros membros da comunidade, artistas, organizadores, professores e dancarinos ao participar da Zen Tribe ou espacos relacionados.",
+      "purchases": "Compras e Pagamentos",
+      "purchases_availability": "Produtos, assinaturas, ingressos, servicos e downloads digitais podem ser limitados por disponibilidade, territorio, data ou condicoes tecnicas.",
+      "purchases_prices": "Precos, moedas, impostos e taxas sao exibidos antes do checkout e podem mudar sem aviso previo.",
+      "purchases_cancel": "Pedidos podem ser cancelados ou recusados quando o pagamento falhar, houver suspeita de fraude, faltarem informacoes obrigatorias ou o item nao estiver mais disponivel.",
+      "purchases_processing": "Pagamentos podem ser processados por provedores terceirizados. Os termos e regras de privacidade deles tambem podem se aplicar.",
+      "purchases_refunds": "Reembolsos, trocas e devolucoes seguem a Politica de Devolucao e Reembolso e eventuais condicoes especificas exibidas no produto ou evento.",
+      "accounts": "Contas e Assinaturas",
+      "accounts_confidential": "Voce e responsavel por manter credenciais de login, acesso a conta e beneficios de assinatura em seguranca.",
+      "accounts_responsibility": "Atividades realizadas pela sua conta podem ser tratadas como suas, salvo se acesso nao autorizado for comunicado rapidamente.",
+      "accounts_accurate": "Informacoes de conta, cobranca, envio e contato devem ser precisas e mantidas atualizadas.",
+      "accounts_suspend": "Contas podem ser suspensas ou restringidas por abuso, fraude, assedio, spam ou violacao destes termos.",
+      "accounts_notify": "Se voce acredita que sua conta foi comprometida, entre em contato com o suporte o quanto antes.",
+      "third_party_links": "Links e Plataformas de Terceiros",
+      "links_contain": "O site pode conter links para plataformas de musica, servicos de ingresso, redes sociais, processadores de pagamento, hoteis, paginas de eventos, materias de imprensa e outros sites de terceiros.",
+      "links_no_control": "Zen Eyer nao controla sites de terceiros, disponibilidade, precos, politicas, conteudo ou praticas de dados dessas plataformas.",
+      "links_no_endorsement": "Um link nao significa necessariamente endosso de toda declaracao, oferta ou servico fornecido pelo site externo.",
+      "links_risk": "Voce acessa sites e plataformas externas por sua propria decisao e deve revisar os termos deles antes de utiliza-los.",
+      "links_review": "Para informacoes oficiais sobre lancamentos, contratacoes, pagamentos e acesso a comunidade, priorize as paginas canonicas em djzeneyer.com e perfis oficiais verificados.",
+      "governing_law": "Lei Aplicavel",
+      "law_brazil": "Estes termos sao regidos pelas leis aplicaveis aos negocios e operacoes de Zen Eyer, sem excluir protecoes obrigatorias ao consumidor que possam se aplicar na sua jurisdicao.",
+      "law_consent": "Quando uma disputa nao puder ser resolvida informalmente, o foro competente sera determinado conforme a lei aplicavel e a natureza da transacao ou servico.",
+      "modifications": "Alteracoes Nestes Termos",
+      "modifications_desc": "Estes Termos de Uso podem ser atualizados para refletir mudancas no site, loja, assinaturas, eventos, servicos, requisitos legais ou estrutura do negocio. A versao mais recente publicada nesta pagina e a versao ativa.",
+      "questions": "Perguntas",
+      "questions_desc": "Para perguntas sobre estes termos, compras, assinaturas, eventos ou uso do site, entre em contato com Zen Eyer pelos canais oficiais.",
+      "contact_company": "Marcelo Eyer Fernandes",
+      "contact_location": "Brasil / Operacoes internacionais",
+      "acceptance_footer": "Ao continuar usando este site, voce reconhece e aceita estes Termos de Uso."
+    }
+  },
+  "terms_page": {
+    "title": "Termos de Uso",
+    "seo": {
+      "title": "Termos de Uso | Zen Eyer",
+      "description": "Termos de Uso do site oficial de Zen Eyer. Leia os termos e condições que regem o uso de nossos serviços."
+    },
+    "last_updated": "Última atualização",
+    "last_updated_date": "Janeiro 2024",
+    "intro_p1": "Bem-vindo ao site oficial do Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). Estes Termos de Uso regem seu acesso e uso de nosso site, serviços e conteúdo.",
+    "intro_p2": "Ao acessar ou usar nosso site, você concorda em cumprir e estar vinculado a estes termos. Se você não concordar com estes termos, por favor não use nosso site.",
+    "sections": {
+      "acceptance": {
+        "title": "1. Aceitação dos Termos",
+        "content": "Ao acessar e usar este site (djzeneyer.com), você aceita e concorda em estar vinculado aos termos e disposições deste contrato. Se você não concordar com estes Termos de Uso, por favor não use este site. Reservamo-nos o direito de modificar estes termos a qualquer momento, e tais modificações entrarão em vigor imediatamente após a postagem neste site."
+      },
+      "license": {
+        "title": "2. Licença de Uso",
+        "content": "É concedida permissão para acessar temporariamente os materiais (informações ou software) no site do Zen Eyer apenas para visualização transitória pessoal e não comercial. Esta é a concessão de uma licença, não uma transferência de título, e sob esta licença você não pode: (a) modificar ou copiar os materiais; (b) usar os materiais para qualquer finalidade comercial, ou para qualquer exibição pública (comercial ou não comercial); (c) tentar descompilar ou fazer engenharia reversa de qualquer software contido no site do Zen Eyer; (d) remover quaisquer direitos autorais ou outras notações de propriedade dos materiais; ou (e) transferir os materiais para outra pessoa ou \"espelhar\" os materiais em qualquer outro servidor."
+      },
+      "disclaimer": {
+        "title": "3. Isenção de Responsabilidade",
+        "content": "Os materiais no site do Zen Eyer são fornecidos 'como estão'. Zen Eyer não oferece garantias, expressas ou implícitas, e por meio deste isenta e nega todas as outras garantias, incluindo, sem limitação, garantias implícitas ou condições de comercialização, adequação a um propósito específico ou não violação de propriedade intelectual ou outra violação de direitos. Além disso, Zen Eyer não garante nem faz qualquer representação relativa à precisão, resultados prováveis ou confiabilidade do uso dos materiais em seu site ou de outra forma relacionado a tais materiais ou em quaisquer sites vinculados a este site."
+      },
+      "limitations": {
+        "title": "4. Limitações",
+        "content": "Em nenhum caso o Zen Eyer ou seus fornecedores serão responsáveis por quaisquer danos (incluindo, sem limitação, danos por perda de dados ou lucro, ou devido à interrupção dos negócios) decorrentes do uso ou da incapacidade de usar os materiais no site do Zen Eyer, mesmo que Zen Eyer ou um representante autorizado do Zen Eyer tenha sido notificado oralmente ou por escrito da possibilidade de tais danos. Como algumas jurisdições não permitem limitações em garantias implícitas, ou limitações de responsabilidade por danos consequentes ou incidentais, essas limitações podem não se aplicar a você."
+      }
+    },
+    "additional": {
+      "ip": {
+        "title": "Propriedade Intelectual",
+        "items": [
+          "Todo o conteúdo, incluindo, mas não se limitando a texto, gráficos, logotipos, imagens, clipes de áudio e software, é de propriedade do Zen Eyer (Marcelo Eyer Fernandes) ou de seus fornecedores de conteúdo.",
+          "O conteúdo é protegido pelas leis de direitos autorais brasileiras e internacionais.",
+          "O uso não autorizado de quaisquer materiais pode violar direitos autorais, marcas registradas e outras leis.",
+          "Você não pode reproduzir, distribuir, exibir ou criar obras derivadas sem permissão expressa por escrito."
+        ]
+      },
+      "conduct": {
+        "title": "Conduta do Usuário",
+        "items": [
+          "Você concorda em não usar o site para qualquer finalidade ilegal ou de qualquer forma que interrompa, danifique ou prejudique o serviço.",
+          "Você não tentará obter acesso não autorizado a qualquer parte do site.",
+          "Você não usará sistemas automatizados (bots, scrapers) sem permissão.",
+          "Você não fará upload nem transmitirá vírus ou qualquer outro tipo de código malicioso.",
+          "Você respeitará a privacidade e os direitos de outros usuários."
+        ]
+      },
+      "purchases": {
+        "title": "Compras e Pagamentos",
+        "items": [
+          "Todas as compras estão sujeitas à disponibilidade e confirmação de pagamento.",
+          "Os preços estão sujeitos a alterações sem aviso prévio.",
+          "Reservamo-nos o direito de recusar ou cancelar qualquer pedido.",
+          "O processamento de pagamento é realizado por processadores terceirizados seguros.",
+          "As políticas de reembolso e cancelamento são descritas no momento da compra."
+        ]
+      },
+      "accounts": {
+        "title": "Contas de Usuário",
+        "items": [
+          "Você é responsável por manter a confidencialidade de suas credenciais de conta.",
+          "Você concorda em aceitar a responsabilidade por todas as atividades que ocorrem em sua conta.",
+          "Você deve fornecer informações precisas e completas ao criar uma conta.",
+          "Reservamo-nos o direito de suspender ou encerrar contas que violem estes termos.",
+          "Você deve nos notificar imediatamente sobre qualquer uso não autorizado de sua conta."
+        ]
+      },
+      "links": {
+        "title": "Links de Terceiros",
+        "items": [
+          "Este site pode conter links para sites de terceiros.",
+          "Zen Eyer não tem controle e não assume responsabilidade pelo conteúdo de terceiros.",
+          "A presença de links não implica endosso.",
+          "Você acessa sites de terceiros por sua conta e risco.",
+          "Revise os termos e as políticas de privacidade de quaisquer sites de terceiros."
+        ]
+      }
+    },
+    "governing_law_title": "10. Lei Aplicável",
+    "governing_law_p1": "Estes Termos de Uso serão regidos e interpretados de acordo com as leis do Brasil, sem levar em conta conflitos de disposições legais. Qualquer ação ou processo legal decorrente destes termos será movido exclusivamente nos tribunais localizados em São Paulo, Brasil.",
+    "governing_law_p2": "Ao usar este site, você concorda com a jurisdição e o local de tais tribunais em São Paulo, Brasil.",
+    "modifications_title": "11. Modificações nos Termos",
+    "modifications_p1": "Zen Eyer reserva-se o direito de revisar estes Termos de Uso a qualquer momento, sem aviso prévio. Ao continuar a usar este site após a publicação das alterações, você concorda em ficar vinculado aos termos revisados. Recomendamos que você revise periodicamente esta página para obter as informações mais recentes sobre nossos termos.",
+    "contact_questions": "Dúvidas sobre estes Termos?",
+    "contact_intro": "Se você tiver alguma dúvida sobre estes Termos de Uso, entre em contato conosco:",
+    "acceptance_p1": "Ao usar este site, você reconhece que leu e entendeu estes Termos de Uso",
+    "acceptance_p2": "e concorda em estar vinculado a eles."
+  }
+}

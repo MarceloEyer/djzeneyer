@@ -6,7 +6,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const CodeOfConductPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'conduct']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const lastUpdated = t('conduct_page.last_updated_date');
   const canonicalUrl = useMemo(

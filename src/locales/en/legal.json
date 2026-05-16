@@ -1,0 +1,174 @@
+{
+  "legal": {
+    "return_policy": {
+      "page_title": "Return & Refund Policy",
+      "page_meta_desc": "Our policy on returns and refunds for products and tickets.",
+      "h1": "Return & Refund Policy",
+      "intro": "At DJ Zen Eyer, we want you to be completely satisfied with your purchase. However, we understand that sometimes things don't work out. Please read our policy below regarding returns and refunds.",
+      "digital_title": "1. Digital Products",
+      "digital_text": "Due to the nature of digital products (music downloads, sample packs, presets), all sales are final. Once a file has been downloaded, we cannot offer a refund. If you have technical issues with a file, please contact support.",
+      "tickets_title": "2. Event Tickets",
+      "tickets_text": "Tickets for events are generally non-refundable unless the event is cancelled or significantly rescheduled.",
+      "cancellations_label": "Cancellations:",
+      "cancellations_text": "If an event is cancelled, you will receive a full refund automatically.",
+      "transfers_label": "Transfers:",
+      "transfers_text": "You may transfer your ticket to another person up to 24 hours before the event starts. Please contact us to process the name change.",
+      "rescheduling_label": "Rescheduling:",
+      "rescheduling_text": "If an event is rescheduled, your ticket will be valid for the new date. If you cannot attend the new date, you may request a refund within 14 days of the announcement.",
+      "merch_title": "3. Physical Merchandise",
+      "merch_text": "For physical items (t-shirts, hoodies, accessories), we accept returns within 30 days of delivery.",
+      "merch_c1": "Items must be unworn, unwashed, and in their original condition.",
+      "merch_c2": "You are responsible for return shipping costs unless the item arrived damaged or incorrect.",
+      "merch_c3": "Refunds are processed to the original payment method within 5-10 business days after we receive the return.",
+      "last_updated": "Last updated",
+      "last_updated_date": "January 2024",
+      "request_text": "To initiate a return or refund request, send an email to",
+      "request_text_2": "with your order number and details of the problem.",
+      "request_title": "4. How to request a refund"
+    },
+    "terms_page": {
+      "title": "Terms of Use",
+      "subtitle": "Terms and conditions for using the official Zen Eyer website, shop, community features, digital products, and event-related services.",
+      "last_updated": "Last updated",
+      "last_updated_date": "January 2026",
+      "introduction": "Welcome to the official website of Zen Eyer. These Terms of Use govern your access to and use of the website, content, community features, digital products, event-related services, and shop experiences made available through djzeneyer.com.",
+      "introduction_agreement": "By using this website or purchasing any product or service, you agree to follow these terms, applicable laws, and any additional conditions shown at checkout or on a specific product, event, or community page.",
+      "acceptance": "Acceptance of Terms",
+      "acceptance_desc": "By accessing this website, creating an account, joining Zen Tribe, purchasing products, downloading music resources, or interacting with any service, you confirm that you have read and accepted these Terms of Use.",
+      "license": "Limited Website License",
+      "license_desc": "You may access and use the website for personal, lawful, and non-commercial purposes. This permission does not transfer ownership of any music, images, text, design, brand assets, software, or other protected material.",
+      "disclaimer": "Information Disclaimer",
+      "disclaimer_desc": "The website content is provided for general information, promotion, education, entertainment, and commerce. Event information, product availability, prices, and community benefits may change over time.",
+      "limitations": "Limitation of Liability",
+      "limitations_desc": "To the maximum extent permitted by law, Zen Eyer is not responsible for indirect losses, technical interruptions, third-party platform issues, or decisions made based on incomplete, outdated, or externally provided information.",
+      "intellectual_property": "Intellectual Property",
+      "ip_content": "Music, mixes, remixes, photos, videos, logos, texts, designs, and brand elements are protected by copyright, trademark, and related rights.",
+      "ip_protected": "The Zen Eyer name, artistic identity, visual identity, and original creative works may not be copied or reused without permission.",
+      "ip_unauthorized": "Unauthorized scraping, republication, resale, impersonation, or redistribution of protected content is prohibited.",
+      "ip_reproduce": "You may share official links to public pages, releases, music platforms, and social profiles as long as attribution and context are preserved.",
+      "user_conduct": "User Conduct",
+      "conduct_lawful": "Use the website and community spaces only for lawful purposes.",
+      "conduct_access": "Do not attempt to bypass authentication, access private areas, or interfere with accounts, orders, points, or member data.",
+      "conduct_bots": "Do not use bots, crawlers, or automated systems in a way that overloads the site or extracts protected content outside normal indexing behavior.",
+      "conduct_malware": "Do not upload, transmit, or link to malicious code, phishing pages, spam, or deceptive material.",
+      "conduct_respect": "Respect other community members, artists, organizers, teachers, and dancers when participating in Zen Tribe or related spaces.",
+      "purchases": "Purchases and Payments",
+      "purchases_availability": "Products, memberships, tickets, services, and digital downloads may be limited by availability, territory, date, or technical conditions.",
+      "purchases_prices": "Prices, currencies, taxes, and fees are shown before checkout and may change without prior notice.",
+      "purchases_cancel": "Orders may be cancelled or refused when payment fails, fraud is suspected, required information is missing, or an item is no longer available.",
+      "purchases_processing": "Payments may be processed by third-party providers. Their own terms and privacy rules may also apply.",
+      "purchases_refunds": "Refunds, exchanges, and returns are handled according to the Return and Refund Policy and any specific conditions shown for the product or event.",
+      "accounts": "Accounts and Memberships",
+      "accounts_confidential": "You are responsible for keeping login credentials, account access, and membership benefits secure.",
+      "accounts_responsibility": "Activity performed through your account may be treated as your activity unless unauthorized access is reported promptly.",
+      "accounts_accurate": "Account, billing, shipping, and contact information should be accurate and kept up to date.",
+      "accounts_suspend": "Accounts may be suspended or restricted for abuse, fraud, harassment, spam, or violation of these terms.",
+      "accounts_notify": "If you believe your account was compromised, contact support as soon as possible.",
+      "third_party_links": "Third-Party Links and Platforms",
+      "links_contain": "The website may link to music platforms, ticketing services, social media, payment processors, hotels, event pages, press articles, and other third-party websites.",
+      "links_no_control": "Zen Eyer does not control third-party websites, their uptime, pricing, policies, content, or data practices.",
+      "links_no_endorsement": "A link does not necessarily mean endorsement of every statement, offer, or service provided by the external website.",
+      "links_risk": "You access external websites and platforms at your own discretion and should review their terms before using them.",
+      "links_review": "For official information about music releases, bookings, payments, and community access, prioritize the canonical pages on djzeneyer.com and official verified profiles.",
+      "governing_law": "Governing Law",
+      "law_brazil": "These terms are governed by the laws applicable to the business and operations of Zen Eyer, without excluding mandatory consumer protections that may apply in your jurisdiction.",
+      "law_consent": "When a dispute cannot be resolved informally, the competent venue will be determined according to applicable law and the nature of the transaction or service.",
+      "modifications": "Changes to These Terms",
+      "modifications_desc": "These Terms of Use may be updated to reflect changes in the website, shop, memberships, events, services, legal requirements, or business structure. The latest version published on this page is the active version.",
+      "questions": "Questions",
+      "questions_desc": "For questions about these terms, purchases, memberships, events, or website use, contact Zen Eyer through the official contact channels.",
+      "contact_company": "Marcelo Eyer Fernandes",
+      "contact_location": "Brazil / International operations",
+      "acceptance_footer": "By continuing to use this website, you acknowledge and accept these Terms of Use."
+    }
+  },
+  "terms_page": {
+    "title": "Terms of Use",
+    "seo": {
+      "title": "Terms of Use | DJ Zen Eyer",
+      "description": "Terms of Use for DJ Zen Eyer official website. Read the terms and conditions governing the use of our services."
+    },
+    "last_updated": "Last updated",
+    "last_updated_date": "January 2026",
+    "intro_p1": "Welcome to the official website of DJ Zen Eyer (Marcelo Eyer Fernandes, CNPJ: 44.063.765/0001-46). These Terms of Use govern your access to and use of our website, services, and content.",
+    "intro_p2": "By accessing or using our website, you agree to comply with and be bound by these terms. If you do not agree to these terms, please do not use our website.",
+    "sections": {
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "content": "By accessing and using this website (djzeneyer.com), you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to these Terms of Use, please do not use this website. We reserve the right to modify these terms at any time, and such modifications shall be effective immediately upon posting on this website."
+      },
+      "license": {
+        "title": "2. Use License",
+        "content": "Permission is granted to temporarily access the materials (information or software) on DJ Zen Eyer's website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not: (a) modify or copy the materials; (b) use the materials for any commercial purpose, or for any public display (commercial or non-commercial); (c) attempt to decompile or reverse engineer any software contained on DJ Zen Eyer's website; (d) remove any copyright or other proprietary notations from the materials; or (e) transfer the materials to another person or \"mirror\" the materials on any other server."
+      },
+      "disclaimer": {
+        "title": "3. Disclaimer",
+        "content": "The materials on DJ Zen Eyer's website are provided on an 'as is' basis. DJ Zen Eyer makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights. Further, DJ Zen Eyer does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its website or otherwise relating to such materials or on any sites linked to this site."
+      },
+      "limitations": {
+        "title": "4. Limitations",
+        "content": "In no event shall DJ Zen Eyer or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on DJ Zen Eyer's website, even if DJ Zen Eyer or a DJ Zen Eyer authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you."
+      }
+    },
+    "additional": {
+      "ip": {
+        "title": "Intellectual Property",
+        "items": [
+          "All content, including but not limited to text, graphics, logos, images, audio clips, and software, is the property of DJ Zen Eyer (Marcelo Eyer Fernandes) or its content suppliers.",
+          "The content is protected by Brazilian and international copyright laws.",
+          "Unauthorized use of any materials may violate copyright, trademark, and other laws.",
+          "You may not reproduce, distribute, display, or create derivative works without express written permission."
+        ]
+      },
+      "conduct": {
+        "title": "User Conduct",
+        "items": [
+          "You agree not to use the website for any unlawful purpose or in any way that interrupts, damages, or impairs the service.",
+          "You will not attempt to gain unauthorized access to any portion of the website.",
+          "You will not use automated systems (bots, scrapers) without permission.",
+          "You will not upload or transmit viruses or any other type of malicious code.",
+          "You will respect the privacy and rights of other users."
+        ]
+      },
+      "purchases": {
+        "title": "Purchases and Payments",
+        "items": [
+          "All purchases are subject to availability and confirmation of payment.",
+          "Prices are subject to change without notice.",
+          "We reserve the right to refuse or cancel any order.",
+          "Payment processing is handled by secure third-party processors.",
+          "Refund and cancellation policies are outlined at the time of purchase."
+        ]
+      },
+      "accounts": {
+        "title": "User Accounts",
+        "items": [
+          "You are responsible for maintaining the confidentiality of your account credentials.",
+          "You agree to accept responsibility for all activities that occur under your account.",
+          "You must provide accurate and complete information when creating an account.",
+          "We reserve the right to suspend or terminate accounts that violate these terms.",
+          "You must notify us immediately of any unauthorized use of your account."
+        ]
+      },
+      "links": {
+        "title": "Third-Party Links",
+        "items": [
+          "This website may contain links to third-party websites.",
+          "DJ Zen Eyer has no control over and assumes no responsibility for third-party content.",
+          "The presence of links does not imply endorsement.",
+          "You access third-party sites at your own risk.",
+          "Please review the terms and privacy policies of any third-party sites."
+        ]
+      }
+    },
+    "governing_law_title": "10. Governing Law",
+    "governing_law_p1": "These Terms of Use shall be governed by and construed in accordance with the laws of Brazil, without regard to its conflict of law provisions. Any legal action or proceeding arising under these terms will be brought exclusively in the courts located in São Paulo, Brazil.",
+    "governing_law_p2": "By using this website, you consent to the jurisdiction and venue of such courts in São Paulo, Brazil.",
+    "modifications_title": "11. Modifications to Terms",
+    "modifications_p1": "DJ Zen Eyer reserves the right to revise these Terms of Use at any time without prior notice. By continuing to use this website after changes are posted, you agree to be bound by the revised terms. We encourage you to periodically review this page for the latest information on our terms.",
+    "contact_questions": "Questions About These Terms?",
+    "contact_intro": "If you have any questions about these Terms of Use, please contact us:",
+    "acceptance_p1": "By using this website, you acknowledge that you have read and understood these Terms of Use",
+    "acceptance_p2": "and agree to be bound by them."
+  }
+}

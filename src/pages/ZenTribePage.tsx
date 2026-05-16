@@ -198,7 +198,7 @@ AchievementCard.displayName = 'AchievementCard';
 // COMPONENTE PRINCIPAL
 // ============================================================================
 const ZenTribePage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'zentribe']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const { user } = useUser();
 

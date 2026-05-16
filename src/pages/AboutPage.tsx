@@ -84,7 +84,7 @@ const ITEM_VARIANTS = {
 // ============================================================================
 
 const AboutPage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['translation', 'about']);
   const { artist } = useBranding();
   const prefersReducedMotion = useReducedMotion();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
@@ -221,7 +221,7 @@ const AboutPage: React.FC = () => {
                 </div>
               </motion.div>
               <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 text-white leading-tight">
-                <Trans i18nKey="about.hero.title">
+                <Trans i18nKey="about.hero.title" ns="about">
                   {/* Fallback text if translation fails */}
                   The <span className="text-primary">Journey</span>
                 </Trans>
@@ -295,7 +295,7 @@ const AboutPage: React.FC = () => {
                 <Globe size={14} /> {t('about.performed_at.badge')}
               </div>
               <h2 className="text-2xl sm:text-4xl font-display font-bold mb-4">
-                <Trans i18nKey="about.performed_at.title">
+                <Trans i18nKey="about.performed_at.title" ns="about">
                   Performing at International <span className="text-primary">Festivals</span>
                 </Trans>
               </h2>
@@ -338,7 +338,7 @@ const AboutPage: React.FC = () => {
               viewport={VIEWPORT_ONCE}
               className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-center mb-16"
             >
-              <Trans i18nKey="about.timeline.title">
+              <Trans i18nKey="about.timeline.title" ns="about">
                 Moments that <span className="text-primary">Changed Everything</span>
               </Trans>
             </motion.h2>
@@ -390,7 +390,7 @@ const AboutPage: React.FC = () => {
             >
               <Heart className="w-16 h-16 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-                <Trans i18nKey="about.philosophy.title">
+                <Trans i18nKey="about.philosophy.title" ns="about">
                   My <span className="text-primary">Philosophy</span>
                 </Trans>
               </h2>
@@ -414,7 +414,7 @@ const AboutPage: React.FC = () => {
             >
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-                <Trans i18nKey="about.cta.title">
+                <Trans i18nKey="about.cta.title" ns="about">
                   Let's <span className="text-primary">Talk?</span>
                 </Trans>
               </h2>
