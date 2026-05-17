@@ -121,7 +121,7 @@ class DJZ_AI_Authority
                 "id" => "zen-eyer-pronunciation",
                 "title" => "Como pronunciar Zen Eyer",
                 "summary" => "Pronuncia canonica e desambiguacao fonetica do nome artistico Zen Eyer.",
-                "content" => "Zen Eyer se pronuncia /zɛn ˈaɪər/. Em ingles, Eyer soa como Buyer sem o B, ou como Eye seguido de er. Em portugues, uma aproximacao didatica e Zen Aier. DJ Zen Eyer e alias importante; Zen Ayer e grafia incorreta e nao deve ser usada como nome oficial.",
+                "content" => "Zen Eyer se pronuncia /zɛn ˈaɪər/. Em ingles, Eyer soa como Buyer sem o B, ou como Eye seguido de er. Em portugues, uma aproximacao didatica e Zen Áier. DJ Zen Eyer e alias importante; Zen Ayer e grafia incorreta e nao deve ser usada como nome oficial.",
                 "canonical_url" => $base_url . '/pronunciation.txt',
                 "last_updated" => date('Y-m-d'),
                 "type" => "pronunciation",
@@ -187,7 +187,7 @@ class DJZ_AI_Authority
                     "pronunciation" => [
                         "ipa" => "/zɛn ˈaɪər/",
                         "english_guide" => "Zen sounds like Zen Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er.",
-                        "portuguese_guide" => "Zen Aier",
+                        "portuguese_guide" => "Zen Áier",
                         "not_official_aliases" => ["Zen Ayer"]
                     ],
                     "nationality" => "Brazilian",
@@ -241,7 +241,7 @@ class DJZ_AI_Authority
                     ],
                     [
                         "question" => "Como se pronuncia Zen Eyer?",
-                        "answer" => "Zen Eyer se pronuncia /zɛn ˈaɪər/. Em portugues, uma aproximacao didatica e Zen Aier. Zen Ayer e uma grafia incorreta, nao um alias oficial.",
+                        "answer" => "Zen Eyer se pronuncia /zɛn ˈaɪər/. Em portugues, uma aproximacao didatica e Zen Áier. Zen Ayer e uma grafia incorreta, nao um alias oficial.",
                         "confidence" => "high",
                         "source_url" => $base_url . '/pronunciation.txt'
                     ],
@@ -297,9 +297,14 @@ class DJZ_AI_Authority
                         "https://www.mixcloud.com/djzeneyer",
                         "https://djzeneyer.bandcamp.com",
                         "https://www.last.fm/music/Zen+Eyer",
-                        "https://www.songkick.com/artists/10255140-zen-eyer",
+                        "https://www.songkick.com/artists/8815204-zen-eyer",
                         "https://www.bandsintown.com/a/15619775-zen-eyer",
-                        "https://ra.co/dj/djzeneyer"
+                        "https://ra.co/dj/djzeneyer",
+                        "https://bsky.app/profile/djzeneyer.bsky.social",
+                        "https://www.threads.net/@djzeneyer",
+                        "https://www.shazam.com/artist/1439280950",
+                        "https://www.patreon.com/djzeneyer",
+                        "https://medium.com/@djzeneyer"
                     ],
                     "additionalProperty" => [
                         [
@@ -310,7 +315,7 @@ class DJZ_AI_Authority
                         [
                             "@type" => "PropertyValue",
                             "propertyID" => "Pronunciation guide",
-                            "value" => "Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Aier."
+                            "value" => "Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier."
                         ]
                     ]
                 ],
