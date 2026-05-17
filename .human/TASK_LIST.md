@@ -9,7 +9,7 @@ Este diretório contém tarefas e estratégias que exigem a intervenção direta
 - [x] **Google Knowledge Panel:** Clicar e reivindicar a propriedade da entidade. (Concluído!)
 - [ ] **Authority Content:** Expandir a nova página de Enciclopédia Zouk com pelo menos 10 novos termos.
 - [ ] **Wikidata Update:** Vincular o site e a enciclopédia como fonte em Wikidata Q136551855.
-- [ ] **Zouk Authority Actions:** Executar o passo a passo em [ZOUK_AUTHORITY_HUMAN_ACTIONS.md](ZOUK_AUTHORITY_HUMAN_ACTIONS.md): artigos externos, paginas de eventos, pauta para Zoukology, checklist Alexa/Amazon Music e medicao mensal.
+- [ ] **Zouk Authority Actions:** Executar o passo a passo em [ZOUK_AUTHORITY_HUMAN_ACTIONS.md](ZOUK_AUTHORITY_HUMAN_ACTIONS.md): artigos externos, páginas de eventos, pauta para Zoukology, checklist Alexa/Amazon Music e medição mensal.
 - [ ] **Bandsintown:** Verificar se os eventos mais recentes estão sincronizados (ID `id_15619775`).
 - [ ] **Cloudflare:** Limpar o cache ("Purge All") após a conclusão desta reestruturação de PRs para eliminar erros 429 residuais.
 - [ ] **Spotify for Artists:** Atualizar a bio para refletir o novo padrão de identidade "Zen Eyer".

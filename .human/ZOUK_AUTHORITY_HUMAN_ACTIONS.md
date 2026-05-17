@@ -106,7 +106,7 @@ Se a Alexa entende outro artista quando alguem pede "DJ Zen Eyer", o problema ma
    - MusicBrainz artist ID: 13afa63c-8164-4697-9cad-c5100062a154
    - ISNI: 0000000528931015
 5. Em novos lancamentos, fazer pitch no Amazon Music for Artists assim que a faixa aparecer em "New Releases". A Amazon informa que pitches ajudam a conectar informacoes de metadata e campanhas.
-6. So pedir para fas testarem comandos depois que os testes internos funcionarem pelo menos com "Zen Eyer on Amazon Music".
+6. Só pedir para fãs testarem comandos depois que os testes internos funcionarem pelo menos com "Zen Eyer on Amazon Music".
 
 ### Mensagem para distribuidora
 

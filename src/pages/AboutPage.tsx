@@ -21,6 +21,7 @@ import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistDat
 import { useBranding } from '../contexts/BrandingContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
+import { getDateTimeFormatter } from '../utils/date';
 
 const getDynamicWhatsAppUrl = (number: string, message?: string) => {
   return `https://wa.me/${number}?text=${encodeURIComponent(message || '')}`;
@@ -88,8 +89,14 @@ const AboutPage: React.FC = () => {
   const { artist } = useBranding();
   const prefersReducedMotion = useReducedMotion();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const currentLocale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
   const currentPath = `/${getLocalizedRoute('about', currentLang).replace(/^\//, '')}`;
   const currentUrl = `${artist.site.baseUrl}${currentPath}`;
+  const birthDate = useMemo(() => new Date(`${ARTIST.identity.birthDate}T00:00:00`), []);
+  const birthDateFormatter = useMemo(
+    () => getDateTimeFormatter(currentLocale, { day: 'numeric', month: 'long', year: 'numeric' }),
+    [currentLocale]
+  );
 
   // SCHEMA.ORG PARA A PAGINA ABOUT
   const ABOUT_SCHEMA = useMemo(() => ({
@@ -179,27 +186,27 @@ const AboutPage: React.FC = () => {
     { label: t('about.facts.items.canonical_name'), value: ARTIST.identity.stageName },
     { label: t('about.facts.items.alias'), value: ARTIST.identity.djAlias },
     { label: t('about.facts.items.full_name'), value: ARTIST.identity.fullName },
-    { label: t('about.facts.items.birth'), value: t('about.facts.values.birth') },
+    { label: t('about.facts.items.birth'), value: birthDateFormatter.format(birthDate) },
     { label: t('about.facts.items.birth_place'), value: t('about.facts.values.birth_place') },
     { label: t('about.facts.items.based_in'), value: t('about.facts.values.based_in') },
     { label: t('about.facts.items.occupation'), value: t('about.facts.values.occupation') },
     { label: t('about.facts.items.genre'), value: t('about.facts.values.genre') },
-    { label: t('about.facts.items.awards'), value: ARTIST.titles.description },
+    { label: t('about.facts.items.awards'), value: t('about.facts.values.awards') },
     { label: t('about.facts.items.active_since'), value: String(ARTIST.stats.startingYear) },
     { label: t('about.facts.items.languages'), value: t('about.facts.values.languages') },
     { label: t('about.facts.items.pronunciation'), value: ARTIST.identity.pronunciationIPA },
-  ], [t]);
+  ], [birthDate, birthDateFormatter, t]);
 
   const AUTHORITY_LINKS = useMemo(() => [
-    { label: 'Wikidata', value: ARTIST.identifiers.wikidata, url: ARTIST.identifiers.wikidataUrl },
-    { label: 'MusicBrainz', value: ARTIST.identifiers.musicbrainz, url: ARTIST.identifiers.musicbrainzUrl },
-    { label: 'ISNI', value: ARTIST.identity.isni, url: 'https://isni.org/isni/0000000528931015' },
-    { label: 'Discogs', value: ARTIST.identifiers.discogs, url: ARTIST.identifiers.discogsUrl },
-    { label: 'Google Knowledge Graph', value: ARTIST.identifiers.knowledgeGraphId, url: ARTIST.identifiers.knowledgeGraphUrl },
-    { label: 'Spotify', value: ARTIST.social.spotify.id, url: ARTIST.social.spotify.url },
-    { label: 'Apple Music', value: '1439280950', url: ARTIST.social.appleMusic.url },
-    { label: 'Amazon Music', value: 'B07JKCDCG8', url: ARTIST.social.amazonMusic.url },
-  ], []);
+    { label: t('about.facts.identifiers.wikidata'), value: ARTIST.identifiers.wikidata, url: ARTIST.identifiers.wikidataUrl },
+    { label: t('about.facts.identifiers.musicbrainz'), value: ARTIST.identifiers.musicbrainz, url: ARTIST.identifiers.musicbrainzUrl },
+    { label: t('about.facts.identifiers.isni'), value: ARTIST.identity.isni, url: `https://isni.org/isni/${ARTIST.identity.isni.replace(/\s/g, '')}` },
+    { label: t('about.facts.identifiers.discogs'), value: ARTIST.identifiers.discogs, url: ARTIST.identifiers.discogsUrl },
+    { label: t('about.facts.identifiers.google_kg'), value: ARTIST.identifiers.knowledgeGraphId, url: ARTIST.identifiers.knowledgeGraphUrl },
+    { label: t('about.facts.identifiers.spotify'), value: ARTIST.social.spotify.id, url: ARTIST.social.spotify.url },
+    { label: t('about.facts.identifiers.apple_music'), value: ARTIST.social.appleMusic.id, url: ARTIST.social.appleMusic.url },
+    { label: t('about.facts.identifiers.amazon_music'), value: ARTIST.social.amazonMusic.id, url: ARTIST.social.amazonMusic.url },
+  ], [t]);
 
   return (
     <>

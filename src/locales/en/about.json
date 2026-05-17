@@ -93,12 +93,22 @@
         "languages": "Languages",
         "pronunciation": "IPA pronunciation"
       },
+      "identifiers": {
+        "wikidata": "Wikidata",
+        "musicbrainz": "MusicBrainz",
+        "isni": "ISNI",
+        "discogs": "Discogs",
+        "google_kg": "Google Knowledge Graph",
+        "spotify": "Spotify",
+        "apple_music": "Apple Music",
+        "amazon_music": "Amazon Music"
+      },
       "values": {
-        "birth": "August 20, 1985",
         "birth_place": "Rio de Janeiro, Brazil",
         "based_in": "Niteroi, Rio de Janeiro, Brazil",
         "occupation": "Brazilian Zouk DJ and music producer",
         "genre": "Brazilian Zouk",
+        "awards": "Winner of two world titles at Ilha do Zouk 2022: Best DJ Performance and Best Remix.",
         "languages": "Portuguese and English"
       }
     }
