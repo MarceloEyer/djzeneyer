@@ -25,7 +25,22 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
   {
     key: 'zoukMusic',
     category: 'music',
-    relatedTerms: ['brazilianZouk', 'zoukRemix', 'cremosidade'],
+    relatedTerms: ['brazilianZouk', 'zoukRemix', 'cremosidade', 'brazilianZoukDj'],
+  },
+  {
+    key: 'brazilianZoukDj',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'musicality', 'zoukDjSet', 'zoukRemix'],
+  },
+  {
+    key: 'zoukDjSet',
+    category: 'music',
+    relatedTerms: ['brazilianZoukDj', 'musicality', 'cremosidade', 'zoukSocialDance'],
+  },
+  {
+    key: 'zoukBpm',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'musicality', 'zoukDjSet'],
   },
   {
     key: 'zoukRemix',
@@ -35,7 +50,7 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
   {
     key: 'musicality',
     category: 'music',
-    relatedTerms: ['zoukMusic', 'cremosidade', 'brazilianZouk'],
+    relatedTerms: ['zoukMusic', 'cremosidade', 'brazilianZouk', 'zoukBpm'],
   },
   {
     key: 'cremosidade',
@@ -70,6 +85,21 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
   {
     key: 'socialDance',
     category: 'eventFormats',
-    relatedTerms: ['zoukMusic', 'musicality', 'zoukFestival'],
+    relatedTerms: ['zoukMusic', 'musicality', 'zoukFestival', 'zoukDjSet'],
+  },
+  {
+    key: 'zoukSocialDance',
+    category: 'eventFormats',
+    relatedTerms: ['socialDance', 'brazilianZoukDj', 'zoukMusic'],
+  },
+  {
+    key: 'bookingZoukDj',
+    category: 'eventFormats',
+    relatedTerms: ['brazilianZoukDj', 'zoukCongress', 'zoukFestival', 'zoukDjSet'],
+  },
+  {
+    key: 'zoukAuthority',
+    category: 'culture',
+    relatedTerms: ['brazilianZouk', 'brazilianZoukDj', 'zoukCongress'],
   },
 ];

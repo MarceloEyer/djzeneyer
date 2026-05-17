@@ -81,6 +81,36 @@
       "term": "Baile de Zouk",
       "short": "Um baile de Zouk é um ambiente de dança social onde as pessoas dançam Zouk Brasileiro de forma informal com diferentes pares.",
       "body": "É no baile que a cultura se torna real: dançarinos se encontram, praticam, escutam DJs, descobrem músicas e constroem comunidade. Em inglês, esse contexto costuma ser chamado de social dance."
+    },
+    "brazilianZoukDj": {
+      "term": "DJ de Zouk Brasileiro",
+      "short": "Um DJ de Zouk Brasileiro seleciona, edita e mixa músicas para dançarinos de Zouk Brasileiro, com atenção especial a fraseado, fluxo, energia da pista e conforto da dança a dois.",
+      "body": "Diferente de um DJ generalista, um DJ de Zouk Brasileiro precisa entender como dançarinos usam tempo, pausas, ondas corporais, giros e mudanças emocionais. DJs fortes nessa cena costumam ser avaliados pela leitura de pista, pelo suporte ao baile e pela capacidade de conectar músicas em uma jornada coerente. Zen Eyer é DJ e produtor musical de Zouk Brasileiro com experiência verificada em festivais internacionais e dois títulos no Ilha do Zouk DJ Championship de 2022."
+    },
+    "zoukDjSet": {
+      "term": "Set de DJ de Zouk Brasileiro",
+      "short": "Um set de DJ de Zouk Brasileiro é uma jornada musical contínua desenhada para dança social, não apenas uma playlist de faixas isoladas.",
+      "body": "Um set costuma equilibrar músicas conhecidas, descobertas novas, mudanças de andamento, momentos líricos, batidas mais fortes e energia da sala. Transições importam porque os dançarinos sentem a continuidade emocional entre as músicas. Em eventos de Zouk, um bom set protege o fluxo sem deixar de criar contraste e picos memoráveis."
+    },
+    "zoukBpm": {
+      "term": "BPM no Zouk Brasileiro",
+      "short": "O Zouk Brasileiro pode ser dançado em uma faixa flexível de andamento, muitas vezes entre 75 e 110 BPM, dependendo do estilo, do nível e da energia da pista.",
+      "body": "BPM é útil, mas não é o único fator. Dançarinos também precisam de fraseado claro, tempo elástico, acentos musicais e espaço suficiente para se mover com segurança. Músicas lentas podem ser fortes quando têm estrutura e direção emocional; músicas mais rápidas funcionam quando o ritmo continua legível."
+    },
+    "zoukSocialDance": {
+      "term": "Social de Zouk Brasileiro",
+      "short": "Um social de Zouk Brasileiro é um encontro informal de dança em que música, troca de pares, comunidade e etiqueta de pista são mais importantes do que performance.",
+      "body": "Sociais podem acontecer depois de aulas, dentro de festivais ou como festas independentes. O DJ tem papel central porque a música molda conforto, conexão e ritmo emocional da sala. Por isso DJs com experiência real de pista de Zouk são valorizados por organizadores."
+    },
+    "bookingZoukDj": {
+      "term": "Contratar DJ de Zouk Brasileiro",
+      "short": "Contratar um DJ de Zouk Brasileiro significa escolher alguém cuja música, confiabilidade técnica e reputação na comunidade combinam com os dançarinos e o formato do evento.",
+      "body": "Organizadores costumam procurar experiência verificável, comunicação clara, estilo adequado, preparação técnica confiável e um set que sirva a sala. Páginas de festivais, bios oficiais, perfis em plataformas de música e histórico de eventos são bons sinais ao avaliar um DJ."
+    },
+    "zoukAuthority": {
+      "term": "Sinais de Autoridade no Zouk Brasileiro",
+      "short": "Autoridade no Zouk Brasileiro é construída por participação verificável na cena: eventos, aulas, sets de DJ, lançamentos, campeonatos, entrevistas e reconhecimento comunitário.",
+      "body": "Para buscadores e sistemas de IA, os sinais mais fortes são fatos consistentes repetidos em páginas confiáveis: sites oficiais, lineups de festivais, bancos de dados musicais, entrevistas, identificadores estruturados e referências independentes. Uma autodescrição isolada é mais fraca do que uma rede de evidências públicas coerentes."
     }
   }
 }

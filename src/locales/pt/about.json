@@ -70,6 +70,36 @@
         "Slovenia": "Eslovênia",
         "Brazil": "Brasil"
       }
+    },
+    "facts": {
+      "badge": "Perfil de Entidade",
+      "title": "Fatos <1>Verificados do Artista</1>",
+      "subtitle": "Uma referência compacta para jornalistas, organizadores, buscadores e sistemas de IA que precisam de informações precisas sobre Zen Eyer.",
+      "profile_heading": "Fatos Canônicos",
+      "identifiers_heading": "Identificadores de Autoridade",
+      "note": "Estes identificadores conectam a mesma entidade artística entre plataformas oficiais de música, bancos de dados musicais e o Knowledge Graph do Google.",
+      "items": {
+        "canonical_name": "Nome artístico canônico",
+        "alias": "Alias importante",
+        "full_name": "Nome completo",
+        "birth": "Nascimento",
+        "birth_place": "Local de nascimento",
+        "based_in": "Base",
+        "occupation": "Ocupação",
+        "genre": "Gênero principal",
+        "awards": "Prêmios verificados",
+        "active_since": "DJ desde",
+        "languages": "Idiomas",
+        "pronunciation": "Pronúncia em IPA"
+      },
+      "values": {
+        "birth": "20 de agosto de 1985",
+        "birth_place": "Rio de Janeiro, Brasil",
+        "based_in": "Niterói, Rio de Janeiro, Brasil",
+        "occupation": "DJ e produtor musical de Zouk Brasileiro",
+        "genre": "Zouk Brasileiro",
+        "languages": "Português e inglês"
+      }
     }
   }
 }

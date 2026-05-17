@@ -4,7 +4,7 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://djzeneyer.com/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/" />
@@ -16,7 +16,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/" />
@@ -28,7 +28,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/about-dj-zen-eyer/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/about-dj-zen-eyer/" />
@@ -40,7 +40,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/sobre-dj-zen-eyer/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/about-dj-zen-eyer/" />
@@ -52,7 +52,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/zouk-events/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-events/" />
@@ -64,7 +64,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/eventos-zouk/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-events/" />
@@ -76,7 +76,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/zouk-music/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/" />
@@ -88,7 +88,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/musica-zouk/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/" />
@@ -99,56 +99,32 @@
     </image:image>
   </url>
   <url>
-    <loc>https://djzeneyer.com/zouk-dance-news/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <loc>https://djzeneyer.com/releases/</loc>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-dance-news/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/noticias-zouk/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-dance-news/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/releases/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/lancamentos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/releases/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
-    <loc>https://djzeneyer.com/pt/noticias-zouk/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <loc>https://djzeneyer.com/pt/lancamentos/</loc>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-dance-news/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/noticias-zouk/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-dance-news/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/zouk-philosophy/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-philosophy/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/filosofia-zouk/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-philosophy/" />
-    <image:image>
-      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://djzeneyer.com/pt/filosofia-zouk/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-philosophy/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/filosofia-zouk/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-philosophy/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/releases/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/lancamentos/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/releases/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://djzeneyer.com/zentribe/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zentribe/" />
@@ -160,7 +136,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/tribo-zen/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zentribe/" />
@@ -172,7 +148,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/work-with-me/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/work-with-me/" />
@@ -184,7 +160,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/trabalhe-comigo/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/work-with-me/" />
@@ -196,7 +172,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/media-clipping/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/media-clipping/" />
@@ -208,7 +184,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/na-midia/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/media-clipping/" />
@@ -220,7 +196,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/shop/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/shop/" />
@@ -232,7 +208,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/loja/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/shop/" />
@@ -244,7 +220,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/support-dj-zen-eyer/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/support-dj-zen-eyer/" />
@@ -256,7 +232,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/apoie-dj-zen-eyer/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/support-dj-zen-eyer/" />
@@ -268,7 +244,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/tickets/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/tickets/" />
@@ -280,7 +256,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/ingressos/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/tickets/" />
@@ -292,7 +268,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/faq/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/faq/" />
@@ -304,7 +280,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/perguntas-frequentes/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/faq/" />
@@ -316,7 +292,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/privacy-policy/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/privacy-policy/" />
@@ -328,7 +304,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/privacidade/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/privacy-policy/" />
@@ -340,7 +316,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/return-policy/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/return-policy/" />
@@ -352,7 +328,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/reembolso/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/return-policy/" />
@@ -364,7 +340,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/terms/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/terms/" />
@@ -376,7 +352,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/termos/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/terms/" />
@@ -388,7 +364,7 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/conduct/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/conduct/" />
@@ -400,12 +376,36 @@
   </url>
   <url>
     <loc>https://djzeneyer.com/pt/regras-de-conduta/</loc>
-    <lastmod>2026-05-10T15:50:53.503Z</lastmod>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/conduct/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/regras-de-conduta/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/conduct/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/zouk-encyclopedia/</loc>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-encyclopedia/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/enciclopedia-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-encyclopedia/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/pt/enciclopedia-zouk/</loc>
+    <lastmod>2026-05-17T13:07:33.463Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-encyclopedia/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/enciclopedia-zouk/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-encyclopedia/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
