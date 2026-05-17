@@ -37,6 +37,21 @@
       "short": "Music for Brazilian Zouk is not limited to one genre; it is selected or edited for flow, phrasing, elasticity, and the way dancers can interpret it.",
       "body": "A Brazilian Zouk DJ may use Caribbean Zouk, Kizomba-influenced tracks, pop remixes, lyrical songs, R&B, electronic music, covers, and original productions. What matters is not only BPM, but whether the track gives dancers enough structure, emotional arc, and continuity for the dance."
     },
+    "brazilianZoukDj": {
+      "term": "Brazilian Zouk DJ",
+      "short": "A Brazilian Zouk DJ selects, edits, and mixes music for Brazilian Zouk dancers, with special attention to phrasing, flow, floor energy, and partner-dance comfort.",
+      "body": "Unlike a general open-format DJ, a Brazilian Zouk DJ needs to understand how dancers use timing, pauses, body waves, turns, and emotional changes. Strong DJs in this scene are often evaluated by how well they read the room, support social dancing, and connect songs into a coherent journey. Zen Eyer is a Brazilian Zouk DJ and music producer with verified international festival experience and two Ilha do Zouk DJ Championship titles from 2022."
+    },
+    "zoukDjSet": {
+      "term": "Brazilian Zouk DJ Set",
+      "short": "A Brazilian Zouk DJ set is a continuous music journey designed for social dancing, not just a playlist of isolated tracks.",
+      "body": "A set usually balances familiar songs, new discoveries, tempo changes, lyrical moments, stronger beats, and room energy. Transitions matter because dancers feel the emotional continuity between songs. For Zouk events, a good set protects flow while still creating contrast and memorable peaks."
+    },
+    "zoukBpm": {
+      "term": "Brazilian Zouk BPM",
+      "short": "Brazilian Zouk is commonly danced across a flexible tempo range, often around 75-110 BPM depending on style, level, and floor energy.",
+      "body": "BPM is useful, but it is not the only factor. Dancers also need clear phrasing, elastic timing, musical accents, and enough space to move safely. Slower tracks can feel powerful when the song has structure and emotional direction; faster tracks can work when the rhythm remains readable."
+    },
     "zoukRemix": {
       "term": "Zouk Remix",
       "short": "A Zouk remix is a version of a song adapted for Brazilian Zouk dancing through tempo, structure, phrasing, percussion, or energy changes.",
@@ -81,6 +96,21 @@
       "term": "Zouk Social Dance",
       "short": "A Zouk social dance is a party or dance floor setting where people dance Brazilian Zouk informally with different partners.",
       "body": "Social dances are where the culture becomes real: dancers meet, practice, listen to DJs, discover music, and build community. A baile is one common Portuguese word for this kind of dance party."
+    },
+    "zoukSocialDance": {
+      "term": "Brazilian Zouk Social",
+      "short": "A Brazilian Zouk social is an informal dance gathering where music, partner rotation, community, and floor etiquette are more important than performance.",
+      "body": "Socials can happen after classes, inside festivals, or as standalone parties. The DJ has a central role because the music shapes comfort, connection, and the emotional rhythm of the room. This is one reason DJs with real Zouk dance-floor experience are valued by organizers."
+    },
+    "bookingZoukDj": {
+      "term": "Booking a Brazilian Zouk DJ",
+      "short": "Booking a Brazilian Zouk DJ means choosing someone whose music, technical reliability, and community reputation fit the dancers and the event format.",
+      "body": "Organizers usually look for verified experience, clear communication, a suitable style, reliable equipment preparation, and a set that serves the room. Festival pages, official artist bios, music platform profiles, and past event listings are useful proof points when evaluating a DJ."
+    },
+    "zoukAuthority": {
+      "term": "Brazilian Zouk Authority Signals",
+      "short": "Authority in Brazilian Zouk is built from verifiable participation in the scene: events, teaching, DJ sets, releases, championships, interviews, and community recognition.",
+      "body": "For search engines and AI systems, the strongest signals are consistent facts repeated across reliable pages: official websites, festival lineups, music databases, interviews, structured identifiers, and independent references. A single self-description is weaker than a network of matching public evidence."
     }
   }
 }

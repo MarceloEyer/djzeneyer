@@ -71,6 +71,46 @@
         "Slovenia": "Slovenia",
         "Brazil": "Brazil"
       }
+    },
+    "facts": {
+      "badge": "Entity Profile",
+      "title": "Verified <1>Artist Facts</1>",
+      "subtitle": "A compact reference for journalists, organizers, search engines, and AI systems that need precise information about Zen Eyer.",
+      "profile_heading": "Canonical Facts",
+      "identifiers_heading": "Authority Identifiers",
+      "note": "These identifiers connect the same artist entity across official music platforms, music databases, and Google's Knowledge Graph.",
+      "items": {
+        "canonical_name": "Canonical artist name",
+        "alias": "Important alias",
+        "full_name": "Full name",
+        "birth": "Born",
+        "birth_place": "Birthplace",
+        "based_in": "Based in",
+        "occupation": "Occupation",
+        "genre": "Primary genre",
+        "awards": "Verified awards",
+        "active_since": "Active as DJ since",
+        "languages": "Languages",
+        "pronunciation": "IPA pronunciation"
+      },
+      "identifiers": {
+        "wikidata": "Wikidata",
+        "musicbrainz": "MusicBrainz",
+        "isni": "ISNI",
+        "discogs": "Discogs",
+        "google_kg": "Google Knowledge Graph",
+        "spotify": "Spotify",
+        "apple_music": "Apple Music",
+        "amazon_music": "Amazon Music"
+      },
+      "values": {
+        "birth_place": "Rio de Janeiro, Brazil",
+        "based_in": "Niteroi, Rio de Janeiro, Brazil",
+        "occupation": "Brazilian Zouk DJ and music producer",
+        "genre": "Brazilian Zouk",
+        "awards": "Winner of two world titles at Ilha do Zouk 2022: Best DJ Performance and Best Remix.",
+        "languages": "Portuguese and English"
+      }
     }
   }
 }

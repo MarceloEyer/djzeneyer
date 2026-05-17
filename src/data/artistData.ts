@@ -176,12 +176,14 @@ export const ARTIST = {
     twitch: { handle: 'djzeneyer', url: 'https://www.twitch.tv/djzeneyer' },
     linkedin: { handle: 'eyermarcelo', url: 'https://www.linkedin.com/in/eyermarcelo' },
     telegram: { handle: 'djzeneyer', url: 'https://t.me/djzeneyer' },
+    bluesky: { handle: '@djzeneyer.bsky.social', url: 'https://bsky.app/profile/djzeneyer.bsky.social' },
+    threads: { handle: '@djzeneyer', url: 'https://www.threads.net/@djzeneyer' },
     soundcloud: { handle: 'djzeneyer', url: 'https://soundcloud.com/djzeneyer' },
     spotify: {
       id: '68SHKGndTlq3USQ2LZmyLw',
       url: 'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
     },
-    appleMusic: { url: 'https://music.apple.com/us/artist/1439280950' },
+    appleMusic: { id: '1439280950', url: 'https://music.apple.com/us/artist/1439280950' },
     YouTubeMusic: { url: 'https://music.youtube.com/channel/UCEVHG-5iyNLWK3Zeungvdqg' },
     deezer: { url: 'https://www.deezer.com/artist/52900762' },
     bandsintown: { url: 'https://www.bandsintown.com/a/15619775' },
@@ -190,13 +192,16 @@ export const ARTIST = {
     lastfm: { url: 'https://www.last.fm/music/Zen+Eyer' },
     songkick: { url: 'https://www.songkick.com/artists/8815204-zen-eyer' },
     tidal: { url: 'https://tidal.com/artist/10492592' },
+    shazam: { url: 'https://www.shazam.com/artist/1439280950' },
     genius: { url: 'https://genius.com/artists/Zen-eyer' },
     musixmatch: { url: 'https://www.musixmatch.com/pt/artista/Zen-Eyer' },
-    amazonMusic: { url: 'https://music.amazon.com/artists/B07JKCDCG8' },
+    amazonMusic: { id: 'B07JKCDCG8', url: 'https://music.amazon.com/artists/B07JKCDCG8' },
     audiomack: { url: 'https://audiomack.com/djzeneyer' },
     boomplay: { url: 'https://www.boomplay.com/artists/35157982' },
     napster: { url: 'https://us.napster.com/artist/art.626690096' },
     qobuz: { url: 'https://www.qobuz.com/artist/7501129' },
+    patreon: { url: 'https://www.patreon.com/djzeneyer' },
+    medium: { url: 'https://medium.com/@djzeneyer' },
     reddit: { url: 'https://www.reddit.com/user/djzeneyer' },
     crunchbase: { url: 'https://www.crunchbase.com/organization/zen-eyer' },
     pinterest: { url: 'https://www.pinterest.com/djzeneyer' },
@@ -413,30 +418,37 @@ export const getWhatsAppUrl = (message?: string) => {
   )}`;
 };
 
+// Descrição de desambiguação única fonética (SSOT)
+export const DISAMBIGUATING_DESCRIPTION =
+  'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.';
+
 // Schema.org sameAs list (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
-  // Authoritative databases (semantically rich first)
   'https://www.wikidata.org/wiki/Q136551855',
   'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
   'https://www.discogs.com/artist/16872046',
-  // Authority identifier
   'https://isni.org/isni/0000000528931015',
-  // Streaming / music platforms
   'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
   'https://music.apple.com/us/artist/1439280950',
-  'https://www.deezer.com/artist/52900762',
-  'https://tidal.com/artist/10492592',
-  'https://music.amazon.com/artists/B07JKCDCG8',
-  'https://soundcloud.com/djzeneyer',
-  // Social / video
+  'https://www.youtube.com/@djzeneyer',
   'https://www.instagram.com/djzeneyer/',
   'https://www.facebook.com/djzeneyer/',
-  // Official channel (youtube.com/@djzeneyer) — will become OAC; Topic channel excluded intentionally
-  'https://www.youtube.com/@djzeneyer',
-  // Live / touring platforms
-  'https://ra.co/dj/djzeneyer',
-  'https://www.mixcloud.com/djzeneyer',
+  'https://www.linkedin.com/in/eyermarcelo',
+  'https://soundcloud.com/djzeneyer',
+  'https://www.deezer.com/artist/52900762',
+  'https://tidal.com/artist/10492592',
   'https://djzeneyer.bandcamp.com',
+  'https://music.amazon.com/artists/B07JKCDCG8',
+  'https://www.mixcloud.com/djzeneyer',
+  'https://www.last.fm/music/Zen+Eyer',
+  'https://www.songkick.com/artists/8815204-zen-eyer',
+  'https://www.bandsintown.com/a/15619775-zen-eyer',
+  'https://ra.co/dj/djzeneyer',
+  'https://bsky.app/profile/djzeneyer.bsky.social',
+  'https://www.threads.net/@djzeneyer',
+  'https://www.shazam.com/artist/1439280950',
+  'https://www.patreon.com/djzeneyer',
+  'https://medium.com/@djzeneyer',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
@@ -446,33 +458,13 @@ export const ARTIST_SCHEMA_BASE = {
   alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
+  disambiguatingDescription: DISAMBIGUATING_DESCRIPTION,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   knowsLanguage: ['pt-BR', 'en'],
-  sameAs: [
-    'https://www.wikidata.org/wiki/Q136551855',
-    'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
-    'https://www.discogs.com/artist/16872046',
-    'https://isni.org/isni/0000000528931015',
-    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    'https://music.apple.com/us/artist/1439280950',
-    'https://www.youtube.com/@djzeneyer',
-    'https://www.instagram.com/djzeneyer/',
-    'https://www.facebook.com/djzeneyer/',
-    'https://www.linkedin.com/in/eyermarcelo',
-    'https://soundcloud.com/djzeneyer',
-    'https://www.deezer.com/artist/52900762',
-    'https://tidal.com/artist/10492592',
-    'https://djzeneyer.bandcamp.com',
-    'https://music.amazon.com/artists/B07JKCDCG8',
-    'https://www.mixcloud.com/djzeneyer',
-    'https://www.last.fm/music/Zen+Eyer',
-    'https://www.songkick.com/artists/10255140-zen-eyer',
-    'https://www.bandsintown.com/a/15619775-zen-eyer',
-    'https://ra.co/dj/djzeneyer',
-  ],
+  sameAs: [...ARTIST_SCHEMA_SAME_AS],
   identifier: [
     {
       '@type': 'PropertyValue',
@@ -513,6 +505,18 @@ export const ARTIST_SCHEMA_BASE = {
       '@type': 'PropertyValue',
       propertyID: 'YouTube',
       value: 'djzeneyer',
+    },
+  ],
+  additionalProperty: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'IPA pronunciation',
+      value: ARTIST.identity.pronunciationIPA,
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Pronunciation guide',
+      value: ARTIST.philosophy.identityAid.pronunciationGuide,
     },
   ],
   nationality: {
@@ -988,6 +992,7 @@ export const MUSICGROUP_SCHEMA = {
   alternateName: [ARTIST.identity.djAlias],
   description:
     'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is an important historical alias.',
+  disambiguatingDescription: DISAMBIGUATING_DESCRIPTION,
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
@@ -1008,28 +1013,7 @@ export const MUSICGROUP_SCHEMA = {
     'World Champion 2022 (Remix) at Ilha do Zouk',
   ],
   influencedBy: ['Lambada'],
-  sameAs: [
-    'https://www.wikidata.org/wiki/Q136551855',
-    'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
-    'https://www.discogs.com/artist/16872046',
-    'https://isni.org/isni/0000000528931015',
-    'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-    'https://music.apple.com/us/artist/1439280950',
-    'https://www.youtube.com/@djzeneyer',
-    'https://www.instagram.com/djzeneyer/',
-    'https://www.facebook.com/djzeneyer/',
-    'https://www.linkedin.com/in/eyermarcelo',
-    'https://soundcloud.com/djzeneyer',
-    'https://www.deezer.com/artist/52900762',
-    'https://tidal.com/artist/10492592',
-    'https://djzeneyer.bandcamp.com',
-    'https://music.amazon.com/artists/B07JKCDCG8',
-    'https://www.mixcloud.com/djzeneyer',
-    'https://www.last.fm/music/Zen+Eyer',
-    'https://www.songkick.com/artists/10255140-zen-eyer',
-    'https://www.bandsintown.com/a/15619775-zen-eyer',
-    'https://ra.co/dj/djzeneyer',
-  ],
+  sameAs: [...ARTIST_SCHEMA_SAME_AS],
   identifier: [
     {
       '@type': 'PropertyValue',
@@ -1070,6 +1054,18 @@ export const MUSICGROUP_SCHEMA = {
       '@type': 'PropertyValue',
       propertyID: 'YouTube',
       value: 'djzeneyer',
+    },
+  ],
+  additionalProperty: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'IPA pronunciation',
+      value: ARTIST.identity.pronunciationIPA,
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Pronunciation guide',
+      value: ARTIST.philosophy.identityAid.pronunciationGuide,
     },
   ],
 };

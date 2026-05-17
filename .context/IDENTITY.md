@@ -27,8 +27,11 @@ A única pronúncia correta e aceita para o nome artístico é:
 Esta transcrição deve ser usada em:
 
 - Arquivos `llms.txt` / `llms-full.txt`.
+- Arquivo público `pronunciation.txt`.
 - Campos de FAQ e metadados de voz.
 - Schema Markup (`SpeakableSpecification`).
+
+Para regras operacionais completas de voz, aliases fonéticos e erros de reconhecimento, consulte `.context/PRONUNCIATION.md`.
 
 ---
 

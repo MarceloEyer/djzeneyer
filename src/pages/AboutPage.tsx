@@ -17,10 +17,11 @@ import {
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { useTranslation, Trans } from 'react-i18next';
-import { ARTIST, ARTIST_SCHEMA_BASE } from '../data/artistData';
+import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-import { sanitizeHtml } from '../utils/sanitize';
+import { safeUrl, sanitizeHtml } from '../utils/sanitize';
+import { getDateTimeFormatter } from '../utils/date';
 
 const getDynamicWhatsAppUrl = (number: string, message?: string) => {
   return `https://wa.me/${number}?text=${encodeURIComponent(message || '')}`;
@@ -88,14 +89,21 @@ const AboutPage: React.FC = () => {
   const { artist } = useBranding();
   const prefersReducedMotion = useReducedMotion();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const currentLocale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
   const currentPath = `/${getLocalizedRoute('about', currentLang).replace(/^\//, '')}`;
   const currentUrl = `${artist.site.baseUrl}${currentPath}`;
+  const birthDate = useMemo(() => new Date(`${ARTIST.identity.birthDate}T00:00:00`), []);
+  const birthDateFormatter = useMemo(
+    () => getDateTimeFormatter(currentLocale, { day: 'numeric', month: 'long', year: 'numeric' }),
+    [currentLocale]
+  );
 
   // SCHEMA.ORG PARA A PAGINA ABOUT
   const ABOUT_SCHEMA = useMemo(() => ({
     '@context': 'https://schema.org',
     '@graph': [
       ARTIST_SCHEMA_BASE,
+      MUSICGROUP_SCHEMA,
       {
         '@type': 'ProfilePage',
         '@id': `${currentUrl}#webpage`,
@@ -172,6 +180,32 @@ const AboutPage: React.FC = () => {
       value: t('about.stats.smiles_value'),
       icon: <Star className="w-8 h-8 mx-auto mb-4 text-primary" />,
     },
+  ], [t]);
+
+  const FACTS_DATA = useMemo(() => [
+    { label: t('about.facts.items.canonical_name'), value: ARTIST.identity.stageName },
+    { label: t('about.facts.items.alias'), value: ARTIST.identity.djAlias },
+    { label: t('about.facts.items.full_name'), value: ARTIST.identity.fullName },
+    { label: t('about.facts.items.birth'), value: birthDateFormatter.format(birthDate) },
+    { label: t('about.facts.items.birth_place'), value: t('about.facts.values.birth_place') },
+    { label: t('about.facts.items.based_in'), value: t('about.facts.values.based_in') },
+    { label: t('about.facts.items.occupation'), value: t('about.facts.values.occupation') },
+    { label: t('about.facts.items.genre'), value: t('about.facts.values.genre') },
+    { label: t('about.facts.items.awards'), value: t('about.facts.values.awards') },
+    { label: t('about.facts.items.active_since'), value: String(ARTIST.stats.startingYear) },
+    { label: t('about.facts.items.languages'), value: t('about.facts.values.languages') },
+    { label: t('about.facts.items.pronunciation'), value: ARTIST.identity.pronunciationIPA },
+  ], [birthDate, birthDateFormatter, t]);
+
+  const AUTHORITY_LINKS = useMemo(() => [
+    { label: t('about.facts.identifiers.wikidata'), value: ARTIST.identifiers.wikidata, url: ARTIST.identifiers.wikidataUrl },
+    { label: t('about.facts.identifiers.musicbrainz'), value: ARTIST.identifiers.musicbrainz, url: ARTIST.identifiers.musicbrainzUrl },
+    { label: t('about.facts.identifiers.isni'), value: ARTIST.identity.isni, url: `https://isni.org/isni/${ARTIST.identity.isni.replace(/\s/g, '')}` },
+    { label: t('about.facts.identifiers.discogs'), value: ARTIST.identifiers.discogs, url: ARTIST.identifiers.discogsUrl },
+    { label: t('about.facts.identifiers.google_kg'), value: ARTIST.identifiers.knowledgeGraphId, url: ARTIST.identifiers.knowledgeGraphUrl },
+    { label: t('about.facts.identifiers.spotify'), value: ARTIST.social.spotify.id, url: ARTIST.social.spotify.url },
+    { label: t('about.facts.identifiers.apple_music'), value: ARTIST.social.appleMusic.id, url: ARTIST.social.appleMusic.url },
+    { label: t('about.facts.identifiers.amazon_music'), value: ARTIST.social.amazonMusic.id, url: ARTIST.social.amazonMusic.url },
   ], [t]);
 
   return (
@@ -325,6 +359,66 @@ const AboutPage: React.FC = () => {
                   </div>
                 </motion.a>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Entity Facts Section */}
+        <section className="px-4 py-16 relative z-10">
+          <div className="container mx-auto max-w-6xl">
+            <motion.div
+              initial={FADE_IN_UP_INITIAL}
+              whileInView={FADE_IN_UP_ANIMATE}
+              viewport={VIEWPORT_ONCE}
+              transition={FADE_IN_UP_TRANSITION}
+              className="mb-10 text-center"
+            >
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary">
+                <Trophy size={14} /> {t('about.facts.badge')}
+              </div>
+              <h2 className="mb-4 font-display text-2xl font-bold sm:text-4xl">
+                <Trans i18nKey="about.facts.title" ns="about">
+                  Verified <span className="text-primary">Artist Facts</span>
+                </Trans>
+              </h2>
+              <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/60">
+                {t('about.facts.subtitle')}
+              </p>
+            </motion.div>
+
+            <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+              <div className="rounded-2xl border border-white/10 bg-surface/40 p-5 md:p-7">
+                <h3 className="mb-5 text-xl font-black text-white">{t('about.facts.profile_heading')}</h3>
+                <dl className="grid gap-4 sm:grid-cols-2">
+                  {FACTS_DATA.map((fact) => (
+                    <div key={fact.label} className="rounded-xl border border-white/8 bg-white/[0.03] p-4">
+                      <dt className="mb-1 text-xs font-bold uppercase tracking-widest text-primary/80">{fact.label}</dt>
+                      <dd className="text-sm leading-relaxed text-white/82">{fact.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-surface/40 p-5 md:p-7">
+                <h3 className="mb-5 text-xl font-black text-white">{t('about.facts.identifiers_heading')}</h3>
+                <div className="space-y-3">
+                  {AUTHORITY_LINKS.map((link) => (
+                    <a
+                      key={link.label}
+                      href={safeUrl(link.url, '/')}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block rounded-xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                    >
+                      <span className="mb-1 block text-xs font-bold uppercase tracking-widest text-primary/80">{link.label}</span>
+                      <span className="break-words text-sm leading-relaxed text-white/82">{link.value}</span>
+                    </a>
+                  ))}
+                </div>
+                <p className="mt-5 text-xs leading-relaxed text-white/45">
+                  {t('about.facts.note')}
+                </p>
+              </div>
             </div>
           </div>
         </section>

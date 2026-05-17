@@ -21,6 +21,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 ### 1. `.context/` (Conhecimento Técnico e de Marca)
 
 - **`IDENTITY.md`**: SSOT para Branding, Nomes, Alias e Pronúncia.
+- **`PRONUNCIATION.md`**: SSOT específico para pronúncia, voz, desambiguação fonética e limites de uso de erros como `Zen Ayer`.
 - **`ARCHITECTURE.md`**: Visão geral do sistema (React + WP Headless).
 - **`ENGINEERING.md`**: Padrões de código PHP, TSX, CI/CD, Build e safeUrl.
 - **`API_ENDPOINTS.md`**: Referência de rotas REST.
