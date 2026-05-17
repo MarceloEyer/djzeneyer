@@ -297,7 +297,7 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: slug('quiz', 'en') as string, pt: slug('quiz', 'pt') as string },
   },
   
-  // Zouk Encyclopedia
+  // Encyclopedia
   {
     key: 'encyclopedia',
     component: EncyclopediaPage,

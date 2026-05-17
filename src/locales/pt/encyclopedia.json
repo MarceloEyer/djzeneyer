@@ -1,13 +1,13 @@
 {
-  "nav_label": "Enciclopédia Zouk",
+  "nav_label": "Enciclopédia",
   "badge": "Guia de Referência",
-  "hero_title": "Enciclopédia <1>Zouk</1>",
+  "hero_title": "<1>Enciclopédia</1>",
   "hero_subtitle": "Uma referência concisa sobre termos, música, dança, cultura e formatos de eventos do Zouk Brasileiro. Feita para responder perguntas comuns com clareza e confiabilidade.",
-  "search_label": "Pesquisar na Enciclopédia Zouk",
+  "search_label": "Pesquisar na Enciclopédia",
   "search_placeholder": "Busque termos, música, dança, eventos...",
   "no_results": "Nenhum verbete encontrado para esta busca.",
   "seo": {
-    "title": "Enciclopédia Zouk",
+    "title": "Enciclopédia",
     "description": "Uma enciclopédia concisa de Zouk Brasileiro com definições sobre dança, música, formatos de eventos e cultura zouk."
   },
   "categories": {
