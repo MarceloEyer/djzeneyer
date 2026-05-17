@@ -100,6 +100,7 @@ Se a Alexa entende outro artista quando alguem pede "DJ Zen Eyer", o problema ma
    - Primary artist: Zen Eyer
    - Artist alias/search alias requested: DJ Zen Eyer
    - Amazon artist URL: https://music.amazon.com/artists/B07JKCDCG8
+   - Pronunciation source: https://djzeneyer.com/pronunciation.txt
    - Spotify artist ID: 68SHKGndTlq3USQ2LZmyLw
    - Apple Music artist ID: 1439280950
    - MusicBrainz artist ID: 13afa63c-8164-4697-9cad-c5100062a154

@@ -446,6 +446,8 @@ export const ARTIST_SCHEMA_BASE = {
   alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
   description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
+  disambiguatingDescription:
+    'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.',
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
   url: ARTIST.site.baseUrl,
@@ -513,6 +515,18 @@ export const ARTIST_SCHEMA_BASE = {
       '@type': 'PropertyValue',
       propertyID: 'YouTube',
       value: 'djzeneyer',
+    },
+  ],
+  additionalProperty: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'IPA pronunciation',
+      value: ARTIST.identity.pronunciationIPA,
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Pronunciation guide',
+      value: ARTIST.philosophy.identityAid.pronunciationGuide,
     },
   ],
   nationality: {
@@ -988,6 +1002,8 @@ export const MUSICGROUP_SCHEMA = {
   alternateName: [ARTIST.identity.djAlias],
   description:
     'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is an important historical alias.',
+  disambiguatingDescription:
+    'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.',
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
@@ -1070,6 +1086,18 @@ export const MUSICGROUP_SCHEMA = {
       '@type': 'PropertyValue',
       propertyID: 'YouTube',
       value: 'djzeneyer',
+    },
+  ],
+  additionalProperty: [
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'IPA pronunciation',
+      value: ARTIST.identity.pronunciationIPA,
+    },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Pronunciation guide',
+      value: ARTIST.philosophy.identityAid.pronunciationGuide,
     },
   ],
 };

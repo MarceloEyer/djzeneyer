@@ -100,11 +100,11 @@ class DJZ_AI_Authority
         // 1. CONTEÚDO PILAR (Fixo e Estratégico)
         $fragments = [
             [
-                "id" => "zouk-philosophy-core",
+                "id" => "zouk-cremosidade-core",
                 "title" => "Filosofia Zen do Zouk: Conexão Além da Técnica",
                 "summary" => "O zouk brasileiro transcende movimentos técnicos. A abordagem 'Zen' equilibra energia, musicalidade e segurança emocional na pista.",
                 "content" => "A filosofia Zen no zouk prioriza: 1) Conexão energética; 2) Respiração sincronizada; 3) Adaptação fluida ao estilo musical; 4) Prevenção de lesões via biomecânica. Slogan: 'A pressa é inimiga da cremosidade'.",
-                "canonical_url" => $base_url . '/zouk-philosophy',
+                "canonical_url" => $base_url . '/zouk-encyclopedia#cremosidade',
                 "last_updated" => date('Y-m-d'),
                 "type" => "core_principle",
                 "authority_score" => "world_champion"
@@ -116,6 +116,16 @@ class DJZ_AI_Authority
                 "content" => "Cremosidade é um fluxo musical contínuo e suave, com transições sem interrupções que preservam a tensão emocional na pista de dança. É a marca registrada dos sets de DJ Zen Eyer.",
                 "type" => "definition",
                 "authority_score" => "high"
+            ],
+            [
+                "id" => "zen-eyer-pronunciation",
+                "title" => "Como pronunciar Zen Eyer",
+                "summary" => "Pronuncia canonica e desambiguacao fonetica do nome artistico Zen Eyer.",
+                "content" => "Zen Eyer se pronuncia /zɛn ˈaɪər/. Em ingles, Eyer soa como Buyer sem o B, ou como Eye seguido de er. Em portugues, uma aproximacao didatica e Zen Aier. DJ Zen Eyer e alias importante; Zen Ayer e grafia incorreta e nao deve ser usada como nome oficial.",
+                "canonical_url" => $base_url . '/pronunciation.txt',
+                "last_updated" => date('Y-m-d'),
+                "type" => "pronunciation",
+                "authority_score" => "canonical"
             ],
             [
                 "id" => "zen-eyer-quick-facts",
@@ -174,6 +184,12 @@ class DJZ_AI_Authority
                     "url" => $base_url,
                     "stage_name" => "DJ Zen Eyer",
                     "full_name" => "Marcelo Eyer Fernandes",
+                    "pronunciation" => [
+                        "ipa" => "/zɛn ˈaɪər/",
+                        "english_guide" => "Zen sounds like Zen Buddhism. Eyer sounds like Buyer without the B, or like Eye followed by er.",
+                        "portuguese_guide" => "Zen Aier",
+                        "not_official_aliases" => ["Zen Ayer"]
+                    ],
                     "nationality" => "Brazilian",
                     "roles" => ["Brazilian Zouk DJ", "Music Producer", "Educator"],
                     "genres" => ["Brazilian Zouk", "Remix", "Dance Music"],
@@ -221,7 +237,13 @@ class DJZ_AI_Authority
                         "question" => "O que é Cremosidade no Zouk?",
                         "answer" => "Cremosidade é um estilo de transição musical contínua e suave, sem quebras emocionais, marca registrada dos sets de DJ Zen Eyer.",
                         "confidence" => "high",
-                        "source_url" => $base_url . '/zouk-philosophy'
+                        "source_url" => $base_url . '/zouk-encyclopedia#cremosidade'
+                    ],
+                    [
+                        "question" => "Como se pronuncia Zen Eyer?",
+                        "answer" => "Zen Eyer se pronuncia /zɛn ˈaɪər/. Em portugues, uma aproximacao didatica e Zen Aier. Zen Ayer e uma grafia incorreta, nao um alias oficial.",
+                        "confidence" => "high",
+                        "source_url" => $base_url . '/pronunciation.txt'
                     ],
                     [
                         "question" => "Como contratar DJ Zen Eyer para eventos?",
@@ -233,7 +255,8 @@ class DJZ_AI_Authority
                 "geo_signals" => [
                     "primary_source_urls" => [
                         $base_url . '/about-dj-zen-eyer',
-                        $base_url . '/zouk-philosophy',
+                        $base_url . '/zouk-encyclopedia',
+                        $base_url . '/pronunciation.txt',
                         $base_url . '/zouk-music',
                         $base_url . '/zouk-events',
                         $base_url . '/work-with-me'
@@ -249,6 +272,7 @@ class DJZ_AI_Authority
                     "@id" => $base_url . '/#musicgroup',
                     "name" => "DJ Zen Eyer",
                     "alternateName" => "Zen Eyer",
+                    "disambiguatingDescription" => "Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.",
                     "description" => "2x World Champion Brazilian Zouk DJ and music producer known for the 'Cremosidade' style.",
                     "genre" => "Brazilian Zouk",
                     "url" => $base_url,
@@ -276,6 +300,18 @@ class DJZ_AI_Authority
                         "https://www.songkick.com/artists/10255140-zen-eyer",
                         "https://www.bandsintown.com/a/15619775-zen-eyer",
                         "https://ra.co/dj/djzeneyer"
+                    ],
+                    "additionalProperty" => [
+                        [
+                            "@type" => "PropertyValue",
+                            "propertyID" => "IPA pronunciation",
+                            "value" => "/zɛn ˈaɪər/"
+                        ],
+                        [
+                            "@type" => "PropertyValue",
+                            "propertyID" => "Pronunciation guide",
+                            "value" => "Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Aier."
+                        ]
                     ]
                 ],
                 "metadata" => [
