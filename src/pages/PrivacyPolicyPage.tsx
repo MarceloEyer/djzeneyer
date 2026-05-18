@@ -5,6 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
+
+// ⚡ Bolt: Module-scoped constants to prevent unnecessary object reallocation on every render cycle.
+const FADE_IN_UP_INITIAL = { opacity: 0, y: 20 };
+const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
+
 const PrivacyPolicyPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'privacy']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
@@ -55,8 +60,8 @@ const PrivacyPolicyPage: React.FC = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
@@ -73,8 +78,8 @@ const PrivacyPolicyPage: React.FC = () => {
 
           {/* Introduction */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card p-8 mb-8"
           >
@@ -90,8 +95,8 @@ const PrivacyPolicyPage: React.FC = () => {
           {sections.map((section, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={FADE_IN_UP_INITIAL}
+              animate={FADE_IN_UP_ANIMATE}
               transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
               className="card p-8 mb-6"
             >
@@ -114,8 +119,8 @@ const PrivacyPolicyPage: React.FC = () => {
 
           {/* Cookies */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.7 }}
             className="card p-8 mb-6"
           >
@@ -130,8 +135,8 @@ const PrivacyPolicyPage: React.FC = () => {
 
           {/* Third-Party Services */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.8 }}
             className="card p-8 mb-6"
           >
@@ -148,8 +153,8 @@ const PrivacyPolicyPage: React.FC = () => {
 
           {/* LGPD Compliance */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.9 }}
             className="card p-8 mb-6 border-l-4 border-primary"
           >
@@ -169,8 +174,8 @@ const PrivacyPolicyPage: React.FC = () => {
 
           {/* Changes to Policy */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.0 }}
             className="card p-8 mb-6"
           >
@@ -182,8 +187,8 @@ const PrivacyPolicyPage: React.FC = () => {
 
           {/* Contact */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.1 }}
             className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
           >
