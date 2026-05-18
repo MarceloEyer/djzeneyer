@@ -24,6 +24,8 @@ import type { ZenGameRankRequirement } from '../types/gamification';
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
 const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_REQUIREMENT_ARRAY: ZenGameRankRequirement[] = [];
+// ⚡ Bolt: Static array to prevent reallocation during render
+const DANCE_ROLES = ['leader', 'follower'];
 
 // Interfaces
 interface UserStats {
@@ -402,7 +404,7 @@ const MyAccountContent: React.FC = () => {
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 block mb-4 ml-1">{t('account.profile.dance_role')}</label>
                     <div className="flex gap-3">
-                      {['leader', 'follower'].map(role => (
+                      {DANCE_ROLES.map(role => (
                         <button
                           key={role}
                           onClick={() => handleProfileChange('danceRole', profileForm.danceRole.includes(role) ? [] : [role])}
