@@ -1,0 +1,32 @@
+{
+  "files_checked": [
+    "public/llms.txt",
+    "public/llms-full.txt",
+    "public/pronunciation.txt",
+    "public/robots.txt",
+    "public/ai-bots.txt",
+    "src/locales/**/*.json",
+    ".context/**/*.md",
+    "AGENTS.md",
+    "AI_CONTEXT_INDEX.md"
+  ],
+  "patterns_found": [
+    "Ã",
+    "Â"
+  ],
+  "files_changed": [
+    ".context/ENGINEERING.md"
+  ],
+  "changes": [
+    {
+      "file": ".context/ENGINEERING.md",
+      "lines_altered": [
+        {
+          "line": 29,
+          "old": "- **Higiene de Texto:** Zero Mojibake (ex: `Â©`). Salvar sempre em UTF-8 limpo.",
+          "new": "- **Higiene de Texto:** Zero Mojibake (ex: `©`). Salvar sempre em UTF-8 limpo."
+        }
+      ]
+    }
+  ]
+}
