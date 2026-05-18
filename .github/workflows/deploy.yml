@@ -110,6 +110,8 @@ jobs:
           npm run generate-sitemaps
           # Validação mínima
           if [ ! -f "public/sitemap.xml" ]; then echo "❌ sitemap.xml missing"; exit 1; fi
+          if [ ! -f "public/sitemap-pages.xml" ]; then echo "❌ sitemap-pages.xml missing"; exit 1; fi
+          if [ ! -f "public/sitemap-events.xml" ]; then echo "❌ sitemap-events.xml missing"; exit 1; fi
           echo "✅ Sitemaps generated successfully"
 
       - name: 🔨 Build production
@@ -199,6 +201,7 @@ jobs:
           path: |
             public/sitemap.xml
             public/sitemap-pages.xml
+            public/sitemap-events.xml
           retention-days: 7
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -469,7 +472,7 @@ jobs:
           port: ${{ env.SSH_PORT }}
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "sitemaps-deploy/sitemap.xml,sitemaps-deploy/sitemap-pages.xml"
+          source: "sitemaps-deploy/sitemap.xml,sitemaps-deploy/sitemap-pages.xml,sitemaps-deploy/sitemap-events.xml"
           target: ${{ env.REMOTE_ROOT }}/
           strip_components: 1
 

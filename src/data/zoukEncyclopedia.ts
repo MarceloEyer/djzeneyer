@@ -4,6 +4,10 @@ export interface EncyclopediaTerm {
   key: string;
   category: EncyclopediaCategory;
   relatedTerms?: string[];
+  sources?: Array<{
+    label: string;
+    url: string;
+  }>;
 }
 
 export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
@@ -11,16 +15,29 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     key: 'brazilianZouk',
     category: 'fundamentals',
     relatedTerms: ['lambada', 'lambazouk', 'zoukMusic'],
+    sources: [
+      { label: 'Wikipedia: Brazilian Zouk', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk' },
+      { label: 'Brazilian Zouk Council', url: 'https://www.brazilianzoukcouncil.com/' },
+      { label: 'Zoukology', url: 'https://www.zoukology.com/' },
+    ],
   },
   {
     key: 'lambada',
     category: 'fundamentals',
     relatedTerms: ['brazilianZouk', 'lambazouk'],
+    sources: [
+      { label: 'Wikipedia: Lambada', url: 'https://en.wikipedia.org/wiki/Lambada' },
+      { label: 'Brazilian Zouk Council', url: 'https://www.brazilianzoukcouncil.com/' },
+    ],
   },
   {
     key: 'lambazouk',
     category: 'fundamentals',
     relatedTerms: ['lambada', 'brazilianZouk'],
+    sources: [
+      { label: 'Wikipedia: Brazilian Zouk', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk' },
+      { label: 'Zoukology', url: 'https://www.zoukology.com/' },
+    ],
   },
   {
     key: 'zoukMusic',
@@ -51,6 +68,10 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     key: 'musicality',
     category: 'music',
     relatedTerms: ['zoukMusic', 'cremosidade', 'brazilianZouk', 'zoukBpm'],
+    sources: [
+      { label: 'Brazilian Zouk Council', url: 'https://www.brazilianzoukcouncil.com/' },
+      { label: 'Zoukology', url: 'https://www.zoukology.com/' },
+    ],
   },
   {
     key: 'cremosidade',

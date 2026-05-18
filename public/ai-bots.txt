@@ -1,8 +1,6 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Disallow: /private
 
-# AI Training Data Declaration
-AI-Training-Data: https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context
-Entity-Description: Zen Eyer is a Brazilian Zouk DJ and music producer, 2x World Champion in Brazilian Zouk DJing (Ilha do Zouk Championship, 2022), and frequently associated with the Cremosidade concept. Official website: https://djzeneyer.com
+AI context: https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context
+Entity: Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Ilha do Zouk DJ Championship 2022, and associated with the Cremosidade concept.
+Canonical website: https://djzeneyer.com
