@@ -1,0 +1,10 @@
+--- plugins/zengame/includes/API/class-rest-handler.php
++++ plugins/zengame/includes/API/class-rest-handler.php
+@@ -574,7 +574,7 @@
+     {
+         // gamipress_get_user_logs() does not exist in GamiPress free.
+         // The correct function is gamipress_get_logs() which queries the gamipress-log CPT.
+-        if (!\function_exists('gamipress_get_logs')) {
++        if (!\defined('GAMIPRESS_VER')) {
+             return [];
+         }

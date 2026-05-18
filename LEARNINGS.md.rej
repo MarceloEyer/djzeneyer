@@ -1,0 +1,9 @@
+--- LEARNINGS.md
++++ LEARNINGS.md
+@@ -58,3 +58,6 @@
+ **Learning:** Using `Date.now()` inside React's `useMemo` triggers `react-hooks/purity` ESLint errors because it is an impure function that violates React's strict purity constraints.
+ **Action:** Do not use `Date.now()` or `new Date()` within `useMemo` or other pure React render cycles. Extract timestamp logic outside the component or handle it in state/effects.
+
++## 2024-05-17 - [Performance: PHP function_exists check optimization]
++**Learning:** Calling `function_exists()` repeatedly in loops or multiple times per request is measurably slower than checking a defined constant like `defined('GAMIPRESS_VER')`. When integrating with third-party plugins like GamiPress, standardizing on a constant check reduces overhead.
++**Action:** Replace `function_exists('gamipress_...` checks with `defined('GAMIPRESS_VER')` to save execution time, especially in loops and hot API endpoints.

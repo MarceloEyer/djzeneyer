@@ -24,7 +24,7 @@ define('DJZ_CACHE_GAMIPRESS', 48 * HOUR_IN_SECONDS);
 function djz_get_gamipress_points_type_slug(): string
 {
     $default = 'zen-points';
-    if (!function_exists('gamipress_get_points_types')) {
+    if (!defined('GAMIPRESS_VER')) {
         return $default;
     }
 
@@ -57,7 +57,7 @@ function djz_get_gamipress_rank_tiers(): array
         ['name' => 'Zen Legend', 'min' => 4000, 'next' => 10000],
     ];
 
-    if (!function_exists('gamipress_get_rank_types')) {
+    if (!defined('GAMIPRESS_VER')) {
         return [
             'tiers' => apply_filters('djz_gamipress_rank_tiers', $fallback),
             'source' => 'fallback',

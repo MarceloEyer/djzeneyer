@@ -137,7 +137,7 @@ final class REST_Handler
         }
 
         global $wpdb;
-        $types = \defined('GAMIPRESS_VER') ? \gamipress_get_points_types() : [];
+        $types = \function_exists('gamipress_get_points_types') ? \gamipress_get_points_types() : [];
         $leaderboard = [];
 
         foreach ($types as $type_key => $type) {
@@ -210,7 +210,7 @@ final class REST_Handler
 
     private static function get_main_points_slug(): string
     {
-        if (!\defined('GAMIPRESS_VER')) {
+        if (!\function_exists('gamipress_get_points_types')) {
             return 'points';
         }
 
@@ -253,7 +253,7 @@ final class REST_Handler
 
     private static function get_user_points(int $user_id): array
     {
-        if (!\defined('GAMIPRESS_VER')) {
+        if (!\function_exists('gamipress_get_points_types')) {
             return [
                 'points' => ['name' => 'XP', 'amount' => 0, 'image' => ''],
             ];
@@ -300,7 +300,7 @@ final class REST_Handler
             'requirements' => [],
         ];
 
-        if (!\defined('GAMIPRESS_VER')) {
+        if (!\function_exists('gamipress_get_rank_types') || !\function_exists('gamipress_get_user_rank')) {
             return $fallback;
         }
 
@@ -327,7 +327,7 @@ final class REST_Handler
         $progress = 0.0;
 
         if ($next) {
-            if (\defined('GAMIPRESS_VER')) {
+            if (\function_exists('gamipress_get_rank_requirements') && \function_exists('gamipress_get_user_requirement_status')) {
                 $reqs = \gamipress_get_rank_requirements($next->ID);
                 if (\is_array($reqs) || $reqs instanceof \Traversable) {
                     foreach ($reqs as $req) {
@@ -372,7 +372,7 @@ final class REST_Handler
                 // gamipress_get_user_points() returns the user's current points for the
                 // main points type; we compare against the next rank's minimum points meta.
                 $main_slug   = self::get_main_points_slug();
-                $user_points = \defined('GAMIPRESS_VER')
+                $user_points = \function_exists('gamipress_get_user_points')
                     ? (int) \gamipress_get_user_points($user_id, $main_slug)
                     : 0;
                 // GamiPress stores minimum points in _gamipress_points_to_unlock (not _gamipress_points).
@@ -459,7 +459,7 @@ final class REST_Handler
 
     private static function get_user_achievements(int $user_id, string $status = 'earned', int $limit = 0): array
     {
-        if (!\defined('GAMIPRESS_VER')) {
+        if (!\function_exists('gamipress_get_achievement_types')) {
             return [];
         }
 
@@ -474,7 +474,7 @@ final class REST_Handler
                 continue;
             }
 
-            if ($status === 'earned' && \defined('GAMIPRESS_VER')) {
+            if ($status === 'earned' && \function_exists('gamipress_get_user_achievements')) {
                 $items = \gamipress_get_user_achievements([
                     'user_id' => $user_id,
                     'achievement_type' => $type_slug,
@@ -482,7 +482,7 @@ final class REST_Handler
             } else {
                 // Collect earned IDs to exclude, then fetch locked in a single query
                 $earned_ids = [];
-                if (\defined('GAMIPRESS_VER')) {
+                if (\function_exists('gamipress_get_user_achievements')) {
                     $earned_objects = \gamipress_get_user_achievements([
                         'user_id' => $user_id,
                         'achievement_type' => $type_slug,
@@ -574,7 +574,7 @@ final class REST_Handler
     {
         // gamipress_get_user_logs() does not exist in GamiPress free.
         // The correct function is gamipress_get_logs() which queries the gamipress-log CPT.
-        if (!\defined('GAMIPRESS_VER')) {
+        if (!\function_exists('gamipress_get_logs')) {
             return [];
         }
 
