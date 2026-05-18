@@ -126,3 +126,8 @@
 
 **Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
 **Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.
+
+## 2024-05-18 - Clean up Patch Artifacts Before Review
+
+**Learning:** Running `request_code_review` with uncleaned temporary patch files (like `patch.diff`) in the working directory results in feedback stating the workspace is cluttered with junk artifacts, leading to a "Mostly Correct" rating.
+**Action:** Always clean up temporary artifact files generated during text manipulation or manual file patches (such as `patch.diff` or scratch scripts) before proceeding to pre-commit or code review steps, ensuring unintended files are not tracked or staged into the repository.
