@@ -23,7 +23,6 @@ const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'se
 // SUB-COMPONENTS (SUSPENSE READY)
 // ============================================================================
 
-// ⚡ Bolt: Extracted static array outside of component to prevent reallocation on every render cycle
 const SKELETON_ITEMS = [1, 2, 3];
 
 const EventSkeleton = () => (

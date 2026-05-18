@@ -24,8 +24,7 @@ import type { ZenGameRankRequirement } from '../types/gamification';
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
 const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_REQUIREMENT_ARRAY: ZenGameRankRequirement[] = [];
-// ⚡ Bolt: Static array to prevent reallocation during render
-const DANCE_ROLES = ['leader', 'follower'];
+const DANCE_ROLES = ['leader', 'follower'] as const;
 
 // Interfaces
 interface UserStats {

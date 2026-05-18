@@ -127,7 +127,7 @@
 **Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
 **Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.
 
-## 2026-06-29 - Inline Arrays and Spread Operators in Render Iterations
+## 2026-05-18 - Inline Arrays in Render Iterations
 
-**Learning:** Declaring static inline arrays like `[0, 1, 2]` or using the spread operator with `Array` constructors like `[...Array(Math.max(0, 10 - earnedAchievements.length))]` directly within a React component's return statement (for `.map()` iterations) forces continuous garbage collection overhead and memory reallocation on every single React rendering cycle.
-**Action:** Always extract static arrays (e.g., `STAR_INDICES`, `SKELETON_ITEMS`, `DANCE_ROLES`) to the module scope outside the component. When generating dynamic sequence arrays based on a calculated length during rendering, use `Array.from({ length: N })` instead of the spread syntax `[...Array(N)]` to prevent unnecessary intermediary array instantiation and spread overhead.
+**Learning:** Declaring static inline arrays like `[0, 1, 2]` or `['leader', 'follower']` inside a React component return creates a new array reference on each render.
+**Action:** Extract reused static arrays to module scope when they are used for render iteration. For dynamic lengths, prefer the clearest expression and avoid claiming allocation savings unless the rendered children themselves are also memoized.

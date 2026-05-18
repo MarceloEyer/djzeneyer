@@ -21,9 +21,7 @@ import type { ZenGameAchievement, ZenGameLeaderboardEntry } from '../types/gamif
 const EMPTY_ACHIEVEMENT_ARRAY: ZenGameAchievement[] = [];
 const EMPTY_LEADERBOARD_ARRAY: ZenGameLeaderboardEntry[] = [];
 
-// ⚡ Bolt: Static array to prevent reallocation during render
 const STAR_INDICES = [0, 1, 2];
-
 
 // ============================================================================
 // 1. SUB-COMPONENTS (PREMIUM VISUALS)
