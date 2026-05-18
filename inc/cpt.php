@@ -162,6 +162,11 @@ add_filter('the_posts', function($posts, $query) {
         } else {
             update_meta_cache('post', $post_ids);
         }
+
+        // ⚡ Bolt: Prime term caches for REST API to avoid N+1 on get_the_terms
+        if (function_exists('update_object_term_cache')) {
+            update_object_term_cache($post_ids, 'remixes');
+        }
     }
 
     // 3. Collect thumbnail IDs from the posts
