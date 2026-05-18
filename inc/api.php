@@ -334,6 +334,9 @@ function djz_query_products(array $options = [])
             update_object_term_cache($product_ids, 'product');
         }
 
+        // ⚡ Bolt: Use template-based permalink generation to prevent N+1 bottleneck on get_permalink()
+        $permalink_template = null;
+
         foreach ($product_objects as $product) {
             $images = [];
             // ⚡ Bolt: Retrieve image IDs from our pre-computed map in O(1) time
@@ -379,6 +382,26 @@ function djz_query_products(array $options = [])
                 $categories = [];
             }
 
+            $product_slug = $product->get_slug();
+            if ($permalink_template === null) {
+                $first_permalink = get_permalink($product->get_id());
+                if (!empty($product_slug)) {
+                    $pos = strrpos($first_permalink, $product_slug);
+                    if ($pos !== false) {
+                        $permalink_template = substr_replace($first_permalink, '%slug%', $pos, strlen($product_slug));
+                    } else {
+                        $permalink_template = false;
+                    }
+                } else {
+                    $permalink_template = false;
+                }
+                $permalink = $first_permalink;
+            } else if ($permalink_template === false) {
+                $permalink = get_permalink($product->get_id());
+            } else {
+                $permalink = str_replace('%slug%', $product_slug, $permalink_template);
+            }
+
             $products[] = [
                 'id' => $product->get_id(),
                 'name' => $product->get_name(),
@@ -391,7 +414,7 @@ function djz_query_products(array $options = [])
                 'images' => $images,
                 'short_description' => $product->get_short_description(),
                 'description' => !empty($slug) ? $product->get_description() : '',
-                'permalink' => get_permalink($product->get_id()),
+                'permalink' => $permalink,
                 'categories' => array_map(function ($term) {
                     return [
                         'id' => $term->term_id,
@@ -652,6 +675,9 @@ function djz_get_shop_page($request)
             if (!empty($product_ids))
                 update_object_term_cache($product_ids, 'product');
 
+            // ⚡ Bolt: Use template-based permalink generation to prevent N+1 bottleneck on get_permalink()
+            $permalink_template = null;
+
             foreach ($product_objects as $product) {
                 // ⚡ Bolt: Retrieve image IDs from our pre-computed map in O(1) time
                 $img_ids = $product_images_map[$product->get_id()] ?? [];
@@ -684,6 +710,27 @@ function djz_get_shop_page($request)
                 }
 
                 $categories = wp_get_post_terms($product->get_id(), 'product_cat');
+
+                $product_slug = $product->get_slug();
+                if ($permalink_template === null) {
+                    $first_permalink = get_permalink($product->get_id());
+                    if (!empty($product_slug)) {
+                        $pos = strrpos($first_permalink, $product_slug);
+                        if ($pos !== false) {
+                            $permalink_template = substr_replace($first_permalink, '%slug%', $pos, strlen($product_slug));
+                        } else {
+                            $permalink_template = false;
+                        }
+                    } else {
+                        $permalink_template = false;
+                    }
+                    $permalink = $first_permalink;
+                } else if ($permalink_template === false) {
+                    $permalink = get_permalink($product->get_id());
+                } else {
+                    $permalink = str_replace('%slug%', $product_slug, $permalink_template);
+                }
+
                 $products[] = [
                     'id' => $product->get_id(),
                     'name' => $product->get_name(),
@@ -696,7 +743,7 @@ function djz_get_shop_page($request)
                     'images' => $images,
                     'short_description' => $product->get_short_description(),
                     'description' => '',
-                    'permalink' => get_permalink($product->get_id()),
+                    'permalink' => $permalink,
                     'categories' => !is_wp_error($categories) ? array_map(function ($term) {
                         return ['id' => $term->term_id, 'name' => $term->name, 'slug' => $term->slug];
                     }, $categories) : [],
