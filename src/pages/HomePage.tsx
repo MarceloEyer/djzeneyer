@@ -10,7 +10,7 @@ import {
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST, ARTIST_BUSINESS_SCHEMA, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
+import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
@@ -141,7 +141,6 @@ const HomePage: React.FC = () => {
         }
       },
       ARTIST_SCHEMA_BASE,
-      ARTIST_BUSINESS_SCHEMA,
       MUSICGROUP_SCHEMA,
       {
         "@type": "WebPage",
@@ -171,9 +170,7 @@ const HomePage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={seoSettings?.real_name
-          ? `${seoSettings.real_name} | ${t('home.stat_champion')}`
-          : t('home.page_title')}
+        title={t('home.page_title')}
 
         description={t('home.page_meta_desc')}
 

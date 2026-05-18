@@ -1,12 +1,13 @@
 import React, { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, ChevronRight, Search, Sparkles } from 'lucide-react';
+import { BookOpen, ChevronRight, ExternalLink, Search, Sparkles } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 import { ZOUK_ENCYCLOPEDIA, type EncyclopediaCategory } from '../data/zoukEncyclopedia';
+import { safeUrl } from '../utils/sanitize';
 
 const HERO_VARIANTS = {
   hidden: { opacity: 0, y: 20 },
@@ -184,6 +185,28 @@ const EncyclopediaPage: React.FC = () => {
                                 {t(`terms.${related}.term`, { ns: 'encyclopedia' })}
                               </a>
                             ))}
+                          </div>
+                        )}
+
+                        {item.sources && item.sources.length > 0 && (
+                          <div className="mt-5 border-t border-white/10 pt-4">
+                            <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-white/40">
+                              {t('sources_label', { ns: 'encyclopedia' })}
+                            </p>
+                            <div className="flex flex-wrap gap-2">
+                              {item.sources.map((source) => (
+                                <a
+                                  key={source.url}
+                                  href={safeUrl(source.url, '/')}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary"
+                                >
+                                  {source.label}
+                                  <ExternalLink size={12} />
+                                </a>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </article>

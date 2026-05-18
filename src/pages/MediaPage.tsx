@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { Newspaper, ExternalLink, Download, Image as ImageIcon } from 'lucide-react';
+import { Newspaper, ExternalLink, Download, Image as ImageIcon, ShieldCheck } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
@@ -23,6 +23,12 @@ const MediaPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   const clippingData = ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY;
+  const independentCoverage = clippingData.filter((item) =>
+    ['Media', 'Official', 'Profile', 'Analytics', 'Event'].includes(item.type)
+  );
+  const distributionCoverage = clippingData.filter((item) =>
+    ['Press Release', 'Report', 'Wiki'].includes(item.type)
+  );
 
   const mediaAssets = [
     {
@@ -74,7 +80,7 @@ const MediaPage: React.FC = () => {
               Press & Media
             </h1>
             <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
-              Explore media coverage, press mentions, and the official press kit of Zen Eyer.
+              {t('media_page.intro')}
             </p>
           </motion.div>
 
@@ -85,8 +91,21 @@ const MediaPage: React.FC = () => {
                 {t('media_page.press_highlights')}
               </h2>
               
+              <div className="mb-10 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+                <div className="mb-3 flex items-center gap-2 text-primary">
+                  <ShieldCheck size={18} />
+                  <h3 className="font-display text-lg font-black uppercase tracking-widest">
+                    {t('media_page.sources_corrections')}
+                  </h3>
+                </div>
+                <p className="text-sm leading-relaxed text-white/65">
+                  {t('media_page.sources_corrections_desc')}
+                </p>
+              </div>
+
+              <h3 className="mb-5 text-xl font-black text-white">{t('media_page.independent_sources')}</h3>
               <div className="grid gap-6">
-                {clippingData.map((item, index: number) => (
+                {independentCoverage.map((item, index: number) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, x: -20 }}
@@ -95,7 +114,7 @@ const MediaPage: React.FC = () => {
                     transition={{ delay: index * 0.1 }}
                   >
                     <a 
-                      href={item.url} 
+                      href={safeUrl(item.url, '/')}
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="group block card p-6 bg-surface/30 backdrop-blur-md border hover:border-primary/50 transition-all"
@@ -115,13 +134,56 @@ const MediaPage: React.FC = () => {
                       <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-primary/70">
                         <span>{item.source}</span>
                         <span className="flex items-center gap-1 group-hover:gap-2 transition-all">
-                          Read More <ExternalLink size={14} />
+                          {t('media_page.read_more')} <ExternalLink size={14} />
                         </span>
                       </div>
                     </a>
                   </motion.div>
                 ))}
               </div>
+
+              {distributionCoverage.length > 0 && (
+                <>
+                  <h3 className="mb-5 mt-12 text-xl font-black text-white">{t('media_page.distribution_sources')}</h3>
+                  <div className="grid gap-6">
+                    {distributionCoverage.map((item, index: number) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <a
+                          href={safeUrl(item.url, '/')}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group block card p-6 bg-surface/30 backdrop-blur-md border hover:border-primary/50 transition-all"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <span className="px-3 py-1 rounded-full bg-white/5 text-primary text-xs font-bold uppercase tracking-widest border border-white/5 group-hover:bg-primary/20 transition-colors">
+                              {item.type}
+                            </span>
+                            <span className="text-white/55 text-xs font-mono">{item.date}</span>
+                          </div>
+                          <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-primary transition-colors tracking-tight">
+                            {item.title}
+                          </h3>
+                          <p className="text-white/70 text-sm mb-4 line-clamp-2 leading-relaxed">
+                            {item.description}
+                          </p>
+                          <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-primary/70">
+                            <span>{item.source}</span>
+                            <span className="flex items-center gap-1 group-hover:gap-2 transition-all">
+                              {t('media_page.read_more')} <ExternalLink size={14} />
+                            </span>
+                          </div>
+                        </a>
+                      </motion.div>
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Sidebar: Assets & Quick Facts */}

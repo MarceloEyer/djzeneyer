@@ -210,6 +210,30 @@ export const ARTIST = {
   // 📰 Clipping / Na Mídia
   mediaClipping: [
     {
+      title: 'All About Jazz Musician Profile',
+      description: 'Independent musician profile for Zen Eyer, connecting the artist name to DJ and music production work.',
+      url: 'https://www.allaboutjazz.com/musicians/zen-eyer',
+      source: 'All About Jazz',
+      date: '2026',
+      type: 'Profile'
+    },
+    {
+      title: 'Brazilian Zouk Council Professionals Directory',
+      description: 'Professional directory from the Brazilian Zouk Council listing Zen Eyer in the Brazilian Zouk community.',
+      url: 'https://www.brazilianzoukcouncil.com/professionals',
+      source: 'Brazilian Zouk Council',
+      date: '2026',
+      type: 'Official'
+    },
+    {
+      title: 'Resident Advisor Event Listing',
+      description: 'Resident Advisor event listing connected to Zen Eyer performance activity.',
+      url: 'https://pt-br.ra.co/events/2297675',
+      source: 'Resident Advisor',
+      date: '2026',
+      type: 'Event'
+    },
+    {
       title: 'Brazilian Zouk DJ Zen Eyer Bridges Brazil and Africa with Kizomba Remix Featuring Kaysha',
       description: 'Detailed press release about the Kizomba remix project and its impact on the global Zouk scene.',
       url: 'https://www.issuewire.com/brazilian-zouk-dj-zen-eyer-bridges-brazil-and-africa-with-kizomba-remix-featuring-kaysha-1847934953275206',
@@ -457,7 +481,7 @@ export const ARTIST_SCHEMA_BASE = {
   name: 'Zen Eyer',
   alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Ilha do Zouk DJ Championship 2022.',
   disambiguatingDescription: DISAMBIGUATING_DESCRIPTION,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
@@ -543,7 +567,6 @@ export const ARTIST_SCHEMA_BASE = {
     // Ligação bidirecional com o nó MusicGroup do projeto artístico
     { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
   ],
-  worksFor: { '@id': `${ARTIST.site.baseUrl}/#business` },
   award: [
     'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
     'World Champion Brazilian Zouk DJ - Best Remix, 2022',
@@ -594,6 +617,16 @@ export const ARTIST_SCHEMA_BASE = {
   subjectOf: [
     {
       '@type': 'WebPage',
+      url: 'https://www.allaboutjazz.com/musicians/zen-eyer',
+      name: 'Zen Eyer - All About Jazz Musician Profile',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://www.brazilianzoukcouncil.com/professionals',
+      name: 'Brazilian Zouk Council - Professionals Directory',
+    },
+    {
+      '@type': 'WebPage',
       url: 'https://www.dutchzouk.nl/artists',
       name: 'Dutch International Zouk Congress — Artists',
     },
@@ -604,8 +637,18 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'WebPage',
+      url: 'https://latindancecalendar.com/festivals/la-zouk-marathon-2023/',
+      name: 'LA Zouk Marathon 2023 — Latin Dance Calendar',
+    },
+    {
+      '@type': 'WebPage',
       url: 'https://www.lisbonzoukmarathon.com/march2026',
       name: 'Lisbon Zouk Marathon March 2026',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://www.praguezouk.com',
+      name: 'Prague Zouk Congress',
     },
     {
       '@type': 'WebPage',
@@ -626,6 +669,11 @@ export const ARTIST_SCHEMA_BASE = {
       '@type': 'WebPage',
       url: 'https://danxer.com/artist/1022/zen-eyer',
       name: 'Zen Eyer — Danxer Artist Profile',
+    },
+    {
+      '@type': 'WebPage',
+      url: 'https://pt-br.ra.co/events/2297675',
+      name: 'Resident Advisor - Zen Eyer Event Listing',
     },
   ],
   // Eventos reais em que Zen Eyer é performer — prova direta de atuação (bidirecional com performerIn)
@@ -963,10 +1011,7 @@ export const ARTIST_BUSINESS_SCHEMA = {
   logo: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
   description:
-    'Organization entity for DJ Zen Eyer bookings, press, music releases, and official artist business operations.',
-  sameAs: [
-    ARTIST.identifiers.secondaryKnowledgeGraphUrl,
-  ],
+    'Organization entity for Zen Eyer bookings, press, music releases, and official artist business operations.',
   identifier: [
     {
       '@type': 'PropertyValue',

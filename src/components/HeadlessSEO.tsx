@@ -5,7 +5,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_BUSINESS_SCHEMA, ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { getAlternateLinks, getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
@@ -230,7 +230,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           potentialAction: siteSearchAction,
         },
         ARTIST_SCHEMA_BASE,
-        ARTIST_BUSINESS_SCHEMA,
+        MUSICGROUP_SCHEMA,
         {
           '@type': 'WebPage',
           '@id': `${finalUrl}#webpage`,
@@ -482,8 +482,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
               potentialAction: siteSearchAction,
             },
             ARTIST_SCHEMA_BASE,
-            ARTIST_BUSINESS_SCHEMA
-          ] : []),
+            MUSICGROUP_SCHEMA
+          ] : [
+            MUSICGROUP_SCHEMA
+          ]),
           webPageSchema,
           ...dynamicGraph
         ],
@@ -504,12 +506,18 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
             potentialAction: siteSearchAction,
           },
           ARTIST_SCHEMA_BASE,
-          ARTIST_BUSINESS_SCHEMA,
+          MUSICGROUP_SCHEMA,
           webPageSchema,
         ],
       };
     } else {
-      finalSchema = webPageSchema; // Fallback to basic WebPage if no graph
+      finalSchema = shouldNoIndex ? webPageSchema : {
+        '@context': 'https://schema.org',
+        '@graph': [
+          MUSICGROUP_SCHEMA,
+          webPageSchema,
+        ],
+      };
     }
   }
 

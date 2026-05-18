@@ -53,6 +53,14 @@ function buildUrlEntry(url, date, priority = '0.8', altUrl = null, imageUrl = nu
   return entry;
 }
 
+function buildSitemapIndexEntry(url, date) {
+  return `
+  <sitemap>
+    <loc>${url}</loc>
+    <lastmod>${date}</lastmod>
+  </sitemap>`;
+}
+
 const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
 const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
 
@@ -188,12 +196,12 @@ async function generateSitemaps() {
     const eventPrefixRegex = new RegExp(`^/?(?:${removableEventPrefixes.map(escapeRegex).join('|')})(?:/|$)`, 'i');
 
     let eventCount = 0;
-    if (events.length > 0) {
-      let eventsXml = `<?xml version="1.0" encoding="UTF-8"?>
+    let eventsXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
+    if (events.length > 0) {
       for (const event of events) {
         // Extração robusta do slug final (ID ou path real)
         let relativePath = event.canonical_path || String(event.event_id);
@@ -216,26 +224,19 @@ async function generateSitemaps() {
 
         eventCount += 2;
       }
-      eventsXml += '\n</urlset>';
-      fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-events.xml'), eventsXml);
-      console.log(`✅ sitemap-events.xml created (${eventCount} URLs)`);
     }
+
+    eventsXml += '\n</urlset>';
+    fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-events.xml'), eventsXml);
+    console.log(`✅ sitemap-events.xml created (${eventCount} URLs)`);
 
     // 3. Index Sitemap
     let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <sitemap>
-    <loc>${BASE_URL}/sitemap-pages.xml</loc>
-    <lastmod>${date}</lastmod>
-  </sitemap>`;
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
-    if (eventCount > 0) {
-      sitemapIndex += `
-  <sitemap>
-    <loc>${BASE_URL}/sitemap-events.xml</loc>
-    <lastmod>${date}</lastmod>
-  </sitemap>`;
-    }
+    sitemapIndex += buildSitemapIndexEntry(`${BASE_URL}/sitemap-pages.xml`, date);
+
+    sitemapIndex += buildSitemapIndexEntry(`${BASE_URL}/sitemap-events.xml`, date);
 
     sitemapIndex += '\n</sitemapindex>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), sitemapIndex);

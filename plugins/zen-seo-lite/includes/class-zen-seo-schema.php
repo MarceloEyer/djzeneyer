@@ -67,6 +67,7 @@ class Zen_SEO_Schema
 
         // Core fragments
         $schema['@graph'][] = $this->generate_person_schema();
+        $schema['@graph'][] = $this->generate_musicgroup_schema();
         $schema['@graph'][] = $this->generate_webpage_schema($post);
         $schema['@graph'][] = $this->generate_breadcrumb_schema($post);
 
@@ -121,6 +122,7 @@ class Zen_SEO_Schema
             '@context' => 'https://schema.org',
             '@graph' => [
                 $this->generate_person_schema(),
+                $this->generate_musicgroup_schema(),
                 $this->generate_website_schema()
             ]
         ];
@@ -190,11 +192,6 @@ class Zen_SEO_Schema
             ];
         }
 
-        // Tax ID (CNPJ) - Only if set
-        if (!empty($settings['cnpj'])) {
-            $person['taxID'] = \sanitize_text_field((string) $settings['cnpj']);
-        }
-
         // Contact point - Only if email is set
         if (!empty($settings['booking_email'])) {
             $person['contactPoint'] = [
@@ -226,6 +223,39 @@ class Zen_SEO_Schema
         $person['sameAs'] = $this->get_same_as_urls($settings);
 
         return $person;
+    }
+
+    /**
+     * Generate MusicGroup schema for the artist project.
+     *
+     * @return array
+     */
+    private function generate_musicgroup_schema()
+    {
+        $settings = Zen_SEO_Helpers::get_global_settings();
+        $same_as = $this->get_same_as_urls($settings);
+
+        $musicgroup = [
+            '@type' => 'MusicGroup',
+            '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#musicgroup')),
+            'name' => 'Zen Eyer',
+            'alternateName' => ['DJ Zen Eyer'],
+            'url' => Zen_SEO_Helpers::get_frontend_url(\home_url('/')),
+            'genre' => ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+            'member' => [
+                ['@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))]
+            ],
+        ];
+
+        if (!empty($settings['default_image'])) {
+            $musicgroup['image'] = \esc_url((string) $settings['default_image']);
+        }
+
+        if (!empty($same_as)) {
+            $musicgroup['sameAs'] = $same_as;
+        }
+
+        return $musicgroup;
     }
 
     /**
@@ -411,38 +441,56 @@ class Zen_SEO_Schema
         $event = [
             '@type' => 'MusicEvent',
             'name' => \sanitize_text_field((string) $title),
-            'description' => \sanitize_text_field((string) $description),
             'startDate' => \sanitize_text_field((string) $meta['event_date']),
             'eventStatus' => 'https://schema.org/EventScheduled',
             'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
             'performer' => [
-                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))
+                '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#musicgroup'))
             ],
         ];
 
-        // Image
-        if ($image) {
-            $event['image'] = \esc_url((string) ($image ?? ''));
+        $start_ts = \strtotime((string) $meta['event_date']);
+        $event['endDate'] = !empty($meta['event_end_date'])
+            ? \sanitize_text_field((string) $meta['event_end_date'])
+            : ($start_ts ? \gmdate('c', $start_ts + 4 * \HOUR_IN_SECONDS) : \sanitize_text_field((string) $meta['event_date']));
+
+        $event_location_name = !empty($meta['event_location']) ? \sanitize_text_field((string) $meta['event_location']) : 'TBA';
+        $event_description = (string) ($description ?: sprintf(
+            'Live Brazilian Zouk DJ set by DJ Zen Eyer%s.',
+            $event_location_name !== 'TBA' ? ' at ' . $event_location_name : ''
+        ));
+        if ($event_location_name !== 'TBA' && \stripos($event_description, $event_location_name) === false) {
+            $event_description .= ' Location: ' . $event_location_name . '.';
         }
+        $event['description'] = \sanitize_text_field($event_description);
+
+        // Image
+        $event['image'] = \esc_url((string) ($image ?: Zen_SEO_Helpers::get_frontend_url(\home_url('/images/zen-eyer-og-image.png'))));
 
         // Location
-        if (!empty($meta['event_location'])) {
-            $event['location'] = [
-                '@type' => 'Place',
-                'name' => \sanitize_text_field((string) $meta['event_location']),
-                'address' => [
-                    '@type' => 'PostalAddress',
-                    'addressCountry' => 'BR'
-                ]
-            ];
+        $postal_address = [
+            '@type' => 'PostalAddress',
+        ];
+        if ($event_location_name !== 'TBA') {
+            $postal_address['addressLocality'] = \sanitize_text_field((string) \trim(\explode(',', $event_location_name)[0]));
+            $country_code = $this->infer_country_code($event_location_name);
+            if ($country_code !== '') {
+                $postal_address['addressCountry'] = $country_code;
+            }
         }
+
+        $event['location'] = [
+            '@type' => 'Place',
+            'name' => $event_location_name,
+            'address' => $postal_address
+        ];
 
         // Offers (ticket)
         $ticket_url = !empty($meta['event_ticket']) ? $meta['event_ticket'] : Zen_SEO_Helpers::get_frontend_url(\get_permalink($post));
         $event['offers'] = [
             '@type' => 'Offer',
             'url' => \esc_url((string) ($ticket_url ?? '')),
-            'availability' => 'https://schema.org/InStock'
+            'availability' => $start_ts && $start_ts < \time() ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock'
         ];
 
         return $event;
@@ -656,15 +704,7 @@ class Zen_SEO_Schema
     {
         $urls = [];
 
-        // Google Knowledge Graph
-        $kg = \trim((string) ($settings['google_kg'] ?? ''));
-        if ($kg !== '') {
-            if (\strpos($kg, 'http') === 0) {
-                $urls[] = \esc_url($kg);
-            } else {
-                $urls[] = 'https://g.co/kg' . $kg;
-            }
-        }
+        // Google Knowledge Graph IDs are emitted as identifiers elsewhere, not sameAs profile URLs.
 
         // Social and music platforms
         $platforms = [
@@ -693,5 +733,37 @@ class Zen_SEO_Schema
         }
 
         return \array_values(\array_filter($urls));
+    }
+
+    /**
+     * Infer an ISO country code from a free-text event location when the source provides one.
+     *
+     * @param string $location
+     * @return string
+     */
+    private function infer_country_code(string $location): string
+    {
+        $normalized = \strtolower($location);
+        $country_map = [
+            'brazil' => 'BR',
+            'brasil' => 'BR',
+            'netherlands' => 'NL',
+            'portugal' => 'PT',
+            'slovenia' => 'SI',
+            'switzerland' => 'CH',
+            'czech' => 'CZ',
+            'prague' => 'CZ',
+            'united states' => 'US',
+            'usa' => 'US',
+            'australia' => 'AU',
+        ];
+
+        foreach ($country_map as $needle => $code) {
+            if (\strpos($normalized, $needle) !== false) {
+                return $code;
+            }
+        }
+
+        return '';
     }
 }
