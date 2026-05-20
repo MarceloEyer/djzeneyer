@@ -161,9 +161,9 @@ function dedupePrerenderHead(html) {
 
   cleaned = removeEarlierMatchesByKey(
     cleaned,
-    /<script[^>]+type=["']application\/ld\+json["'][\s\S]*?<\/script>/gi,
+    /<script[^>]+type=["']application\/ld\+json["'][\s\S]*?<\/script\s*>/gi,
     (tag) => {
-      const json = tag.match(/<script[^>]*>([\s\S]*?)<\/script>/i)?.[1]?.trim();
+      const json = tag.match(/<script[^>]*>([\s\S]*?)<\/script\s*>/i)?.[1]?.trim();
       return json ? `script:ld-json:${json}` : '';
     }
   );
