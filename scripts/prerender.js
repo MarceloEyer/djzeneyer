@@ -71,6 +71,11 @@ function removeEarlierMatchesByKey(input, regex, getKey) {
     .map(match => ({ index: match.index, text: match[0], key: getKey(match[0]) }))
     .filter(match => Boolean(match.key));
 
+  return removeEarlierCollectedMatches(input, matches);
+}
+
+function removeEarlierCollectedMatches(input, matches) {
+
   if (matches.length <= 1) return input;
 
   const seen = new Set();
@@ -97,6 +102,42 @@ function removeEarlierMatchesByKey(input, regex, getKey) {
 
   output += input.slice(cursor);
   return output;
+}
+
+function dedupeJsonLdScripts(input) {
+  const matches = [];
+  const lowerInput = input.toLowerCase();
+  let cursor = 0;
+
+  while (cursor < input.length) {
+    const openStart = lowerInput.indexOf('<script', cursor);
+    if (openStart === -1) break;
+
+    const openEnd = input.indexOf('>', openStart);
+    if (openEnd === -1) break;
+
+    const closeStart = lowerInput.indexOf('</script', openEnd + 1);
+    if (closeStart === -1) break;
+
+    const closeEnd = input.indexOf('>', closeStart);
+    if (closeEnd === -1) break;
+
+    const openTag = input.slice(openStart, openEnd + 1);
+    if (getHtmlAttribute(openTag, 'type').toLowerCase() === 'application/ld+json') {
+      const json = input.slice(openEnd + 1, closeStart).trim();
+      if (json) {
+        matches.push({
+          index: openStart,
+          text: input.slice(openStart, closeEnd + 1),
+          key: `script:ld-json:${json}`,
+        });
+      }
+    }
+
+    cursor = closeEnd + 1;
+  }
+
+  return removeEarlierCollectedMatches(input, matches);
 }
 
 function removeLaterMatchesByKey(input, regex, getKey) {
@@ -159,14 +200,7 @@ function dedupePrerenderHead(html) {
     return '';
   });
 
-  cleaned = removeEarlierMatchesByKey(
-    cleaned,
-    /<script[^>]+type=["']application\/ld\+json["'][\s\S]*?<\/script\s*>/gi,
-    (tag) => {
-      const json = tag.match(/<script[^>]*>([\s\S]*?)<\/script\s*>/i)?.[1]?.trim();
-      return json ? `script:ld-json:${json}` : '';
-    }
-  );
+  cleaned = dedupeJsonLdScripts(cleaned);
 
   return cleaned;
 }
