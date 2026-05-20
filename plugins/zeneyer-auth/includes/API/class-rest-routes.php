@@ -619,6 +619,7 @@ class Rest_Routes
 
         if (!empty($order_ids)) {
             $placeholders = implode(',', array_fill(0, count($order_ids), '%d'));
+            // ⚡ Bolt: Fetch all line items in a single IN clause query instead of chunking or querying per order (fixes N+1 and chunking loop overhead).
             $query = $wpdb->prepare("
                 SELECT i.order_id, i.order_item_name as name,
                        MAX(CASE WHEN im.meta_key = '_qty' THEN im.meta_value END) as quantity,
