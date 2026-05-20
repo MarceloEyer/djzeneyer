@@ -1,3 +1,8 @@
+# 2026-05-20 - Gate de Uso do Bolt
+
+**Learning:** Este arquivo é memória histórica de padrões e aprendizados, não backlog automático. Entradas antigas, futuras ou fora de ordem podem conter contexto incompleto e não autorizam PR por si só.
+**Action:** Antes de aplicar qualquer learning, confirmar que o padrão existe no código atual, que há benefício real e que a mudança foi pedida por humano, issue atribuída ou bug reproduzível. Não abrir PR para limpeza de comentários ou micro-otimização sem evidência objetiva.
+
 ## 2025-02-19 - WP REST API _embed Performance
 
 **Learning:** Using `_embed` in WP REST API requests triggers significant overhead due to multiple internal queries (N+1) for fetching related objects like authors, terms, media, and comments. For list endpoints returning many items (e.g., 100 tracks), this causes a major performance bottleneck on the backend.
