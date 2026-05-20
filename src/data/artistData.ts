@@ -53,7 +53,7 @@ export const ARTIST = {
   stats: {
     startingYear: START_YEAR,
     yearsActive: CURRENT_YEAR - START_YEAR,
-    countriesPlayed: 15, // 🇧🇷🇺🇸🇩🇪🇵🇱🇸🇮🇦🇺🇳🇱🇵🇹🇨🇿🇨🇭🇪🇸🇭🇷🇮🇹🇮🇪🇱🇹
+    countriesPlayed: 14, // Brazil, Netherlands, Germany, Poland, Portugal, Spain, Australia, Switzerland, Ireland, Slovenia, United States, Czech Republic, Lithuania, Latvia
     continentsPlayed: 4, // América do Sul, América do Norte, Europa, Oceania (Austrália)
     lastUpdated: new Date().toISOString().split('T')[0],
   },
@@ -234,30 +234,6 @@ export const ARTIST = {
       type: 'Event'
     },
     {
-      title: 'Brazilian Zouk DJ Zen Eyer Bridges Brazil and Africa with Kizomba Remix Featuring Kaysha',
-      description: 'Detailed press release about the Kizomba remix project and its impact on the global Zouk scene.',
-      url: 'https://www.issuewire.com/brazilian-zouk-dj-zen-eyer-bridges-brazil-and-africa-with-kizomba-remix-featuring-kaysha-1847934953275206',
-      source: 'IssueWire',
-      date: '2024-08-10',
-      type: 'Press Release'
-    },
-    {
-      title: 'The Global Rise of Brazilian Zouk Music and Cultural Evolution',
-      description: 'In-depth article on the cultural evolution and global growth of Brazilian Zouk, citing Zen Eyers influence.',
-      url: 'https://timebusinessnews.com/the-global-rise-of-brazilian-zouk-music-and-cultural-evolution/',
-      source: 'Time Business News',
-      date: '2025-12-05',
-      type: 'Media'
-    },
-    {
-      title: 'Brazilian Zouk DJ Zen Eyer Announces Award Winning International Tour',
-      description: 'Report on the announcement of the 2026 international tour covering Europe, North America, and Brazil.',
-      url: 'https://mypr.co.za/international/brazilian-zouk-dj-zen-eyer-announces-award-winning-international-tour/',
-      source: 'MyPR South Africa',
-      date: '2025-11-20',
-      type: 'Report'
-    },
-    {
       title: 'DJ Zen Eyer - World Champion DJ Profile',
       description: 'Professional profile highlighting the two world titles won at the Ilha do Zouk DJ Championship.',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
@@ -311,7 +287,7 @@ export const ARTIST = {
       state: 'RJ',
       country: 'Brazil',
       areaDetail: 'Born in Rio de Janeiro, based in Niterói',
-      displayArea: 'Rio de Janeiro / Niterói',
+      displayArea: 'Niterói, Rio de Janeiro',
     },
   },
 
@@ -553,9 +529,8 @@ export const ARTIST_SCHEMA_BASE = {
     addressCountry: 'BR',
   },
   homeLocation: {
-    '@type': 'City',
-    name: 'Niterói',
-    addressCountry: 'BR',
+    '@type': 'Place',
+    name: 'Niterói, Rio de Janeiro, Brazil',
   },
   memberOf: [
     {
@@ -598,7 +573,7 @@ export const ARTIST_SCHEMA_BASE = {
         name: 'Brazil',
       },
       description:
-        'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses in 15+ countries across 4 continents.',
+      'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses in 14 countries across 4 continents.',
       skills: 'DJ Mixing, Music Curation, Live Performance, Cremosidade Transitions',
     },
     {

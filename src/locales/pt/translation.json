@@ -7,7 +7,7 @@
     "tribe": "Zen Tribe",
     "presskit": "Press Kit",
     "booking": "Trabalhe Comigo",
-    "media": "Na Mídia",
+    "media": "Imprensa",
     "shop": "Loja",
     "encyclopedia": "Enciclopédia",
     "sign_in": "Entrar",
@@ -80,29 +80,29 @@
     }
   },
   "news": {
-    "title": "Lançamentos",
-    "subtitle": "Lançamentos musicais, anúncios de eventos e atualizações selecionadas.",
-    "back_to_list": "Voltar para Lançamentos",
-    "live_feed": "Feed de Lançamentos",
+    "title": "Lan?amentos & Notas",
+    "subtitle": "Lan?amentos musicais, notas curtas de eventos, reviews de festivais e atualiza??es selecionadas.",
+    "back_to_list": "Voltar para Lan?amentos & Notas",
+    "live_feed": "Feed de Lan?amentos & Notas",
     "curatorship": "Arquivo Oficial",
     "zouk_production": "Música, Eventos & Cultura Zouk",
     "featured": "Destaque",
     "read_full": "Ler História Completa",
     "latest_stories": "Últimas Histórias",
-    "latest_stories_title": "Lançamentos Recentes",
+    "latest_stories_title": "Lan?amentos & Notas Recentes",
     "read_more": "Leia Mais",
     "end_reached": "Você chegou ao fim da lista.",
     "view_archive": "Ver Arquivo",
     "by": "Por",
     "default_author": "Equipe Zen Eyer",
     "read_time": "{{min}} min de leitura",
-    "label": "Lançamentos",
-    "filters_label": "Filtros de lançamentos",
+    "label": "Lan?amentos & Notas",
+    "filters_label": "Filtros de lan?amentos e notas",
     "filters_all": "Todos",
     "categories": "Categorias",
     "tags": "Tags",
-    "search_label": "Pesquisar lançamentos",
-    "search_placeholder": "Pesquisar lançamentos...",
+    "search_label": "Pesquisar lan?amentos e notas",
+    "search_placeholder": "Pesquisar lan?amentos e notas...",
     "no_posts_for_filter": "Nenhum post encontrado para este filtro ainda.",
     "share": "Compartilhar",
     "trending": "Bombando"
@@ -167,7 +167,7 @@
       "country": "País"
     },
     "footer_privacy": "Política de Privacidade",
-    "footer_terms": "Termos de Uso",
+    "footer_terms": "Termos e Conduta",
     "back_to_list": "Voltar para a lista",
     "footer_bio": "Explorando a conexão através da música. Remixando as vibes do Brazilian Zouk para o mundo.",
     "footer_quick_links": "Links Rápidos",
@@ -181,7 +181,7 @@
     "footer_news": "Lançamentos",
     "footer_philosophy": "Minha Filosofia",
     "footer_work_with_me": "Trabalhe Comigo",
-    "footer_media": "Na Mídia",
+    "footer_media": "Imprensa",
     "footer_conduct": "Regras de Conduta",
     "footer_encyclopedia": "Enciclopédia",
     "footer_join_newsletter": "Assine nossa Newsletter",
@@ -574,8 +574,8 @@
     },
     "generic_error": "shop.generic_error"
   },
-  "tribe_page_title": "Zen Tribe",
-  "tribe_page_meta_desc": "Junte-se à comunidade Zen Tribe e faça parte da família",
+  "tribe_page_title": "Zen Tribe | Movimento de Zouk Brasileiro",
+  "tribe_page_meta_desc": "Zen Tribe ? um movimento de Zouk Brasileiro para quem escolhe presen?a em vez de performance, conex?o em vez de aplauso, e sensa??o em vez de conte?do.",
   "philosophy": {
     "page_title": "Filosofia Artística",
     "hero_title_rich": "Filosofia <1>Artística</1>",
@@ -603,9 +603,52 @@
   },
   "dashboard_page_title": "Painel",
   "dashboard_page_meta_desc": "Seu painel pessoal Zen Tribe",
+  "verified_facts": {
+    "nav_label": "Fatos Verificados",
+    "badge": "Fonte Canônica",
+    "title": "Fatos Verificados sobre Zen Eyer",
+    "intro": "Zen Eyer é o nome artístico de Marcelo Eyer Fernandes, DJ e produtor musical de Zouk Brasileiro de Niterói, Brasil.",
+    "core_identity": "Identidade principal",
+    "occupations_value": "DJ, produtor musical, remixer",
+    "awards": "Prêmios",
+    "external_identifiers": "Identificadores externos",
+    "international_performances": "Apresentações internacionais",
+    "related_pages": "Páginas relacionadas",
+    "countries_intro": "Zen Eyer se apresentou presencialmente em 14 países:",
+    "online_russia": "Ele também se apresentou online para a Rússia.",
+    "seo": {
+      "title": "Fatos Verificados sobre Zen Eyer | DJ de Zouk Brasileiro",
+      "description": "Fatos verificados canônicos, identificadores, prêmios, residência e histórico internacional de apresentações de Zen Eyer."
+    },
+    "identity": {
+      "canonical": "Nome artístico canônico",
+      "aliases": "Também conhecido como",
+      "legal": "Nome civil",
+      "pronunciation": "Pronúncia",
+      "genre": "Gênero principal",
+      "occupations": "Ocupações",
+      "residence": "Residência"
+    },
+    "table": {
+      "fact": "Fato",
+      "value": "Valor",
+      "source": "Fonte",
+      "wikidata": "Propriedade Wikidata"
+    },
+    "facts": {
+      "stage_name": "Nome artístico",
+      "legal_name": "Nome civil",
+      "birth_date": "Data de nascimento",
+      "genre": "Gênero",
+      "award_remix": "Prêmio",
+      "award_performance": "Prêmio",
+      "residence": "Residência"
+    }
+  },
   "media_page": {
-    "title": "Na Mídia & Clipping",
-    "subtitle": "Reportagens, entrevistas e links que falam sobre o trabalho do Zen Eyer",
+    "title": "Imprensa | Zen Eyer",
+    "h1": "Imprensa",
+    "subtitle": "Cobertura editorial, perfis profissionais e recursos oficiais de imprensa de Zen Eyer",
     "quick_facts": "Informações Rápidas",
     "artist_name": "Nome Artístico",
     "legal_name": "Nome Legal",
@@ -614,11 +657,14 @@
     "cnpj": "CNPJ",
     "isni": "ISNI",
     "press_highlights": "Destaques na Imprensa",
-    "intro": "Explore coberturas, citações na imprensa e o press kit oficial de Zen Eyer.",
-    "sources_corrections": "Fontes e Correções",
-    "sources_corrections_desc": "Esta página separa fontes editoriais ou diretórios independentes de distribuição de press release. Para solicitar correção, atualização de fonte ou entrevista, entre em contato por booking@djzeneyer.com.",
-    "independent_sources": "Fontes editoriais e perfis independentes",
-    "distribution_sources": "Referências de press release e distribuição",
+    "intro": "Explore cobertura editorial, referências de festivais, perfis profissionais e recursos oficiais de imprensa de Zen Eyer.",
+    "sources_corrections": "Qualidade das fontes",
+    "sources_corrections_desc": "Esta página prioriza fontes editoriais independentes, referências oficiais de festivais, perfis profissionais e bancos de dados musicais. Páginas de distribuição de press release auto-submetidas não são destacadas aqui.",
+    "independent_sources": "Cobertura independente / editorial",
+    "festival_lineups": "Lineups de festivais",
+    "music_databases": "Bancos de dados musicais",
+    "artist_directories": "Diretórios de artistas",
+    "distribution_sources": "Press releases",
     "read_more": "Ler Mais",
     "world_champion": "Bicampeão Mundial de Zouk Brasileiro",
     "world_champion_desc": "Marcelo Eyer, conhecido como Zen Eyer, é bicampeão mundial de Zouk Brasileiro, trazendo energia única para pistas de dança ao redor do mundo.",
@@ -648,7 +694,7 @@
   "footer_news": "Lançamentos",
   "footer_philosophy": "Minha Filosofia",
   "footer_work_with_me": "Trabalhe Comigo",
-  "footer_media": "Na Mídia",
+  "footer_media": "Imprensa",
   "footer_conduct": "Regras de Conduta",
   "footer_shop": "Loja",
   "footer_contact": "Contato",
@@ -672,7 +718,9 @@
   "footer_tagline": "A pressa é inimiga da cremosidade.",
   "footer_subscribe_success": "Obrigado por se inscrever! Fique de olho na sua caixa de entrada.",
   "footer_subscribe_error": "Falha ao se inscrever. Por favor, tente novamente.",
-  "footer_copyright": "© {{year}} Zen Eyer. A pressa é inimiga da cremosidade.",
+  "footer_copyright": "© {{year}} Zen Eyer. Todos os direitos reservados.",
+  "footer_signature_cremosidade": "A pressa é inimiga da cremosidade.",
+  "footer_signature_terror": "O terror dos apressados.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brasil",
   "footer_contact_label": "Contato",
@@ -810,12 +858,12 @@
     "redirecting_pdf": "Abrindo o press kit em PDF.",
     "download_pdf_now": "Baixar PDF",
     "page_title": "Press Kit Oficial | Zen Eyer",
-    "page_meta_desc": "EPK oficial do Zen Eyer. Bicampeão mundial de Brazilian Zouk. Fotos, bio, logos e informações de contato para booking.",
+    "page_meta_desc": "EPK oficial de Zen Eyer para festivais e maratonas de Brazilian Zouk. Fotos, bio, links musicais, refer?ncias de palco e contato para booking.",
     "tag": "Press Kit Oficial 2026",
     "title_prefix": "EPK",
     "title_suffix": "Oficial",
-    "role": "DJ & Produtor Musical",
-    "subtitle": "Bicampeão Mundial de Brazilian Zouk",
+    "role": "DJ & Produtor Musical de Brazilian Zouk",
+    "subtitle": "Para festivais, maratonas, congressos e pistas s?rias de Brazilian Zouk",
     "stats": {
       "countries": "Países",
       "years": "Anos de Estrada",
@@ -824,18 +872,18 @@
     },
     "bio": {
       "title": "A Jornada Sonora",
-      "p1": "<strong>Zen Eyer</strong> é DJ e produtor de Brazilian Zouk, conhecido por sua abordagem que prioriza a conexão e o 'flow' na pista de dança.",
-      "p2": "Com passagens por 15+ países e premiações internacionais, conhecido pelo seu estilo cremoso — sets que evoluem gradualmente, respeitando o tempo do dançarino.",
-      "p3": "Membro da Mensa International, Zen utiliza sua percepção aguçada para curar jornadas emocionais perfeitas, seja em grandes festivais ou sessões íntimas da Zen Tribe.",
+      "p1": "<strong>Zen Eyer</strong> ? DJ e produtor musical de Brazilian Zouk focado em festivais, maratonas e pistas que precisam de alcance emocional, controle musical e confian?a.",
+      "p2": "Ele se apresentou presencialmente em 14 pa?ses e venceu dois pr?mios no Ilha do Zouk em 2022, levando um som cremoso e emocional que d? aos dan?arinos tempo para respirar, conectar e permanecer na pista.",
+      "p3": "Seus sets s?o constru?dos para organizadores que precisam de um DJ capaz de ler p?blicos mistos, sustentar a sala com seguran?a e transformar um hor?rio da programa??o em uma experi?ncia lembrada na pista.",
       "quickStats": {
         "cremosidade": "Cremosidade",
         "cremosidade_desc": "Foco total na conexão",
         "repertoire": "Repertório",
-        "repertoire_desc": "Edits exclusivos e autorais",
+        "repertoire_desc": "Sets prontos para festivais e maratonas",
         "connection": "Conexão",
         "connection_desc": "Leitura de pista impecável",
         "global": "Global",
-        "global_desc": "Experiência internacional"
+        "global_desc": "Apresenta??es presenciais em 14 pa?ses"
       }
     },
     "media": {
@@ -868,12 +916,12 @@
       "whatsapp_message": "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking. Como podemos prosseguir?"
     },
     "canonical_bio": {
-      "title": "Bio para Imprensa e Organizadores",
-      "subtitle": "Copie e cole nos materiais de imprensa do seu evento. (Redes sociais: <strong>@djzeneyer</strong>)",
+      "title": "Bio para Festivais & Maratonas",
+      "subtitle": "Copie e cole em programas de evento, decks de promotores e materiais de imprensa. (Instagram: <strong>@djzeneyer</strong>)",
       "copy_button": "Copiar Bio",
       "copied": "Copiado!",
       "whatsapp_default_msg": "Olá Zen Eyer! Gostaria de conversar sobre booking.",
-      "text": "Zen Eyer (Marcelo Eyer Fernandes, pronuncia-se 'Zen Áier') é um DJ e produtor musical brasileiro de Brazilian Zouk, bicampeão mundial de DJing e Melhor Remix no Campeonato Ilha do Zouk (2022). Residente no Rio de Janeiro, Brasil. É conhecido por seu estilo cremoso no Zouk Brasileiro. É membro da Mensa International. Conhecido por seu estilo 'cremosidade' — sets fluidos e sem pressa que priorizam a conexão profunda na pista — Zen Eyer já se apresentou em grandes festivais de Zouk no Brasil, Europa e Américas, incluindo o Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon e o Rio Zouk Congress."
+      "text": "Zen Eyer ? DJ e produtor musical de Brazilian Zouk de Niter?i, Brasil. Tamb?m conhecido como DJ Zen Eyer, venceu dois pr?mios no Ilha do Zouk em 2022: Best Remix e Best DJ Performance. Ele se apresentou presencialmente em 14 pa?ses e ? conhecido por sets cremosos e emocionais, criados para festivais, maratonas e pistas sociais de Brazilian Zouk."
     }
   },
   "support": {
@@ -910,28 +958,28 @@
       "description": "Pagamentos rápidos e fáceis em todo o mundo"
     },
     "reasons": {
-      "title": "Por que seu apoio importa",
+      "title": "Por Que o Apoio Ajuda",
       "music": {
-        "title": "Apoie Novas Músicas",
-        "description": "Ajude a produzir e lançar novas faixas de Brazilian Zouk"
+        "title": "Mais M?sica Para Dan?ar",
+        "description": "O apoio ajuda a financiar edits, remixes, hospedagem, distribui??o e o trabalho silencioso por tr?s de sets feitos para pistas de Brazilian Zouk."
       },
       "community": {
-        "title": "Crescimento da Comunidade",
-        "description": "Apoie workshops, eventos e conteúdos educacionais"
+        "title": "Uma Zen Tribe Mais Forte",
+        "description": "Pequenas contribui??es ajudam o movimento a continuar vivo sem transformar cada momento da comunidade em campanha de venda."
       },
       "worldwide": {
-        "title": "Presença Mundial",
-        "description": "Permita turnês internacionais e colaborações"
+        "title": "Trabalho Internacional Mais F?cil",
+        "description": "Op??es claras de pagamento facilitam para organizadores e apoiadores em diferentes pa?ses enviarem dinheiro na moeda que funciona melhor."
       }
     },
     "seo": {
-      "title": "Apoie Zen Eyer | Informações de Pagamento",
-      "description": "Apoie o Zen Eyer através de doações ou contratação para eventos. Múltiplos métodos de pagamento disponíveis mundialmente, incluindo Inter Global, Wise e PayPal.",
+      "title": "Apoie Zen Eyer | Informa??es de Pagamento",
+      "description": "Informa??es oficiais de pagamento para apoiar Zen Eyer ou pagar valores relacionados a booking em BRL, USD, EUR, GBP, Wise e PayPal.",
       "keywords": "apoiar artista, contratar dj, métodos de pagamento, pagamentos internacionais, brazilian zouk dj"
     },
     "header": {
-      "title": "Apoie a <1>Música</1>",
-      "description": "Seu apoio ajuda a criar novas músicas, conteúdo educacional e a fortalecer a comunidade de Brazilian Zouk em todo o mundo. Seja contratando para um evento ou fazendo uma doação, cada contribuição faz a diferença."
+      "title": "Apoie a <1>M?sica</1>",
+      "description": "Se a m?sica do Zen Eyer j? te deu uma boa dan?a, uma faixa ?til ou um momento que foi com voc? para casa, seu apoio ajuda a manter novos sets, remixes e trabalhos de comunidade acontecendo. Esta p?gina tamb?m re?ne os meios oficiais de pagamento para organizadores."
     },
     "payment": {
       "title": "Métodos de Pagamento",
@@ -946,11 +994,11 @@
     "phone": "Telefone / Chave",
     "sendPayment": "Enviar Pagamento via",
     "business": {
-      "title": "Reservas de Eventos & Consultas de Negócios",
-      "description": "Para reservas de eventos, solicitações de workshops ou colaborações comerciais, envie os detalhes para o e-mail abaixo. Inclua detalhes do evento, local e data para um processamento mais rápido.",
-      "contact": "Contato para Contratações"
+      "title": "Para Organizadores",
+      "description": "Se voc? est? pagando cach?, sinal, divis?o de viagem ou algum custo relacionado a festival, use os dados oficiais desta p?gina e inclua nome do evento, cidade e data na mensagem.",
+      "contact": "Enviar Dados do Booking"
     },
-    "thankYou": "✨ Seu apoio mantém a música viva. Obrigado! ✨"
+    "thankYou": "Seu apoio faz diferen?a de verdade. Obrigado."
   },
   "events_no_results_filter": "Puxa, não encontrei nenhum evento nesse estado. Que tal olhar a agenda completa?",
   "quiz": {
@@ -1052,8 +1100,8 @@
   "events_title": "events_title",
   "events_view_details": "events_view_details",
   "loc_to_be_defined": "loc_to_be_defined",
-  "news_page_meta_desc": "Lançamentos musicais, anúncios de eventos e atualizações selecionadas de Zen Eyer.",
-  "news_page_title": "Lançamentos | Zen Eyer",
+  "news_page_meta_desc": "Lan?amentos musicais, notas curtas de eventos, reviews de festivais e atualiza??es selecionadas de Zen Eyer.",
+  "news_page_title": "Lan?amentos & Notas | Zen Eyer",
   "press_kit": "press_kit",
   "price_free": "Grátis",
   "error_boundary": {

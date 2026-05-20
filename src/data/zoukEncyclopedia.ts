@@ -40,6 +40,36 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     ],
   },
   {
+    key: 'caribbeanVsBrazilianZouk',
+    category: 'fundamentals',
+    relatedTerms: ['zoukMusic', 'brazilianZouk', 'lambada'],
+  },
+  {
+    key: 'cabecada',
+    category: 'fundamentals',
+    relatedTerms: ['bodyWave', 'connection', 'leading', 'following'],
+  },
+  {
+    key: 'bodyWave',
+    category: 'fundamentals',
+    relatedTerms: ['cabecada', 'flow', 'elasticity'],
+  },
+  {
+    key: 'connection',
+    category: 'fundamentals',
+    relatedTerms: ['leading', 'following', 'elasticity'],
+  },
+  {
+    key: 'leading',
+    category: 'fundamentals',
+    relatedTerms: ['following', 'connection', 'socialDanceEtiquette'],
+  },
+  {
+    key: 'following',
+    category: 'fundamentals',
+    relatedTerms: ['leading', 'connection', 'socialDanceEtiquette'],
+  },
+  {
     key: 'zoukMusic',
     category: 'music',
     relatedTerms: ['brazilianZouk', 'zoukRemix', 'cremosidade', 'brazilianZoukDj'],
@@ -74,14 +104,34 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     ],
   },
   {
+    key: 'elasticity',
+    category: 'culture',
+    relatedTerms: ['connection', 'bodyWave', 'flow'],
+  },
+  {
+    key: 'flow',
+    category: 'culture',
+    relatedTerms: ['cremosidade', 'musicality', 'elasticity'],
+  },
+  {
     key: 'cremosidade',
     category: 'culture',
-    relatedTerms: ['musicality', 'zoukMusic', 'zoukRemix'],
+    relatedTerms: ['musicality', 'zoukMusic', 'zoukRemix', 'flow'],
+  },
+  {
+    key: 'socialDanceEtiquette',
+    category: 'culture',
+    relatedTerms: ['socialDance', 'connection', 'leading', 'following'],
   },
   {
     key: 'zoukCongress',
     category: 'eventFormats',
     relatedTerms: ['zoukFestival', 'zoukMarathon', 'workshop'],
+  },
+  {
+    key: 'brazilianZoukCongress',
+    category: 'eventFormats',
+    relatedTerms: ['zoukCongress', 'zoukFestival', 'workshop'],
   },
   {
     key: 'zoukFestival',
@@ -107,6 +157,11 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     key: 'socialDance',
     category: 'eventFormats',
     relatedTerms: ['zoukMusic', 'musicality', 'zoukFestival', 'zoukDjSet'],
+  },
+  {
+    key: 'jackAndJill',
+    category: 'eventFormats',
+    relatedTerms: ['zoukCongress', 'socialDance', 'musicality'],
   },
   {
     key: 'zoukSocialDance',

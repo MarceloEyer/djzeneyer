@@ -330,6 +330,33 @@ const ZenTribePage: React.FC = () => {
           </div>
         </div>
 
+        {/* Movement Philosophy */}
+        <section className="py-14 bg-background">
+          <div className="container mx-auto px-4">
+            <motion.div
+              className="mx-auto max-w-4xl rounded-3xl border border-primary/20 bg-surface/40 p-6 sm:p-10 shadow-2xl shadow-primary/5"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="mb-6 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
+                {t('zenTribe.philosophy.badge')}
+              </div>
+              <h2 className="mb-6 text-2xl sm:text-4xl font-black font-display text-white">
+                {t('zenTribe.philosophy.title')}
+              </h2>
+              <div className="space-y-5 text-base sm:text-lg leading-relaxed text-white/70">
+                <p>{t('zenTribe.philosophy.p1')}</p>
+                <p>{t('zenTribe.philosophy.p2')}</p>
+                <p className="border-l-4 border-primary pl-5 text-white/85 italic">
+                  {t('zenTribe.philosophy.quote')}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* Tribe Benefits */}
         <section className="py-16 bg-background" id="tribe-benefits">
           <div className="container mx-auto px-4">

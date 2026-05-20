@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, Mail,
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
-  Sparkles, Trophy, ArrowUpRight, MessageCircle, Wand2
+  Sparkles, Trophy, ArrowUpRight, MessageCircle, Wand2, Music2
 } from 'lucide-react';
 import { YouTubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
@@ -52,7 +52,7 @@ const itemVariants = {
 
 
 // --- Smart Music Card Component ---
-const SmartMusicCard = ({ platforms }: { platforms: { id: string; name: string; url: string; icon: string }[] }) => {
+const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string; icon: React.ReactNode; color: string }[] }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -124,6 +124,7 @@ const ZenLinkPageComponent = () => {
   const quizUrl = `${artist.site.baseUrl}${i18n.language === 'pt' ? '/pt' : ''}/${quizSlug}`;
 
   const MUSIC_PLATFORMS = [
+    { name: 'SoundCloud', icon: <Music2 className="w-5 h-5" />, rawUrl: artist.social.soundcloud?.url, color: '#ff5500' },
     { name: 'Spotify', icon: <SpotifyIcon />, rawUrl: artist.social.spotify?.url, color: '#1DB954' },
     { name: 'Apple Music', icon: <AppleMusicIcon />, rawUrl: artist.social.appleMusic?.url, color: '#FA243C' },
     { name: t('social.youtube_music'), icon: <YouTubeMusicIcon />, rawUrl: artist.social.YouTubeMusic?.url, color: '#FF0000' },

@@ -23,12 +23,28 @@ const MediaPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   const clippingData = ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY;
-  const independentCoverage = clippingData.filter((item) =>
-    ['Media', 'Official', 'Profile', 'Analytics', 'Event'].includes(item.type)
-  );
-  const distributionCoverage = clippingData.filter((item) =>
-    ['Press Release', 'Report', 'Wiki'].includes(item.type)
-  );
+  const mediaGroups = [
+    {
+      title: t('media_page.independent_sources'),
+      items: clippingData.filter((item) => ['Media', 'Report'].includes(item.type)),
+    },
+    {
+      title: t('media_page.festival_lineups'),
+      items: clippingData.filter((item) => ['Official', 'Event'].includes(item.type)),
+    },
+    {
+      title: t('media_page.music_databases'),
+      items: clippingData.filter((item) => ['Analytics'].includes(item.type) || ['All About Jazz'].includes(item.source)),
+    },
+    {
+      title: t('media_page.artist_directories'),
+      items: clippingData.filter((item) => ['Profile', 'Wiki'].includes(item.type) && item.source !== 'All About Jazz'),
+    },
+    {
+      title: t('media_page.distribution_sources'),
+      items: clippingData.filter((item) => ['Press Release'].includes(item.type)),
+    },
+  ].filter((group) => group.items.length > 0);
 
   const mediaAssets = [
     {
@@ -77,7 +93,7 @@ const MediaPage: React.FC = () => {
               <Newspaper size={16} /> {t('media_page.verified_profiles')}
             </div>
             <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-white tracking-tighter uppercase leading-[0.9]">
-              Press & Media
+              {t('media_page.h1')}
             </h1>
             <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
               {t('media_page.intro')}
@@ -103,52 +119,13 @@ const MediaPage: React.FC = () => {
                 </p>
               </div>
 
-              <h3 className="mb-5 text-xl font-black text-white">{t('media_page.independent_sources')}</h3>
-              <div className="grid gap-6">
-                {independentCoverage.map((item, index: number) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <a 
-                      href={safeUrl(item.url, '/')}
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="group block card p-6 bg-surface/30 backdrop-blur-md border hover:border-primary/50 transition-all"
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <span className="px-3 py-1 rounded-full bg-white/5 text-primary text-xs font-bold uppercase tracking-widest border border-white/5 group-hover:bg-primary/20 transition-colors">
-                          {item.type}
-                        </span>
-                        <span className="text-white/55 text-xs font-mono">{item.date}</span>
-                      </div>
-                      <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-primary transition-colors tracking-tight">
-                        {item.title}
-                      </h3>
-                      <p className="text-white/70 text-sm mb-4 line-clamp-2 leading-relaxed">
-                        {item.description}
-                      </p>
-                      <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-primary/70">
-                        <span>{item.source}</span>
-                        <span className="flex items-center gap-1 group-hover:gap-2 transition-all">
-                          {t('media_page.read_more')} <ExternalLink size={14} />
-                        </span>
-                      </div>
-                    </a>
-                  </motion.div>
-                ))}
-              </div>
-
-              {distributionCoverage.length > 0 && (
-                <>
-                  <h3 className="mb-5 mt-12 text-xl font-black text-white">{t('media_page.distribution_sources')}</h3>
+              {mediaGroups.map((group) => (
+                <section key={group.title}>
+                  <h3 className="mb-5 mt-12 text-xl font-black text-white first:mt-0">{group.title}</h3>
                   <div className="grid gap-6">
-                    {distributionCoverage.map((item, index: number) => (
+                    {group.items.map((item, index: number) => (
                       <motion.div
-                        key={index}
+                        key={`${group.title}-${item.url}`}
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
@@ -182,8 +159,8 @@ const MediaPage: React.FC = () => {
                       </motion.div>
                     ))}
                   </div>
-                </>
-              )}
+                </section>
+              ))}
             </div>
 
             {/* Sidebar: Assets & Quick Facts */}

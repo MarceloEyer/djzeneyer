@@ -177,7 +177,8 @@
         {
             "key": "conduct",
             "en": "conduct",
-            "pt": "regras-de-conduta"
+            "pt": "regras-de-conduta",
+            "excludeFromSitemap": true
         },
         {
             "key": "quiz",
@@ -201,6 +202,11 @@
                 "en": ["zouk-terms", "zouk-wiki"],
                 "pt": ["termos-zouk", "wiki-zouk"]
             }
+        },
+        {
+            "key": "verified-facts",
+            "en": "verified-facts",
+            "pt": "fatos-verificados"
         }
     ]
 }
