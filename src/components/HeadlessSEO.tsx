@@ -460,9 +460,9 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         '@id': `${finalUrl}#video`,
         name: video.name,
         description: video.description,
-        thumbnailUrl: video.thumbnailUrl,
+        thumbnailUrl: safeUrl(video.thumbnailUrl, '/fallback.svg'),
         uploadDate: video.uploadDate,
-        embedUrl: video.embedUrl,
+        ...(video.embedUrl ? { embedUrl: safeUrl(video.embedUrl, '/') } : {}),
       });
     }
 

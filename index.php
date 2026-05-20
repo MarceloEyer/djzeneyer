@@ -84,10 +84,14 @@ if ($serve_file) {
     // Caso especial: HTML (SPA Shell ou Prerenderizado)
     if ($extension === 'html') {
         $html_content = file_get_contents($serve_file);
+        if ($html_content === false) {
+            http_response_code(500);
+            exit('Failed to read SPA shell file.');
+        }
 
         ob_start();
         wp_head();
-        $wp_head_content = ob_get_clean();
+        $wp_head_content = (string)ob_get_clean();
 
         // SEO/Knowledge Panel Crucial Links (previously only in header.php)
         $me_links = '
@@ -101,7 +105,7 @@ if ($serve_file) {
 
         ob_start();
         wp_footer();
-        $wp_footer_content = ob_get_clean();
+        $wp_footer_content = (string)ob_get_clean();
 
         // Inject wp_head just before </head>
         $html_content = str_replace('</head>', $wp_head_content . "\n</head>", $html_content);
