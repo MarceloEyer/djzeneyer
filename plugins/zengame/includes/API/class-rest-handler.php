@@ -466,80 +466,144 @@ final class REST_Handler
         $ach_types = \gamipress_get_achievement_types();
         $all = [];
 
-        foreach ($ach_types as $type_key => $type) {
-            // gamipress_get_achievement_types() retorna array associativo chave=slug,
-            // igual ao get_rank_types(). O sub-campo 'slug' pode não existir — usar a chave.
-            $type_slug = (string) ($type['slug'] ?? $type_key);
-            if ($type_slug === '') {
-                continue;
-            }
+        if ($status === 'earned') {
+            foreach ($ach_types as $type_key => $type) {
+                // gamipress_get_achievement_types() retorna array associativo chave=slug,
+                // igual ao get_rank_types(). O sub-campo 'slug' pode não existir — usar a chave.
+                $type_slug = (string) ($type['slug'] ?? $type_key);
+                if ($type_slug === '') {
+                    continue;
+                }
 
-            if ($status === 'earned' && \function_exists('gamipress_get_user_achievements')) {
-                $items = \gamipress_get_user_achievements([
-                    'user_id' => $user_id,
-                    'achievement_type' => $type_slug,
-                ]);
-            } else {
-                // Collect earned IDs to exclude, then fetch locked in a single query
-                $earned_ids = [];
                 if (\function_exists('gamipress_get_user_achievements')) {
-                    $earned_objects = \gamipress_get_user_achievements([
+                    $items = \gamipress_get_user_achievements([
                         'user_id' => $user_id,
                         'achievement_type' => $type_slug,
                     ]);
-                    foreach ($earned_objects as $earned) {
-                        if (isset($earned->ID)) $earned_ids[] = (int) $earned->ID;
+
+                    if (!\is_array($items) && !($items instanceof \Traversable)) {
+                        continue;
+                    }
+
+                    // Fase 1: normaliza todos os posts do tipo para extrair IDs
+                    $batch = [];
+                    foreach ($items as $item) {
+                        $date_earned = (\is_object($item) && isset($item->date_earned))
+                            ? (string) $item->date_earned
+                            : '';
+                        $post = self::normalize_post_object($item);
+                        if ($post) {
+                            $batch[] = ['post' => $post, 'date_earned' => $date_earned];
+                        }
+                    }
+
+                    // Fase 2: prime caches em lote para evitar N+1 em thumbnail e meta
+                    if (!empty($batch)) {
+                        $batch_ids = \array_values(\array_unique(\array_map(static fn($e) => $e['post']->ID, $batch)));
+                        \_prime_post_caches($batch_ids, false, true);
+                        \update_meta_cache('post', $batch_ids);
+                    }
+
+                    // Fase 3: monta resultado com cache quente
+                    foreach ($batch as $entry) {
+                        $post = $entry['post'];
+                        $all[] = [
+                            'id' => (int) $post->ID,
+                            'title' => (string) $post->post_title,
+                            'description' => (string) ($post->post_excerpt ?: $post->post_content ?: ''),
+                            'image' => \get_the_post_thumbnail_url($post->ID, 'thumbnail') ?: '',
+                            'earned' => true,
+                            'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
+                            'date_earned' => $entry['date_earned'],
+                        ];
                     }
                 }
+            }
+        } else {
+            // Bolt Performance Optimization:
+            // Instead of running get_posts for each achievement type inside the loop,
+            // we gather all slugs and earned IDs, and make a single get_posts query.
+            // This reduces the number of database queries from N (types) to 1.
+            $all_type_slugs = [];
+            $all_earned_ids = [];
 
+            foreach ($ach_types as $type_key => $type) {
+                $type_slug = (string) ($type['slug'] ?? $type_key);
+                if ($type_slug !== '') {
+                    $all_type_slugs[] = $type_slug;
+
+                    if (\function_exists('gamipress_get_user_achievements')) {
+                        $earned_objects = \gamipress_get_user_achievements([
+                            'user_id' => $user_id,
+                            'achievement_type' => $type_slug,
+                        ]);
+                        foreach ($earned_objects as $earned) {
+                            if (isset($earned->ID)) {
+                                $all_earned_ids[] = (int) $earned->ID;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!empty($all_type_slugs)) {
                 $query_args = [
-                    'post_type' => $type_slug,
+                    'post_type' => $all_type_slugs,
                     'post_status' => 'publish',
                     'posts_per_page' => -1,
                     'orderby' => 'menu_order',
                     'order' => 'ASC',
                 ];
-                if (!empty($earned_ids)) {
-                    $query_args['post__not_in'] = $earned_ids;
+                if (!empty($all_earned_ids)) {
+                    $query_args['post__not_in'] = $all_earned_ids;
                 }
+
                 $items = \get_posts($query_args);
-            }
 
-            if (!\is_array($items) && !($items instanceof \Traversable)) {
-                continue;
-            }
+                if (\is_array($items) || $items instanceof \Traversable) {
+                    $batch = [];
+                    foreach ($items as $item) {
+                        $post = self::normalize_post_object($item);
+                        if ($post) {
+                            $batch[] = ['post' => $post, 'date_earned' => ''];
+                        }
+                    }
 
-            // Fase 1: normaliza todos os posts do tipo para extrair IDs
-            $batch = [];
-            foreach ($items as $item) {
-                $date_earned = ($status === 'earned' && \is_object($item) && isset($item->date_earned))
-                    ? (string) $item->date_earned
-                    : '';
-                $post = self::normalize_post_object($item);
-                if ($post) {
-                    $batch[] = ['post' => $post, 'date_earned' => $date_earned];
+                    if (!empty($batch)) {
+                        $batch_ids = \array_values(\array_unique(\array_map(static fn($e) => $e['post']->ID, $batch)));
+                        \_prime_post_caches($batch_ids, false, true);
+                        \update_meta_cache('post', $batch_ids);
+                    }
+
+                    // To preserve the original sorting (grouped by achievement type),
+                    // we separate the results by post_type and then append them to $all.
+                    $grouped_by_type = [];
+                    foreach ($batch as $entry) {
+                        $post = $entry['post'];
+                        $type = $post->post_type;
+                        if (!isset($grouped_by_type[$type])) {
+                            $grouped_by_type[$type] = [];
+                        }
+                        $grouped_by_type[$type][] = [
+                            'id' => (int) $post->ID,
+                            'title' => (string) $post->post_title,
+                            'description' => (string) ($post->post_excerpt ?: $post->post_content ?: ''),
+                            'image' => \get_the_post_thumbnail_url($post->ID, 'thumbnail') ?: '',
+                            'earned' => false,
+                            'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
+                            'date_earned' => '',
+                        ];
+                    }
+
+                    // Append in the original order of $all_type_slugs to match the foreach loop order
+                    foreach ($all_type_slugs as $slug) {
+                        if (isset($grouped_by_type[$slug])) {
+                            foreach ($grouped_by_type[$slug] as $item_data) {
+                                $all[] = $item_data;
+                            }
+                        }
+                    }
                 }
-            }
-
-            // Fase 2: prime caches em lote para evitar N+1 em thumbnail e meta
-            if (!empty($batch)) {
-                $batch_ids = \array_values(\array_unique(\array_map(static fn($e) => $e['post']->ID, $batch)));
-                \_prime_post_caches($batch_ids, false, true);
-                \update_meta_cache('post', $batch_ids);
-            }
-
-            // Fase 3: monta resultado com cache quente
-            foreach ($batch as $entry) {
-                $post = $entry['post'];
-                $all[] = [
-                    'id' => (int) $post->ID,
-                    'title' => (string) $post->post_title,
-                    'description' => (string) ($post->post_excerpt ?: $post->post_content ?: ''),
-                    'image' => \get_the_post_thumbnail_url($post->ID, 'thumbnail') ?: '',
-                    'earned' => $status === 'earned',
-                    'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
-                    'date_earned' => $entry['date_earned'],
-                ];
             }
         }
 
