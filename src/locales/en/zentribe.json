@@ -1,37 +1,44 @@
 {
   "zenTribe": {
-    "pageTitle": "Zen Tribe - Exclusive Community",
-    "pageDesc": "Join the Zen Tribe and get access to exclusive content, VIP events, and much more!",
-    "badge": "Exclusive Community",
+    "pageTitle": "Zen Tribe - Brazilian Zouk Movement",
+    "pageDesc": "Zen Tribe is a Brazilian Zouk movement for dancers who choose presence over performance, connection over applause, and feeling over content.",
+    "badge": "Brazilian Zouk Movement",
     "welcome": "Welcome to",
     "tribe": "Zen Tribe",
-    "subtitle": "An exclusive community for true music lovers. Earn points, unlock achievements, and enjoy amazing benefits.",
+    "subtitle": "A movement for dancers who choose presence over performance, connection over applause, and feeling over content.",
     "schema": {
-      "organization_name": "Zen Tribe - Global Brazilian Zouk Community",
-      "organization_desc": "Exclusive community for Brazilian Zouk lovers, offering early access to music, VIP events and gamified reward system.",
-      "organization_slogan": "Connecting souls through Brazilian Zouk"
+      "organization_name": "Zen Tribe - Brazilian Zouk Movement",
+      "organization_desc": "Zen Tribe is a Brazilian Zouk movement and community founded by Zen Eyer for dancers who value presence, connection, slow dancing, and music as a shared emotional experience.",
+      "organization_slogan": "Presence over performance"
     },
-    "joinNow": "Join Now",
-    "learnMore": "Learn More",
+    "joinNow": "Join the Movement",
+    "learnMore": "Read the Philosophy",
     "unlockAtLevel": "Unlock at level {{level}}",
-    "mostPopular": "Most Popular",
-    "upgradeNow": "Upgrade Now",
+    "mostPopular": "Symbolic Support",
+    "upgradeNow": "Support the Tribe",
     "unlocked": "Unlocked",
-    "viewMemberships": "View Memberships",
-    "whyJoin": "Why Join the Zen Tribe?",
-    "chooseMembership": "Choose Your Tribe Membership",
-    "selectTier": "Select the membership tier that fits your journey with DJ Zen Eyer's music",
-    "levelUpTitle": "Level Up Your Music Journey",
-    "levelUpDesc": "The Zen Tribe features a comprehensive achievement system that rewards you for engaging with music, attending events, and being an active community member.",
-    "xpTitle": "Experience Points (XP)",
-    "xpDesc": "Earn XP for every action you take, from listening to tracks to attending events.",
-    "badgesTitle": "Digital Badges",
-    "badgesDesc": "Unlock collectible badges for special achievements and milestones in your journey.",
-    "rewardsTitle": "Rewards & Perks",
-    "rewardsDesc": "Earn real benefits like merchandise discounts, exclusive content, and VIP upgrades.",
-    "streaksTitle": "Daily Streaks",
-    "streaksDesc": "Maintain your engagement streak for bonus XP and special streak-only rewards.",
-    "achievementShowcase": "Achievement Showcase",
+    "viewMemberships": "Explore the Tribe",
+    "whyJoin": "What the Zen Tribe Defends",
+    "philosophy": {
+      "badge": "The Philosophy",
+      "title": "Some of the most important dances leave almost no evidence.",
+      "p1": "No perfect video, no dramatic ending, no applause. Sometimes there is only a change in the breath, a memory in the skin, a warmth that follows someone home and becomes hard to explain.",
+      "p2": "Zen Tribe exists for dancers who are tired of treating the body as content, proof, product, or performance. In a culture that keeps asking us to accelerate, the slow body becomes a small act of resistance: it chooses sensation over display, attention over metrics, and presence over the pressure to be watched.",
+      "quote": "The dance does not always need to become content. Sometimes the most radical thing a body can do is slow down with another body and pay attention."
+    },
+    "chooseMembership": "Choose How You Belong",
+    "selectTier": "Start free, stay close to the music, and support the movement only if it feels right.",
+    "levelUpTitle": "A Slower Way to Belong",
+    "levelUpDesc": "Zen Tribe uses badges and achievements as small rituals of participation, not as pressure to perform. The point is to notice, share, dance, and help the community stay alive without turning every moment into content.",
+    "xpTitle": "Presence Points",
+    "xpDesc": "Earn points for meaningful participation: listening, sharing, showing up, supporting releases, and helping other dancers feel welcome.",
+    "badgesTitle": "Tribe Badges",
+    "badgesDesc": "Collect badges that mark real moments in the community: first track, first event, first shared memory.",
+    "rewardsTitle": "Fair Perks",
+    "rewardsDesc": "Get small benefits like early music access, discounts, private notes, and symbolic recognition inside the Tribe.",
+    "streaksTitle": "Gentle Rhythm",
+    "streaksDesc": "Participation should feel like a rhythm, not an obligation. The Tribe rewards consistency without turning connection into a job.",
+    "achievementShowcase": "Tribe Rituals",
     "currentLevel": "Current Level",
     "zenApprentice": "Zen Apprentice",
     "progressToLevel": "Progress to Level 4",
@@ -39,116 +46,116 @@
       "members": "Members",
       "tracks": "Tracks",
       "events": "Events",
-      "achievements": "Achievements"
+      "achievements": "Badges"
     },
     "tabs": {
       "benefits": "Benefits",
-      "achievements": "Achievements",
-      "challenges": "Challenges"
+      "achievements": "Badges",
+      "challenges": "Rituals"
     },
     "benefits": {
       "exclusiveMusic": {
-        "title": "Exclusive Music",
-        "desc": "Early access to releases and exclusive remixes before anyone else."
+        "title": "Music Before the Noise",
+        "desc": "Early access to edits, remixes, and sets made for dancers who want to feel before they perform."
       },
       "earlyAccess": {
-        "title": "Early Access",
-        "desc": "Buy event tickets before general sale."
+        "title": "A Calmer Signal",
+        "desc": "Updates about selected events, releases, and dance-floor moments without social media urgency."
       },
       "merchandise": {
-        "title": "Exclusive Merchandise",
-        "desc": "Discounts on official products and limited editions."
+        "title": "Tribe Symbols",
+        "desc": "Access to small objects, merch, and signs of belonging connected to the Zen Tribe philosophy."
       },
       "community": {
-        "title": "Private Community",
-        "desc": "Access to exclusive Tribe members group."
+        "title": "A Place to Slow Down",
+        "desc": "A community for dancers who resist the pressure to turn every dance into a clip, metric, or performance."
       },
       "vipStatus": {
-        "title": "VIP Status",
-        "desc": "Special privileges at live events."
+        "title": "Symbolic Support",
+        "desc": "A low-cost way to support the music and help the movement keep breathing."
       },
       "behindScenes": {
-        "title": "Behind the Scenes",
-        "desc": "Exclusive behind-the-scenes content and creative process."
+        "title": "Behind the Sound",
+        "desc": "Notes from sets, releases, festivals, and the creative process behind the cremosidade."
       }
     },
     "achievements": {
       "firstTrack": {
         "title": "First Track",
-        "desc": "Downloaded your first song"
+        "desc": "Listened to your first Zen Tribe track"
       },
       "firstEvent": {
         "title": "First Event",
-        "desc": "Attended your first event"
+        "desc": "Shared the floor with the Tribe"
       },
       "collector": {
-        "title": "Collector",
-        "desc": "Downloaded 10 tracks"
+        "title": "Keeper",
+        "desc": "Saved 10 tracks or memories"
       },
       "legend": {
-        "title": "Legend",
-        "desc": "Reached maximum level"
+        "title": "Tribe Elder",
+        "desc": "Reached the deepest level of participation"
       },
       "streak": {
-        "title": "Fire Streak",
-        "desc": "7 consecutive active days"
+        "title": "Slow Flame",
+        "desc": "Stayed present across 7 moments"
       },
       "marketer": {
-        "title": "Ambassador",
-        "desc": "Shared 5 times"
+        "title": "Signal Keeper",
+        "desc": "Shared the movement with care"
       }
     },
     "challenges": {
       "downloadTracks": {
-        "title": "Download 5 Tracks",
-        "desc": "Download 5 different songs"
+        "title": "Save 5 Tracks",
+        "desc": "Build a small library for slow floors"
       },
       "attendEvents": {
         "title": "Attend 3 Events",
-        "desc": "Attend 3 DJ Zen Eyer events"
+        "desc": "Bring the philosophy to real dance floors"
       },
       "shareContent": {
-        "title": "Share 10 Times",
-        "desc": "Share content 10 times on social media"
+        "title": "Share With Care",
+        "desc": "Share the movement without turning it into noise"
       }
     },
     "cta": {
-      "title": "Ready to Elevate Your Experience?",
-      "subtitle": "Join thousands of Zen Tribe members and unlock all exclusive benefits!",
-      "button": "Join the Tribe Now"
+      "title": "Choose Presence",
+      "subtitle": "Join the Zen Tribe if you believe dance can be more than a performance for the camera.",
+      "button": "Join the Movement"
     },
     "tiers": {
       "novice": {
-        "name": "Zen Novice",
+        "name": "Tribe Guest",
         "price": "Free",
-        "feature1": "Access to public music releases",
-        "feature2": "Create and share playlists",
-        "feature3": "Join community discussions",
-        "feature4": "Basic profile and badges"
+        "feature1": "Access public releases and selected notes",
+        "feature2": "Join the movement without pressure",
+        "feature3": "Follow community updates",
+        "feature4": "Start collecting basic badges"
       },
       "voyager": {
-        "name": "Zen Voyager",
-        "price": "$9.99/month",
-        "feature1": "All Zen Novice features",
-        "feature2": "Exclusive weekly music drops",
-        "feature3": "Early access to event tickets",
-        "feature4": "Advanced achievement system",
-        "feature5": "Discounts on merchandise"
+        "name": "Tribe Supporter",
+        "price": "Symbolic",
+        "feature1": "All free features",
+        "feature2": "Early access to selected music drops",
+        "feature3": "Private notes from sets and festivals",
+        "feature4": "Advanced badge system",
+        "feature5": "Small discounts on official items"
       },
       "master": {
-        "name": "Zen Master",
-        "price": "$19.99/month",
-        "feature1": "All Zen Voyager features",
-        "feature2": "VIP access to all live events",
-        "feature3": "Monthly exclusive live streams",
-        "feature4": "Personalized playlists from DJ Zen Eyer",
-        "feature5": "Zen Master digital badge collection",
-        "feature6": "Meet & greet opportunities"
+        "name": "Tribe Keeper",
+        "price": "Deeper support",
+        "feature1": "All supporter features",
+        "feature2": "Priority access when limited spots exist",
+        "feature3": "Occasional private listening sessions",
+        "feature4": "Curated playlists from Zen Eyer",
+        "feature5": "Tribe Keeper digital badge collection",
+        "feature6": "Closer participation in community experiments"
       }
     },
     "aria": {
-      "learnMore": "Learn More",
-      "viewMemberships": "View Memberships"
+      "learnMore": "Read the Zen Tribe philosophy",
+      "viewMemberships": "Explore membership options"
     }
   }
 }

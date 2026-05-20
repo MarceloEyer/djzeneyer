@@ -120,7 +120,7 @@ const AboutPage: React.FC = () => {
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: t('home'), item: `${artist.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
+            { '@type': 'ListItem', position: 1, name: 'Home', item: `${artist.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
             { '@type': 'ListItem', position: 2, name: t('about.seo.name'), item: currentUrl },
           ],
         },

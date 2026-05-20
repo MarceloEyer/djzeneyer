@@ -1,37 +1,44 @@
 {
   "zenTribe": {
-    "pageTitle": "Zen Tribe - Comunidade Exclusiva",
-    "pageDesc": "Junte-se à Zen Tribe e tenha acesso a conteúdo exclusivo, eventos VIP e muito mais!",
-    "badge": "Comunidade Exclusiva",
+    "pageTitle": "Zen Tribe - Movimento de Zouk Brasileiro",
+    "pageDesc": "Zen Tribe é um movimento de Zouk Brasileiro para quem escolhe presença em vez de performance, conexão em vez de aplauso, e sensação em vez de conteúdo.",
+    "badge": "Movimento de Zouk Brasileiro",
     "welcome": "Bem-vindo à",
     "tribe": "Zen Tribe",
-    "subtitle": "Uma comunidade exclusiva para verdadeiros amantes de música. Ganhe pontos, desbloqueie conquistas e aproveite benefícios incríveis.",
+    "subtitle": "Um movimento para quem escolhe presença em vez de performance, conexão em vez de aplauso, e sensação em vez de conteúdo.",
     "schema": {
-      "organization_name": "Zen Tribe - Comunidade Global de Zouk Brasileiro",
-      "organization_desc": "Comunidade exclusiva para amantes do Zouk Brasileiro, oferecendo acesso antecipado a músicas, eventos VIP e sistema de recompensas gamificado.",
-      "organization_slogan": "Conectando almas através do Zouk Brasileiro"
+      "organization_name": "Zen Tribe - Movimento de Zouk Brasileiro",
+      "organization_desc": "Zen Tribe é um movimento e comunidade de Zouk Brasileiro criado por Zen Eyer para dançarinos que valorizam presença, conexão, dança lenta e música como experiência emocional compartilhada.",
+      "organization_slogan": "Presença em vez de performance"
     },
-    "joinNow": "Entrar Agora",
-    "learnMore": "Saiba Mais",
+    "joinNow": "Entrar no Movimento",
+    "learnMore": "Ler a Filosofia",
     "unlockAtLevel": "Desbloquear no nível {{level}}",
-    "mostPopular": "Mais Popular",
-    "upgradeNow": "Fazer Upgrade Agora",
+    "mostPopular": "Apoio Simbólico",
+    "upgradeNow": "Apoiar a Tribe",
     "unlocked": "Desbloqueado",
-    "viewMemberships": "Ver Planos",
-    "whyJoin": "Por Que Entrar na Zen Tribe?",
-    "chooseMembership": "Escolha Seu Plano Zen Tribe",
-    "selectTier": "Selecione o plano que se encaixa na sua jornada com a música do Zen Eyer",
-    "levelUpTitle": "Evolua Sua Jornada Musical",
-    "levelUpDesc": "A Zen Tribe possui um sistema completo de conquistas que recompensa você por interagir com a música, participar de eventos e ser um membro ativo da comunidade.",
-    "xpTitle": "Pontos de Experiência (XP)",
-    "xpDesc": "Ganhe XP por cada ação que você toma, desde ouvir tracks até participar de eventos.",
-    "badgesTitle": "Badges Digitais",
-    "badgesDesc": "Desbloqueie badges colecionáveis por conquistas especiais e marcos na sua jornada.",
-    "rewardsTitle": "Recompensas & Benefícios",
-    "rewardsDesc": "Ganhe benefícios reais como descontos em merchandise, conteúdo exclusivo e upgrades VIP.",
-    "streaksTitle": "Sequências Diárias",
-    "streaksDesc": "Mantenha sua sequência de engajamento para XP bônus e recompensas exclusivas de sequência.",
-    "achievementShowcase": "Vitrine de Conquistas",
+    "viewMemberships": "Explorar a Tribe",
+    "whyJoin": "O Que a Zen Tribe Defende",
+    "philosophy": {
+      "badge": "A Filosofia",
+      "title": "Algumas das danças mais importantes deixam quase nenhuma evidência.",
+      "p1": "Nenhum vídeo perfeito, nenhum final dramático, nenhum aplauso. Às vezes existe apenas uma mudança na respiração, uma memória na pele, um calor que acompanha a pessoa até em casa e se torna difícil de explicar.",
+      "p2": "A Zen Tribe existe para quem cansou de tratar o corpo como conteúdo, prova, produto ou performance. Em uma cultura que continua pedindo aceleração, o corpo lento vira um pequeno ato de resistência: ele escolhe sensação em vez de exibição, atenção em vez de métrica, e presença em vez da obrigação de ser visto.",
+      "quote": "A dança nem sempre precisa virar conteúdo. Às vezes, a coisa mais radical que um corpo pode fazer é desacelerar com outro corpo e prestar atenção."
+    },
+    "chooseMembership": "Escolha Como Pertencer",
+    "selectTier": "Comece grátis, fique perto da música e apoie o movimento só se fizer sentido para você.",
+    "levelUpTitle": "Um Jeito Mais Lento de Pertencer",
+    "levelUpDesc": "A Zen Tribe usa badges e conquistas como pequenos rituais de participação, não como pressão para performar. A ideia é perceber, compartilhar, dançar e ajudar a comunidade a continuar viva sem transformar cada momento em conteúdo.",
+    "xpTitle": "Pontos de Presença",
+    "xpDesc": "Ganhe pontos por participação significativa: ouvir, compartilhar, aparecer, apoiar lançamentos e ajudar outros dançarinos a se sentirem bem-vindos.",
+    "badgesTitle": "Badges da Tribe",
+    "badgesDesc": "Colecione badges que marcam momentos reais na comunidade: primeira música, primeiro evento, primeira memória compartilhada.",
+    "rewardsTitle": "Benefícios Justos",
+    "rewardsDesc": "Receba pequenos benefícios como acesso antecipado a músicas, descontos, notas privadas e reconhecimento simbólico dentro da Tribe.",
+    "streaksTitle": "Ritmo Gentil",
+    "streaksDesc": "Participar deve parecer um ritmo, não uma obrigação. A Tribe recompensa consistência sem transformar conexão em trabalho.",
+    "achievementShowcase": "Rituais da Tribe",
     "currentLevel": "Nível Atual",
     "zenApprentice": "Aprendiz Zen",
     "progressToLevel": "Progresso para Nível 4",
@@ -39,116 +46,116 @@
       "members": "Membros",
       "tracks": "Tracks",
       "events": "Eventos",
-      "achievements": "Conquistas"
+      "achievements": "Badges"
     },
     "tabs": {
       "benefits": "Benefícios",
-      "achievements": "Conquistas",
-      "challenges": "Desafios"
+      "achievements": "Badges",
+      "challenges": "Rituais"
     },
     "benefits": {
       "exclusiveMusic": {
-        "title": "Música Exclusiva",
-        "desc": "Acesso antecipado a lançamentos e remixes exclusivos antes de todos."
+        "title": "Música Antes do Ruído",
+        "desc": "Acesso antecipado a edits, remixes e sets feitos para quem quer sentir antes de performar."
       },
       "earlyAccess": {
-        "title": "Acesso Antecipado",
-        "desc": "Compre ingressos para eventos antes da venda geral."
+        "title": "Um Sinal Mais Calmo",
+        "desc": "Atualizações sobre eventos, lançamentos e momentos de pista sem a urgência das redes sociais."
       },
       "merchandise": {
-        "title": "Merchandise Exclusivo",
-        "desc": "Descontos em produtos oficiais e edições limitadas."
+        "title": "Símbolos da Tribe",
+        "desc": "Acesso a pequenos objetos, merch e sinais de pertencimento ligados à filosofia da Zen Tribe."
       },
       "community": {
-        "title": "Comunidade Privada",
-        "desc": "Acesso ao grupo exclusivo de membros da Tribe."
+        "title": "Um Lugar Para Desacelerar",
+        "desc": "Uma comunidade para quem resiste à pressão de transformar toda dança em vídeo, métrica ou performance."
       },
       "vipStatus": {
-        "title": "Status VIP",
-        "desc": "Privilégios especiais em eventos ao vivo."
+        "title": "Apoio Simbólico",
+        "desc": "Uma forma barata de apoiar a música e ajudar o movimento a continuar respirando."
       },
       "behindScenes": {
-        "title": "Bastidores",
-        "desc": "Conteúdo exclusivo dos bastidores e processo criativo."
+        "title": "Por Trás do Som",
+        "desc": "Notas de sets, lançamentos, festivais e do processo criativo por trás da cremosidade."
       }
     },
     "achievements": {
       "firstTrack": {
         "title": "Primeira Track",
-        "desc": "Baixou sua primeira música"
+        "desc": "Ouviu sua primeira track da Zen Tribe"
       },
       "firstEvent": {
         "title": "Primeiro Evento",
-        "desc": "Participou do seu primeiro evento"
+        "desc": "Dividiu a pista com a Tribe"
       },
       "collector": {
-        "title": "Colecionador",
-        "desc": "Baixou 10 tracks"
+        "title": "Guardião",
+        "desc": "Salvou 10 tracks ou memórias"
       },
       "legend": {
-        "title": "Lenda",
-        "desc": "Alcançou o nível máximo"
+        "title": "Ancião da Tribe",
+        "desc": "Chegou ao nível mais profundo de participação"
       },
       "streak": {
-        "title": "Sequência de Fogo",
-        "desc": "7 dias consecutivos ativos"
+        "title": "Chama Lenta",
+        "desc": "Permaneceu presente em 7 momentos"
       },
       "marketer": {
-        "title": "Embaixador",
-        "desc": "Compartilhou 5 vezes"
+        "title": "Guardião do Sinal",
+        "desc": "Compartilhou o movimento com cuidado"
       }
     },
     "challenges": {
       "downloadTracks": {
-        "title": "Baixe 5 Tracks",
-        "desc": "Baixe 5 músicas diferentes"
+        "title": "Salve 5 Tracks",
+        "desc": "Crie uma pequena biblioteca para pistas lentas"
       },
       "attendEvents": {
         "title": "Participe de 3 Eventos",
-        "desc": "Participe de 3 eventos do Zen Eyer"
+        "desc": "Leve a filosofia para pistas reais"
       },
       "shareContent": {
-        "title": "Compartilhe 10 Vezes",
-        "desc": "Compartilhe conteúdo 10 vezes nas redes sociais"
+        "title": "Compartilhe com Cuidado",
+        "desc": "Compartilhe o movimento sem transformá-lo em ruído"
       }
     },
     "cta": {
-      "title": "Pronto para Evoluir Sua Experiência?",
-      "subtitle": "Junte-se a milhares de membros da Zen Tribe e desbloqueie todos os benefícios exclusivos!",
-      "button": "Entrar na Tribe Agora"
+      "title": "Escolha Presença",
+      "subtitle": "Entre na Zen Tribe se você acredita que a dança pode ser mais do que uma performance para a câmera.",
+      "button": "Entrar no Movimento"
     },
     "tiers": {
       "novice": {
-        "name": "Novato Zen",
+        "name": "Convidado da Tribe",
         "price": "Grátis",
-        "feature1": "Acesso a lançamentos públicos de música",
-        "feature2": "Criar e compartilhar playlists",
-        "feature3": "Participar de discussões da comunidade",
-        "feature4": "Perfil básico e badges"
+        "feature1": "Acesso a lançamentos públicos e notas selecionadas",
+        "feature2": "Entrar no movimento sem pressão",
+        "feature3": "Acompanhar atualizações da comunidade",
+        "feature4": "Começar a colecionar badges básicos"
       },
       "voyager": {
-        "name": "Viajante Zen",
-        "price": "R$49,99/mês",
-        "feature1": "Todos os recursos de Novato Zen",
-        "feature2": "Lançamentos musicais semanais exclusivos",
-        "feature3": "Acesso antecipado a ingressos de eventos",
-        "feature4": "Sistema de conquistas avançado",
-        "feature5": "Descontos em merchandise"
+        "name": "Apoiador da Tribe",
+        "price": "Simbólico",
+        "feature1": "Todos os recursos gratuitos",
+        "feature2": "Acesso antecipado a lançamentos selecionados",
+        "feature3": "Notas privadas de sets e festivais",
+        "feature4": "Sistema avançado de badges",
+        "feature5": "Pequenos descontos em itens oficiais"
       },
       "master": {
-        "name": "Mestre Zen",
-        "price": "R$99,99/mês",
-        "feature1": "Todos os recursos de Viajante Zen",
-        "feature2": "Acesso VIP a todos os eventos ao vivo",
-        "feature3": "Lives mensais exclusivas",
-        "feature4": "Playlists personalizadas do Zen Eyer",
-        "feature5": "Coleção de badges digitais Mestre Zen",
-        "feature6": "Oportunidades de meet & greet"
+        "name": "Guardião da Tribe",
+        "price": "Apoio maior",
+        "feature1": "Todos os recursos de apoiador",
+        "feature2": "Prioridade quando houver vagas limitadas",
+        "feature3": "Sessões privadas ocasionais de escuta",
+        "feature4": "Playlists curadas por Zen Eyer",
+        "feature5": "Coleção de badges digitais Guardião da Tribe",
+        "feature6": "Participação mais próxima em experimentos da comunidade"
       }
     },
     "aria": {
-      "learnMore": "Saiba Mais",
-      "viewMemberships": "Ver Planos"
+      "learnMore": "Ler a filosofia da Zen Tribe",
+      "viewMemberships": "Explorar opções de participação"
     }
   }
 }

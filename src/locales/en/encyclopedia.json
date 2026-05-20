@@ -38,6 +38,36 @@
       "short": "Music for Brazilian Zouk is not limited to one genre; it is selected or edited for flow, phrasing, elasticity, and the way dancers can interpret it.",
       "body": "A Brazilian Zouk DJ may use Caribbean Zouk, Kizomba-influenced tracks, pop remixes, lyrical songs, R&B, electronic music, covers, and original productions. What matters is not only BPM, but whether the track gives dancers enough structure, emotional arc, and continuity for the dance."
     },
+    "caribbeanVsBrazilianZouk": {
+      "term": "Caribbean Zouk vs Brazilian Zouk",
+      "short": "Caribbean Zouk is a music genre from the French Caribbean; Brazilian Zouk is a partner dance developed in Brazil with Lambada-related roots.",
+      "body": "The names overlap, but the subjects are different. Brazilian Zouk dancers may dance to Caribbean Zouk music, but the dance also uses pop, R&B, electronic, Kizomba-influenced tracks, covers, and remixes adapted for the social dance floor."
+    },
+    "cabecada": {
+      "term": "Cabecada / Head Movement",
+      "short": "Cabecada is a family of Brazilian Zouk head movement techniques that must be led, followed, and trained with safety and control.",
+      "body": "Head movement is one of the most recognizable visual elements in Brazilian Zouk, but it depends on posture, preparation, axis, connection, and consent. On a social floor, safe technique matters more than dramatic range."
+    },
+    "bodyWave": {
+      "term": "Body Wave",
+      "short": "A body wave is a fluid movement through the torso that can express rhythm, melody, or elastic timing in Brazilian Zouk.",
+      "body": "Body waves are often connected to breath, grounding, and partner connection. They can be subtle or expansive, but they should remain readable and comfortable for both partners."
+    },
+    "connection": {
+      "term": "Connection",
+      "short": "Connection is the shared physical, musical, and emotional communication that lets partners dance Brazilian Zouk together.",
+      "body": "In social dancing, connection includes frame, tone, timing, listening, comfort, and respect. DJs influence connection by choosing music that gives dancers space to listen and respond."
+    },
+    "leading": {
+      "term": "Leading",
+      "short": "Leading is the role of proposing movement, direction, timing, and energy while listening to the follower's response.",
+      "body": "Good leading in Brazilian Zouk is not force. It uses clarity, preparation, body mechanics, musicality, and respect for the partner's comfort and boundaries."
+    },
+    "following": {
+      "term": "Following",
+      "short": "Following is the role of interpreting and responding to the lead while maintaining agency, balance, musicality, and safety.",
+      "body": "Strong following is active, not passive. It includes listening through the body, managing axis, styling intentionally, and protecting personal limits on the dance floor."
+    },
     "brazilianZoukDj": {
       "term": "Brazilian Zouk DJ",
       "short": "A Brazilian Zouk DJ selects, edits, and mixes music for Brazilian Zouk dancers, with special attention to phrasing, flow, floor energy, and partner-dance comfort.",
@@ -63,15 +93,35 @@
       "short": "Zouk musicality is the ability to interpret rhythm, melody, texture, accents, silence, and emotional changes through the dance.",
       "body": "Musicality in Brazilian Zouk is not just dancing on beat. Dancers respond to vocals, breaks, waves, percussion, tension, release, and the long emotional curves inside a song. DJs influence musicality by choosing tracks that invite interpretation instead of forcing only one energy level."
     },
+    "elasticity": {
+      "term": "Elasticity",
+      "short": "Elasticity is the stretch-and-release quality that gives Brazilian Zouk movement a responsive, fluid feeling.",
+      "body": "Elasticity can appear in timing, connection, body movement, and transitions. It works best when both partners keep control and avoid pulling or collapsing through the frame."
+    },
+    "flow": {
+      "term": "Flow",
+      "short": "Flow is the sense that movement, music, and partner connection continue naturally without unnecessary interruption.",
+      "body": "In Brazilian Zouk, flow does not mean everything stays slow or soft. It means changes in energy feel connected, prepared, and musically coherent."
+    },
     "cremosidade": {
       "term": "Cremosidade",
-      "short": "Cremosidade is Zen Eyer's term for a smooth, continuous musical and dance feeling where transitions protect flow instead of interrupting it.",
-      "body": "The concept is useful for describing a style of Zouk music selection and mixing that favors elasticity, emotional continuity, and dancer comfort. It is part of Zen Eyer's artistic vocabulary, but not the whole of his identity or the whole definition of Brazilian Zouk."
+      "short": "Cremosidade is a Brazilian Zouk expression for a creamy, melting, emotionally connected dance-floor feeling.",
+      "body": "The concept is useful for describing a style of Zouk music selection and mixing that favors elasticity, emotional continuity, and dancer comfort. In English, Zen Eyer is known for creamy, emotional sets that make dancers \"melt on the floor.\""
+    },
+    "socialDanceEtiquette": {
+      "term": "Social Dance Etiquette",
+      "short": "Social dance etiquette is the shared set of habits that keeps a Brazilian Zouk floor safe, respectful, and welcoming.",
+      "body": "It includes asking clearly, accepting refusals gracefully, managing space, avoiding unsafe moves, respecting boundaries, and adapting to the partner and room."
     },
     "zoukCongress": {
       "term": "Zouk Congress",
       "short": "A Zouk congress is a structured Brazilian Zouk event that usually combines workshops, parties, performances, guest artists, and social dancing.",
       "body": "Congresses tend to be larger and more programmatic than a simple party. They often include multiple teachers, DJs, levels, daytime classes, night parties, and sometimes competitions or showcases."
+    },
+    "brazilianZoukCongress": {
+      "term": "Brazilian Zouk Congress",
+      "short": "A Brazilian Zouk congress is a multi-day event for learning, social dancing, performances, and community gathering.",
+      "body": "Congress programs often combine daytime workshops with night parties and DJ sets. They are important places for dancers to discover music, teachers, communities, and international artists."
     },
     "zoukFestival": {
       "term": "Zouk Festival",
@@ -97,6 +147,11 @@
       "term": "Zouk Social Dance",
       "short": "A Zouk social dance is a party or dance floor setting where people dance Brazilian Zouk informally with different partners.",
       "body": "Social dances are where the culture becomes real: dancers meet, practice, listen to DJs, discover music, and build community. A baile is one common Portuguese word for this kind of dance party."
+    },
+    "jackAndJill": {
+      "term": "Jack and Jill",
+      "short": "Jack and Jill is a social dance competition format where partners are assigned randomly rather than competing as fixed couples.",
+      "body": "In Brazilian Zouk events, Jack and Jill formats can test adaptability, musicality, social connection, and the ability to dance well with different partners."
     },
     "zoukSocialDance": {
       "term": "Brazilian Zouk Social",

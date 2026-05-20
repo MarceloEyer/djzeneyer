@@ -27,6 +27,10 @@
     "en": "/zouk-encyclopedia",
     "pt": "/pt/enciclopedia-zouk"
   },
+  "verified-facts": {
+    "en": "/verified-facts",
+    "pt": "/pt/fatos-verificados"
+  },
   "zentribe": {
     "en": "/zentribe",
     "pt": "/pt/tribo-zen"

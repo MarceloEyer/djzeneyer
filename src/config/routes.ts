@@ -73,7 +73,6 @@ const NewsPage = lazyWithRetry(() => import('../pages/NewsPage'), 'route:news');
 const PrivacyPolicyPage = lazyWithRetry(() => import('../pages/PrivacyPolicyPage'), 'route:privacy');
 const ReturnPolicyPage = lazyWithRetry(() => import('../pages/ReturnPolicyPage'), 'route:returns');
 const TermsPage = lazyWithRetry(() => import('../pages/TermsPage'), 'route:terms');
-const CodeOfConductPage = lazyWithRetry(() => import('../pages/CodeOfConductPage'), 'route:conduct');
 const SupportArtistPage = lazyWithRetry(() => import('../pages/SupportArtistPage'), 'route:support');
 const TicketsPage = lazyWithRetry(() => import('../pages/TicketsPage'), 'route:tickets');
 const TicketsCheckoutPage = lazyWithRetry(() => import('../pages/TicketsCheckoutPage'), 'route:tickets-checkout');
@@ -81,6 +80,7 @@ const ResetPasswordPage = lazyWithRetry(() => import('../pages/ResetPasswordPage
 const ZenLinkPage = lazyWithRetry(() => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })), 'route:zenlink');
 const ZoukPersonaQuizPage = lazyWithRetry(() => import('../pages/ZoukPersonaQuizPage'), 'route:quiz');
 const EncyclopediaPage = lazyWithRetry(() => import('../pages/EncyclopediaPage'), 'route:encyclopedia');
+const VerifiedFactsPage = lazyWithRetry(() => import('../pages/VerifiedFactsPage'), 'route:verified-facts');
 const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'), 'route:not-found');
 
 import routesSlugs from './routes-slugs.json';
@@ -276,10 +276,10 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     paths: { en: slug('terms', 'en') as string, pt: slug('terms', 'pt') as string },
   },
 
-  // Code of Conduct
+  // Legacy Code of Conduct URL: consolidated into Terms & Conduct.
   {
     key: 'conduct',
-    component: CodeOfConductPage,
+    component: TermsPage,
     paths: { en: slug('conduct', 'en') as string, pt: slug('conduct', 'pt') as string },
   },
 
@@ -302,6 +302,13 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'encyclopedia',
     component: EncyclopediaPage,
     paths: { en: slug('encyclopedia', 'en'), pt: slug('encyclopedia', 'pt') },
+  },
+
+  // Verified Facts
+  {
+    key: 'verified-facts',
+    component: VerifiedFactsPage,
+    paths: { en: slug('verified-facts', 'en') as string, pt: slug('verified-facts', 'pt') as string },
   },
 
   // Password Reset

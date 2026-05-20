@@ -21,6 +21,8 @@ import type { ZenGameAchievement, ZenGameLeaderboardEntry } from '../types/gamif
 const EMPTY_ACHIEVEMENT_ARRAY: ZenGameAchievement[] = [];
 const EMPTY_LEADERBOARD_ARRAY: ZenGameLeaderboardEntry[] = [];
 
+const STAR_INDICES = [0, 1, 2];
+
 // ============================================================================
 // 1. SUB-COMPONENTS (PREMIUM VISUALS)
 // ============================================================================
@@ -369,7 +371,7 @@ const DashboardContent = () => {
                         "{t('dashboard.ascension_quote')}"
                      </p>
                      <div className="flex gap-2">
-                        {[0, 1, 2].map(i => (
+                        {STAR_INDICES.map(i => (
                           <Star key={i} size={12} className={i < rankStars ? 'text-yellow-500 fill-yellow-500' : 'text-white/10'} />
                         ))}
                      </div>
