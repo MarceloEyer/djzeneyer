@@ -405,7 +405,7 @@ const DashboardContent = () => {
                     <HexBadge key={ach.id} earned={true} title={ach.title} image={ach.image} size="3.5" />
                   ))
                 )}
-                {Array.from({ length: Math.max(0, 10 - earnedAchievements.length) }).map((_, i) => (
+                {Array.from({ length: Math.max(0, 10 - earnedAchievements.length) }, (_, i) => (
                   <HexBadge key={`locked-${i}`} earned={false} title="Locked" size="3.5" />
                 ))}
               </div>
