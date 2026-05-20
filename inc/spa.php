@@ -35,6 +35,10 @@ add_filter('template_include', function($template) {
 
         // Mark that we intentionally routed to the SPA so other hooks do not restore the 404 header.
         $GLOBALS['DJZ_SPA_ROUTED'] = true;
+        
+        global $wp_query;
+        $wp_query->is_404 = false;
+        $wp_query->is_page = true;
 
         status_header(200);
         nocache_headers();

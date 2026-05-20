@@ -81,12 +81,39 @@ if ($serve_file) {
         exit;
     }
 
-    // Caso especial: HTML (SPA Shell)
+    // Caso especial: HTML (SPA Shell ou Prerenderizado)
     if ($extension === 'html') {
-        get_header();
-        echo '<div id="root">';
-        echo '</div>'; // Re-adicionando para compatibilidade máxima
-        get_footer();
+        $html_content = file_get_contents($serve_file);
+
+        ob_start();
+        wp_head();
+        $wp_head_content = ob_get_clean();
+
+        // SEO/Knowledge Panel Crucial Links (previously only in header.php)
+        $me_links = '
+    <link rel="me" href="https://www.wikidata.org/wiki/Q136551855">
+    <link rel="me" href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154">
+    <link rel="me" href="https://www.instagram.com/djzeneyer/">
+    <link rel="me" href="https://soundcloud.com/djzeneyer">
+    <style>#wpadminbar { display: none !important; } html { margin-top: 0 !important; }</style>
+';
+        $wp_head_content .= $me_links;
+
+        ob_start();
+        wp_footer();
+        $wp_footer_content = ob_get_clean();
+
+        // Inject wp_head just before </head>
+        $html_content = str_replace('</head>', $wp_head_content . "\n</head>", $html_content);
+        
+        // Inject wp_footer just before </body>
+        $html_content = str_replace('</body>', $wp_footer_content . "\n</body>", $html_content);
+
+        // Replace <html lang="en"> with WordPress language attributes if needed
+        $lang_attrs = get_language_attributes();
+        $html_content = preg_replace('/<html[^>]*>/i', '<html ' . $lang_attrs . '>', $html_content);
+
+        echo $html_content;
         exit;
     }
 
