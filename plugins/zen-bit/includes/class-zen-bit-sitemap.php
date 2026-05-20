@@ -4,7 +4,7 @@
  *
  * Exposes /sitemap-events.xml with SEO-optimised canonical URLs.
  *
- * CRITICAL FIX (v3.1.0):
+ * Canonical URL Implementation (v3.1.0):
  *   The sitemap previously pointed to `/events/{event_id}` — a URL that only
  *   exists as a short-form alias and is NOT what the React router renders.
  *   The canonical URL is `/zouk-events/{yyyy-mm-dd}-{slug}-{event_id}`, built by
@@ -141,7 +141,7 @@ class Zen_BIT_Sitemap
     /**
      * Fetches upcoming events from Bandsintown and builds the XML string.
      *
-     * CANONICAL URL FIX:
+     * Canonical URL Handling:
      *   Each raw event is passed through Zen_BIT_Normalizer::normalize_list_item()
      *   which calls build_canonical_path() internally:
      *     /zouk-events/{yyyy-mm-dd}-{slug}-{event_id}
