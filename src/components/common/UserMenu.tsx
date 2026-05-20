@@ -5,7 +5,7 @@
  * Integrado com UserContext para estado de autenticação.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   User,
@@ -38,40 +38,51 @@ const UserMenu: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+
+  // ⚡ Bolt: Extract dynamic array combinations/spreads into a useMemo hook,
+  // and consolidate getLocalizedRoute calls to prevent O(N) reallocation and recalculations on every render.
+  const { homePath, menuLinks } = useMemo(() => {
+    const accountPath = getLocalizedRoute('my-account', currentLang);
+    return {
+      homePath: getLocalizedRoute('', currentLang),
+      menuLinks: [
+        {
+          to: getLocalizedRoute('dashboard', currentLang),
+          label: t('nav.dashboard'),
+          icon: <LayoutDashboard size={18} />
+        },
+        {
+          to: accountPath,
+          label: t('nav.my_account'),
+          icon: <User size={18} />
+        },
+        {
+          to: `${accountPath}?tab=orders`,
+          label: t('account.orders.title'),
+          icon: <ShoppingBag size={18} />
+        },
+        {
+          to: `${accountPath}?tab=settings`,
+          label: t('account.tabs.settings'),
+          icon: <Settings size={18} />
+        },
+      ]
+    };
+  }, [currentLang, t]);
+
   if (!user) return null;
 
   const handleLogout = async () => {
     try {
       await logout();
       setIsOpen(false);
-      navigate(getLocalizedRoute('', currentLang));
+      navigate(homePath);
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
 
-  const menuLinks = [
-    {
-      to: getLocalizedRoute('dashboard', currentLang),
-      label: t('nav.dashboard'),
-      icon: <LayoutDashboard size={18} />
-    },
-    {
-      to: getLocalizedRoute('my-account', currentLang),
-      label: t('nav.my_account'),
-      icon: <User size={18} />
-    },
-    {
-      to: `${getLocalizedRoute('my-account', currentLang)}?tab=orders`,
-      label: t('account.orders.title'),
-      icon: <ShoppingBag size={18} />
-    },
-    {
-      to: `${getLocalizedRoute('my-account', currentLang)}?tab=settings`,
-      label: t('account.tabs.settings'),
-      icon: <Settings size={18} />
-    },
-  ];
+
 
   return (
     <div className="relative" ref={menuRef}>

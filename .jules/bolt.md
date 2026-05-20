@@ -131,3 +131,8 @@
 
 **Learning:** Declaring static inline arrays like `[0, 1, 2]` or `['leader', 'follower']` inside a React component return creates a new array reference on each render.
 **Action:** Extract reused static arrays to module scope when they are used for render iteration. For dynamic lengths, prefer the clearest expression and avoid claiming allocation savings unless the rendered children themselves are also memoized.
+
+## 2026-06-29 - Memoize Multiple getLocalizedRoute Calls
+
+**Learning:** Repeatedly invoking `getLocalizedRoute` with distinct arguments inline inside a component's render body (like building multiple navigation `<Link>` components in `Footer.tsx` or `UserMenu.tsx`) causes O(N) recalculations on every React reconciliation cycle, especially when unrelated state updates.
+**Action:** Consolidate multiple invocations of such deterministic functions into a single object map or array wrapped in a `useMemo` hook (e.g., keyed by the `currentLang` dependency). This preserves referential equality for navigation elements and eliminates repeated function overhead during renders.

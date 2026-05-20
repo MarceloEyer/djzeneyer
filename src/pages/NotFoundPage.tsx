@@ -9,6 +9,16 @@ const NotFoundPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
+  // ⚡ Bolt: Consolidate getLocalizedRoute calls into a single object map wrapped in useMemo.
+  // This evaluates the localized paths only once when the language changes, rather than recalculating them on every unrelated state update.
+  const routes = useMemo(() => ({
+    home: getLocalizedRoute('', currentLang),
+    music: getLocalizedRoute('music', currentLang),
+    events: getLocalizedRoute('events', currentLang),
+    zentribe: getLocalizedRoute('zentribe', currentLang),
+  }), [currentLang]);
+
+
   return (
     <>
     <HeadlessSEO
@@ -51,7 +61,7 @@ const NotFoundPage: React.FC = () => {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <Link
-              to={getLocalizedRoute('', currentLang)}
+              to={routes.home}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -61,7 +71,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to={getLocalizedRoute('music', currentLang)}
+              to={routes.music}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -71,7 +81,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to={getLocalizedRoute('events', currentLang)}
+              to={routes.events}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -81,7 +91,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
 
             <Link
-              to={getLocalizedRoute('zentribe', currentLang)}
+              to={routes.zentribe}
               className="card p-4 text-center hover:bg-white/5 transition-colors"
             >
               <div className="flex flex-col items-center">
@@ -91,7 +101,7 @@ const NotFoundPage: React.FC = () => {
             </Link>
           </div>
 
-          <Link to={getLocalizedRoute('', currentLang)} className="btn btn-primary px-8 py-3">
+          <Link to={routes.home} className="btn btn-primary px-8 py-3">
             {t('not_found.cta')}
           </Link>
         </div>
