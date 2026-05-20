@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath, URL } from 'url';
 import puppeteer from 'puppeteer';
@@ -59,6 +59,150 @@ function slugify(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+function getHtmlAttribute(tag, attribute) {
+  const match = tag.match(new RegExp(`\\s${attribute}\\s*=\\s*["']([^"']+)["']`, 'i'));
+  return match?.[1] || '';
+}
+
+function removeEarlierMatchesByKey(input, regex, getKey) {
+  const matches = [...input.matchAll(regex)]
+    .map(match => ({ index: match.index, text: match[0], key: getKey(match[0]) }))
+    .filter(match => Boolean(match.key));
+
+  return removeEarlierCollectedMatches(input, matches);
+}
+
+function removeEarlierCollectedMatches(input, matches) {
+
+  if (matches.length <= 1) return input;
+
+  const seen = new Set();
+  const removeIndexes = new Set();
+
+  for (let index = matches.length - 1; index >= 0; index--) {
+    const match = matches[index];
+    if (seen.has(match.key)) {
+      removeIndexes.add(match.index);
+      continue;
+    }
+    seen.add(match.key);
+  }
+
+  if (removeIndexes.size === 0) return input;
+
+  let output = '';
+  let cursor = 0;
+  matches.forEach((match) => {
+    if (!removeIndexes.has(match.index)) return;
+    output += input.slice(cursor, match.index);
+    cursor = match.index + match.text.length;
+  });
+
+  output += input.slice(cursor);
+  return output;
+}
+
+function dedupeJsonLdScripts(input) {
+  const matches = [];
+  const lowerInput = input.toLowerCase();
+  let cursor = 0;
+
+  while (cursor < input.length) {
+    const openStart = lowerInput.indexOf('<script', cursor);
+    if (openStart === -1) break;
+
+    const openEnd = input.indexOf('>', openStart);
+    if (openEnd === -1) break;
+
+    const closeStart = lowerInput.indexOf('</script', openEnd + 1);
+    if (closeStart === -1) break;
+
+    const closeEnd = input.indexOf('>', closeStart);
+    if (closeEnd === -1) break;
+
+    const openTag = input.slice(openStart, openEnd + 1);
+    if (getHtmlAttribute(openTag, 'type').toLowerCase() === 'application/ld+json') {
+      const json = input.slice(openEnd + 1, closeStart).trim();
+      if (json) {
+        matches.push({
+          index: openStart,
+          text: input.slice(openStart, closeEnd + 1),
+          key: `script:ld-json:${json}`,
+        });
+      }
+    }
+
+    cursor = closeEnd + 1;
+  }
+
+  return removeEarlierCollectedMatches(input, matches);
+}
+
+function removeLaterMatchesByKey(input, regex, getKey) {
+  const matches = [...input.matchAll(regex)]
+    .map(match => ({ index: match.index, text: match[0], key: getKey(match[0]) }))
+    .filter(match => Boolean(match.key));
+
+  if (matches.length <= 1) return input;
+
+  const seen = new Set();
+  const removeIndexes = new Set();
+  matches.forEach((match) => {
+    if (seen.has(match.key)) {
+      removeIndexes.add(match.index);
+      return;
+    }
+    seen.add(match.key);
+  });
+
+  if (removeIndexes.size === 0) return input;
+
+  let output = '';
+  let cursor = 0;
+  matches.forEach((match) => {
+    if (!removeIndexes.has(match.index)) return;
+    output += input.slice(cursor, match.index);
+    cursor = match.index + match.text.length;
+  });
+
+  output += input.slice(cursor);
+  return output;
+}
+
+function dedupePrerenderHead(html) {
+  let cleaned = removeLaterMatchesByKey(html, /<title[\s\S]*?<\/title>/gi, () => 'title');
+
+  cleaned = removeEarlierMatchesByKey(cleaned, /<meta\s+[^>]*>/gi, (tag) => {
+    const property = getHtmlAttribute(tag, 'property').toLowerCase();
+    if (property) return `meta:property:${property}`;
+
+    const name = getHtmlAttribute(tag, 'name').toLowerCase();
+    if (name) return `meta:name:${name}`;
+
+    const charset = getHtmlAttribute(tag, 'charset').toLowerCase();
+    if (charset) return 'meta:charset';
+
+    return '';
+  });
+
+  cleaned = removeEarlierMatchesByKey(cleaned, /<link\s+[^>]*>/gi, (tag) => {
+    const rel = getHtmlAttribute(tag, 'rel').toLowerCase();
+    if (!rel) return '';
+
+    if (rel === 'canonical') return 'link:canonical';
+    if (rel === 'alternate') {
+      return `link:alternate:${getHtmlAttribute(tag, 'hreflang').toLowerCase()}`;
+    }
+    if (rel === 'me') return `link:me:${getHtmlAttribute(tag, 'href')}`;
+
+    return '';
+  });
+
+  cleaned = dedupeJsonLdScripts(cleaned);
+
+  return cleaned;
 }
 
 function buildCanonicalPath(event, lang = 'en') {
@@ -289,25 +433,27 @@ async function prerender() {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
-    const page = await browser.newPage();
-
-    // 🛡️ API INTERCEPTION: Global for all pages
-    // __PRERENDER_DATA__ é injetado no Puppeteer E gravado no HTML (ver abaixo).
-    // Isso elimina os fetches de events e menu do critical path de carregamento.
     const prerenderPayloadObj = {
       events: bandsintownData.list,
       menu: menuData,
       fetchedAt: bandsintownData.fetchedAt,
     };
-    await page.evaluateOnNewDocument((payload) => {
-      window.__PRERENDER_DATA__ = payload;
-    }, prerenderPayloadObj);
 
-    await page.setRequestInterception(true);
-    page.on('request', request => {
-      const reqUrl = request.url();
-      const urlObj = new URL(reqUrl);
-      const lang = (urlObj.searchParams.get('lang') || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+    const createPrerenderPage = async () => {
+      const page = await browser.newPage();
+
+      // 🛡️ API INTERCEPTION: Global for all pages
+      // __PRERENDER_DATA__ é injetado no Puppeteer E gravado no HTML (ver abaixo).
+      // Isso elimina os fetches de events e menu do critical path de carregamento.
+      await page.evaluateOnNewDocument((payload) => {
+        window.__PRERENDER_DATA__ = payload;
+      }, prerenderPayloadObj);
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        const reqUrl = request.url();
+        const urlObj = new URL(reqUrl);
+        const lang = (urlObj.searchParams.get('lang') || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
 
         if (reqUrl.includes('/wp-json/')) {
         let mockData = [];
@@ -373,17 +519,20 @@ async function prerender() {
       }
     });
 
-    page.on('console', msg => {
-      const text = msg.text();
-      // Silenciar erros de assets (imagens/svgs) para não sujar o log principal
-      if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
-        console.log(`[JS ERROR]: ${text}`);
-      }
-    });
+      page.on('console', msg => {
+        const text = msg.text();
+        // Silenciar erros de assets (imagens/svgs) para não sujar o log principal
+        if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
+          console.log(`[JS ERROR]: ${text}`);
+        }
+      });
 
-    page.on('pageerror', err => {
+      page.on('pageerror', err => {
         console.log(`[PAGE FATAL ERROR]: ${err.toString()}`);
-    });
+      });
+
+      return page;
+    };
 
     let successCount = 0;
 
@@ -400,7 +549,15 @@ async function prerender() {
         outputPath = join(targetDir, 'index.html');
       }
 
+      let page = null;
+      let previousHtml = null;
       try {
+        if (route !== '/' && route !== '' && existsSync(outputPath)) {
+          previousHtml = readFileSync(outputPath, 'utf8');
+          unlinkSync(outputPath);
+        }
+
+        page = await createPrerenderPage();
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
         try {
@@ -430,12 +587,22 @@ async function prerender() {
             finalHtml = finalHtml.replace('</head>', `${prerenderInlineScript}\n</head>`);
           }
 
+          finalHtml = dedupePrerenderHead(finalHtml);
+
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
           successCount++;
         }
       } catch (error) {
         console.error(`❌ Erro em ${route}: ${error.message}`);
+        if (previousHtml !== null && !existsSync(outputPath)) {
+          writeFileSync(outputPath, previousHtml, 'utf8');
+          console.warn(`HTML anterior preservado para ${route}`);
+        }
+      } finally {
+        if (page && !page.isClosed()) {
+          await page.close();
+        }
       }
     }
 

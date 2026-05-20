@@ -69,6 +69,17 @@ if (file_exists($possible_file) && is_file($possible_file)) {
     }
 }
 
+// Rotas SPA válidas sem prerender próprio (ex: dashboard) recebem o shell base.
+if (!$serve_file && !empty($GLOBALS['DJZ_SPA_ROUTED'])) {
+    $spa_shell = $real_dist_path . 'index.html';
+    if (file_exists($spa_shell) && is_file($spa_shell)) {
+        $real_spa_shell = realpath($spa_shell);
+        if ($real_spa_shell && strpos($real_spa_shell, $real_dist_path) === 0) {
+            $serve_file = $real_spa_shell;
+        }
+    }
+}
+
 // 5. Entrega o arquivo (Se validado e seguro)
 if ($serve_file) {
     // Whitelist de extensões permitidas (Camada extra de segurança)
@@ -81,12 +92,33 @@ if ($serve_file) {
         exit;
     }
 
-    // Caso especial: HTML (SPA Shell)
+    // Caso especial: HTML (SPA Shell ou Prerenderizado)
     if ($extension === 'html') {
-        get_header();
-        echo '<div id="root">';
-        echo '</div>'; // Re-adicionando para compatibilidade máxima
-        get_footer();
+        $html_content = file_get_contents($serve_file);
+        if ($html_content === false) {
+            status_header(500);
+            nocache_headers();
+            exit('Failed to read SPA shell file.');
+        }
+
+        // Do not call wp_head()/wp_footer() here: prerendered Vite HTML already
+        // contains the canonical SEO tags and app assets. Inject only the WP data bridge.
+        $wp_data = [
+            'rootUrl'  => home_url('/'),
+            'siteUrl'  => site_url('/'),
+            'restUrl'  => rest_url(),
+            'nonce'    => wp_create_nonce('wp_rest'),
+            'userId'   => get_current_user_id(),
+            'themeUrl' => get_template_directory_uri(),
+        ];
+        $wp_data_script = '<script>window.wpData=' . wp_json_encode($wp_data, JSON_UNESCAPED_SLASHES) . ';</script>';
+
+        if (strpos($html_content, 'window.wpData') === false) {
+            $html_content = str_replace('</body>', $wp_data_script . "\n</body>", $html_content);
+        }
+
+        header('Content-Type: text/html; charset=UTF-8');
+        echo $html_content;
         exit;
     }
 
@@ -113,9 +145,10 @@ if ($serve_file) {
     exit;
 }
 
-// 6. Fallback: Serve o SPA shell para rotas dinâmicas/privadas sem prerender (ex: /dashboard, /my-account).
-// Chegando aqui significa: não é asset, não é rota WP, sem arquivo prerendered → React monta no cliente.
+// 6. Fallback: se a rota não foi reconhecida como SPA válida, preserve o 404 real.
+status_header(404);
+nocache_headers();
 get_header();
-echo '<div id="root"></div>';
+echo '<main id="content" class="container mx-auto px-4 py-24"><h1>' . esc_html__('Page not found', 'zentheme') . '</h1></main>';
 get_footer();
 exit;
