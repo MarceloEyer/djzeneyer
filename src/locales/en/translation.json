@@ -7,7 +7,7 @@
     "tribe": "Zen Tribe",
     "presskit": "Press Kit",
     "booking": "Work With Me",
-    "media": "Media",
+    "media": "Press",
     "shop": "Shop",
     "encyclopedia": "Encyclopedia",
     "sign_in": "Sign In",
@@ -134,7 +134,7 @@
       "country": "Country"
     },
     "footer_privacy": "Privacy Policy",
-    "footer_terms": "Terms of Use",
+    "footer_terms": "Terms & Conduct",
     "footer_bio": "Exploring connection through music. Remixing Brazilian Zouk vibes for the world.",
     "footer_quick_links": "Quick Links",
     "footer_events": "Events",
@@ -147,7 +147,7 @@
     "footer_news": "Releases",
     "footer_philosophy": "My Philosophy",
     "footer_work_with_me": "Work With Me",
-    "footer_media": "Press & Media",
+    "footer_media": "Press",
     "footer_conduct": "Code of Conduct",
     "footer_encyclopedia": "Encyclopedia",
     "footer_join_newsletter": "Join our Newsletter",
@@ -337,8 +337,8 @@
   "upcoming_events": "Upcoming Events",
   "home": {
     "site_desc": "Official website of Zen Eyer, also known as DJ Zen Eyer, 2x World Champion Brazilian Zouk DJ and music producer",
-    "page_title": "DJ Zen Eyer | 2x World Champion Brazilian Zouk DJ & Producer",
-    "page_meta_desc": "DJ Zen Eyer, two-time world champion (Best Remix & Best DJ Performance) at Brazilian Zouk World Championships. Book for international events.",
+    "page_title": "Zen Eyer | Brazilian Zouk DJ & Music Producer",
+    "page_meta_desc": "Zen Eyer, Brazilian Zouk DJ and music producer, two-time world champion at Ilha do Zouk. Book for international events.",
     "headline": "Experience the <1>Zen</1> in Brazilian Zouk",
     "subheadline": "Transforming dance floors into immersive audio experiences",
     "welcome": "Welcome to Zen Eyer",
@@ -356,7 +356,7 @@
     "cta_subtitle": "Join thousands of members and transform your experience",
     "hero_badge": "2x World Champion - Zouk World Championships",
     "hero_title": "Zen Eyer",
-    "hero_subtitle": "2x World Champion Brazilian Zouk DJ & Producer",
+    "hero_subtitle": "Brazilian Zouk DJ & Music Producer",
     "pronunciation_summary": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B, or like 'Eye' followed by 'er').",
     "hero_slogan": "Haste is the enemy of creaminess",
     "hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
@@ -364,7 +364,7 @@
     "stat_countries": "Countries",
     "stat_events": "Events",
     "stat_years": "Years Active",
-    "bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 10 countries.",
+    "bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 14 countries.",
     "bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
     "bio_p3": "Whether at reZENha, at Renata Peçanha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
     "festivals_title": "Performed at International Festivals",
@@ -414,32 +414,32 @@
       "cta": "DOWNLOAD PRESS KIT 2025"
     }
   },
-  "news_page_title": "Releases | Zen Eyer",
-  "news_page_meta_desc": "Official music releases, event announcements, and selected updates from Zen Eyer.",
+  "news_page_title": "Releases & Notes | Zen Eyer",
+  "news_page_meta_desc": "Official music releases, short event notes, festival reviews, and selected updates from Zen Eyer.",
   "news": {
-    "title": "Releases",
-    "subtitle": "Official music releases, event announcements, and selected updates.",
-    "live_feed": "Release Feed",
+    "title": "Releases & Notes",
+    "subtitle": "Music releases, short event notes, festival reviews, and selected updates.",
+    "live_feed": "Releases & Notes Feed",
     "curatorship": "Official Archive",
     "zouk_production": "Music, Events & Zouk Culture",
-    "back_to_list": "BACK TO RELEASES",
+    "back_to_list": "BACK TO RELEASES & NOTES",
     "by": "By",
     "read_full": "READ FULL STORY",
     "latest_stories": "Latest Stories",
-    "latest_stories_title": "Latest Releases",
+    "latest_stories_title": "Latest Releases & Notes",
     "read_more": "Read More",
     "end_reached": "You've reached the end of recent updates.",
     "view_archive": "View Full Archive",
     "featured": "Featured",
     "default_author": "Zen Eyer",
     "read_time": "{{min}} min read",
-    "label": "Releases",
-    "filters_label": "Release filters",
+    "label": "Releases & Notes",
+    "filters_label": "Release and note filters",
     "filters_all": "All",
     "categories": "Categories",
     "tags": "Tags",
-    "search_label": "Search releases",
-    "search_placeholder": "Search releases...",
+    "search_label": "Search releases and notes",
+    "search_placeholder": "Search releases and notes...",
     "no_posts_for_filter": "No posts found for this filter yet."
   },
   "encyclopedia": {
@@ -575,8 +575,8 @@
     },
     "generic_error": "shop.generic_error"
   },
-  "tribe_page_title": "Zen Tribe",
-  "tribe_page_meta_desc": "Join the Zen Tribe community and become part of the family",
+  "tribe_page_title": "Zen Tribe | Brazilian Zouk Movement",
+  "tribe_page_meta_desc": "Zen Tribe is a Brazilian Zouk movement for dancers who choose presence over performance, connection over applause, and feeling over content.",
   "philosophy": {
     "page_title": "Artistic Philosophy",
     "hero_title_rich": "Artistic <1>Philosophy</1>",
@@ -604,9 +604,52 @@
   },
   "dashboard_page_title": "Dashboard",
   "dashboard_page_meta_desc": "Your personal Zen Tribe dashboard",
+  "verified_facts": {
+    "nav_label": "Verified Facts",
+    "badge": "Canonical Source",
+    "title": "Verified Facts about Zen Eyer",
+    "intro": "Zen Eyer is the stage name of Marcelo Eyer Fernandes, a Brazilian Zouk DJ and music producer from Niterói, Brazil.",
+    "core_identity": "Core identity",
+    "occupations_value": "DJ, music producer, remixer",
+    "awards": "Awards",
+    "external_identifiers": "External identifiers",
+    "international_performances": "International performances",
+    "related_pages": "Related pages",
+    "countries_intro": "Zen Eyer has performed in 14 countries in person:",
+    "online_russia": "He has also performed online for Russia.",
+    "seo": {
+      "title": "Verified Facts about Zen Eyer | Brazilian Zouk DJ",
+      "description": "Canonical verified facts, identifiers, awards, residence, and international performance history for Zen Eyer."
+    },
+    "identity": {
+      "canonical": "Canonical artist name",
+      "aliases": "Also known as",
+      "legal": "Legal name",
+      "pronunciation": "Pronunciation",
+      "genre": "Primary genre",
+      "occupations": "Occupations",
+      "residence": "Residence"
+    },
+    "table": {
+      "fact": "Fact",
+      "value": "Value",
+      "source": "Source",
+      "wikidata": "Wikidata property"
+    },
+    "facts": {
+      "stage_name": "Stage name",
+      "legal_name": "Legal name",
+      "birth_date": "Birth date",
+      "genre": "Genre",
+      "award_remix": "Award",
+      "award_performance": "Award",
+      "residence": "Residence"
+    }
+  },
   "media_page": {
-    "title": "Media & Press Kit",
-    "subtitle": "Official media resources and press information for DJ Zen Eyer",
+    "title": "Press | Zen Eyer",
+    "h1": "Press",
+    "subtitle": "Editorial coverage, professional profiles, and official press resources for Zen Eyer",
     "quick_facts": "Quick Facts",
     "artist_name": "Artist Name",
     "legal_name": "Legal Name",
@@ -615,11 +658,14 @@
     "cnpj": "CNPJ",
     "isni": "ISNI",
     "press_highlights": "Press Highlights",
-    "intro": "Explore media coverage, press mentions, and the official press kit of Zen Eyer.",
-    "sources_corrections": "Sources & Corrections",
-    "sources_corrections_desc": "This page separates independent editorial or directory sources from press-release distribution. To request a correction, source update, or interview, contact booking@djzeneyer.com.",
-    "independent_sources": "Independent editorial and profile sources",
-    "distribution_sources": "Press release and distribution references",
+    "intro": "Explore editorial coverage, festival references, professional profiles, and official press resources for Zen Eyer.",
+    "sources_corrections": "Source Quality",
+    "sources_corrections_desc": "This page prioritizes independent editorial sources, official festival references, professional profiles, and music databases. Self-submitted press-release distribution pages are intentionally not highlighted here.",
+    "independent_sources": "Independent / editorial coverage",
+    "festival_lineups": "Festival lineups",
+    "music_databases": "Music databases",
+    "artist_directories": "Artist directories",
+    "distribution_sources": "Press releases",
     "read_more": "Read More",
     "world_champion": "2x World Champion Brazilian Zouk DJ",
     "world_champion_desc": "Marcelo Eyer, known as DJ Zen Eyer, is a two-time World Champion in Brazilian Zouk, bringing unique energy to dance floors worldwide.",
@@ -649,7 +695,7 @@
   "footer_news": "Releases",
   "footer_philosophy": "My Philosophy",
   "footer_work_with_me": "Work With Me",
-  "footer_media": "Media",
+  "footer_media": "Press",
   "footer_conduct": "Code of Conduct",
   "footer_shop": "Shop",
   "footer_contact": "Contact",
@@ -674,10 +720,12 @@
   "events_search_results": "Results for",
   "events_venue": "Venue",
   "footer_bio": "Music producer and DJ creating immersive audio experiences for the mind, body, and soul.",
-  "footer_tagline": "Haste is the enemy of cremosity. One beat at a time.",
+  "footer_tagline": "Haste is the enemy of creaminess. One beat at a time.",
   "footer_subscribe_success": "Thanks for subscribing! Keep an eye on your inbox.",
   "footer_subscribe_error": "Failed to subscribe. Please try again.",
   "footer_copyright": "© {{year}} Zen Eyer. All rights reserved.",
+  "footer_signature_cremosidade": "A pressa é inimiga da cremosidade.",
+  "footer_signature_terror": "O terror dos apressados.",
   "footer_legal_name": "Marcelo Eyer Fernandes 44063765000146",
   "footer_location": "Niterói, RJ - Brazil",
   "footer_contact_label": "Contact",
@@ -806,12 +854,12 @@
     "redirecting_pdf": "Opening the press kit PDF.",
     "download_pdf_now": "Download PDF",
     "page_title": "Official Press Kit | DJ Zen Eyer",
-    "page_meta_desc": "Official EPK of DJ Zen Eyer. Two-time Brazilian Zouk world champion. Photos, bio, logos, and contact information for booking.",
+    "page_meta_desc": "Official EPK of Zen Eyer for Brazilian Zouk festivals and marathons. Photos, biography, music links, stage references, and booking contact.",
     "tag": "Official Press Kit 2026",
     "title_prefix": "Official",
     "title_suffix": "EPK",
-    "role": "DJ & Music Producer",
-    "subtitle": "2× World Champion Brazilian Zouk",
+    "role": "Brazilian Zouk DJ & Music Producer",
+    "subtitle": "For Brazilian Zouk festivals, marathons, congresses, and serious dance floors",
     "stats": {
       "countries": "Countries",
       "years": "Years on the Road",
@@ -820,18 +868,18 @@
     },
     "bio": {
       "title": "The Sonic Journey",
-      "p1": "<strong>DJ Zen Eyer</strong> is a Brazilian Zouk DJ and music producer, known for his approach that prioritizes connection and 'flow' on the dance floor.",
-      "p2": "Having performed in 15+ countries and won international awards, known for his cremoso style — sets that evolve gradually, respecting the dancer's timing.",
-      "p3": "A member of Mensa International, Zen uses his keen perception to curate perfect emotional journeys, whether at major festivals or intimate Zen Tribe sessions.",
+      "p1": "<strong>Zen Eyer</strong> is a Brazilian Zouk DJ and music producer focused on festivals, marathons, and dance floors that need emotional range, musical control, and trust.",
+      "p2": "He has performed in 14 countries and won two awards at Ilha do Zouk in 2022, bringing a creamy, emotional sound that gives dancers time to breathe, connect, and stay on the floor.",
+      "p3": "His sets are built for organizers who need a DJ able to read mixed-level crowds, hold the room with confidence, and turn a program slot into a remembered dance-floor experience.",
       "quickStats": {
         "cremosidade": "Cremosidade",
         "cremosidade_desc": "Total focus on connection",
         "repertoire": "Repertoire",
-        "repertoire_desc": "Exclusive and original edits",
+        "repertoire_desc": "Festival and marathon-ready sets",
         "connection": "Connection",
         "connection_desc": "Impeccable floor reading",
         "global": "Global",
-        "global_desc": "International experience"
+        "global_desc": "In-person performances in 14 countries"
       }
     },
     "media": {
@@ -864,12 +912,12 @@
       "whatsapp_message": "Hello Zen Eyer! I'd like to talk about a possible collaboration or booking. How can we proceed?"
     },
     "canonical_bio": {
-      "title": "Bio for Press & Organizers",
-      "subtitle": "Copy and paste for your event's press materials. (Social handle: <strong>@djzeneyer</strong>)",
+      "title": "Bio for Festivals & Marathons",
+      "subtitle": "Copy and paste for event programs, promoter decks, and press materials. (Social handle: <strong>@djzeneyer</strong>)",
       "copy_button": "Copy Bio",
       "copied": "Copied!",
       "whatsapp_default_msg": "Hello Zen Eyer! I'd like to talk about booking.",
-      "text": "Zen Eyer (Marcelo Eyer Fernandes, pronounced 'Buyer') is a Brazilian Zouk DJ and music producer, two-time World Champion in DJing and Best Remix at the Ilha do Zouk Championship (2022). Based in Rio de Janeiro, Brazil. He is known for his cremoso style in Brazilian Zouk DJing. He is a member of Mensa International. Known for his signature 'cremosidade' style — fluid, unhurried sets that prioritize deep connection on the dance floor — Zen Eyer has performed at major Zouk festivals across Brazil, Europe, and the Americas, including the Dutch International Zouk Congress, Lisbon Zouk Marathon, Slovenian Zouk Marathon, and Rio Zouk Congress."
+      "text": "Zen Eyer is a Brazilian Zouk DJ and music producer from Niter?i, Brazil. Also known as DJ Zen Eyer, he won two awards at Ilha do Zouk in 2022: Best Remix and Best DJ Performance. He has performed in 14 countries in person and is known for creamy, emotional sets designed for Brazilian Zouk festivals, marathons, and social dance floors."
     }
   },
   "events_add_google": "Add to Calendar",
@@ -907,28 +955,28 @@
       "description": "Quick and easy payments worldwide"
     },
     "reasons": {
-      "title": "Why Your Support Matters",
+      "title": "Why Support Helps",
       "music": {
-        "title": "Support New Music",
-        "description": "Help produce and release new Brazilian Zouk tracks"
+        "title": "More Music for Dancers",
+        "description": "Support helps fund edits, remixes, hosting, distribution, and the quiet work behind sets made for Brazilian Zouk floors."
       },
       "community": {
-        "title": "Community Growth",
-        "description": "Support workshops, events, and educational content"
+        "title": "A Stronger Zen Tribe",
+        "description": "Small contributions help keep the movement alive without turning every community moment into a sales campaign."
       },
       "worldwide": {
-        "title": "Worldwide Presence",
-        "description": "Enable international tours and collaborations"
+        "title": "Easier International Work",
+        "description": "Clear payment options make it easier for organizers and supporters in different countries to send money in the currency that works for them."
       }
     },
     "seo": {
-      "title": "Support DJ Zen Eyer | Payment Information",
-      "description": "Support DJ Zen Eyer through donations or hire for events. Multiple payment methods available worldwide including Inter Global, Wise, and PayPal.",
+      "title": "Support Zen Eyer | Payment Information",
+      "description": "Official payment information for supporting Zen Eyer or paying booking-related fees in BRL, USD, EUR, GBP, Wise, and PayPal.",
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
       "title": "Support the <1>Music</1>",
-      "description": "Your support helps create new music, educational content, and build the Brazilian Zouk community worldwide. Whether you're hiring for an event or making a donation, every contribution makes a difference."
+      "description": "If Zen Eyer's music has given you a good dance, a useful track, or a moment you carried home, your support helps keep new sets, remixes, and community work moving. This page also lists official payment methods for organizers."
     },
     "payment": {
       "title": "Payment Methods",
@@ -943,11 +991,11 @@
     "phone": "Phone / Key",
     "sendPayment": "Send Payment via",
     "business": {
-      "title": "Event Bookings & Business Inquiries",
-      "description": "For event bookings, workshop requests, or business collaborations, please send payment details to the email below. Include event details, location, and date for faster processing.",
-      "contact": "Contact for Bookings"
+      "title": "For Organizers",
+      "description": "If you are paying a booking fee, travel share, deposit, or festival-related cost, use the official details on this page and include the event name, city, and date in your message.",
+      "contact": "Send Booking Details"
     },
-    "thankYou": "✨ Your support keeps the music alive. Thank you! ✨"
+    "thankYou": "Your support makes a real difference. Thank you."
   },
   "events_no_results_filter": "Sorry, I couldn't find any events in this state. Maybe check the full schedule?",
   "quiz": {

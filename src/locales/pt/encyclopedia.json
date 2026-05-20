@@ -48,6 +48,21 @@
       "short": "Musicalidade no Zouk é a capacidade de interpretar ritmo, melodia, textura, acentos, silêncio e mudanças emocionais por meio da dança.",
       "body": "A musicalidade no Zouk Brasileiro não é apenas dançar no tempo. Dançarinos respondem a vocais, pausas, ondas, percussão, tensão, relaxamento e curvas emocionais longas dentro da música. DJs influenciam a musicalidade ao escolher faixas que convidam interpretação em vez de impor apenas um nível de energia."
     },
+    "elasticity": {
+      "term": "Elasticidade",
+      "short": "Elasticidade e a qualidade de expansao e retorno que da ao movimento do Zouk Brasileiro uma sensacao responsiva e fluida.",
+      "body": "A elasticidade pode aparecer no tempo, na conexao, no movimento corporal e nas transicoes. Funciona melhor quando os dois parceiros mantem controle e evitam puxar ou colapsar o frame."
+    },
+    "flow": {
+      "term": "Flow",
+      "short": "Flow e a sensacao de que movimento, musica e conexao continuam naturalmente, sem interrupcoes desnecessarias.",
+      "body": "No Zouk Brasileiro, flow nao significa que tudo precisa ser lento ou suave. Significa que mudancas de energia parecem conectadas, preparadas e coerentes com a musica."
+    },
+    "socialDanceEtiquette": {
+      "term": "Etiqueta de Danca Social",
+      "short": "Etiqueta de danca social e o conjunto de habitos que mantem uma pista de Zouk Brasileiro segura, respeitosa e acolhedora.",
+      "body": "Inclui convidar com clareza, aceitar recusas com naturalidade, cuidar do espaco, evitar movimentos inseguros, respeitar limites e se adaptar ao par e ao ambiente."
+    },
     "cremosidade": {
       "term": "Cremosidade",
       "short": "Cremosidade é o termo de Zen Eyer para uma sensação musical e corporal suave e contínua, em que as transições protegem o fluxo em vez de interrompê-lo.",
@@ -57,6 +72,11 @@
       "term": "Congresso de Zouk",
       "short": "Um congresso de Zouk é um evento estruturado de Zouk Brasileiro que normalmente combina workshops, festas, apresentações, artistas convidados e bailes.",
       "body": "Congressos tendem a ser maiores e mais programáticos do que uma festa simples. Geralmente incluem vários professores, DJs, níveis, aulas durante o dia, festas à noite e, às vezes, competições ou apresentações."
+    },
+    "brazilianZoukCongress": {
+      "term": "Congresso de Zouk Brasileiro",
+      "short": "Um congresso de Zouk Brasileiro e um evento de varios dias para aulas, bailes, apresentacoes e encontro da comunidade.",
+      "body": "A programacao costuma combinar workshops durante o dia com festas e sets de DJs a noite. Congressos sao importantes para dancarinos descobrirem musicas, professores, comunidades e artistas internacionais."
     },
     "zoukFestival": {
       "term": "Festival de Zouk",
@@ -83,6 +103,36 @@
       "short": "Um baile de Zouk é um ambiente de dança social onde as pessoas dançam Zouk Brasileiro de forma informal com diferentes pares.",
       "body": "É no baile que a cultura se torna real: dançarinos se encontram, praticam, escutam DJs, descobrem músicas e constroem comunidade. Em inglês, esse contexto costuma ser chamado de social dance."
     },
+    "caribbeanVsBrazilianZouk": {
+      "term": "Zouk Caribenho vs Zouk Brasileiro",
+      "short": "Zouk caribenho e genero musical do Caribe frances; Zouk Brasileiro e uma danca a dois desenvolvida no Brasil com raizes ligadas a Lambada.",
+      "body": "Os nomes se sobrepoem, mas os assuntos sao diferentes. Dancarinos de Zouk Brasileiro podem dancar Zouk caribenho, mas a danca tambem usa pop, R&B, eletronica, musicas com influencia de Kizomba, covers e remixes adaptados para o baile."
+    },
+    "cabecada": {
+      "term": "Cabecada / Head Movement",
+      "short": "Cabecada e uma familia de tecnicas de movimento de cabeca no Zouk Brasileiro que deve ser conduzida, seguida e treinada com seguranca e controle.",
+      "body": "Movimento de cabeca e um dos elementos visuais mais reconheciveis do Zouk Brasileiro, mas depende de postura, preparacao, eixo, conexao e consentimento. No baile, tecnica segura importa mais do que amplitude dramatica."
+    },
+    "bodyWave": {
+      "term": "Onda Corporal",
+      "short": "A onda corporal e um movimento fluido pelo tronco que pode expressar ritmo, melodia ou tempo elastico no Zouk Brasileiro.",
+      "body": "Ondas corporais costumam se conectar com respiracao, chao e conexao entre parceiros. Podem ser sutis ou amplas, mas precisam continuar legiveis e confortaveis para os dois."
+    },
+    "connection": {
+      "term": "Conexao",
+      "short": "Conexao e a comunicacao fisica, musical e emocional compartilhada que permite aos parceiros dancarem Zouk Brasileiro juntos.",
+      "body": "Na danca social, conexao inclui frame, tonus, tempo, escuta, conforto e respeito. DJs influenciam a conexao ao escolher musicas que dao espaco para os dancarinos ouvirem e responderem."
+    },
+    "leading": {
+      "term": "Conducao",
+      "short": "Conducao e o papel de propor movimento, direcao, tempo e energia enquanto se escuta a resposta da pessoa conduzida.",
+      "body": "Boa conducao no Zouk Brasileiro nao e forca. Ela usa clareza, preparacao, mecanica corporal, musicalidade e respeito pelo conforto e pelos limites do par."
+    },
+    "following": {
+      "term": "Resposta / Following",
+      "short": "Following e o papel de interpretar e responder a conducao mantendo autonomia, equilibrio, musicalidade e seguranca.",
+      "body": "Um following forte e ativo, nao passivo. Inclui escutar pelo corpo, administrar eixo, estilizar com intencao e proteger limites pessoais na pista."
+    },
     "brazilianZoukDj": {
       "term": "DJ de Zouk Brasileiro",
       "short": "Um DJ de Zouk Brasileiro seleciona, edita e mixa músicas para dançarinos de Zouk Brasileiro, com atenção especial a fraseado, fluxo, energia da pista e conforto da dança a dois.",
@@ -97,6 +147,11 @@
       "term": "BPM no Zouk Brasileiro",
       "short": "O Zouk Brasileiro pode ser dançado em uma faixa flexível de andamento, muitas vezes entre 75 e 110 BPM, dependendo do estilo, do nível e da energia da pista.",
       "body": "BPM é útil, mas não é o único fator. Dançarinos também precisam de fraseado claro, tempo elástico, acentos musicais e espaço suficiente para se mover com segurança. Músicas lentas podem ser fortes quando têm estrutura e direção emocional; músicas mais rápidas funcionam quando o ritmo continua legível."
+    },
+    "jackAndJill": {
+      "term": "Jack and Jill",
+      "short": "Jack and Jill e um formato de competicao de danca social em que os pares sao sorteados, em vez de competir como casais fixos.",
+      "body": "Em eventos de Zouk Brasileiro, o formato Jack and Jill pode avaliar adaptacao, musicalidade, conexao social e a capacidade de dancar bem com diferentes parceiros."
     },
     "zoukSocialDance": {
       "term": "Social de Zouk Brasileiro",

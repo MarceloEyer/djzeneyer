@@ -1,6 +1,6 @@
 // src/components/common/Footer.tsx - Restored to Original Design (Simplified)
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Music2, MessageCircle, SendHorizontal, Heart } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, YouTubeIcon } from '../icons/BrandIcons';
@@ -16,6 +16,9 @@ const Footer: React.FC = () => {
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
   const currentLang = normalizeLanguage(i18n.language);
+  const location = useLocation();
+  const footerSignatures = [t('footer_signature_cremosidade'), t('footer_signature_terror')];
+  const footerSignature = footerSignatures[location.pathname.length % footerSignatures.length];
 
   const { mutate: subscribe, isPending: isSubmitting } = useSubscriptionMutation();
 
@@ -107,9 +110,9 @@ const Footer: React.FC = () => {
             <ul className="space-y-2.5">
               <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
               <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
+              <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/75 hover:text-primary transition-colors">FAQ</Link></li>
               <li><Link to={getLocalizedRoute('encyclopedia', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('encyclopedia.nav_label')}</Link></li>
               <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
-              <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/75 hover:text-primary transition-colors">FAQ</Link></li>
             </ul>
           </div>
 
@@ -148,14 +151,12 @@ const Footer: React.FC = () => {
 
         {/* Bottom Bar - Simplified */}
         <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/60 text-sm">
-          <p>{t('footer_copyright', { year: CURRENT_YEAR })}</p>
+          <p>{t('footer_copyright', { year: CURRENT_YEAR })} <span className="mx-1">&bull;</span> {footerSignature}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
             <Link to={getLocalizedRoute('privacy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
             <span>&bull;</span>
             <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
-            <span>&bull;</span>
-            <Link to={getLocalizedRoute('conduct', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_conduct')}</Link>
           </div>
 
           <div className="mt-4 text-xs opacity-50 flex justify-center gap-4">

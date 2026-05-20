@@ -82,7 +82,7 @@ const EncyclopediaPage: React.FC = () => {
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: t('home'), item: ARTIST.site.baseUrl },
+            { '@type': 'ListItem', position: 1, name: 'Home', item: ARTIST.site.baseUrl },
             { '@type': 'ListItem', position: 2, name: t('nav_label', { ns: 'encyclopedia' }), item: pageUrl },
           ],
         },
