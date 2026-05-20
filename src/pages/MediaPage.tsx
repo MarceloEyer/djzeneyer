@@ -80,6 +80,13 @@ const MediaPage: React.FC = () => {
         description={t('media_page.subtitle')}
         url={`https://djzeneyer.com/${getLocalizedRoute('media', currentLang).replace(/^\//, '')}`}
         image="/images/zen-eyer-og-image.png"
+        video={{
+          name: 'DJ Zen Eyer - Live Zouk Set',
+          description: 'Official live set and highlights from DJ Zen Eyer.',
+          thumbnailUrl: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+          uploadDate: '2024-01-01T00:00:00Z',
+          embedUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+        }}
       />
 
       <div className="min-h-screen pt-24 sm:pt-40 pb-16 sm:pb-24 bg-background relative overflow-hidden">

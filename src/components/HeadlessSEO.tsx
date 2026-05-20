@@ -61,6 +61,20 @@ interface ZenSeoPluginData {
   event_ticket?: string;
 }
 
+export interface VideoSchemaData {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  embedUrl?: string;
+}
+
+export interface ReviewSchemaData {
+  authorName: string;
+  reviewBody: string;
+  ratingValue: number;
+}
+
 interface HeadlessSEOProps {
   data?: ZenSeoPluginData;
   schema?: object;
@@ -79,6 +93,8 @@ interface HeadlessSEOProps {
   leadAnswer?: string;
   faqs?: { q: string; a: string }[]; // NOVO: Suporte a FAQ Schema
   events?: EventSchemaData[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
+  video?: VideoSchemaData; // NOVO: Suporte a VideoObject Schema
+  aggregateRating?: { ratingValue: number; reviewCount: number; reviews?: ReviewSchemaData[] }; // NOVO: Avaliações
   /** Injeta speakable no nó WebPage gerado automaticamente (Google Assistant / IA de voz).
    *  ⚠️  Só tem efeito quando `schema` NÃO é fornecido — se `schema` for passado,
    *      adicione `speakable` diretamente no nó WebPage/Article do schema customizado.
@@ -125,6 +141,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   leadAnswer,
   faqs,
   events,
+  video,
+  aggregateRating,
   speakable,
 }) => {
   const { artist } = useBranding();
@@ -435,8 +453,47 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       }
     }
 
+    // 4.4 VideoObject Schema
+    if (video) {
+      graph.push({
+        '@type': 'VideoObject',
+        '@id': `${finalUrl}#video`,
+        name: video.name,
+        description: video.description,
+        thumbnailUrl: video.thumbnailUrl,
+        uploadDate: video.uploadDate,
+        embedUrl: video.embedUrl,
+      });
+    }
+
+    // 4.5 AggregateRating Schema (For Product/Course/Event mapped to WebPage)
+    if (aggregateRating) {
+      const reviewElements = aggregateRating.reviews?.map((r) => ({
+        '@type': 'Review',
+        author: { '@type': 'Person', name: r.authorName },
+        reviewRating: { '@type': 'Rating', ratingValue: r.ratingValue, bestRating: 5 },
+        reviewBody: r.reviewBody,
+      }));
+
+      // Injeta avaliação como Service/Product genérico para a WebPage se não houver Event ou Course
+      graph.push({
+        '@type': 'Service',
+        '@id': `${finalUrl}#service`,
+        name: finalTitle,
+        description: truncatedDesc,
+        provider: { '@id': `${baseUrl}/#musicgroup` },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: aggregateRating.ratingValue,
+          reviewCount: aggregateRating.reviewCount,
+          bestRating: 5,
+        },
+        ...(reviewElements?.length ? { review: reviewElements } : {}),
+      });
+    }
+
     return graph;
-  }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage]);
+  }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage, video, aggregateRating, finalTitle, truncatedDesc]);
 
   if (!schema) {
     // Speakable spec — injeta seletores CSS para Google Assistant / LLMs de voz
