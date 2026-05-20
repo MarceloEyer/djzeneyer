@@ -12,7 +12,7 @@ Este arquivo existe para orientar o Jules antes de planejar ou abrir PR. Leia em
 
 ## Papel esperado do Jules
 
-Jules é executor assíncrono de tarefas específicas. Ele deve criar PRs pequenos e revisáveis apenas quando houver pedido humano, issue atribuída ou bug demonstrável.
+Jules é executor assíncrono de tarefas específicas e auditorias programadas. Ele deve criar PRs pequenos e revisáveis quando houver pedido humano, issue atribuída, bug demonstrável ou achado relevante de uma rotina proativa.
 
 Jules não deve atuar como reviewer automático de PRs de terceiros. Essa função pertence a CodeRabbit, Codex e revisão humana.
 
@@ -23,6 +23,7 @@ Jules não deve atuar como reviewer automático de PRs de terceiros. Essa funç�
 - Implementar feature pequena com escopo claro.
 - Fazer refactor local quando simplifica o código sem alterar comportamento.
 - Melhorar performance quando há hot path comprovado e validação antes/depois.
+- Rodar auditorias programadas de performance, segurança, cache, SEO técnico e rotas, abrindo PR somente para achados com evidência objetiva.
 
 ## O que costuma gerar ruído
 
@@ -50,7 +51,7 @@ Risco alto:
 - SQL manual, cache priming, query batching e endpoints REST de lista.
 - Workflows de deploy, secrets, SSH, ambiente de produção.
 
-Para risco alto, abra PR somente com pedido humano explícito e validação descrita.
+Para risco alto, abra PR somente com pedido humano explícito ou auditoria proativa com evidência forte, validação descrita e escopo pequeno.
 
 ## Validação mínima por domínio
 
@@ -82,5 +83,12 @@ Antes de abrir PR:
 - escrever título honesto
 - incluir validações executadas
 - explicar riscos residuais
+
+Em auditoria proativa, abrir PR apenas quando houver pelo menos uma evidência concreta:
+- rota live/local com status errado, soft 404 ou canonical inválido
+- query/chamada remota em loop de cardinalidade variável
+- cache ausente ou cache incorreto em endpoint público
+- falha de sanitização/autorização demonstrável
+- métrica, profiler ou custo algorítmico claro em hot path
 
 Se a melhor conclusão for "não vale PR", diga isso no resumo da tarefa.

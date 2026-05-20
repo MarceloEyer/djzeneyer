@@ -73,8 +73,9 @@ add_action('rest_api_init', function () {
  */
 function djz_get_menu($request)
 {
-    $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
-    $cache_key = 'djz_menu_' . $lang;
+    $lang = sanitize_key($request->get_param('lang') ?? 'en');
+    $lang = str_starts_with($lang, 'pt') ? 'pt' : 'en';
+    $cache_key = 'djz_menu_v2_' . $lang;
 
     $cached = get_transient($cache_key);
     if ($cached)
@@ -100,11 +101,7 @@ function djz_get_menu($request)
             if ((int) $item->menu_item_parent !== 0)
                 continue;
 
-            $url = $item->url;
-            if (strpos($url, $home) !== false) {
-                $url = str_replace($home, '', $url);
-                $url = '/' . ltrim($url, '/');
-            }
+            $url = djz_localize_menu_url($item->url, $lang, $home);
 
             $formatted[] = [
                 'ID' => $item->ID,
@@ -117,6 +114,135 @@ function djz_get_menu($request)
 
     set_transient($cache_key, $formatted, DJZ_CACHE_MENU);
     return rest_ensure_response($formatted);
+}
+
+/**
+ * Localize a WordPress menu URL using the React route SSOT.
+ *
+ * Polylang can return the translated menu item title while keeping a custom-link
+ * URL in the default language. The React app can fix that client-side, but the
+ * REST endpoint and prerender payload should already expose the localized path.
+ */
+function djz_localize_menu_url(string $url, string $lang, string $home): string
+{
+    $parsed_url = wp_parse_url($url);
+    if (is_array($parsed_url) && !empty($parsed_url['scheme'])) {
+        $scheme = strtolower((string) $parsed_url['scheme']);
+        if (!in_array($scheme, ['http', 'https'], true)) {
+            return $url;
+        }
+    }
+
+    if (is_array($parsed_url) && !empty($parsed_url['host'])) {
+        $home_host = wp_parse_url($home, PHP_URL_HOST);
+        if (!is_string($home_host) || strcasecmp((string) $parsed_url['host'], $home_host) !== 0) {
+            return $url;
+        }
+    }
+
+    $path = $url;
+    if (str_starts_with($path, $home)) {
+        $path = '/' . ltrim(substr($path, strlen($home)), '/');
+    }
+
+    $parts = wp_parse_url($path);
+    $raw_path = isset($parts['path']) ? (string) $parts['path'] : '/';
+    $query = isset($parts['query']) && $parts['query'] !== '' ? '?' . $parts['query'] : '';
+    $fragment = isset($parts['fragment']) && $parts['fragment'] !== '' ? '#' . $parts['fragment'] : '';
+
+    $normalized_path = djz_normalize_menu_path($raw_path);
+    $route = djz_menu_route_by_path($normalized_path);
+    if (!$route) {
+        $fallback_path = '/' . ltrim($normalized_path, '/');
+        if ($fallback_path !== '/') {
+            $fallback_path = rtrim($fallback_path, '/') . '/';
+        }
+        return $fallback_path . $query . $fragment;
+    }
+
+    $localized = djz_menu_route_path($route, $lang);
+    return $localized . $query . $fragment;
+}
+
+function djz_normalize_menu_path(string $path): string
+{
+    $segments = array_values(array_filter(explode('/', trim(rawurldecode($path), '/')), static function ($segment) {
+        return $segment !== '' && $segment !== '.';
+    }));
+
+    if (in_array('..', $segments, true)) {
+        return '/';
+    }
+
+    return '/' . implode('/', $segments);
+}
+
+function djz_menu_routes(): array
+{
+    static $routes = null;
+
+    if ($routes !== null) {
+        return $routes;
+    }
+
+    $routes = [];
+    $routes_file = get_theme_file_path('/src/config/routes-slugs.json');
+    if (!file_exists($routes_file)) {
+        return $routes;
+    }
+
+    $routes_json = file_get_contents($routes_file);
+    $routes_data = $routes_json !== false ? json_decode($routes_json, true) : null;
+    if (!is_array($routes_data) || empty($routes_data['routes']) || !is_array($routes_data['routes'])) {
+        return $routes;
+    }
+
+    foreach ($routes_data['routes'] as $route) {
+        if (is_array($route) && empty($route['private'])) {
+            $routes[] = $route;
+        }
+    }
+
+    return $routes;
+}
+
+function djz_menu_route_by_path(string $path): ?array
+{
+    $normalized = djz_normalize_menu_path($path);
+
+    foreach (djz_menu_routes() as $route) {
+        foreach (['en', 'pt'] as $lang) {
+            $slug = isset($route[$lang]) ? trim((string) $route[$lang], '/') : '';
+            $route_path = $lang === 'pt' ? '/pt' . ($slug === '' ? '' : '/' . $slug) : '/' . $slug;
+            if (djz_normalize_menu_path($route_path) === $normalized) {
+                return $route;
+            }
+
+            if (empty($route['aliases'][$lang]) || !is_array($route['aliases'][$lang])) {
+                continue;
+            }
+
+            foreach ($route['aliases'][$lang] as $alias) {
+                $alias_slug = trim((string) $alias, '/');
+                if ($alias_slug === '') {
+                    continue;
+                }
+                $alias_path = $lang === 'pt' ? '/pt/' . $alias_slug : '/' . $alias_slug;
+                if (djz_normalize_menu_path($alias_path) === $normalized) {
+                    return $route;
+                }
+            }
+        }
+    }
+
+    return null;
+}
+
+function djz_menu_route_path(array $route, string $lang): string
+{
+    $slug = isset($route[$lang]) ? trim((string) $route[$lang], '/') : '';
+    $path = $lang === 'pt' ? '/pt' . ($slug === '' ? '' : '/' . $slug) : '/' . $slug;
+    return $path === '/' ? '/' : rtrim($path, '/') . '/';
 }
 
 /**

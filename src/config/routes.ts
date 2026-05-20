@@ -61,7 +61,6 @@ const MusicPage = lazyWithRetry(() => import('../pages/MusicPage'), 'route:music
 const ZenTribePage = lazyWithRetry(() => import('../pages/ZenTribePage'), 'route:zentribe');
 const MediaPage = lazyWithRetry(() => import('../pages/MediaPage'), 'route:media');
 const PressKitPage = lazyWithRetry(() => import('../pages/PressKitPage'), 'route:booking');
-const PressKitDownloadPage = lazyWithRetry(() => import('../pages/PressKitDownloadPage'), 'route:presskit');
 const ShopPage = lazyWithRetry(() => import('../pages/ShopPage'), 'route:shop');
 const ProductPage = lazyWithRetry(() => import('../pages/ProductPage'), 'route:product');
 const CartPage = lazyWithRetry(() => import('../pages/CartPage'), 'route:cart');
@@ -166,12 +165,6 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: PressKitPage,
     paths: { en: slug('booking', 'en') as string, pt: slug('booking', 'pt') as string },
   },
-  {
-    key: 'presskit',
-    component: PressKitDownloadPage,
-    paths: { en: slug('presskit', 'en') as string, pt: slug('presskit', 'pt') as string },
-  },
-
   // Shop (com wildcard para subrotas)
   {
     key: 'product-detail',

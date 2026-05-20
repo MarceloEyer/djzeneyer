@@ -1,5 +1,6 @@
 import { spawn } from 'child_process';
 import { writeFileSync, existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
+import { createServer } from 'net';
 import { join, dirname } from 'path';
 import { fileURLToPath, URL } from 'url';
 import puppeteer from 'puppeteer';
@@ -9,6 +10,7 @@ const __dirname = dirname(__filename);
 const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
 const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
 const SITE_BASE_URL = process.env.SITE_BASE_URL || 'https://djzeneyer.com';
+const PRERENDER_PORT = parsePrerenderPort(process.env.PRERENDER_PORT);
 const INTERNAL_API_EVENTS = `${SITE_BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=365`;
 const EVENTS_ROUTE_EN = '/zouk-events';
 const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
@@ -39,7 +41,7 @@ try {
 }
 
 const CONFIG = {
-  serverBase: 'http://localhost:5173',
+  serverBase: process.env.PRERENDER_SERVER_BASE || `http://localhost:${PRERENDER_PORT}`,
   distDir: join(__dirname, '..', 'dist'),
   timeout: 60000,
   waitForSelector: '#root',
@@ -47,6 +49,28 @@ const CONFIG = {
 };
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function parsePrerenderPort(value) {
+  const parsed = Number(value || '5173');
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 65535 ? parsed : 5173;
+}
+
+function assertPortAvailable(port) {
+  return new Promise((resolve, reject) => {
+    const server = createServer();
+    server.once('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        reject(new Error(`Porta ${port} já está em uso. Encerre o vite preview antigo ou rode com PRERENDER_PORT=outra_porta.`));
+        return;
+      }
+      reject(error);
+    });
+    server.once('listening', () => {
+      server.close(resolve);
+    });
+    server.listen(port, '127.0.0.1');
+  });
+}
 
 function safeText(value) {
   return typeof value === 'string' ? value.trim() : '';
@@ -347,11 +371,18 @@ let viteProcess = null;
 function startDevServer() {
   return new Promise(async (resolve, reject) => {
     console.log('🚀 Iniciando Vite Preview...');
-    const command = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-    viteProcess = spawn(command, ['vite', 'preview', '--port', '5173', '--host'], {
+    try {
+      await assertPortAvailable(PRERENDER_PORT);
+    } catch (error) {
+      reject(error);
+      return;
+    }
+
+    const viteBin = join(__dirname, '..', 'node_modules', 'vite', 'bin', 'vite.js');
+    viteProcess = spawn(process.execPath, [viteBin, 'preview', '--port', String(PRERENDER_PORT), '--host'], {
       cwd: process.cwd(),
       stdio: 'inherit',
-      shell: process.platform === 'win32',
+      shell: false,
       env: { ...process.env, FORCE_COLOR: '1', PRERENDER_MODE: 'true' },
     });
     viteProcess.on('error', reject);
