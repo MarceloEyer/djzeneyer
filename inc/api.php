@@ -125,13 +125,24 @@ function djz_get_menu($request)
  */
 function djz_localize_menu_url(string $url, string $lang, string $home): string
 {
-    if (preg_match('#^https?://#i', $url) && strpos($url, $home) !== 0) {
-        return $url;
+    $parsed_url = wp_parse_url($url);
+    if (is_array($parsed_url) && !empty($parsed_url['scheme'])) {
+        $scheme = strtolower((string) $parsed_url['scheme']);
+        if (!in_array($scheme, ['http', 'https'], true)) {
+            return $url;
+        }
+    }
+
+    if (is_array($parsed_url) && !empty($parsed_url['host'])) {
+        $home_host = wp_parse_url($home, PHP_URL_HOST);
+        if (!is_string($home_host) || strcasecmp((string) $parsed_url['host'], $home_host) !== 0) {
+            return $url;
+        }
     }
 
     $path = $url;
-    if (strpos($path, $home) === 0) {
-        $path = substr($path, strlen($home));
+    if (str_starts_with($path, $home)) {
+        $path = '/' . ltrim(substr($path, strlen($home)), '/');
     }
 
     $parts = wp_parse_url($path);
@@ -142,7 +153,11 @@ function djz_localize_menu_url(string $url, string $lang, string $home): string
     $normalized_path = djz_normalize_menu_path($raw_path);
     $route = djz_menu_route_by_path($normalized_path);
     if (!$route) {
-        return '/' . ltrim($normalized_path, '/') . $query . $fragment;
+        $fallback_path = '/' . ltrim($normalized_path, '/');
+        if ($fallback_path !== '/') {
+            $fallback_path = rtrim($fallback_path, '/') . '/';
+        }
+        return $fallback_path . $query . $fragment;
     }
 
     $localized = djz_menu_route_path($route, $lang);

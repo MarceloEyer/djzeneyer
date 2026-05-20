@@ -10,7 +10,7 @@ const __dirname = dirname(__filename);
 const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
 const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
 const SITE_BASE_URL = process.env.SITE_BASE_URL || 'https://djzeneyer.com';
-const PRERENDER_PORT = Number(process.env.PRERENDER_PORT || '5173');
+const PRERENDER_PORT = parsePrerenderPort(process.env.PRERENDER_PORT);
 const INTERNAL_API_EVENTS = `${SITE_BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=365`;
 const EVENTS_ROUTE_EN = '/zouk-events';
 const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
@@ -49,6 +49,11 @@ const CONFIG = {
 };
 
 const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function parsePrerenderPort(value) {
+  const parsed = Number(value || '5173');
+  return Number.isInteger(parsed) && parsed >= 1 && parsed <= 65535 ? parsed : 5173;
+}
 
 function assertPortAvailable(port) {
   return new Promise((resolve, reject) => {
