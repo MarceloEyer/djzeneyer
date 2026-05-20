@@ -130,6 +130,15 @@ const MediaPage: React.FC = () => {
                     {group.items.map((item, index: number) => (
                       <motion.div
                         key={`${group.title}-${item.url}`}
+                        initial={GROUP_ITEM_INITIAL}
+                        whileInView={GROUP_ITEM_WHILE_IN_VIEW}
+                        viewport={GROUP_ITEM_VIEWPORT}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <a
+                          href={safeUrl(item.url, '/')}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="group block card p-6 bg-surface/30 backdrop-blur-md border hover:border-primary/50 transition-all"
                         >
                           <div className="flex justify-between items-start mb-4">
