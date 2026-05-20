@@ -1,5 +1,4 @@
 // src/components/HeadlessSEO.tsx
-// VERSÃO 8.3.0 - FIX: HTML LANG DYNAMIC & SOCIAL FALLBACK
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
@@ -301,7 +300,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
     // 4.3 Event Schema (Single-pass MusicEvent mapping)
     if (events && events.length > 0) {
-      // eslint-disable-next-line react-hooks/purity
+
       const now = Date.now();
       const threeHoursMs = 3 * 60 * 60 * 1000;
       const musicEvents: Record<string, unknown>[] = [];
@@ -585,7 +584,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         </>
       )}
 
-      {/* Twitter Cards (X) - FIX: Adicionado summary_large_image explicitamente */}
+      {/* Twitter Cards (X) */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={truncatedDesc} />
