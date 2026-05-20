@@ -21,10 +21,20 @@ const EMPTY_CLIPPING_ARRAY: MediaClippingItem[] = [];
 const GROUP_ITEM_INITIAL = { opacity: 0, x: -20 };
 const GROUP_ITEM_WHILE_IN_VIEW = { opacity: 1, x: 0 };
 const GROUP_ITEM_VIEWPORT = { once: true };
+const FEATURED_VIDEO = {
+  id: 'TcdCdpTzz-M',
+  uploadDate: '2017-10-30T09:16:47-07:00',
+  duration: 'PT3M19S',
+  embedUrl: 'https://www.youtube.com/embed/TcdCdpTzz-M',
+  contentUrl: 'https://www.youtube.com/watch?v=TcdCdpTzz-M',
+  thumbnailUrl: 'https://i.ytimg.com/vi/TcdCdpTzz-M/hqdefault.jpg',
+};
 
 const MediaPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const featuredVideoTitle = t('media_page.featured_video_title');
+  const featuredVideoDescription = t('media_page.featured_video_desc');
 
   const clippingData = ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY;
   const mediaGroups = [
@@ -80,6 +90,15 @@ const MediaPage: React.FC = () => {
         description={t('media_page.subtitle')}
         url={`https://djzeneyer.com/${getLocalizedRoute('media', currentLang).replace(/^\//, '')}`}
         image="/images/zen-eyer-og-image.png"
+        video={{
+          name: featuredVideoTitle,
+          description: featuredVideoDescription,
+          thumbnailUrl: FEATURED_VIDEO.thumbnailUrl,
+          uploadDate: FEATURED_VIDEO.uploadDate,
+          embedUrl: FEATURED_VIDEO.embedUrl,
+          contentUrl: FEATURED_VIDEO.contentUrl,
+          duration: FEATURED_VIDEO.duration,
+        }}
       />
 
       <div className="min-h-screen pt-24 sm:pt-40 pb-16 sm:pb-24 bg-background relative overflow-hidden">
@@ -192,6 +211,38 @@ const MediaPage: React.FC = () => {
                       )}
                     </div>
                   ))}
+                </div>
+              </section>
+
+              <section className="overflow-hidden rounded-2xl border border-white/10 bg-surface/40">
+                <div className="aspect-video w-full bg-black">
+                  <iframe
+                    className="h-full w-full"
+                    src={safeUrl(FEATURED_VIDEO.embedUrl, '/')}
+                    title={featuredVideoTitle}
+                    loading="lazy"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+                <div className="p-5">
+                  <div className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
+                    {t('media_page.featured_video_label')}
+                  </div>
+                  <h3 className="mb-2 font-display text-lg font-black uppercase tracking-tight text-white">
+                    {featuredVideoTitle}
+                  </h3>
+                  <p className="mb-4 text-sm leading-relaxed text-white/65">
+                    {featuredVideoDescription}
+                  </p>
+                  <a
+                    href={safeUrl(FEATURED_VIDEO.contentUrl, '/')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-[44px] items-center gap-2 text-xs font-black uppercase tracking-widest text-primary hover:text-primary/80"
+                  >
+                    {t('media_page.watch_on_youtube')} <ExternalLink size={14} />
+                  </a>
                 </div>
               </section>
 

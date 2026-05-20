@@ -80,7 +80,7 @@ export const EventMedia: React.FC<EventMediaProps> = ({
         <div className={`aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 ${className}`}>
             {image ? (
                 <img
-                    src={safeUrl(image, '/fallback.svg')}
+                    src={safeUrl(image, '/images/zen-eyer-og-image.png')}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                     alt={stripHtml(title)}
                     loading="lazy"

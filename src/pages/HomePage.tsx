@@ -171,13 +171,9 @@ const HomePage: React.FC = () => {
     <>
       <HeadlessSEO
         title={t('home.page_title')}
-
         description={t('home.page_meta_desc')}
-
         url={currentUrl}
-
         image={seoSettings?.default_og_image || `${currentUrl}/images/zen-eyer-og-image.png`}
-
         isHomepage={true}
         schema={schemaData}
         keywords={t('home.seo.keywords')}

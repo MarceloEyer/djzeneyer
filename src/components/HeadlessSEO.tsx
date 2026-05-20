@@ -61,6 +61,16 @@ interface ZenSeoPluginData {
   event_ticket?: string;
 }
 
+export interface VideoSchemaData {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  embedUrl?: string;
+  contentUrl?: string;
+  duration?: string;
+}
+
 interface HeadlessSEOProps {
   data?: ZenSeoPluginData;
   schema?: object;
@@ -79,6 +89,7 @@ interface HeadlessSEOProps {
   leadAnswer?: string;
   faqs?: { q: string; a: string }[]; // NOVO: Suporte a FAQ Schema
   events?: EventSchemaData[]; // NOVO: Suporte a Event Schema (passado via data do GamiPress/API)
+  video?: VideoSchemaData; // NOVO: Suporte a VideoObject Schema
   /** Injeta speakable no nó WebPage gerado automaticamente (Google Assistant / IA de voz).
    *  ⚠️  Só tem efeito quando `schema` NÃO é fornecido — se `schema` for passado,
    *      adicione `speakable` diretamente no nó WebPage/Article do schema customizado.
@@ -125,6 +136,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   leadAnswer,
   faqs,
   events,
+  video,
   speakable,
 }) => {
   const { artist } = useBranding();
@@ -435,8 +447,24 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       }
     }
 
+    // 4.4 VideoObject Schema
+    if (video) {
+      const safeThumbnail = safeUrl(video.thumbnailUrl, '/images/zen-eyer-og-image.png');
+      graph.push({
+        '@type': 'VideoObject',
+        '@id': `${finalUrl}#video`,
+        name: video.name,
+        description: video.description,
+        thumbnailUrl: ensureAbsoluteUrl(safeThumbnail, baseUrl),
+        uploadDate: video.uploadDate,
+        ...(video.embedUrl ? { embedUrl: safeUrl(video.embedUrl, '/') } : {}),
+        ...(video.contentUrl ? { contentUrl: safeUrl(video.contentUrl, '/') } : {}),
+        ...(video.duration ? { duration: video.duration } : {}),
+      });
+    }
+
     return graph;
-  }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage]);
+  }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage, video]);
 
   if (!schema) {
     // Speakable spec — injeta seletores CSS para Google Assistant / LLMs de voz
@@ -565,25 +593,17 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta property="og:url" content={finalUrl} />
 
       {/* Garante que as imagens sempre apareçam */}
-      {finalImage && (
-        <>
-          <meta property="og:image" content={finalImage} />
-          {finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
-          <meta property="og:image:alt" content={finalTitle} />
-          <meta property="og:image:width" content="1200" />
-          <meta property="og:image:height" content="630" />
-        </>
-      )}
+      {finalImage && <meta property="og:image" content={finalImage} />}
+      {finalImage && finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
+      {finalImage && <meta property="og:image:alt" content={finalTitle} />}
+      {finalImage && <meta property="og:image:width" content="1200" />}
+      {finalImage && <meta property="og:image:height" content="630" />}
 
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
-      {isProfileType && (
-        <>
-          <meta property="profile:first_name" content={authorFirstName} />
-          <meta property="profile:last_name" content={authorLastName} />
-          <meta property="profile:username" content="djzeneyer" />
-        </>
-      )}
+      {isProfileType && <meta property="profile:first_name" content={authorFirstName} />}
+      {isProfileType && <meta property="profile:last_name" content={authorLastName} />}
+      {isProfileType && <meta property="profile:username" content="djzeneyer" />}
 
       {/* Twitter Cards (X) - FIX: Adicionado summary_large_image explicitamente */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -597,6 +617,11 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       {computedHrefLang.map(({ lang, url: hrefUrl }) => (
         <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl, '/')} />
       ))}
+
+      <link rel="me" href={safeUrl(artist.identifiers.wikidataUrl, '/')} />
+      <link rel="me" href={safeUrl(artist.identifiers.musicbrainzUrl, '/')} />
+      <link rel="me" href={safeUrl(artist.social.instagram.url, '/')} />
+      <link rel="me" href={safeUrl(artist.social.soundcloud.url, '/')} />
 
       {/* Schema JSON-LD */}
       {finalSchema && (
