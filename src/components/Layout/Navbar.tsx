@@ -104,6 +104,10 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         onLoginClick();
     }, [onLoginClick]);
 
+    // ⚡ Bolt: Extracted inline arrow functions to stable references to prevent child re-renders
+    const handleDesktopNavigate = useCallback(() => { }, []);
+    const handleMobileNavigate = useCallback(() => setIsMenuOpen(false), []);
+
     const processedMenuItems = useMemo((): MenuItemData[] => {
         if (!menuItems?.length) return [];
         return menuItems.map(item => {
@@ -163,6 +167,38 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         });
     }, [menuItems, currentLang, t]);
 
+    // ⚡ Bolt: Single loop to pre-calculate and memoize Desktop and Mobile JSX elements, avoiding multiple O(N) map allocations per render cycle
+    const { desktopMenuElements, mobileMenuElements } = useMemo(() => {
+        const desktop: React.ReactElement[] = [];
+        const mobile: React.ReactElement[] = [];
+
+        for (let i = 0; i < processedMenuItems.length; i++) {
+            const item = processedMenuItems[i];
+
+            desktop.push(
+                <MenuItem
+                    key={item.ID}
+                    item={item}
+                    isMobile={false}
+                    onNavigate={handleDesktopNavigate}
+                    onPrefetch={handlePrefetch}
+                />
+            );
+
+            mobile.push(
+                <MenuItem
+                    key={item.ID}
+                    item={item}
+                    isMobile={true}
+                    onNavigate={handleMobileNavigate}
+                    onPrefetch={handlePrefetch}
+                />
+            );
+        }
+
+        return { desktopMenuElements: desktop, mobileMenuElements: mobile };
+    }, [processedMenuItems, handleDesktopNavigate, handleMobileNavigate, handlePrefetch]);
+
     return (
         <>
             <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-[#121212]/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10' : 'bg-transparent py-5'}`}>
@@ -175,15 +211,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         {processedMenuItems.length === 0 && import.meta.env.DEV && (
                             <div className="text-white/20 text-xs">Menu Empty (Debug)</div>
                         )}
-                        {processedMenuItems.map(item => (
-                            <MenuItem
-                                key={item.ID}
-                                item={item}
-                                isMobile={false}
-                                onNavigate={() => { }}
-                                onPrefetch={handlePrefetch}
-                            />
-                        ))}
+                        {desktopMenuElements}
                     </nav>
 
                     <div className="hidden md:flex items-center gap-4">
@@ -209,15 +237,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                     />
                     <div className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-white/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto translate-y-0 transition-transform duration-300">
                         <nav className="flex flex-col space-y-3 mb-6">
-                            {processedMenuItems.map(item => (
-                                <MenuItem
-                                    key={item.ID}
-                                    item={item}
-                                    isMobile={true}
-                                    onNavigate={() => setIsMenuOpen(false)}
-                                    onPrefetch={handlePrefetch}
-                                />
-                            ))}
+                            {mobileMenuElements}
                         </nav>
                         <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
                             {user?.isLoggedIn ? <UserMenu /> : (
