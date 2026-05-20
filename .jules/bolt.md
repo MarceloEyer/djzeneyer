@@ -126,3 +126,8 @@
 
 **Learning:** Conditionally mapping undefined data to inline empty arrays (`|| []`) inside a functional React component creates a brand new array reference on every render when data is not yet available. If this inline array is passed into the dependency array of a `useMemo` hook (like precomputing sets from an API dataset), it will completely defeat memoization and cause the hook to needlessly re-evaluate and iterate on every React reconciliation cycle.
 **Action:** To provide stable reference equality during empty/loading states, always declare a properly typed constant array (e.g., `const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];`) at the module scope (outside the component) and use that constant as the fallback.
+
+## 2026-05-18 - Inline Arrays in Render Iterations
+
+**Learning:** Declaring static inline arrays like `[0, 1, 2]` or `['leader', 'follower']` inside a React component return creates a new array reference on each render.
+**Action:** Extract reused static arrays to module scope when they are used for render iteration. For dynamic lengths, prefer the clearest expression and avoid claiming allocation savings unless the rendered children themselves are also memoized.

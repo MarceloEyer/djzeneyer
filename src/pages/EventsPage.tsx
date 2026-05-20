@@ -23,9 +23,11 @@ const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'se
 // SUB-COMPONENTS (SUSPENSE READY)
 // ============================================================================
 
+const SKELETON_ITEMS = [1, 2, 3];
+
 const EventSkeleton = () => (
   <div className="space-y-6">
-    {[1, 2, 3].map(i => (
+    {SKELETON_ITEMS.map(i => (
       <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
         <div className="w-12 h-12 bg-white/5 rounded-full" />
         <div className="flex-1 space-y-3">
