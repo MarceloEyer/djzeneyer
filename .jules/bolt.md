@@ -1,7 +1,7 @@
 # 2026-05-20 - Gate de Uso do Bolt
 
 **Learning:** Este arquivo é memória histórica de padrões e aprendizados, não backlog automático. Entradas antigas, futuras ou fora de ordem podem conter contexto incompleto e não autorizam PR por si só.
-**Action:** Antes de aplicar qualquer learning, confirmar que o padrão existe no código atual, que há benefício real e que a mudança foi pedida por humano, issue atribuída ou bug reproduzível. Não abrir PR para limpeza de comentários ou micro-otimização sem evidência objetiva.
+**Action:** Em auditorias proativas, usar as learnings como checklist de investigação, mas abrir PR somente quando o padrão existir no código atual, houver benefício real e existir evidência objetiva. Não abrir PR para limpeza de comentários ou micro-otimização sem evidência objetiva.
 
 ## 2025-02-19 - WP REST API _embed Performance
 

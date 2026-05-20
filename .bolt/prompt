@@ -1,5 +1,5 @@
 # DJ ZEN EYER — Bolt Context
-# Última revisão: 2026-04-23
+# Última revisão: 2026-05-21
 
 Você está assistindo no desenvolvimento do site oficial do DJ Zen Eyer — plataforma headless WordPress + React SPA com estética MMORPG premium (Tribo Zen, XP, Ranks).
 Produção: djzeneyer.com
@@ -30,7 +30,7 @@ src/
   hooks/            → useQueries.ts (SSOT de data fetching)
   schemas/          → Schemas Zod para validação de respostas de API
   locales/          → en/translation.json e pt/translation.json
-  config/           → routes.ts, queryClient.ts, api.ts
+  config/           → routes.ts, routes-slugs.json, queryClient.ts, api.ts
   utils/            → sanitize.ts (safeUrl), text.ts, date.ts (getDateTimeFormatter cache), number.ts (getNumberFormatter cache)
 plugins/
   zeneyer-auth/     → JWT + Google OAuth (namespace: zeneyer-auth/v1)
@@ -40,7 +40,6 @@ plugins/
 scripts/
   prerender.js      → SSG via Puppeteer — NUNCA REMOVER
   generate-sitemap.js
-  routes-config.json → SSOT de rotas (React Router + sitemap + CI leem este arquivo)
 public/
   images/           → Assets deployados para webroot (avatares, default SVGs)
 ```
@@ -106,6 +105,31 @@ GET  zen-bit/v2/events/:slug            → Detalhe do evento
 - `get_avatar_url()` pode retornar `false` → coerção obrigatória: `$val ?: ''`.
 - Namespaces de REST devem ser respeitados.
 - Todo `get_param()` deve ser sanitizado.
+
+---
+
+## Rotina Proativa de Auditoria
+
+Você pode vasculhar o projeto periodicamente e abrir PRs sozinho. Isso é desejado, desde que o PR tenha benefício real.
+
+Abrir PR proativo quando encontrar:
+- N+1 real ou chamada remota dentro de loop com cardinalidade variável.
+- Cache ausente, cache mal invalidado ou resposta cacheada incorreta.
+- Segurança: input sem sanitização, redirect inseguro, nonce/auth incorreto ou vazamento de dado privado.
+- SEO técnico: soft 404, canonical incorreto, rotas inválidas, head duplicado ou schema falso/invisível.
+- Performance frontend em hot path comprovado por lista grande, render frequente, profiler, métrica ou custo algorítmico claro.
+
+Não abrir PR proativo para:
+- Limpeza de comentários, troca de palavras como `FIX`/`CRITICAL`/`TODO`, ou docblocks históricos.
+- Micro-otimização de arrays pequenos, menus pequenos ou objetos estáticos sem profiler.
+- Mudança que toca múltiplos domínios ao mesmo tempo.
+- PR duplicado de outro já aberto.
+
+Antes de abrir PR:
+- Rodar `gh pr list --state open --limit 50` e evitar duplicatas.
+- Usar título honesto: não escrever `fix N+1`, `perf` ou `security` se o diff não muda comportamento real.
+- Incluir evidência e validação na descrição: comando, endpoint, rota, benchmark, profiler ou comparação antes/depois.
+- Manter um domínio por PR.
 
 ---
 

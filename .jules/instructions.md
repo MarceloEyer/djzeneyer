@@ -11,8 +11,9 @@
 - Não adicione comentários de revisão em PRs que você não criou.
 - Não aprove, solicite mudanças ou faça resumos de PRs de terceiros.
 - A revisão de código é responsabilidade do CodeRabbit (configurado em `.coderabbit.yaml`).
-- Seu papel: implementar tarefas explicitamente solicitadas, criar branches, abrir PRs focados e aguardar revisão humana/bots.
-- Se encontrar uma oportunidade não solicitada, registre como sugestão no resumo da tarefa. Não abra PR automaticamente.
+- Seu papel: implementar tarefas explicitamente solicitadas e executar auditorias proativas programadas de qualidade, performance e segurança.
+- Em auditorias proativas, você pode abrir PR sozinho quando o achado passar pelo gate de qualidade abaixo.
+- Se encontrar uma oportunidade fraca, cosmética ou sem evidência objetiva, registre como sugestão no resumo da tarefa. Não abra PR para esse caso.
 
 ---
 
@@ -49,7 +50,7 @@ Em caso de divergência, siga esta ordem:
 
 Antes de abrir PR, confirme todos os itens:
 
-1. A tarefa veio de pedido humano explícito, issue atribuída ou bug reproduzível no código atual.
+1. A tarefa veio de pedido humano explícito, issue atribuída, rotina programada de auditoria ou bug reproduzível no código atual.
 2. O diff resolve uma causa real, não apenas uma hipótese genérica extraída de comentário ou learning.
 3. O PR é pequeno, tem um domínio único e não duplica PR aberto.
 4. Existe validação proporcional ao risco (`npm run lint`, teste específico, diff manual ou benchmark reproduzível).
@@ -60,7 +61,15 @@ Não abrir PR automaticamente para:
 - Micro-otimizações de renderização sem evidência de profiler, hot path ou regressão visível.
 - Refactors de performance em PHP/GamiPress/WooCommerce sem benchmark, fixture ou revisão manual planejada.
 - Mudanças em arquivos de contexto, workflows, autenticação, SEO/head, rotas ou deploy sem pedido explícito.
-- Alterações geradas apenas por `.jules/bolt.md`. Esse arquivo é memória, não backlog.
+- Alterações geradas apenas por `.jules/bolt.md`. Esse arquivo é memória, não backlog; em auditorias programadas ele pode orientar a busca, mas não substitui evidência no código.
+
+Em rotina programada de auditoria, abrir PR apenas para achados relevantes:
+
+- N+1 real ou chamada remota dentro de loop com cardinalidade variável.
+- Cache ausente, cache mal invalidado ou transiente que causa resposta errada/lenta.
+- Segurança: input sem sanitização, redirect inseguro, nonce/auth incorreto, exposição de dado privado.
+- SEO técnico: soft 404, canonical incorreto, rotas inválidas, head duplicado, schema falso/invisível.
+- Performance frontend em hot path comprovado por lista grande, render frequente, profiler, métrica ou custo algorítmico claro.
 
 ---
 
@@ -163,10 +172,10 @@ Não abrir PR automaticamente para:
 
 ## 9. Uso correto de `.jules/bolt.md`
 
-`.jules/bolt.md` é um log de aprendizados. Ele não é fila de tarefas.
+`.jules/bolt.md` é um log de aprendizados. Ele não é fila de tarefas, mas pode orientar auditorias programadas.
 
-- Não use entradas do Bolt como autorização para abrir PR.
+- Não use entradas do Bolt, isoladamente, como autorização para abrir PR.
 - Não propague datas futuras ou fora de ordem; use apenas a data real do dia.
-- Se uma learning parecer aplicável, primeiro prove que o padrão existe no código atual e que o benefício compensa o risco.
+- Se uma learning parecer aplicável, primeiro prove que o padrão existe no código atual e que o benefício compensa o risco. Em auditoria programada, essa prova é o que autoriza o PR.
 - Em caso de conflito entre Bolt e código real, o código real vence.
 - Se a mudança for apenas cosmética, comentário ou micro-otimização, deixe como sugestão e aguarde pedido humano.
