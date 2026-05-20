@@ -101,6 +101,8 @@ if ($serve_file) {
             exit('Failed to read SPA shell file.');
         }
 
+        // Do not call wp_head()/wp_footer() here: prerendered Vite HTML already
+        // contains the canonical SEO tags and app assets. Inject only the WP data bridge.
         $wp_data = [
             'rootUrl'  => home_url('/'),
             'siteUrl'  => site_url('/'),
@@ -147,6 +149,6 @@ if ($serve_file) {
 status_header(404);
 nocache_headers();
 get_header();
-echo '<main id="content" class="container mx-auto px-4 py-24"><h1>Page not found</h1></main>';
+echo '<main id="content" class="container mx-auto px-4 py-24"><h1>' . esc_html__('Page not found', 'zentheme') . '</h1></main>';
 get_footer();
 exit;

@@ -11,7 +11,15 @@ function djz_spa_normalize_path(string $path): string
 {
     $path = strtok($path, '?') ?: '/';
     $path = str_replace("\0", '', rawurldecode($path));
-    $path = '/' . trim($path, '/');
+    $segments = array_values(array_filter(explode('/', trim($path, '/')), static function ($segment) {
+        return $segment !== '' && $segment !== '.';
+    }));
+
+    if (in_array('..', $segments, true)) {
+        return '/__invalid_spa_path__';
+    }
+
+    $path = '/' . implode('/', $segments);
     return $path === '/' ? '/' : rtrim($path, '/');
 }
 
@@ -69,12 +77,26 @@ function djz_spa_known_paths(): array
 function djz_spa_path_is_known(string $path): bool
 {
     $normalized_path = djz_spa_normalize_path($path);
+    if ($normalized_path === '/__invalid_spa_path__') {
+        return false;
+    }
+
     if (in_array($normalized_path, djz_spa_known_paths(), true)) {
         return true;
     }
 
-    $dist_route = get_theme_file_path('/dist' . ($normalized_path === '/' ? '' : $normalized_path) . '/index.html');
-    return file_exists($dist_route) && is_file($dist_route);
+    $dist_root = realpath(get_theme_file_path('/dist'));
+    if ($dist_root === false) {
+        return false;
+    }
+
+    $dist_route = realpath(get_theme_file_path('/dist' . ($normalized_path === '/' ? '' : $normalized_path) . '/index.html'));
+    if ($dist_route === false || !is_file($dist_route)) {
+        return false;
+    }
+
+    $dist_root = rtrim($dist_root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    return strpos($dist_route, $dist_root) === 0;
 }
 
 /**

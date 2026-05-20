@@ -61,32 +61,69 @@ function slugify(value) {
     .replace(/(^-|-$)/g, '');
 }
 
-function removeEarlierMatches(input, regex) {
-  const matches = [...input.matchAll(regex)];
+function getHtmlAttribute(tag, attribute) {
+  const match = tag.match(new RegExp(`\\s${attribute}\\s*=\\s*["']([^"']+)["']`, 'i'));
+  return match?.[1] || '';
+}
+
+function removeEarlierMatchesByKey(input, regex, getKey) {
+  const matches = [...input.matchAll(regex)]
+    .map(match => ({ index: match.index, text: match[0], key: getKey(match[0]) }))
+    .filter(match => Boolean(match.key));
+
   if (matches.length <= 1) return input;
+
+  const seen = new Set();
+  const removeIndexes = new Set();
+
+  for (let index = matches.length - 1; index >= 0; index--) {
+    const match = matches[index];
+    if (seen.has(match.key)) {
+      removeIndexes.add(match.index);
+      continue;
+    }
+    seen.add(match.key);
+  }
+
+  if (removeIndexes.size === 0) return input;
 
   let output = '';
   let cursor = 0;
-  matches.forEach((match, index) => {
-    if (index === matches.length - 1) return;
+  matches.forEach((match) => {
+    if (!removeIndexes.has(match.index)) return;
     output += input.slice(cursor, match.index);
-    cursor = match.index + match[0].length;
+    cursor = match.index + match.text.length;
   });
 
   output += input.slice(cursor);
   return output;
 }
 
-function removeLaterMatches(input, regex) {
-  const matches = [...input.matchAll(regex)];
+function removeLaterMatchesByKey(input, regex, getKey) {
+  const matches = [...input.matchAll(regex)]
+    .map(match => ({ index: match.index, text: match[0], key: getKey(match[0]) }))
+    .filter(match => Boolean(match.key));
+
   if (matches.length <= 1) return input;
+
+  const seen = new Set();
+  const removeIndexes = new Set();
+  matches.forEach((match) => {
+    if (seen.has(match.key)) {
+      removeIndexes.add(match.index);
+      return;
+    }
+    seen.add(match.key);
+  });
+
+  if (removeIndexes.size === 0) return input;
 
   let output = '';
   let cursor = 0;
-  matches.forEach((match, index) => {
-    if (index === 0) return;
+  matches.forEach((match) => {
+    if (!removeIndexes.has(match.index)) return;
     output += input.slice(cursor, match.index);
-    cursor = match.index + match[0].length;
+    cursor = match.index + match.text.length;
   });
 
   output += input.slice(cursor);
@@ -94,36 +131,42 @@ function removeLaterMatches(input, regex) {
 }
 
 function dedupePrerenderHead(html) {
-  const keepFirstPatterns = [
-    /<title[\s\S]*?<\/title>/gi,
-  ];
+  let cleaned = removeLaterMatchesByKey(html, /<title[\s\S]*?<\/title>/gi, () => 'title');
 
-  const keepLastPatterns = [
-    /<meta\s+[^>]*name=["']description["'][^>]*>/gi,
-    /<meta\s+[^>]*name=["']keywords["'][^>]*>/gi,
-    /<meta\s+[^>]*property=["']og:[^"']+["'][^>]*>/gi,
-    /<meta\s+[^>]*name=["']twitter:[^"']+["'][^>]*>/gi,
-    /<meta\s+[^>]*name=["']robots["'][^>]*>/gi,
-    /<link\s+[^>]*rel=["']canonical["'][^>]*>/gi,
-    /<script[^>]+type=["']application\/ld\+json["'][\s\S]*?<\/script>/gi,
-  ];
+  cleaned = removeEarlierMatchesByKey(cleaned, /<meta\s+[^>]*>/gi, (tag) => {
+    const property = getHtmlAttribute(tag, 'property').toLowerCase();
+    if (property) return `meta:property:${property}`;
 
-  let cleaned = keepFirstPatterns.reduce(
-    (current, pattern) => removeLaterMatches(current, pattern),
-    html
-  );
+    const name = getHtmlAttribute(tag, 'name').toLowerCase();
+    if (name) return `meta:name:${name}`;
 
-  cleaned = keepLastPatterns.reduce(
-    (current, pattern) => removeEarlierMatches(current, pattern),
-    cleaned
-  );
+    const charset = getHtmlAttribute(tag, 'charset').toLowerCase();
+    if (charset) return 'meta:charset';
 
-  ['en', 'pt-BR', 'x-default'].forEach((lang) => {
-    cleaned = removeEarlierMatches(
-      cleaned,
-      new RegExp(`<link\\s+[^>]*rel=["']alternate["'][^>]*hreflang=["']${lang}["'][^>]*>`, 'gi')
-    );
+    return '';
   });
+
+  cleaned = removeEarlierMatchesByKey(cleaned, /<link\s+[^>]*>/gi, (tag) => {
+    const rel = getHtmlAttribute(tag, 'rel').toLowerCase();
+    if (!rel) return '';
+
+    if (rel === 'canonical') return 'link:canonical';
+    if (rel === 'alternate') {
+      return `link:alternate:${getHtmlAttribute(tag, 'hreflang').toLowerCase()}`;
+    }
+    if (rel === 'me') return `link:me:${getHtmlAttribute(tag, 'href')}`;
+
+    return '';
+  });
+
+  cleaned = removeEarlierMatchesByKey(
+    cleaned,
+    /<script[^>]+type=["']application\/ld\+json["'][\s\S]*?<\/script>/gi,
+    (tag) => {
+      const json = tag.match(/<script[^>]*>([\s\S]*?)<\/script>/i)?.[1]?.trim();
+      return json ? `script:ld-json:${json}` : '';
+    }
+  );
 
   return cleaned;
 }
@@ -470,9 +513,10 @@ async function prerender() {
       }
 
       let page = null;
+      let previousHtml = null;
       try {
-        // Avoid serving stale prerendered HTML back into Puppeteer and accumulating old Helmet tags.
         if (route !== '/' && route !== '' && existsSync(outputPath)) {
+          previousHtml = readFileSync(outputPath, 'utf8');
           unlinkSync(outputPath);
         }
 
@@ -514,6 +558,10 @@ async function prerender() {
         }
       } catch (error) {
         console.error(`❌ Erro em ${route}: ${error.message}`);
+        if (previousHtml !== null && !existsSync(outputPath)) {
+          writeFileSync(outputPath, previousHtml, 'utf8');
+          console.warn(`HTML anterior preservado para ${route}`);
+        }
       } finally {
         if (page && !page.isClosed()) {
           await page.close();

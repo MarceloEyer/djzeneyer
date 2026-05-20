@@ -593,25 +593,17 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta property="og:url" content={finalUrl} />
 
       {/* Garante que as imagens sempre apareçam */}
-      {finalImage && (
-        <>
-          <meta property="og:image" content={finalImage} />
-          {finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
-          <meta property="og:image:alt" content={finalTitle} />
-          <meta property="og:image:width" content="1200" />
-          <meta property="og:image:height" content="630" />
-        </>
-      )}
+      {finalImage && <meta property="og:image" content={finalImage} />}
+      {finalImage && finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
+      {finalImage && <meta property="og:image:alt" content={finalTitle} />}
+      {finalImage && <meta property="og:image:width" content="1200" />}
+      {finalImage && <meta property="og:image:height" content="630" />}
 
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
-      {isProfileType && (
-        <>
-          <meta property="profile:first_name" content={authorFirstName} />
-          <meta property="profile:last_name" content={authorLastName} />
-          <meta property="profile:username" content="djzeneyer" />
-        </>
-      )}
+      {isProfileType && <meta property="profile:first_name" content={authorFirstName} />}
+      {isProfileType && <meta property="profile:last_name" content={authorLastName} />}
+      {isProfileType && <meta property="profile:username" content="djzeneyer" />}
 
       {/* Twitter Cards (X) - FIX: Adicionado summary_large_image explicitamente */}
       <meta name="twitter:card" content="summary_large_image" />
@@ -626,10 +618,10 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl, '/')} />
       ))}
 
-      <link rel="me" href={artist.identifiers.wikidataUrl} />
-      <link rel="me" href={artist.identifiers.musicbrainzUrl} />
-      <link rel="me" href={artist.social.instagram.url} />
-      <link rel="me" href={artist.social.soundcloud.url} />
+      <link rel="me" href={safeUrl(artist.identifiers.wikidataUrl, '/')} />
+      <link rel="me" href={safeUrl(artist.identifiers.musicbrainzUrl, '/')} />
+      <link rel="me" href={safeUrl(artist.social.instagram.url, '/')} />
+      <link rel="me" href={safeUrl(artist.social.soundcloud.url, '/')} />
 
       {/* Schema JSON-LD */}
       {finalSchema && (
