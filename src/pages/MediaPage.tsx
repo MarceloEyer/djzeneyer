@@ -18,6 +18,10 @@ type MediaClippingItem = {
 
 const EMPTY_CLIPPING_ARRAY: MediaClippingItem[] = [];
 
+const GROUP_ITEM_INITIAL = { opacity: 0, x: -20 };
+const GROUP_ITEM_WHILE_IN_VIEW = { opacity: 1, x: 0 };
+const GROUP_ITEM_VIEWPORT = { once: true };
+
 const MediaPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
@@ -126,15 +130,6 @@ const MediaPage: React.FC = () => {
                     {group.items.map((item, index: number) => (
                       <motion.div
                         key={`${group.title}-${item.url}`}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <a
-                          href={safeUrl(item.url, '/')}
-                          target="_blank"
-                          rel="noopener noreferrer"
                           className="group block card p-6 bg-surface/30 backdrop-blur-md border hover:border-primary/50 transition-all"
                         >
                           <div className="flex justify-between items-start mb-4">

@@ -42,6 +42,9 @@ const YouTubeMusicIcon = () => (
 
 // --- Animation variants ---
 
+const BUTTON_WHILE_HOVER = { scale: 1.02 };
+const BUTTON_WHILE_TAP = { scale: 0.98 };
+
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
   visible: {
@@ -62,8 +65,8 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
     <motion.div variants={itemVariants} className="w-full">
       <motion.button
         onClick={() => setIsOpen(!isOpen)}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileHover={BUTTON_WHILE_HOVER}
+        whileTap={BUTTON_WHILE_TAP}
         aria-expanded={isOpen}
         className="w-full relative overflow-hidden rounded-2xl p-[2px] bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 shadow-lg shadow-primary/10"
       >
@@ -229,7 +232,7 @@ const ZenLinkPageComponent = () => {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 * index }}
-                whileTap={{ scale: 0.98 }}
+                whileTap={BUTTON_WHILE_TAP}
                 className={`group block rounded-2xl border p-4 transition-all duration-300 ${link.highlight
                   ? 'border-primary/40 bg-gradient-to-r from-primary/15 to-transparent hover:border-primary/60 shadow-lg shadow-primary/5'
                   : 'border-white/5 bg-black/20 hover:bg-black/40 hover:border-white/20'
