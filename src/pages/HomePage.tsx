@@ -9,7 +9,6 @@ import {
   PlayCircle, Calendar, Users, Music, Award, Trophy,
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
-import { AGGREGATE_RATING } from '../data/testimonialsData';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useZenSeoSettings } from '../hooks/useQueries';
@@ -164,25 +163,6 @@ const HomePage: React.FC = () => {
           "@type": "BreadcrumbList",
           "itemListElement": [{ "@type": "ListItem", "position": 1, "name": "Home", "item": currentUrl }]
         }
-      },
-      {
-        "@type": "Service",
-        "@id": `${currentUrl}#service`,
-        "name": t('home.page_title'),
-        "description": t('home.page_meta_desc'),
-        "provider": { "@id": `${ARTIST.site.baseUrl}/#musicgroup` },
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": AGGREGATE_RATING.ratingValue,
-          "reviewCount": AGGREGATE_RATING.reviewCount,
-          "bestRating": 5
-        },
-        "review": AGGREGATE_RATING.reviews.map((r) => ({
-          "@type": "Review",
-          "author": { "@type": "Person", "name": r.authorName },
-          "reviewRating": { "@type": "Rating", "ratingValue": r.ratingValue, "bestRating": 5 },
-          "reviewBody": r.reviewBody
-        }))
       }
     ],
   }), [seoSettings, t, currentUrl, routes.news]);

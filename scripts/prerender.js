@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { writeFileSync, existsSync, mkdirSync, readFileSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync, readFileSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath, URL } from 'url';
 import puppeteer from 'puppeteer';
@@ -59,6 +59,73 @@ function slugify(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+function removeEarlierMatches(input, regex) {
+  const matches = [...input.matchAll(regex)];
+  if (matches.length <= 1) return input;
+
+  let output = '';
+  let cursor = 0;
+  matches.forEach((match, index) => {
+    if (index === matches.length - 1) return;
+    output += input.slice(cursor, match.index);
+    cursor = match.index + match[0].length;
+  });
+
+  output += input.slice(cursor);
+  return output;
+}
+
+function removeLaterMatches(input, regex) {
+  const matches = [...input.matchAll(regex)];
+  if (matches.length <= 1) return input;
+
+  let output = '';
+  let cursor = 0;
+  matches.forEach((match, index) => {
+    if (index === 0) return;
+    output += input.slice(cursor, match.index);
+    cursor = match.index + match[0].length;
+  });
+
+  output += input.slice(cursor);
+  return output;
+}
+
+function dedupePrerenderHead(html) {
+  const keepFirstPatterns = [
+    /<title[\s\S]*?<\/title>/gi,
+  ];
+
+  const keepLastPatterns = [
+    /<meta\s+[^>]*name=["']description["'][^>]*>/gi,
+    /<meta\s+[^>]*name=["']keywords["'][^>]*>/gi,
+    /<meta\s+[^>]*property=["']og:[^"']+["'][^>]*>/gi,
+    /<meta\s+[^>]*name=["']twitter:[^"']+["'][^>]*>/gi,
+    /<meta\s+[^>]*name=["']robots["'][^>]*>/gi,
+    /<link\s+[^>]*rel=["']canonical["'][^>]*>/gi,
+    /<script[^>]+type=["']application\/ld\+json["'][\s\S]*?<\/script>/gi,
+  ];
+
+  let cleaned = keepFirstPatterns.reduce(
+    (current, pattern) => removeLaterMatches(current, pattern),
+    html
+  );
+
+  cleaned = keepLastPatterns.reduce(
+    (current, pattern) => removeEarlierMatches(current, pattern),
+    cleaned
+  );
+
+  ['en', 'pt-BR', 'x-default'].forEach((lang) => {
+    cleaned = removeEarlierMatches(
+      cleaned,
+      new RegExp(`<link\\s+[^>]*rel=["']alternate["'][^>]*hreflang=["']${lang}["'][^>]*>`, 'gi')
+    );
+  });
+
+  return cleaned;
 }
 
 function buildCanonicalPath(event, lang = 'en') {
@@ -286,25 +353,27 @@ async function prerender() {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
-    const page = await browser.newPage();
-
-    // 🛡️ API INTERCEPTION: Global for all pages
-    // __PRERENDER_DATA__ é injetado no Puppeteer E gravado no HTML (ver abaixo).
-    // Isso elimina os fetches de events e menu do critical path de carregamento.
     const prerenderPayloadObj = {
       events: bandsintownData.list,
       menu: menuData,
       fetchedAt: bandsintownData.fetchedAt,
     };
-    await page.evaluateOnNewDocument((payload) => {
-      window.__PRERENDER_DATA__ = payload;
-    }, prerenderPayloadObj);
 
-    await page.setRequestInterception(true);
-    page.on('request', request => {
-      const reqUrl = request.url();
-      const urlObj = new URL(reqUrl);
-      const lang = (urlObj.searchParams.get('lang') || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+    const createPrerenderPage = async () => {
+      const page = await browser.newPage();
+
+      // 🛡️ API INTERCEPTION: Global for all pages
+      // __PRERENDER_DATA__ é injetado no Puppeteer E gravado no HTML (ver abaixo).
+      // Isso elimina os fetches de events e menu do critical path de carregamento.
+      await page.evaluateOnNewDocument((payload) => {
+        window.__PRERENDER_DATA__ = payload;
+      }, prerenderPayloadObj);
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        const reqUrl = request.url();
+        const urlObj = new URL(reqUrl);
+        const lang = (urlObj.searchParams.get('lang') || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
 
         if (reqUrl.includes('/wp-json/')) {
         let mockData = [];
@@ -370,17 +439,20 @@ async function prerender() {
       }
     });
 
-    page.on('console', msg => {
-      const text = msg.text();
-      // Silenciar erros de assets (imagens/svgs) para não sujar o log principal
-      if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
-        console.log(`[JS ERROR]: ${text}`);
-      }
-    });
+      page.on('console', msg => {
+        const text = msg.text();
+        // Silenciar erros de assets (imagens/svgs) para não sujar o log principal
+        if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
+          console.log(`[JS ERROR]: ${text}`);
+        }
+      });
 
-    page.on('pageerror', err => {
+      page.on('pageerror', err => {
         console.log(`[PAGE FATAL ERROR]: ${err.toString()}`);
-    });
+      });
+
+      return page;
+    };
 
     let successCount = 0;
 
@@ -397,7 +469,14 @@ async function prerender() {
         outputPath = join(targetDir, 'index.html');
       }
 
+      let page = null;
       try {
+        // Avoid serving stale prerendered HTML back into Puppeteer and accumulating old Helmet tags.
+        if (route !== '/' && route !== '' && existsSync(outputPath)) {
+          unlinkSync(outputPath);
+        }
+
+        page = await createPrerenderPage();
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
         try {
@@ -427,12 +506,18 @@ async function prerender() {
             finalHtml = finalHtml.replace('</head>', `${prerenderInlineScript}\n</head>`);
           }
 
+          finalHtml = dedupePrerenderHead(finalHtml);
+
           writeFileSync(outputPath, finalHtml, 'utf8');
           console.log(`✅ ${route} (${finalHtml.length}b)`);
           successCount++;
         }
       } catch (error) {
         console.error(`❌ Erro em ${route}: ${error.message}`);
+      } finally {
+        if (page && !page.isClosed()) {
+          await page.close();
+        }
       }
     }
 

@@ -69,6 +69,17 @@ if (file_exists($possible_file) && is_file($possible_file)) {
     }
 }
 
+// Rotas SPA válidas sem prerender próprio (ex: dashboard) recebem o shell base.
+if (!$serve_file && !empty($GLOBALS['DJZ_SPA_ROUTED'])) {
+    $spa_shell = $real_dist_path . 'index.html';
+    if (file_exists($spa_shell) && is_file($spa_shell)) {
+        $real_spa_shell = realpath($spa_shell);
+        if ($real_spa_shell && strpos($real_spa_shell, $real_dist_path) === 0) {
+            $serve_file = $real_spa_shell;
+        }
+    }
+}
+
 // 5. Entrega o arquivo (Se validado e seguro)
 if ($serve_file) {
     // Whitelist de extensões permitidas (Camada extra de segurança)
@@ -85,38 +96,26 @@ if ($serve_file) {
     if ($extension === 'html') {
         $html_content = file_get_contents($serve_file);
         if ($html_content === false) {
-            http_response_code(500);
+            status_header(500);
+            nocache_headers();
             exit('Failed to read SPA shell file.');
         }
 
-        ob_start();
-        wp_head();
-        $wp_head_content = (string)ob_get_clean();
+        $wp_data = [
+            'rootUrl'  => home_url('/'),
+            'siteUrl'  => site_url('/'),
+            'restUrl'  => rest_url(),
+            'nonce'    => wp_create_nonce('wp_rest'),
+            'userId'   => get_current_user_id(),
+            'themeUrl' => get_template_directory_uri(),
+        ];
+        $wp_data_script = '<script>window.wpData=' . wp_json_encode($wp_data, JSON_UNESCAPED_SLASHES) . ';</script>';
 
-        // SEO/Knowledge Panel Crucial Links (previously only in header.php)
-        $me_links = '
-    <link rel="me" href="https://www.wikidata.org/wiki/Q136551855">
-    <link rel="me" href="https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154">
-    <link rel="me" href="https://www.instagram.com/djzeneyer/">
-    <link rel="me" href="https://soundcloud.com/djzeneyer">
-    <style>#wpadminbar { display: none !important; } html { margin-top: 0 !important; }</style>
-';
-        $wp_head_content .= $me_links;
+        if (strpos($html_content, 'window.wpData') === false) {
+            $html_content = str_replace('</body>', $wp_data_script . "\n</body>", $html_content);
+        }
 
-        ob_start();
-        wp_footer();
-        $wp_footer_content = (string)ob_get_clean();
-
-        // Inject wp_head just before </head>
-        $html_content = str_replace('</head>', $wp_head_content . "\n</head>", $html_content);
-        
-        // Inject wp_footer just before </body>
-        $html_content = str_replace('</body>', $wp_footer_content . "\n</body>", $html_content);
-
-        // Replace <html lang="en"> with WordPress language attributes if needed
-        $lang_attrs = get_language_attributes();
-        $html_content = preg_replace('/<html[^>]*>/i', '<html ' . $lang_attrs . '>', $html_content);
-
+        header('Content-Type: text/html; charset=UTF-8');
         echo $html_content;
         exit;
     }
@@ -144,9 +143,10 @@ if ($serve_file) {
     exit;
 }
 
-// 6. Fallback: Serve o SPA shell para rotas dinâmicas/privadas sem prerender (ex: /dashboard, /my-account).
-// Chegando aqui significa: não é asset, não é rota WP, sem arquivo prerendered → React monta no cliente.
+// 6. Fallback: se a rota não foi reconhecida como SPA válida, preserve o 404 real.
+status_header(404);
+nocache_headers();
 get_header();
-echo '<div id="root"></div>';
+echo '<main id="content" class="container mx-auto px-4 py-24"><h1>Page not found</h1></main>';
 get_footer();
 exit;
