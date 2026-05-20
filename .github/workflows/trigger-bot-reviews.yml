@@ -1,14 +1,14 @@
-name: 🤖 Trigger All Bot Reviews
+name: 🤖 Trigger Bot Reviews
 
-# CodeRabbit, Codex e Jules precisam de um prompt explícito para revisar.
-# Este workflow garante que os bots recebam prompt em TODOS os PRs,
+# CodeRabbit e Codex precisam de um prompt explícito para revisar.
+# Este workflow garante que os reviewers recebam prompt em TODOS os PRs,
 # incluindo PRs criados por bots (Jules, Bolt).
 #
 # Estrutura:
 # - concurrency: serializa triggers por branch base → evita burst que consome
 #   o rate limit do CodeRabbit quando vários PRs são abertos em sequência.
 # - sleep entre steps: espaça as chamadas dentro de um mesmo PR.
-# - Jules: não recebe @jules em PRs criados pelo próprio Jules (evita loop de noise).
+# - Jules: não é usado como reviewer automático. Jules cria PRs; não revisa PRs de terceiros.
 
 on:
   pull_request_target:
@@ -26,7 +26,7 @@ concurrency:
 
 jobs:
   trigger-reviews:
-    name: Trigger CodeRabbit + Codex + Jules
+    name: Trigger CodeRabbit + Codex
     runs-on: ubuntu-latest
     steps:
       # ── CodeRabbit ────────────────────────────────────────────────────────
@@ -38,7 +38,7 @@ jobs:
             const marker = '<!-- coderabbit-auto-review -->';
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
               issue_number,
@@ -76,7 +76,7 @@ jobs:
             const marker = '<!-- codex-auto-review -->';
             const { owner, repo } = context.repo;
             const issue_number = context.payload.pull_request.number;
-            const { data: comments } = await github.rest.issues.listComments({
+            const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
               issue_number,
@@ -103,47 +103,5 @@ jobs:
                 '- SEO por página com `<HeadlessSEO />`; rotas privadas usam `noindex`',
                 '- safeUrl(null) retorna "#" truthy — sempre passar segundo argumento',
                 '- Consulte `AGENTS.md` e `AI_CONTEXT_INDEX.md` para regras completas',
-              ].join('\n'),
-            });
-
-      # ── Jules ─────────────────────────────────────────────────────────────
-      # Jules NÃO recebe @jules em PRs criados pelo próprio Jules.
-      # Isso evita o loop onde Jules responde ao trigger com check-in nos seus
-      # próprios PRs sem fazer revisão útil.
-      - name: Trigger Jules review (apenas PRs não criados por bots)
-        if: >
-          github.event.pull_request.user.login != 'google-labs-jules' &&
-          github.event.pull_request.user.type != 'Bot'
-        uses: actions/github-script@v9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const marker = '<!-- jules-auto-review -->';
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-            const { data: comments } = await github.rest.issues.listComments({
-              owner,
-              repo,
-              issue_number,
-              per_page: 100,
-            });
-
-            if (comments.some((c) => c.body?.includes(marker))) {
-              core.info(`Jules prompt já existe no PR #${issue_number}; pulando.`);
-              return;
-            }
-
-            await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number,
-              body: [
-                marker,
-                '@jules Por favor, revise este PR.',
-                '',
-                'Verifique qualidade do código, possíveis bugs, impactos de performance',
-                'e conformidade com as regras do projeto.',
-                'Stack: React 19 + TypeScript 6 + Vite 8 + Tailwind 4 + WordPress Headless PHP 8.3.',
-                'Consulte `.jules/instructions.md` e `AI_CONTEXT_INDEX.md` para regras completas.',
               ].join('\n'),
             });

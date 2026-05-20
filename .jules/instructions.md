@@ -1,5 +1,6 @@
 # Instruções Operacionais para Jules — DJ Zen Eyer
-# Última revisão: 2026-03-27
+
+Última revisão: 2026-05-20
 
 ---
 
@@ -10,7 +11,8 @@
 - Não adicione comentários de revisão em PRs que você não criou.
 - Não aprove, solicite mudanças ou faça resumos de PRs de terceiros.
 - A revisão de código é responsabilidade do CodeRabbit (configurado em `.coderabbit.yaml`).
-- Seu papel: identificar melhorias, criar branches, implementar, abrir PR, aguardar revisão.
+- Seu papel: implementar tarefas explicitamente solicitadas, criar branches, abrir PRs focados e aguardar revisão humana/bots.
+- Se encontrar uma oportunidade não solicitada, registre como sugestão no resumo da tarefa. Não abra PR automaticamente.
 
 ---
 
@@ -36,7 +38,29 @@ Em caso de divergência, siga esta ordem:
 - Leia `.jules/context.md` completo.
 - Leia `AI_CONTEXT_INDEX.md`.
 - Verifique a stack real no `package.json` (nunca assuma versões de cabeça).
+- Rode `gh pr list --state open --limit 50` e não crie PR duplicado.
 - Nunca crie PRs que mexam em mais de um domínio ao mesmo tempo (ex: frontend + PHP juntos). Separe em PRs focados.
+- O título do PR deve descrever o que o diff realmente muda. Não use `fix`, `perf` ou `N+1` se o diff só altera comentário, documentação ou lint.
+- A descrição do PR deve listar validações executadas. Se uma validação relevante não foi executada, explique por quê.
+
+---
+
+## 3.1 Gate de criação de PR
+
+Antes de abrir PR, confirme todos os itens:
+
+1. A tarefa veio de pedido humano explícito, issue atribuída ou bug reproduzível no código atual.
+2. O diff resolve uma causa real, não apenas uma hipótese genérica extraída de comentário ou learning.
+3. O PR é pequeno, tem um domínio único e não duplica PR aberto.
+4. Existe validação proporcional ao risco (`npm run lint`, teste específico, diff manual ou benchmark reproduzível).
+
+Não abrir PR automaticamente para:
+
+- Limpeza de comentários, docblocks, changelog ou palavras como `FIX`, `CRITICAL`, `TODO`, salvo pedido humano explícito.
+- Micro-otimizações de renderização sem evidência de profiler, hot path ou regressão visível.
+- Refactors de performance em PHP/GamiPress/WooCommerce sem benchmark, fixture ou revisão manual planejada.
+- Mudanças em arquivos de contexto, workflows, autenticação, SEO/head, rotas ou deploy sem pedido explícito.
+- Alterações geradas apenas por `.jules/bolt.md`. Esse arquivo é memória, não backlog.
 
 ---
 
@@ -99,7 +123,7 @@ Em caso de divergência, siga esta ordem:
 
 - **Vite 8:** nunca `minify: 'esbuild'` — OXC é o padrão.
 - **Prerender:** nunca remover `scripts/prerender.js`.
-- **SSOT de rotas:** ao criar nova rota, atualizar `scripts/routes-config.json`.
+- **SSOT de rotas:** ao criar nova rota, atualizar `src/config/routes-slugs.json`.
 - **fetch-depth no CI:** manter `2`, nunca `0`.
 - **ESLint ignores:** `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer` — nunca remover.
 
@@ -123,7 +147,7 @@ Em caso de divergência, siga esta ordem:
 ## 8. Quando criar PR vs quando não criar
 
 **Criar PR:**
-- Performance: memoização, lazy load, otimização de queries
+- Performance: memoização, lazy load, otimização de queries apenas quando houver gargalo real, hot path ou benchmark reproduzível
 - Refactor focado: um arquivo ou feature por vez
 - Deps: bumps de patch/minor em lotes por categoria (devDeps separado de prodDeps)
 - Novas features pedidas explicitamente em issues
@@ -133,3 +157,16 @@ Em caso de divergência, siga esta ordem:
 - Mudanças em `deploy.yml` que alterem lógica de SSH ou secrets
 - Bumps de versão major sem verificação de compatibilidade
 - Qualquer coisa que toque em rotas de autenticação ou JWT
+- Qualquer alteração comment-only, salvo pedido humano direto
+
+---
+
+## 9. Uso correto de `.jules/bolt.md`
+
+`.jules/bolt.md` é um log de aprendizados. Ele não é fila de tarefas.
+
+- Não use entradas do Bolt como autorização para abrir PR.
+- Não propague datas futuras ou fora de ordem; use apenas a data real do dia.
+- Se uma learning parecer aplicável, primeiro prove que o padrão existe no código atual e que o benefício compensa o risco.
+- Em caso de conflito entre Bolt e código real, o código real vence.
+- Se a mudança for apenas cosmética, comentário ou micro-otimização, deixe como sugestão e aguarde pedido humano.
