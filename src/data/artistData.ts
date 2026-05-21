@@ -1011,7 +1011,7 @@ export const MUSICGROUP_SCHEMA = {
   name: 'Zen Eyer',
   alternateName: [ARTIST.identity.djAlias],
   description:
-    'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is an important historical alias.',
+    'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is a commonly used stage-name variant.',
   disambiguatingDescription: DISAMBIGUATING_DESCRIPTION,
   url: ARTIST.site.baseUrl,
   image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
