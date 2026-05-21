@@ -125,6 +125,10 @@ A distinctive musical movement focused on:
 - **Slovenian Zouk Marathon:** Official DJ listing at https://slovenianzoukmarathon.com/mood-makers/
 - **Wikidata entity (canonical):** https://www.wikidata.org/wiki/Q136551855 — all verifiable external references consolidated here.
 
+## Press Release Distribution
+
+- **PR.com:** Updated distribution release for Zen Eyer's 2026 tour announcement, with corrected official website and music/social links. This is a paid/self-submitted distribution page, not independent editorial coverage. Source: https://www.pr.com/press-release/952937
+
 ## Discography
 
 Zen Eyer releases original tracks, remixes, and edits for Brazilian Zouk dancing. All releases are distributed via Soundrop (one-time payment model, no annual fee).
@@ -221,8 +225,8 @@ The following decisions have been made by the project owner and must NOT be re-s
 ### Country count: 14 (SSOT)
 - Zen Eyer has performed in 14 countries in person. The source of truth is `src/data/artistData.ts` -> `ARTIST.stats.countriesPlayed`. Do NOT use "11", "11+", "15", or "15+" for the public in-person country count.
 
-### PR.com and IssueWire: not credible sources
-- PR.com and IssueWire are paid press release services with no editorial review. They do NOT count as credible sources for Wikipedia notability, LLM trust signals, or knowledge graph authority. Do NOT cite them or suggest them as evidence of media coverage.
+### PR.com and IssueWire: distribution sources only
+- PR.com and IssueWire are paid press release services with no editorial review. They do NOT count as credible sources for Wikipedia notability, LLM trust signals, or knowledge graph authority. Cite them only as distribution press releases, never as independent editorial coverage.
 
 ### Wikipedia: sources must be built first
 - Zen Eyer does not currently have a Wikipedia EN article. This is intentional — the community strategy requires building 3–5 independent editorial sources first (podcasts with transcripts, editorial dance media, international festival features). Do NOT suggest submitting to Wikipedia immediately without this groundwork.

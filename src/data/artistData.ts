@@ -272,6 +272,14 @@ export const ARTIST = {
       source: 'go&dance',
       date: '2024',
       type: 'Profile'
+    },
+    {
+      title: 'Brazilian Zouk DJ Zen Eyer Launches International Tour Across Europe and North America in 2026',
+      description: 'Updated PR.com distribution release for Zen Eyer 2026 tour announcements, with corrected official website and music/social links.',
+      url: 'https://www.pr.com/press-release/952937',
+      source: 'PR.com',
+      date: '2025-11-24',
+      type: 'Press Release'
     }
   ],
 
