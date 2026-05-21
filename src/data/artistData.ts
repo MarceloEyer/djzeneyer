@@ -371,7 +371,7 @@ export const ARTIST = {
       ipa: '/zɛn ˈaɪər/',
       pronunciationGuide: 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.',
       aliases: ['DJ Zen Eyer'],
-      disallowedAliases: ['Zen Ayer'],
+      commonMisspellings: ['Zen Ayer'],
     },
     mission:
       'Bring the soul and passion of Brazilian Zouk to dancers around the world through immersive DJ sets and creative remixes.',
@@ -420,7 +420,7 @@ export const getWhatsAppUrl = (message?: string) => {
 
 // Descrição de desambiguação única fonética (SSOT)
 export const DISAMBIGUATING_DESCRIPTION =
-  'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.';
+  'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used alias, and Zen Ayer is simply a common misspelling.';
 
 // Schema.org sameAs list (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
