@@ -1,14 +1,14 @@
 # Zen Eyer Pronunciation SSOT
 
 Version: 1.0.0
-Last updated: 2026-05-17
+Last updated: 2026-05-21
 
 This file is the single source of truth for pronunciation, voice-search disambiguation, and phonetic guidance for Zen Eyer.
 
 ## Canonical Pronunciation
 
 - Canonical artist name: `Zen Eyer`
-- Important historical alias: `DJ Zen Eyer`
+- Commonly used stage-name variant: `DJ Zen Eyer`
 - IPA: `/zɛn ˈaɪər/`
 - English guide: `Zen` sounds like Zen Buddhism. `Eyer` sounds like `Buyer` without the `B`, or like `Eye` followed by `er`.
 - Portuguese guide: `Zen Áier`
@@ -40,6 +40,5 @@ When opening support tickets with distributors or Amazon Music, use:
 - Canonical artist name: `Zen Eyer`
 - Requested searchable alias: `DJ Zen Eyer`
 - IPA: `/zɛn ˈaɪər/`
-- Common mistaken hearing to investigate: `Zen Ayer`
 
-`Zen Ayer` may be mentioned only in support/debug contexts as a likely speech-recognition error, not as a public alias.
+`Zen Ayer` may be mentioned only as a common misspelling or speech-recognition error, not as an official artist name.

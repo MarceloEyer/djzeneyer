@@ -1,16 +1,14 @@
 import React, { useState, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation, Trans } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { 
   DollarSign, 
   CreditCard, 
-  Banknote, 
   Heart, 
-  Music, 
   Globe, 
   Building2, 
-  CheckCircle2, 
   ChevronDown,
   Euro,
   PoundSterling,
@@ -95,10 +93,36 @@ const SupportArtistPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const [openCurrency, setOpenCurrency] = useState<string | null>(null);
 
-  const supportReasons = [
-    { icon: Music, title: t('support.reasons.music.title'), description: t('support.reasons.music.description') },
-    { icon: Heart, title: t('support.reasons.community.title'), description: t('support.reasons.community.description') },
-    { icon: Globe, title: t('support.reasons.worldwide.title'), description: t('support.reasons.worldwide.description') },
+  const supportActions = [
+    {
+      emoji: '🎵',
+      title: t('support.actions.streaming.title'),
+      description: t('support.actions.streaming.description'),
+      to: getLocalizedRoute('music', currentLang),
+      cta: t('support.actions.streaming.cta'),
+    },
+    {
+      emoji: '🛒',
+      title: t('support.actions.amazon.title'),
+      description: t('support.actions.amazon.description'),
+    },
+    {
+      emoji: '☕',
+      title: t('support.actions.pix.title'),
+      description: t('support.actions.pix.description'),
+    },
+    {
+      emoji: '🎟️',
+      title: t('support.actions.organizer.title'),
+      description: t('support.actions.organizer.description'),
+      to: getLocalizedRoute('booking', currentLang),
+      cta: t('support.actions.organizer.cta'),
+    },
+    {
+      emoji: '👍',
+      title: t('support.actions.engagement.title'),
+      description: t('support.actions.engagement.description'),
+    },
   ];
 
   const handleToggle = (currency: string) => {
@@ -106,11 +130,7 @@ const SupportArtistPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 min-h-screen bg-background relative overflow-hidden">
-      {/* Background decoration */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
-
+    <div className="pt-24 sm:pt-32 pb-16 sm:pb-24 min-h-screen bg-background">
       <HeadlessSEO
         title={t('support.seo.title')}
         description={t('support.seo.description')}
@@ -119,20 +139,45 @@ const SupportArtistPage: React.FC = () => {
         image="/images/zen-eyer-og-image.png"
       />
 
-      <div className="container mx-auto px-4 max-w-5xl relative z-10">
+      <div className="container mx-auto px-4 max-w-5xl">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
             <Heart size={16} /> {t('common.footer_support_artist')}
           </div>
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-white tracking-tighter uppercase leading-[0.9]">
             <Trans i18nKey="support.header.title">
-               Apoie a <span className="text-primary">Música</span>
+              Support DJ <span className="text-primary">Zen Eyer</span>
             </Trans>
           </h1>
           <p className="text-base sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             {t('support.header.description')}
           </p>
         </motion.div>
+
+        <section className="mx-auto mb-16 max-w-4xl rounded-2xl border border-white/10 bg-surface/40 p-5 sm:p-8">
+          <div className="space-y-5">
+            {supportActions.map((action) => (
+              <div key={action.title} className="flex gap-4 rounded-xl border border-white/5 bg-black/15 p-4">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-2xl" aria-hidden="true">
+                  {action.emoji}
+                </div>
+                <div className="min-w-0">
+                  <h2 className="text-base font-black uppercase tracking-tight text-white sm:text-lg">
+                    {action.title}
+                  </h2>
+                  <p className="mt-1 text-sm leading-relaxed text-white/70 sm:text-base">
+                    {action.description}
+                  </p>
+                  {action.to && (
+                    <Link to={action.to} className="mt-3 inline-flex min-h-[44px] items-center text-sm font-bold text-primary transition-colors hover:text-white">
+                      {action.cta}
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Currency Accordions */}
         <div className="mb-20">
@@ -266,55 +311,9 @@ const SupportArtistPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Reasons & Business */}
-        <div className="grid lg:grid-cols-2 gap-8 items-stretch pt-12 sm:pt-20">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }} 
-            whileInView={{ opacity: 1, x: 0 }} 
-            viewport={{ once: true }} 
-            className="card p-5 sm:p-8 bg-surface/30 backdrop-blur-md"
-          >
-            <h3 className="text-2xl font-black font-display mb-8 uppercase tracking-widest flex items-center gap-2 text-white">
-              <Sparkles size={24} className="text-primary" /> {t('support.reasons.title')}
-            </h3>
-            <div className="space-y-6">
-              {supportReasons.map((reason, i) => (
-                <div key={i} className="flex gap-4">
-                  <div className="mt-1 p-2 bg-primary/10 rounded-lg text-primary h-fit">
-                    <reason.icon size={20} />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-white mb-1 uppercase tracking-tighter">{reason.title}</h4>
-                    <p className="text-white/65 text-sm leading-relaxed">{reason.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }} 
-            whileInView={{ opacity: 1, x: 0 }} 
-            viewport={{ once: true }} 
-            className="card p-5 sm:p-8 bg-gradient-to-br from-primary/10 to-accent/10 border-primary/30 flex flex-col justify-center text-center"
-          >
-            <Banknote className="mx-auto mb-6 text-primary" size={56} />
-            <h3 className="text-3xl font-black font-display mb-6 uppercase tracking-tighter text-white">{t('support.business.title')}</h3>
-            <p className="text-white/80 mb-8 leading-relaxed italic">
-              {t('support.business.description')}
-            </p>
-            <a 
-              href={`mailto:${ARTIST.contact.email}?subject=Booking Inquiry`} 
-              className="btn btn-primary btn-lg py-4 rounded-xl font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-            >
-              <CheckCircle2 size={20} className="mr-2" />
-              {t('support.business.contact')}
-            </a>
-          </motion.div>
-        </div>
-
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
-          <p className="text-2xl text-white/55 italic font-display lowercase tracking-tighter">
+          <Sparkles className="mx-auto mb-4 text-primary" size={24} />
+          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-white/70 sm:text-2xl">
             {t('support.thankYou')}
           </p>
         </motion.div>

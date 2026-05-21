@@ -228,7 +228,7 @@ const AboutPage: React.FC = () => {
         <div className="absolute top-0 left-0 w-full h-[150vh] overflow-hidden pointer-events-none -z-0">
           <div className="absolute top-[5%] left-[-10%] w-[60%] h-[40%] bg-primary/10 blur-[130px] rounded-full" />
           <div className="absolute top-[20%] left-[60%] w-[35%] h-[35%] bg-blue-500/5 blur-[100px] rounded-full" />
-          <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 blur-[120px] rounded-full animate-pulse" />
+          <div className="absolute top-[30%] right-[-10%] w-[50%] h-[50%] bg-secondary/10 blur-[120px] rounded-full" />
           <div className="absolute top-[50%] left-[-5%] w-[30%] h-[30%] bg-primary/5 blur-[80px] rounded-full" />
           <div className="absolute bottom-[10%] left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[100px] rounded-full" />
         </div>
@@ -504,7 +504,7 @@ const AboutPage: React.FC = () => {
               whileInView={ITEM_ANIMATE}
               viewport={VIEWPORT_ONCE}
               transition={FADE_IN_UP_TRANSITION}
-              className="bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl p-6 sm:p-10 md:p-12 border border-primary/30 text-center"
+              className="card bg-surface/50 rounded-2xl p-6 sm:p-10 md:p-12 border border-white/10 text-center"
             >
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">

@@ -417,7 +417,7 @@
   "news_page_title": "Releases & Notes | Zen Eyer",
   "news_page_meta_desc": "Official music releases, short event notes, festival reviews, and selected updates from Zen Eyer.",
   "news": {
-    "title": "Releases & Notes",
+    "title": "Releases & <1>Notes</1>",
     "subtitle": "Music releases, short event notes, festival reviews, and selected updates.",
     "live_feed": "Releases & Notes Feed",
     "curatorship": "Official Archive",
@@ -426,7 +426,7 @@
     "by": "By",
     "read_full": "READ FULL STORY",
     "latest_stories": "Latest Stories",
-    "latest_stories_title": "Latest Releases & Notes",
+    "latest_stories_title": "Latest Releases & <1>Notes</1>",
     "read_more": "Read More",
     "end_reached": "You've reached the end of recent updates.",
     "view_archive": "View Full Archive",
@@ -958,19 +958,28 @@
       "title": "PayPal",
       "description": "Quick and easy payments worldwide"
     },
-    "reasons": {
-      "title": "Why Support Helps",
-      "music": {
-        "title": "More Music for Dancers",
-        "description": "Support helps fund edits, remixes, hosting, distribution, and the quiet work behind sets made for Brazilian Zouk floors."
+    "actions": {
+      "streaming": {
+        "title": "Listen on streaming platforms",
+        "description": "Every play on Spotify or any streaming platform helps a lot and costs you nothing.",
+        "cta": "Open the music page"
       },
-      "community": {
-        "title": "A Stronger Zen Tribe",
-        "description": "Small contributions help keep the movement alive without turning every community moment into a sales campaign."
+      "amazon": {
+        "title": "Buy through my links",
+        "description": "If you are already buying something on Amazon, use my affiliate link when I share it. You pay the same price and I receive a small commission."
       },
-      "worldwide": {
-        "title": "Easier International Work",
-        "description": "Clear payment options make it easier for organizers and supporters in different countries to send money in the currency that works for them."
+      "pix": {
+        "title": "Send a PIX or direct support",
+        "description": "Want to send that positive energy directly? Send me a PIX or choose any payment method on this page. Any amount helps, and you can send a message with it."
+      },
+      "organizer": {
+        "title": "Talk to your local organizer",
+        "description": "Tell the organizer in your city or region about bringing Zen Eyer to a congress, festival, social, or party.",
+        "cta": "Open booking information"
+      },
+      "engagement": {
+        "title": "Your engagement already helps",
+        "description": "Following, liking, commenting, sharing, and saving posts already makes a real difference."
       }
     },
     "seo": {
@@ -979,8 +988,8 @@
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
-      "title": "Support the <1>Music</1>",
-      "description": "If Zen Eyer's music has given you a good dance, a useful track, or a moment you carried home, your support helps keep new sets, remixes, and community work moving. This page also lists official payment methods for organizers."
+      "title": "Support DJ <1>Zen Eyer</1>",
+      "description": "If you enjoy my work and want to help keep the cremosidade alive on the dance floor, here are a few simple ways to support it."
     },
     "payment": {
       "title": "Payment Methods",
@@ -994,12 +1003,7 @@
     "email": "Email",
     "phone": "Phone / Key",
     "sendPayment": "Send Payment via",
-    "business": {
-      "title": "For Organizers",
-      "description": "If you are paying a booking fee, travel share, deposit, or festival-related cost, use the official details on this page and include the event name, city, and date in your message.",
-      "contact": "Send Booking Details"
-    },
-    "thankYou": "Your support makes a real difference. Thank you."
+    "thankYou": "Thank you so much for the support. This is what helps me keep producing new music and bringing Brazilian Zouk cremosidade around the world. 🙏"
   },
   "events_no_results_filter": "Sorry, I couldn't find any events in this state. Maybe check the full schedule?",
   "quiz": {
