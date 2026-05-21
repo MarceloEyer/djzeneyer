@@ -46,6 +46,11 @@ const YouTubeMusicIcon = () => (
 
 const BUTTON_WHILE_HOVER = { scale: 1.02 };
 const BUTTON_WHILE_TAP = { scale: 0.98 };
+const LINK_INITIAL = { opacity: 0, x: -10 };
+const LINK_ANIMATE = { opacity: 1, x: 0 };
+const LINK_TRANSITION = { type: 'spring' as const, stiffness: 260, damping: 24 };
+const FOOTER_INITIAL = { opacity: 0 };
+const FOOTER_ANIMATE = { opacity: 1 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
@@ -224,7 +229,7 @@ const ZenLinkPageComponent = () => {
 
           <section className="space-y-3">
             <SmartMusicCard platforms={MUSIC_PLATFORMS} />
-            {MAIN_LINKS.map((link, index) => {
+            {MAIN_LINKS.map((link) => {
               const InnerContent = (
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/60 border border-white/5 text-primary">
@@ -245,7 +250,13 @@ const ZenLinkPageComponent = () => {
 
               if (link.internal) {
                 return (
-                  <motion.div key={link.title} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 * index }} whileTap={BUTTON_WHILE_TAP}>
+                  <motion.div
+                    key={link.title}
+                    initial={LINK_INITIAL}
+                    animate={LINK_ANIMATE}
+                    transition={LINK_TRANSITION}
+                    whileTap={BUTTON_WHILE_TAP}
+                  >
                     <Link to={link.url} className={className}>
                       {InnerContent}
                     </Link>
@@ -259,9 +270,9 @@ const ZenLinkPageComponent = () => {
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * index }}
+                  initial={LINK_INITIAL}
+                  animate={LINK_ANIMATE}
+                  transition={LINK_TRANSITION}
                   whileTap={BUTTON_WHILE_TAP}
                   className={className}
                 >
@@ -272,8 +283,8 @@ const ZenLinkPageComponent = () => {
           </section>
 
           <motion.footer
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={FOOTER_INITIAL}
+            animate={FOOTER_ANIMATE}
             className="mt-8 space-y-3"
           >
             <a
