@@ -10,7 +10,7 @@ import {
   Headphones, ChevronDown, ExternalLink as ExternalLinkIcon,
   Sparkles, Trophy, ArrowUpRight, MessageCircle, Wand2, Music2
 } from 'lucide-react';
-import { YouTubeIcon, InstagramIcon } from '../components/icons/BrandIcons';
+import { YouTubeIcon } from '../components/icons/BrandIcons';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useBranding } from '../contexts/BrandingContext';
 import { ARTIST } from '../data/artistData';
@@ -151,7 +151,6 @@ const ZenLinkPageComponent = () => {
   const MAIN_LINKS = [
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: getLocalizedRoute('booking', lang), icon: <Calendar className="h-5 w-5" />, highlight: true, internal: true },
     { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: getLocalizedRoute('quiz', lang), icon: <Wand2 className="h-5 w-5" />, highlight: true, internal: true },
-    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: safeUrl(artist.social.instagram?.url, '/'), icon: <InstagramIcon size={20} className="h-5 w-5" /> },
     { title: t('social.YouTube'), subtitle: t('zenlink.YouTube_subtitle'), url: safeUrl(artist.social.YouTube?.url, '/'), icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
     { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: safeUrl(getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), '/'), icon: <MessageCircle className="h-5 w-5" /> },
     { title: 'E-mail', subtitle: ARTIST.contact.email, url: safeUrl(`mailto:${ARTIST.contact.email}`, '/'), icon: <Mail className="h-5 w-5" /> },
