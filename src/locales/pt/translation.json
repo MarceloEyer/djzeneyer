@@ -80,7 +80,7 @@
     }
   },
   "news": {
-    "title": "Lan?amentos & Notas",
+    "title": "Lançamentos & <1>Notas</1>",
     "subtitle": "Lan?amentos musicais, notas curtas de eventos, reviews de festivais e atualiza??es selecionadas.",
     "back_to_list": "Voltar para Lan?amentos & Notas",
     "live_feed": "Feed de Lan?amentos & Notas",
@@ -89,7 +89,7 @@
     "featured": "Destaque",
     "read_full": "Ler História Completa",
     "latest_stories": "Últimas Histórias",
-    "latest_stories_title": "Lan?amentos & Notas Recentes",
+    "latest_stories_title": "Lançamentos & <1>Notas</1> Recentes",
     "read_more": "Leia Mais",
     "end_reached": "Você chegou ao fim da lista.",
     "view_archive": "Ver Arquivo",
@@ -961,19 +961,28 @@
       "title": "PayPal",
       "description": "Pagamentos rápidos e fáceis em todo o mundo"
     },
-    "reasons": {
-      "title": "Por Que o Apoio Ajuda",
-      "music": {
-        "title": "Mais Música Para Dançar",
-        "description": "O apoio ajuda a financiar edits, remixes, hospedagem, distribuição e o trabalho silencioso por trás de sets feitos para pistas de Brazilian Zouk."
+    "actions": {
+      "streaming": {
+        "title": "Ouça nas plataformas de streaming",
+        "description": "Cada play no Spotify ou em qualquer plataforma de streaming ajuda muito e não custa nada para você.",
+        "cta": "Abrir página de música"
       },
-      "community": {
-        "title": "Uma Zen Tribe Mais Forte",
-        "description": "Pequenas contribuições ajudam o movimento a continuar vivo sem transformar cada momento da comunidade em campanha de venda."
+      "amazon": {
+        "title": "Compre através dos meus links",
+        "description": "Se você já vai comprar qualquer coisa na Amazon, use meu link de afiliado quando eu compartilhar. Você paga o mesmo preço e eu recebo uma pequena comissão."
       },
-      "worldwide": {
-        "title": "Trabalho Internacional Mais Fácil",
-        "description": "Opções claras de pagamento facilitam para organizadores e apoiadores em diferentes países enviarem dinheiro na moeda que funciona melhor."
+      "pix": {
+        "title": "Mande um PIX ou apoio direto",
+        "description": "Quer mandar aquela energia positiva diretamente? Me manda um PIX ou escolha qualquer forma de envio desta página. Pode ser qualquer valor. E mande uma mensagem junto, adoro conversar!"
+      },
+      "organizer": {
+        "title": "Converse com o organizador da sua região",
+        "description": "Fale do Zen Eyer para tocar no congresso, festival ou festa da sua cidade ou região.",
+        "cta": "Abrir informações de booking"
+      },
+      "engagement": {
+        "title": "Seu engajamento já ajuda demais",
+        "description": "Curtir, compartilhar, seguir nas redes sociais, salvar e comentar nos posts já faz toda a diferença."
       }
     },
     "seo": {
@@ -982,8 +991,8 @@
       "keywords": "apoiar artista, contratar dj, métodos de pagamento, pagamentos internacionais, brazilian zouk dj"
     },
     "header": {
-      "title": "Apoie a <1>Música</1>",
-      "description": "Se a música do Zen Eyer já te deu uma boa dança, uma faixa útil ou um momento que foi com você para casa, seu apoio ajuda a manter novos sets, remixes e trabalhos de comunidade acontecendo. Esta página também reúne os meios oficiais de pagamento para organizadores."
+      "title": "Apoie o DJ <1>Zen Eyer</1>",
+      "description": "Se você gosta do meu trabalho e quer ajudar a manter a cremosidade nas pistas, aqui estão algumas formas simples de apoiar:"
     },
     "payment": {
       "title": "Métodos de Pagamento",
@@ -997,12 +1006,7 @@
     "email": "E-mail",
     "phone": "Telefone / Chave",
     "sendPayment": "Enviar Pagamento via",
-    "business": {
-      "title": "Para Organizadores",
-      "description": "Se você está pagando cachê, sinal, divisão de viagem ou algum custo relacionado a festival, use os dados oficiais desta página e inclua nome do evento, cidade e data na mensagem.",
-      "contact": "Enviar Dados do Booking"
-    },
-    "thankYou": "Seu apoio faz diferença de verdade. Obrigado."
+    "thankYou": "Valeu demais pelo apoio! É isso que permite que eu continue produzindo novas músicas e levando a cremosidade do Brazilian Zouk pelo mundo. 🙏"
   },
   "events_no_results_filter": "Puxa, não encontrei nenhum evento nesse estado. Que tal olhar a agenda completa?",
   "quiz": {

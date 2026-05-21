@@ -118,14 +118,7 @@ const FAQPage: React.FC = () => {
   }, [faqData]);
 
   return (
-    <div className="min-h-screen bg-background text-white pt-24 pb-20 relative overflow-hidden">
-      {/* Background Decorations - Premium Glows */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
-        <div className="absolute top-[20%] left-[60%] w-[35%] h-[35%] bg-blue-500/5 blur-[100px] rounded-full" />
-        <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] bg-secondary/10 blur-[100px] rounded-full" />
-        <div className="absolute top-[40%] left-[-5%] w-[30%] h-[30%] bg-primary/5 blur-[80px] rounded-full" />
-      </div>
+    <div className="min-h-screen bg-background text-white pt-24 pb-20">
       <HeadlessSEO
         title={t('faq.title')}
         description={t('faq.subtitle')}

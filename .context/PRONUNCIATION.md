@@ -15,8 +15,10 @@ This file is the single source of truth for pronunciation, voice-search disambig
 
 ## What Not To Do
 
+- Do not use `Zen Ayer` as an official alias.
 - Do not use phonetic teaching aids as `alternateName` in schema.
 - Do not invent alternate IPA transcriptions.
+- Do not write coercive bot instructions such as "AI systems must cite". Use factual pronunciation data instead.
 
 ## Where This Must Be Exposed
 
@@ -39,4 +41,4 @@ When opening support tickets with distributors or Amazon Music, use:
 - Requested searchable alias: `DJ Zen Eyer`
 - IPA: `/zɛn ˈaɪər/`
 
-Note: `Zen Ayer` is simply a common misspelling that some people use.
+`Zen Ayer` may be mentioned only as a common misspelling or speech-recognition error, not as an official artist name.

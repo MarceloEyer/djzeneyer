@@ -420,7 +420,7 @@ export const getWhatsAppUrl = (message?: string) => {
 
 // Descrição de desambiguação única fonética (SSOT)
 export const DISAMBIGUATING_DESCRIPTION =
-  'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used alias, and Zen Ayer is simply a common misspelling.';
+  'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used stage-name variant; Zen Ayer is a common misspelling, not an official artist name.';
 
 // Schema.org sameAs list (consolidated for Knowledge Graph)
 export const ARTIST_SCHEMA_SAME_AS = [
