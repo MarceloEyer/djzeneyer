@@ -120,11 +120,13 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
   );
 };
 
+import { getLocalizedRoute } from '../config/routes';
+import { Link } from 'react-router-dom';
+
 const ZenLinkPageComponent = () => {
   const { t, i18n } = useTranslation();
   const { artist } = useBranding();
-  const quizSlug = i18n.language === 'pt' ? 'perguntas' : 'quiz';
-  const quizUrl = `${artist.site.baseUrl}${i18n.language === 'pt' ? '/pt' : ''}/${quizSlug}`;
+  const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
   const MUSIC_PLATFORMS = [
     { name: 'SoundCloud', icon: <Music2 className="w-5 h-5" />, rawUrl: artist.social.soundcloud?.url, color: '#ff5500' },
@@ -143,9 +145,8 @@ const ZenLinkPageComponent = () => {
   ];
 
   const MAIN_LINKS = [
-    { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: safeUrl(`${artist.site.baseUrl}/work-with-me`, '/'), icon: <Calendar className="h-5 w-5" />, highlight: true },
-    { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: safeUrl(quizUrl, '/'), icon: <Wand2 className="h-5 w-5" />, highlight: true },
-    { title: 'Instagram', subtitle: `${artist.social.instagram?.handle || '@djzeneyer'} • ${t('zenlink.instagram_subtitle')}`, url: safeUrl(artist.social.instagram?.url, '/'), icon: <InstagramIcon size={20} className="h-5 w-5" /> },
+    { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: getLocalizedRoute('booking', lang), icon: <Calendar className="h-5 w-5" />, highlight: true, internal: true },
+    { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: getLocalizedRoute('quiz', lang), icon: <Wand2 className="h-5 w-5" />, highlight: true, internal: true },
     { title: t('social.YouTube'), subtitle: t('zenlink.YouTube_subtitle'), url: safeUrl(artist.social.YouTube?.url, '/'), icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
     { title: 'WhatsApp', subtitle: t('zenlink.contact_direct'), url: safeUrl(getDynamicWhatsAppUrl(artist.identity.whatsapp || ARTIST.contact.whatsapp.number, t('zenlink.whatsapp_message')), '/'), icon: <MessageCircle className="h-5 w-5" /> },
     { title: 'E-mail', subtitle: ARTIST.contact.email, url: safeUrl(`mailto:${ARTIST.contact.email}`, '/'), icon: <Mail className="h-5 w-5" /> },
@@ -223,21 +224,8 @@ const ZenLinkPageComponent = () => {
 
           <section className="space-y-3">
             <SmartMusicCard platforms={MUSIC_PLATFORMS} />
-            {MAIN_LINKS.map((link, index) => (
-              <motion.a
-                key={link.title}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 * index }}
-                whileTap={BUTTON_WHILE_TAP}
-                className={`group block rounded-2xl border p-4 transition-all duration-300 ${link.highlight
-                  ? 'border-primary/40 bg-gradient-to-r from-primary/15 to-transparent hover:border-primary/60 shadow-lg shadow-primary/5'
-                  : 'border-white/5 bg-black/20 hover:bg-black/40 hover:border-white/20'
-                  }`}
-              >
+            {MAIN_LINKS.map((link, index) => {
+              const InnerContent = (
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/60 border border-white/5 text-primary">
                     {link.icon}
@@ -248,8 +236,39 @@ const ZenLinkPageComponent = () => {
                   </div>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
                 </div>
-              </motion.a>
-            ))}
+              );
+              
+              const className = `group block rounded-2xl border p-4 transition-all duration-300 ${link.highlight
+                  ? 'border-primary/40 bg-gradient-to-r from-primary/15 to-transparent hover:border-primary/60 shadow-lg shadow-primary/5'
+                  : 'border-white/5 bg-black/20 hover:bg-black/40 hover:border-white/20'
+                  }`;
+
+              if (link.internal) {
+                return (
+                  <motion.div key={link.title} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 * index }} whileTap={BUTTON_WHILE_TAP}>
+                    <Link to={link.url} className={className}>
+                      {InnerContent}
+                    </Link>
+                  </motion.div>
+                );
+              }
+
+              return (
+                <motion.a
+                  key={link.title}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  whileTap={BUTTON_WHILE_TAP}
+                  className={className}
+                >
+                  {InnerContent}
+                </motion.a>
+              );
+            })}
           </section>
 
           <motion.footer
