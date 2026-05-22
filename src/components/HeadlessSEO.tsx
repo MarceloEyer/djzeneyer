@@ -216,10 +216,20 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   }
   const htmlLangAttribute = currentLocale === 'pt_BR' ? 'pt-BR' : 'en';
   const { authorFirstName, authorLastName } = React.useMemo(() => {
-    const nameParts = artist.identity.fullName.split(' ').filter(Boolean);
+    // ⚡ Bolt: Replace allocating split() with zero-allocation indexOf/slice for string extraction
+    const fullName = artist.identity.fullName.trim();
+    const firstSpaceIndex = fullName.indexOf(' ');
+
+    if (firstSpaceIndex === -1) {
+      return {
+        authorFirstName: fullName || artist.identity.stageName,
+        authorLastName: artist.identity.stageName
+      };
+    }
+
     return {
-      authorFirstName: nameParts[0] || artist.identity.stageName,
-      authorLastName: nameParts.slice(1).join(' ') || artist.identity.stageName
+      authorFirstName: fullName.slice(0, firstSpaceIndex) || artist.identity.stageName,
+      authorLastName: fullName.slice(firstSpaceIndex + 1).trim() || artist.identity.stageName
     };
   }, [artist.identity.fullName, artist.identity.stageName]);
   const isProfileType = type === 'profile';

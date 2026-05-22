@@ -136,3 +136,6 @@
 
 **Learning:** Declaring static inline arrays like `[0, 1, 2]` or `['leader', 'follower']` inside a React component return creates a new array reference on each render.
 **Action:** Extract reused static arrays to module scope when they are used for render iteration. For dynamic lengths, prefer the clearest expression and avoid claiming allocation savings unless the rendered children themselves are also memoized.
+## 2026-05-18 - Replacing `String.prototype.split()` with zero-allocation alternatives
+**Learning:** `String.prototype.split()` creates an intermediate array, which adds overhead and garbage collection pressure, particularly in hot paths like routing maps or render loops.
+**Action:** When extracting substrings or indices in performance-critical code paths, utilize zero-allocation native string methods like `indexOf()` combined with `slice()` instead of chained `.split()` calls. Focus primarily on hot paths and leave isolated, infrequent calls alone.
