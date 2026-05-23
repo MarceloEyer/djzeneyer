@@ -11,7 +11,10 @@ const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775'
 const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID || 'f8f1216ea03be95a3ea91c7ebe7117e7';
 const SITE_BASE_URL = process.env.SITE_BASE_URL || 'https://djzeneyer.com';
 const PRERENDER_PORT = parsePrerenderPort(process.env.PRERENDER_PORT);
-const INTERNAL_API_EVENTS = `${SITE_BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=365`;
+const PRERENDER_HOME_EVENTS_LIMIT = 3;
+const PRERENDER_EVENTS_LIST_LIMIT = 50;
+const PRERENDER_EVENTS_DAYS = 365;
+const INTERNAL_API_EVENTS = `${SITE_BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=${PRERENDER_EVENTS_DAYS}&limit=${PRERENDER_EVENTS_LIST_LIMIT}`;
 const EVENTS_ROUTE_EN = '/zouk-events';
 const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
 const bandsintownArtistEndpoint = `https://rest.bandsintown.com/artists/${BANDSINTOWN_ARTIST_ID}/events?app_id=${BANDSINTOWN_APP_ID}&date=upcoming`;
@@ -236,6 +239,52 @@ function buildCanonicalPath(event, lang = 'en') {
   return `${base}/${eventDate}-${titlePart}-${event.event_id}`;
 }
 
+function localizeCanonicalPath(event, lang = 'en') {
+  const existingPath = safeText(event?.canonical_path);
+  if (!existingPath) return buildCanonicalPath(event, lang);
+
+  if (lang === 'pt') {
+    if (existingPath.startsWith(`${EVENTS_ROUTE_PT}/`)) return existingPath;
+    if (existingPath.startsWith(`${EVENTS_ROUTE_EN}/`)) {
+      return `${EVENTS_ROUTE_PT}${existingPath.slice(EVENTS_ROUTE_EN.length)}`;
+    }
+  }
+
+  if (existingPath.startsWith(`${EVENTS_ROUTE_EN}/`)) return existingPath;
+  if (existingPath.startsWith(`${EVENTS_ROUTE_PT}/`)) {
+    return `${EVENTS_ROUTE_EN}${existingPath.slice(EVENTS_ROUTE_PT.length)}`;
+  }
+
+  return buildCanonicalPath(event, lang);
+}
+
+function normalizeZenBitEvent(raw, lang = 'en') {
+  const normalized = {
+    ...raw,
+    event_id: String(raw?.event_id ?? raw?.id ?? ''),
+    title: safeText(raw?.title) || 'DJ Zen Eyer',
+    starts_at: safeText(raw?.starts_at || raw?.datetime || ''),
+    timezone: raw?.timezone || undefined,
+    location: {
+      venue: safeText(raw?.location?.venue),
+      city: safeText(raw?.location?.city),
+      region: safeText(raw?.location?.region),
+      country: safeText(raw?.location?.country),
+      latitude: raw?.location?.latitude ? String(raw.location.latitude) : undefined,
+      longitude: raw?.location?.longitude ? String(raw.location.longitude) : undefined,
+    },
+    source_url: safeText(raw?.source_url || raw?.url),
+  };
+
+  const canonical_path = localizeCanonicalPath(normalized, lang);
+
+  return {
+    ...normalized,
+    canonical_path,
+    canonical_url: `${SITE_BASE_URL}${canonical_path}`,
+  };
+}
+
 function normalizeBandsintownEvent(raw, lang = 'en') {
   const venue = raw?.venue || {};
   const startsAt = raw?.datetime || raw?.starts_at || '';
@@ -340,11 +389,11 @@ async function fetchEvents() {
 
     const items = Array.isArray(raw) ? raw : [];
     
-    // Se vier da API interna, já está normalizado. Mas passamos pelo normalizeBandsintownEvent 
-    // novamente para garantir que a estrutura 'detailById' (en/pt) seja criada corretamente
-    // se o prerender precisar de campos específicos de tradução.
-    const eventsEn = items.map(item => normalizeBandsintownEvent(item, 'en')).filter(e => e.event_id);
-    const eventsPt = items.map(item => normalizeBandsintownEvent(item, 'pt')).filter(e => e.event_id);
+    // Internal API events are already normalized by zen-bit. Only normalize raw
+    // Bandsintown fallback payloads from scratch.
+    const normalizer = source === 'INTERNAL_API' ? normalizeZenBitEvent : normalizeBandsintownEvent;
+    const eventsEn = items.map(item => normalizer(item, 'en')).filter(e => e.event_id);
+    const eventsPt = items.map(item => normalizer(item, 'pt')).filter(e => e.event_id);
     const detailById = Object.fromEntries(eventsEn.map((event, index) => [event.event_id, { en: event, pt: eventsPt[index] }]));
 
     const payload = {
@@ -439,6 +488,43 @@ async function fetchMenuData() {
   return result;
 }
 
+function getRouteLang(route) {
+  return route === '/pt' || route.startsWith('/pt/') ? 'pt' : 'en';
+}
+
+function isHomeRoute(route) {
+  return route === '/' || route === '' || route === '/pt';
+}
+
+function isEventsListRoute(route) {
+  return route === EVENTS_ROUTE_EN || route === EVENTS_ROUTE_PT;
+}
+
+function buildPrerenderPayloadForRoute(route, bandsintownData, menuData) {
+  const lang = getRouteLang(route);
+  const payload = {
+    menu: {
+      en: menuData.en || [],
+      pt: menuData.pt || [],
+    },
+    fetchedAt: bandsintownData.fetchedAt,
+  };
+
+  if (isHomeRoute(route)) {
+    payload.events = { [lang]: (bandsintownData.list?.[lang] || []).slice(0, PRERENDER_HOME_EVENTS_LIMIT) };
+    payload.eventsLimit = PRERENDER_HOME_EVENTS_LIMIT;
+    payload.eventsMode = 'upcoming';
+    payload.eventsDays = PRERENDER_EVENTS_DAYS;
+  } else if (isEventsListRoute(route)) {
+    payload.events = { [lang]: bandsintownData.list?.[lang] || [] };
+    payload.eventsLimit = PRERENDER_EVENTS_LIST_LIMIT;
+    payload.eventsMode = 'upcoming';
+    payload.eventsDays = PRERENDER_EVENTS_DAYS;
+  }
+
+  return payload;
+}
+
 async function prerender() {
   let browser = null;
   try {
@@ -464,13 +550,7 @@ async function prerender() {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
-    const prerenderPayloadObj = {
-      events: bandsintownData.list,
-      menu: menuData,
-      fetchedAt: bandsintownData.fetchedAt,
-    };
-
-    const createPrerenderPage = async () => {
+    const createPrerenderPage = async (routePayload) => {
       const page = await browser.newPage();
 
       // 🛡️ API INTERCEPTION: Global for all pages
@@ -478,7 +558,7 @@ async function prerender() {
       // Isso elimina os fetches de events e menu do critical path de carregamento.
       await page.evaluateOnNewDocument((payload) => {
         window.__PRERENDER_DATA__ = payload;
-      }, prerenderPayloadObj);
+      }, routePayload);
 
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -588,7 +668,8 @@ async function prerender() {
           unlinkSync(outputPath);
         }
 
-        page = await createPrerenderPage();
+        const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, menuData);
+        page = await createPrerenderPage(prerenderPayloadObj);
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
         try {
@@ -614,7 +695,12 @@ async function prerender() {
             : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
 
           // Injeta antes do </head> (garante que está disponível antes do JS principal)
-          if (!finalHtml.includes('window.__PRERENDER_DATA__')) {
+          if (finalHtml.includes('window.__PRERENDER_DATA__')) {
+            finalHtml = finalHtml.replace(
+              /<script>window\.__PRERENDER_DATA__=.*?<\/script>/s,
+              prerenderInlineScript
+            );
+          } else {
             finalHtml = finalHtml.replace('</head>', `${prerenderInlineScript}\n</head>`);
           }
 

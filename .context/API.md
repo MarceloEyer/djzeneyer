@@ -56,13 +56,21 @@ Alias endpoints also exist under `/auth/*`:
 
 ## Events (`zen-bit/v2`)
 
-- `GET /events`
+- `GET /events?mode=upcoming|past|all&days=1..730&limit=1..200&lang=en|pt`
 - `GET /events/schema`
 - `GET /events/{event_id}`
 - `GET /events/{event_id}/schema`
 - `POST /admin/fetch-now` (admin)
 - `POST /admin/clear-cache` (admin)
 - `GET /admin/health` (admin)
+
+Consumption model:
+
+- `zen-bit` is the SSOT for event selection, date filtering, sorting, canonical paths, cache headers, and MusicEvent schema.
+- Home should request or prerender only the next 3 upcoming events.
+- The public Events page should request or prerender the upcoming list payload, currently capped at 50 events.
+- React may derive render-only fields such as `detailHref`, parsed dates, and display labels, but should not duplicate backend event selection rules.
+- Prerender may inline route-scoped event payloads for bots and first paint. The frontend must treat those as initial cache data, not as a global complete event store.
 
 ## Gamification (`zengame/v1`)
 

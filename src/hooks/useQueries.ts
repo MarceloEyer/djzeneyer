@@ -263,6 +263,9 @@ declare global {
         en?: WPPost[];
         pt?: WPPost[];
       };
+      eventsLimit?: number;
+      eventsMode?: FetchEventsParams['mode'];
+      eventsDays?: number;
       fetchedAt?: string;
     };
   }
@@ -287,6 +290,34 @@ const getPrerenderData = <T>(
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
 const getPrerenderMenu = (lang?: string) => getPrerenderData<MenuItem[]>(lang, 'menu');
 const getPrerenderNews = (lang?: string) => getPrerenderData<WPPost[]>(lang, 'news');
+
+const withProcessedEvents = (
+  events: ZenBitEventListItem[],
+  lang?: string
+): ZenBitEventListItem[] => {
+  const eventsDetailRoute = getLocalizedRoute('events-detail', (lang || 'en') as Language);
+
+  return events.map(event => {
+    const eventDate = new Date(event.starts_at);
+    if (!Number.isFinite(eventDate.getTime())) {
+      return null;
+    }
+
+    const identifier = event.canonical_path
+      ? event.canonical_path.split('/').pop() || event.event_id
+      : event.event_id;
+
+    return {
+      ...event,
+      _processed: {
+        eventDate,
+        day: eventDate.getDate(),
+        detailHref: generatePath(eventsDetailRoute, { id: identifier })
+      }
+    };
+  }).filter((event): event is ZenBitEventListItem => event !== null);
+};
+
 export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   const prerenderMenu = getPrerenderMenu(lang);
   if (prerenderMenu && prerenderMenu.length > 0) return prerenderMenu;
@@ -329,8 +360,19 @@ export const fetchEventsFn = async ({
   upcomingOnly,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
   const prerenderEvents = getPrerenderEvents(lang);
-  if (prerenderEvents && prerenderEvents.length > 0) {
-    return prerenderEvents.slice(0, limit);
+  const prerenderEventsLimit = window.__PRERENDER_DATA__?.eventsLimit;
+  const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
+  const requestedDays = date === undefined ? (days ?? 365) : undefined;
+  const prerenderEventsMode = window.__PRERENDER_DATA__?.eventsMode;
+  const prerenderEventsDays = window.__PRERENDER_DATA__?.eventsDays;
+  const canUsePrerenderEvents =
+    requestedMode === prerenderEventsMode &&
+    date === undefined &&
+    requestedDays === prerenderEventsDays &&
+    prerenderEventsLimit !== undefined &&
+    limit <= prerenderEventsLimit;
+  if (canUsePrerenderEvents && prerenderEvents && prerenderEvents.length > 0) {
+    return withProcessedEvents(prerenderEvents.slice(0, limit), lang);
   }
 
   try {
@@ -363,23 +405,7 @@ export const fetchEventsFn = async ({
     }
 
     // Optimization: Pre-process dates and IDs at fetch time to avoid O(N) on render
-    const eventsDetailRoute = getLocalizedRoute('events-detail', (lang || 'en') as Language);
-    
-    return events.map(event => {
-      const eventDate = new Date(event.starts_at);
-      const identifier = event.canonical_path
-        ? event.canonical_path.split('/').pop() || event.event_id
-        : event.event_id;
-
-      return {
-        ...event,
-        _processed: {
-          eventDate,
-          day: eventDate.getDate(),
-          detailHref: generatePath(eventsDetailRoute, { id: identifier })
-        }
-      };
-    });
+    return withProcessedEvents(events, lang);
   } catch (err) {
     console.error('Fetch Events failed:', err);
     return [];
