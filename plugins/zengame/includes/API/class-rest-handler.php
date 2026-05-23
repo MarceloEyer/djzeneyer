@@ -270,6 +270,18 @@ final class REST_Handler
         }
         if (!empty($type_ids)) {
             \_prime_post_caches($type_ids, false, true);
+
+            // ⚡ Bolt: Prime attachment (thumbnail) caches for all point types to prevent N+1 queries during get_the_post_thumbnail_url
+            $attachment_ids = [];
+            foreach ($type_ids as $id) {
+                $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
+                if ($thumbnail_id > 0) {
+                    $attachment_ids[] = $thumbnail_id;
+                }
+            }
+            if (!empty($attachment_ids)) {
+                \_prime_post_caches(\array_unique($attachment_ids), false, true);
+            }
         }
 
         $points = [];
@@ -429,6 +441,18 @@ final class REST_Handler
             $rank_ids = \array_column($ranks, 'ID');
             \_prime_post_caches($rank_ids, false, true);
             \update_meta_cache('post', $rank_ids);
+
+            // ⚡ Bolt: Prime attachment (thumbnail) caches for all ranks to prevent N+1 queries during get_the_post_thumbnail_url
+            $attachment_ids = [];
+            foreach ($rank_ids as $id) {
+                $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
+                if ($thumbnail_id > 0) {
+                    $attachment_ids[] = $thumbnail_id;
+                }
+            }
+            if (!empty($attachment_ids)) {
+                \_prime_post_caches(\array_unique($attachment_ids), false, true);
+            }
         }
 
         if (empty($ranks)) {
@@ -526,6 +550,18 @@ final class REST_Handler
                 $batch_ids = \array_values(\array_unique(\array_map(static fn($e) => $e['post']->ID, $batch)));
                 \_prime_post_caches($batch_ids, false, true);
                 \update_meta_cache('post', $batch_ids);
+
+                // ⚡ Bolt: Prime attachment (thumbnail) caches to prevent N+1 queries during get_the_post_thumbnail_url
+                $attachment_ids = [];
+                foreach ($batch_ids as $id) {
+                    $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
+                    if ($thumbnail_id > 0) {
+                        $attachment_ids[] = $thumbnail_id;
+                    }
+                }
+                if (!empty($attachment_ids)) {
+                    \_prime_post_caches(\array_unique($attachment_ids), false, true);
+                }
             }
 
             // Fase 3: monta resultado com cache quente
