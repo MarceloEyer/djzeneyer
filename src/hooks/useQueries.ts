@@ -299,6 +299,10 @@ const withProcessedEvents = (
 
   return events.map(event => {
     const eventDate = new Date(event.starts_at);
+    if (!Number.isFinite(eventDate.getTime())) {
+      return null;
+    }
+
     const identifier = event.canonical_path
       ? event.canonical_path.split('/').pop() || event.event_id
       : event.event_id;
@@ -311,7 +315,7 @@ const withProcessedEvents = (
         detailHref: generatePath(eventsDetailRoute, { id: identifier })
       }
     };
-  });
+  }).filter((event): event is ZenBitEventListItem => event !== null);
 };
 
 export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
@@ -358,12 +362,13 @@ export const fetchEventsFn = async ({
   const prerenderEvents = getPrerenderEvents(lang);
   const prerenderEventsLimit = window.__PRERENDER_DATA__?.eventsLimit;
   const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
+  const requestedDays = date === undefined ? (days ?? 365) : undefined;
   const prerenderEventsMode = window.__PRERENDER_DATA__?.eventsMode;
   const prerenderEventsDays = window.__PRERENDER_DATA__?.eventsDays;
   const canUsePrerenderEvents =
     requestedMode === prerenderEventsMode &&
     date === undefined &&
-    days === prerenderEventsDays &&
+    requestedDays === prerenderEventsDays &&
     prerenderEventsLimit !== undefined &&
     limit <= prerenderEventsLimit;
   if (canUsePrerenderEvents && prerenderEvents && prerenderEvents.length > 0) {

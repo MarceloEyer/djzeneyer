@@ -503,7 +503,10 @@ function isEventsListRoute(route) {
 function buildPrerenderPayloadForRoute(route, bandsintownData, menuData) {
   const lang = getRouteLang(route);
   const payload = {
-    menu: { [lang]: menuData[lang] || [] },
+    menu: {
+      en: menuData.en || [],
+      pt: menuData.pt || [],
+    },
     fetchedAt: bandsintownData.fetchedAt,
   };
 

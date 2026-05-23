@@ -36,24 +36,24 @@ interface UserStats {
   recentAchievements: number;
 }
 
+interface ProfileForm {
+  realName: string;
+  preferredName: string;
+  facebookUrl: string;
+  instagramUrl: string;
+  danceRole: string[];
+  gender: '' | 'male' | 'female' | 'non-binary';
+}
+
 const MyAccountContent: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { user, loading, logout } = useUser();
+  const { user, loadingInitial, logout } = useUser();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'overview';
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const activeTab = searchParams.get('tab') || 'overview';
 
   const { data: gamipress, loading: loadingGP, error: errorGP } = useGamiPressContext();
-
-  // Sync state correctly if parameter changes externally while page is mounted
-  useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab && tab !== activeTab) {
-      setActiveTab(tab);
-    }
-  }, [searchParams, activeTab]);
 
   // ⚡ Bolt: Memoize combined achievements array to prevent O(N) reallocation during every component re-render
   const allAchievements = useMemo(() => [
@@ -63,19 +63,11 @@ const MyAccountContent: React.FC = () => {
 
   // Handle manual tab switching and URL update
   const handleTabChange = React.useCallback((tabId: string) => {
-    setActiveTab(tabId);
     setSearchParams({ tab: tabId });
   }, [setSearchParams]);
 
   // Profile form state
-  const [profileForm, setProfileForm] = useState({
-    realName: user?.name || '',
-    preferredName: '',
-    facebookUrl: '',
-    instagramUrl: '',
-    danceRole: [] as string[],
-    gender: '' as '' | 'male' | 'female' | 'non-binary'
-  });
+  const [profileDraft, setProfileDraft] = useState<Partial<ProfileForm>>({});
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
 
@@ -115,10 +107,10 @@ const MyAccountContent: React.FC = () => {
 
   // Redirect se não logado
   useEffect(() => {
-    if (!loading && !loadingGP && !user?.isLoggedIn) {
+    if (!loadingInitial && !loadingGP && !user?.isLoggedIn) {
       navigate(getLocalizedRoute('', currentLang));
     }
-  }, [user, loading, loadingGP, navigate, currentLang]);
+  }, [user, loadingInitial, loadingGP, navigate, currentLang]);
 
   // React Query Hooks
   const { data: profileData } = useProfileQuery(user?.token);
@@ -127,19 +119,19 @@ const MyAccountContent: React.FC = () => {
   const updateNewsletter = useUpdateNewsletterMutation(user?.token);
   const { data: orders = [], isLoading: loadingOrders } = useUserOrdersQuery(user?.id, user?.token, 5);
 
-  // Sync profile data to form state
-  useEffect(() => {
-    if (profileData) {
-      setProfileForm({
-        realName: profileData.real_name || user?.name || '',
-        preferredName: profileData.preferred_name || '',
-        facebookUrl: profileData.facebook_url || '',
-        instagramUrl: profileData.instagram_url || '',
-        danceRole: profileData.dance_role || EMPTY_STRING_ARRAY,
-        gender: profileData.gender || '',
-      });
-    }
-  }, [profileData, user?.name]);
+  const profileDefaults = useMemo<ProfileForm>(() => ({
+    realName: profileData?.real_name || user?.name || '',
+    preferredName: profileData?.preferred_name || '',
+    facebookUrl: profileData?.facebook_url || '',
+    instagramUrl: profileData?.instagram_url || '',
+    danceRole: profileData?.dance_role || EMPTY_STRING_ARRAY,
+    gender: profileData?.gender || '',
+  }), [profileData, user?.name]);
+
+  const profileForm = useMemo<ProfileForm>(() => ({
+    ...profileDefaults,
+    ...profileDraft,
+  }), [profileDefaults, profileDraft]);
 
 
   const handleLogout = React.useCallback(() => {
@@ -152,8 +144,8 @@ const MyAccountContent: React.FC = () => {
     }
   }, [logout, navigate, currentLang]);
 
-  const handleProfileChange = React.useCallback((field: string, value: string | string[]) => {
-    setProfileForm(prev => ({ ...prev, [field]: value }));
+  const handleProfileChange = React.useCallback((field: keyof ProfileForm, value: string | string[]) => {
+    setProfileDraft(prev => ({ ...prev, [field]: value }));
     setProfileSaved(false);
   }, []);
 
@@ -184,7 +176,7 @@ const MyAccountContent: React.FC = () => {
     { id: 'settings', label: t('account.tabs.settings'), icon: Settings, color: 'secondary' },
   ], [t]);
 
-  if (loading || (user?.isLoggedIn && loadingGP)) {
+  if (loadingInitial || (user?.isLoggedIn && loadingGP)) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24">
         <div className="text-center">

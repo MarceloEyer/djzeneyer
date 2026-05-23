@@ -24,6 +24,8 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Events SSOT:** `zen-bit/v2/events` is the source of truth for event selection, sorting, date windows, canonical paths, cache headers, and schema. React can add render-only fields, but should not duplicate backend filtering logic.
 - **Events prerender data:** `window.__PRERENDER_DATA__.events` must go through the same `_processed` enrichment as live API events. Components such as the home `EventsList` rely on `_processed.detailHref` and `_processed.day`; returning raw prerender items makes the home show "No events found" while `/events` still works.
 - **Route-scoped prerender payloads:** Home should inline only the next 3 events, `/zouk-events` should inline the list payload, and unrelated routes should not inline events. Track `eventsMode`, `eventsDays`, and `eventsLimit` so SPA navigation or different queries fetch `zen-bit` instead of reusing an incompatible inline cache.
+- **Prerender menu payloads:** Include both `menu.en` and `menu.pt` in every prerender payload. SPA language switches can otherwise fall back to the route locale menu and show the wrong navigation language.
+- **Prerender cache matching:** Normalize query defaults before comparing with `window.__PRERENDER_DATA__` metadata. For example, an omitted `days` parameter that defaults to 365 should still match a prerender payload tagged with `eventsDays: 365`.
 
 ## 🎨 Decisões de Marca & SEO
 
