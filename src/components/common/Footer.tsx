@@ -22,8 +22,7 @@ const Footer: React.FC = () => {
 
   const { mutate: subscribe, isPending: isSubmitting } = useSubscriptionMutation();
 
-  // ⚡ Bolt: Consolidate multiple getLocalizedRoute invocations into a single object map wrapped in useMemo.
-  // This prevents O(N) recalculations on every render cycle.
+  // This avoids recalculating static footer hrefs on every render cycle.
   const routes = useMemo(() => ({
     home: getLocalizedRoute('', currentLang),
     support: getLocalizedRoute('support', currentLang),
