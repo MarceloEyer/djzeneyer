@@ -667,24 +667,47 @@ class Rest_Routes
     private static function get_profile_data($user_id)
     {
         $user = get_userdata($user_id);
+        $meta = get_user_meta($user_id);
 
         // Avatar: prefer Google OAuth photo, then Gravatar (with 404 default so empty is returned if no Gravatar)
-        $google_avatar = get_user_meta($user_id, 'zeneyer_google_avatar', true);
+        $google_avatar = self::first_user_meta_value($meta, 'zeneyer_google_avatar');
         $avatar = $google_avatar ?: (function_exists('get_avatar_url') ? (get_avatar_url($user_id, ['size' => 200, 'default' => '404']) ?: '') : '');
 
         return [
             'id' => $user_id,
             'email' => $user->user_email,
             'display_name' => $user->display_name,
-            'real_name' => get_user_meta($user_id, 'zen_real_name', true),
-            'preferred_name' => get_user_meta($user_id, 'zen_preferred_name', true),
-            'facebook_url' => get_user_meta($user_id, 'zen_facebook_url', true),
-            'instagram_url' => get_user_meta($user_id, 'zen_instagram_url', true),
-            'dance_role' => get_user_meta($user_id, 'zen_dance_role', true) ?: [],
-            'gender' => get_user_meta($user_id, 'zen_gender', true),
+            'real_name' => self::first_user_meta_value($meta, 'zen_real_name'),
+            'preferred_name' => self::first_user_meta_value($meta, 'zen_preferred_name'),
+            'facebook_url' => self::first_user_meta_value($meta, 'zen_facebook_url'),
+            'instagram_url' => self::first_user_meta_value($meta, 'zen_instagram_url'),
+            'dance_role' => self::first_user_meta_value($meta, 'zen_dance_role', []),
+            'gender' => self::first_user_meta_value($meta, 'zen_gender'),
             'avatar' => $avatar,
             'user_registered_year' => intval(substr((string)$user->user_registered, 0, 4)),
         ];
+    }
+
+    /**
+     * Read first value from raw get_user_meta($user_id) payload.
+     *
+     * @param array<string, array<int, mixed>> $meta
+     * @param mixed $default
+     * @return mixed
+     */
+    private static function first_user_meta_value(array $meta, string $key, $default = '')
+    {
+        if (!isset($meta[$key][0])) {
+            return $default;
+        }
+
+        $value = maybe_unserialize($meta[$key][0]);
+
+        if ($value === '' || $value === null) {
+            return $default;
+        }
+
+        return $value;
     }
 
     /**

@@ -84,13 +84,15 @@ final class REST_Handler
                 return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
             }
 
+            $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
+
             $data = [
                 'user_id' => $user_id,
                 'stats' => [
                     'totalTracks' => self::$engine->get_user_total_tracks($user_id),
                     'eventsAttended' => self::$engine->get_user_events_attended($user_id),
-                    'streak' => (int) \get_user_meta($user_id, 'zen_login_streak', true),
-                    'streakFire' => ((int) \get_user_meta($user_id, 'zen_login_streak', true)) >= 3,
+                    'streak' => $streak,
+                    'streakFire' => $streak >= 3,
                 ],
                 'points' => self::get_user_points($user_id),
                 'rank' => self::get_user_rank_data($user_id),
