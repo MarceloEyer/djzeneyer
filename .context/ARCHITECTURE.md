@@ -37,6 +37,18 @@ Arquivos que precisam ficar na raiz do site em produção devem ter origem em `p
 - SEO headless: plugin `zen-seo-lite`.
 - Gamificacao: plugin `zengame`.
 
+## Eventos, prerender e consumo de recursos
+
+`zen-bit` e a fonte de verdade para eventos. O plugin decide selecao, modo (`upcoming`, `past`, `all`), janela de dias, limite, ordenacao, canonical path, cache HTTP e schema MusicEvent. O frontend consome `zen-bit/v2/events` via `useEventsQuery` e so adiciona campos de renderizacao, como `detailHref` e datas ja parseadas para os cards.
+
+O prerender existe principalmente para SEO, GEO, AEO, Knowledge Panel e first paint. Ele pode injetar `window.__PRERENDER_DATA__` como cache inicial por rota, mas esse payload deve ser pequeno e escopado:
+
+- Home: apenas os 3 proximos eventos.
+- Events: lista publica maior, atualmente limitada a 50 eventos.
+- Outras rotas: sem lista de eventos, exceto quando a propria rota dinamica do evento precisar de dados para renderizacao.
+
+Essa divisao evita over-fetch, reduz HTML inutil em paginas sem eventos, preserva dados estruturados para bots e mantem o plugin como SSOT.
+
 ## Fluxo operacional
 
 1. O usuario acessa a SPA.

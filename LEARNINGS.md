@@ -21,6 +21,9 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Vite Build:** Use sempre o minificador OXC (Vite 8 padrão). Nunca remover assets hashados antigos de `dist/assets` durante o deploy para evitar `ChunkLoadError`.
 - **safeUrl fallback:** `safeUrl(null)` retorna `'#'` (truthy). O padrão `safeUrl(url) || fallback` nunca funciona. Sempre: `safeUrl(url, '/fallback.svg')` para imagens, `safeUrl(url, '/')` para links.
 - **artistData.ts chaves capitalizadas:** As chaves `YouTube` e `YouTubeMusic` no objeto `social` são escritas com capital Y e T. Não usar `youtube` ou `youtubeMusic` (lowercase) — essas chaves não existem.
+- **Events SSOT:** `zen-bit/v2/events` is the source of truth for event selection, sorting, date windows, canonical paths, cache headers, and schema. React can add render-only fields, but should not duplicate backend filtering logic.
+- **Events prerender data:** `window.__PRERENDER_DATA__.events` must go through the same `_processed` enrichment as live API events. Components such as the home `EventsList` rely on `_processed.detailHref` and `_processed.day`; returning raw prerender items makes the home show "No events found" while `/events` still works.
+- **Route-scoped prerender payloads:** Home should inline only the next 3 events, `/zouk-events` should inline the list payload, and unrelated routes should not inline events. Track `eventsMode`, `eventsDays`, and `eventsLimit` so SPA navigation or different queries fetch `zen-bit` instead of reusing an incompatible inline cache.
 
 ## 🎨 Decisões de Marca & SEO
 

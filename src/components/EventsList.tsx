@@ -53,6 +53,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   // React Query: v2 defaults
   const { data: events = [], isLoading: loading, error } = useEventsQuery({
     mode: 'upcoming',
+    days: 365,
     limit,
     lang
   });
