@@ -573,7 +573,10 @@ export const useNewsQuery = (
   });
 };
 
-export const useNewsTaxonomiesQuery = (lang?: string) => {
+export const useNewsTaxonomiesQuery = (
+  lang?: string,
+  options: { enabled?: boolean } = {}
+) => {
   return useQuery({
     queryKey: QUERY_KEYS.posts.taxonomies(lang),
     queryFn: async () => {
@@ -584,6 +587,7 @@ export const useNewsTaxonomiesQuery = (lang?: string) => {
       return { categories, tags };
     },
     staleTime: STALE_TIME.POSTS,
+    enabled: options.enabled,
   });
 };
 

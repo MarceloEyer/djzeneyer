@@ -73,7 +73,9 @@ const NewsPage: React.FC = () => {
   }), [searchParams]);
   const hasActiveFilter = Boolean(selectedFilterSlugs.category || selectedFilterSlugs.tag || selectedFilterSlugs.search);
 
-  const { data: taxonomiesData } = useNewsTaxonomiesQuery(normalizedLanguage);
+  const { data: taxonomiesData } = useNewsTaxonomiesQuery(normalizedLanguage, {
+    enabled: !slug,
+  });
   const selectedFilters = useMemo(() => {
     const selectedCategory = taxonomiesData?.categories.find(term => term.slug === selectedFilterSlugs.category);
     const selectedTag = taxonomiesData?.tags.find(term => term.slug === selectedFilterSlugs.tag);
