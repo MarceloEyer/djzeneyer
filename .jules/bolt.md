@@ -136,6 +136,3 @@
 
 **Learning:** Declaring static inline arrays like `[0, 1, 2]` or `['leader', 'follower']` inside a React component return creates a new array reference on each render.
 **Action:** Extract reused static arrays to module scope when they are used for render iteration. For dynamic lengths, prefer the clearest expression and avoid claiming allocation savings unless the rendered children themselves are also memoized.
-## 2026-06-29 - N+1 Query in WP get_the_post_thumbnail_url()
-**Learning:** Calling `get_the_post_thumbnail_url()` inside a loop triggers an N+1 query for the attachment posts, even if the main post objects and meta caches were already primed via `_prime_post_caches()`, because attachments are separate post types in WordPress.
-**Action:** When priming caches for loops that fetch thumbnails, always include a second caching step: extract the `_thumbnail_id`s from the primed meta cache (`get_post_meta`), and batch prime those attachment IDs via a second call to `_prime_post_caches($attachment_ids, false, true)` before the loop.

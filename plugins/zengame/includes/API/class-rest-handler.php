@@ -251,6 +251,30 @@ final class REST_Handler
         return \get_current_user_id() ?: null;
     }
 
+    private static function prime_thumbnail_attachment_caches(array $post_ids): void
+    {
+        $post_ids = \array_values(\array_unique(\array_filter(
+            \array_map('intval', $post_ids),
+            static fn(int $id): bool => $id > 0
+        )));
+
+        if (empty($post_ids)) {
+            return;
+        }
+
+        $attachment_ids = [];
+        foreach ($post_ids as $id) {
+            $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
+            if ($thumbnail_id > 0) {
+                $attachment_ids[] = $thumbnail_id;
+            }
+        }
+
+        if (!empty($attachment_ids)) {
+            \_prime_post_caches(\array_values(\array_unique($attachment_ids)), false, true);
+        }
+    }
+
     private static function get_user_points(int $user_id): array
     {
         if (!\function_exists('gamipress_get_points_types')) {
@@ -270,18 +294,7 @@ final class REST_Handler
         }
         if (!empty($type_ids)) {
             \_prime_post_caches($type_ids, false, true);
-
-            // ⚡ Bolt: Prime attachment (thumbnail) caches for all point types to prevent N+1 queries during get_the_post_thumbnail_url
-            $attachment_ids = [];
-            foreach ($type_ids as $id) {
-                $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
-                if ($thumbnail_id > 0) {
-                    $attachment_ids[] = $thumbnail_id;
-                }
-            }
-            if (!empty($attachment_ids)) {
-                \_prime_post_caches(\array_unique($attachment_ids), false, true);
-            }
+            self::prime_thumbnail_attachment_caches($type_ids);
         }
 
         $points = [];
@@ -441,18 +454,7 @@ final class REST_Handler
             $rank_ids = \array_column($ranks, 'ID');
             \_prime_post_caches($rank_ids, false, true);
             \update_meta_cache('post', $rank_ids);
-
-            // ⚡ Bolt: Prime attachment (thumbnail) caches for all ranks to prevent N+1 queries during get_the_post_thumbnail_url
-            $attachment_ids = [];
-            foreach ($rank_ids as $id) {
-                $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
-                if ($thumbnail_id > 0) {
-                    $attachment_ids[] = $thumbnail_id;
-                }
-            }
-            if (!empty($attachment_ids)) {
-                \_prime_post_caches(\array_unique($attachment_ids), false, true);
-            }
+            self::prime_thumbnail_attachment_caches($rank_ids);
         }
 
         if (empty($ranks)) {
@@ -550,18 +552,7 @@ final class REST_Handler
                 $batch_ids = \array_values(\array_unique(\array_map(static fn($e) => $e['post']->ID, $batch)));
                 \_prime_post_caches($batch_ids, false, true);
                 \update_meta_cache('post', $batch_ids);
-
-                // ⚡ Bolt: Prime attachment (thumbnail) caches to prevent N+1 queries during get_the_post_thumbnail_url
-                $attachment_ids = [];
-                foreach ($batch_ids as $id) {
-                    $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
-                    if ($thumbnail_id > 0) {
-                        $attachment_ids[] = $thumbnail_id;
-                    }
-                }
-                if (!empty($attachment_ids)) {
-                    \_prime_post_caches(\array_unique($attachment_ids), false, true);
-                }
+                self::prime_thumbnail_attachment_caches($batch_ids);
             }
 
             // Fase 3: monta resultado com cache quente
