@@ -1,5 +1,5 @@
 // src/components/common/Footer.tsx - Restored to Original Design (Simplified)
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Music, Music2, MessageCircle, SendHorizontal, Heart } from 'lucide-react';
@@ -21,6 +21,25 @@ const Footer: React.FC = () => {
   const footerSignature = footerSignatures[location.pathname.length % footerSignatures.length];
 
   const { mutate: subscribe, isPending: isSubmitting } = useSubscriptionMutation();
+
+  // ⚡ Bolt: Consolidate multiple getLocalizedRoute invocations into a single object map wrapped in useMemo.
+  // This prevents O(N) recalculations on every render cycle.
+  const routes = useMemo(() => ({
+    home: getLocalizedRoute('', currentLang),
+    support: getLocalizedRoute('support', currentLang),
+    events: getLocalizedRoute('events', currentLang),
+    music: getLocalizedRoute('music', currentLang),
+    shop: getLocalizedRoute('shop', currentLang),
+    zentribe: getLocalizedRoute('zentribe', currentLang),
+    booking: getLocalizedRoute('booking', currentLang),
+    about: getLocalizedRoute('about', currentLang),
+    news: getLocalizedRoute('news', currentLang),
+    faq: getLocalizedRoute('faq', currentLang),
+    encyclopedia: getLocalizedRoute('encyclopedia', currentLang),
+    media: getLocalizedRoute('media', currentLang),
+    privacy: getLocalizedRoute('privacy', currentLang),
+    terms: getLocalizedRoute('terms', currentLang),
+  }), [currentLang]);
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +75,7 @@ const Footer: React.FC = () => {
 
           {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
-            <Link to={getLocalizedRoute('', currentLang)} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
+            <Link to={routes.home} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
               </div>
@@ -85,7 +104,7 @@ const Footer: React.FC = () => {
               </a>
             </div>
             <div className="mt-5">
-              <Link to={getLocalizedRoute('support', currentLang)} className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors font-semibold text-sm">
+              <Link to={routes.support} className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors font-semibold text-sm">
                 <Heart size={13} />
                 {t('footer_support_artist')}
               </Link>
@@ -96,11 +115,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('events', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.events')}</Link></li>
-              <li><Link to={getLocalizedRoute('music', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.music')}</Link></li>
-              <li><Link to={getLocalizedRoute('shop', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
-              <li><Link to={getLocalizedRoute('zentribe', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
-              <li><Link to={getLocalizedRoute('booking', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
+              <li><Link to={routes.events} className="text-white/75 hover:text-primary transition-colors">{t('nav.events')}</Link></li>
+              <li><Link to={routes.music} className="text-white/75 hover:text-primary transition-colors">{t('nav.music')}</Link></li>
+              <li><Link to={routes.shop} className="text-white/75 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
+              <li><Link to={routes.zentribe} className="text-white/75 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
+              <li><Link to={routes.booking} className="text-white/75 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
             </ul>
           </div>
 
@@ -108,11 +127,11 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={getLocalizedRoute('about', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
-              <li><Link to={getLocalizedRoute('news', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
-              <li><Link to={getLocalizedRoute('faq', currentLang)} className="text-white/75 hover:text-primary transition-colors">FAQ</Link></li>
-              <li><Link to={getLocalizedRoute('encyclopedia', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('encyclopedia.nav_label')}</Link></li>
-              <li><Link to={getLocalizedRoute('media', currentLang)} className="text-white/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
+              <li><Link to={routes.about} className="text-white/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
+              <li><Link to={routes.news} className="text-white/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
+              <li><Link to={routes.faq} className="text-white/75 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to={routes.encyclopedia} className="text-white/75 hover:text-primary transition-colors">{t('encyclopedia.nav_label')}</Link></li>
+              <li><Link to={routes.media} className="text-white/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
             </ul>
           </div>
 
@@ -154,9 +173,9 @@ const Footer: React.FC = () => {
           <p>{t('footer_copyright', { year: CURRENT_YEAR })} <span className="mx-1">&bull;</span> {footerSignature}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
-            <Link to={getLocalizedRoute('privacy', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
+            <Link to={routes.privacy} className="hover:text-primary transition-colors">{t('common.footer_privacy')}</Link>
             <span>&bull;</span>
-            <Link to={getLocalizedRoute('terms', currentLang)} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
+            <Link to={routes.terms} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
           </div>
 
           <div className="mt-4 text-xs opacity-50 flex justify-center gap-4">
