@@ -26,11 +26,37 @@ export const BrandingProvider: React.FC<{ children: ReactNode }> = ({ children }
   // Merge dynamic data with static fallback to ensure no breaks
   const artist = useMemo(() => {
     if (!data) return FALLBACK_ARTIST as unknown as ArtistProfile;
-    
+
+    const fallback = FALLBACK_ARTIST as unknown as Record<string, unknown>;
+    const dynamic = data as unknown as Record<string, unknown>;
+
     return {
-      ...data,
-      // Ensure we have at least the critical site fields from fallback if missing
-      site: (FALLBACK_ARTIST as unknown as { site: unknown }).site,
+      ...fallback,
+      ...dynamic,
+      identity: {
+        ...(fallback.identity as Record<string, unknown>),
+        ...(dynamic.identity as Record<string, unknown>),
+      },
+      site: {
+        ...(fallback.site as Record<string, unknown>),
+        ...(dynamic.site as Record<string, unknown>),
+        media: {
+          ...((fallback.site as { media?: Record<string, unknown> })?.media || {}),
+          ...((dynamic.site as { media?: Record<string, unknown> })?.media || {}),
+        },
+      },
+      stats: {
+        ...(fallback.stats as Record<string, unknown>),
+        ...(dynamic.stats as Record<string, unknown>),
+      },
+      contact: {
+        ...(fallback.contact as Record<string, unknown>),
+        ...(dynamic.contact as Record<string, unknown>),
+        whatsapp: {
+          ...((fallback.contact as { whatsapp?: Record<string, unknown> })?.whatsapp || {}),
+          ...((dynamic.contact as { whatsapp?: Record<string, unknown> })?.whatsapp || {}),
+        },
+      },
     };
   }, [data]);
 

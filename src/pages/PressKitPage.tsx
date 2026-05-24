@@ -26,7 +26,7 @@ import {
   Check
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
-import { ARTIST, CURRENT_YEAR } from '../data/artistData';
+import { ARTIST } from '../data/artistData';
 
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
 const EMPTY_FESTIVAL_ARRAY: { name: string; country: string; date: string; flag: string }[] = [];
@@ -85,11 +85,11 @@ const PressKitPage: React.FC = () => {
   const isPortuguese = i18n.language?.toLowerCase().startsWith('pt') ?? false;
 
   const pressLinks = useMemo(() => ({
-    photos: ARTIST.site.media.photosUrl,
-    epk: isPortuguese ? ARTIST.site.media.epkPdfPt : ARTIST.site.media.epkPdfEn,
-    epkMd: isPortuguese ? ARTIST.site.media.epkMdPt : ARTIST.site.media.epkMdEn,
-    logos: ARTIST.site.media.logosZip,
-  }), [isPortuguese]);
+    photos: artist.site.media.photosUrl || ARTIST.site.media.photosUrl,
+    epk: (isPortuguese ? artist.site.media.epkPdfPt : artist.site.media.epkPdfEn) || (isPortuguese ? ARTIST.site.media.epkPdfPt : ARTIST.site.media.epkPdfEn),
+    epkMd: (isPortuguese ? artist.site.media.epkMdPt : artist.site.media.epkMdEn) || (isPortuguese ? ARTIST.site.media.epkMdPt : ARTIST.site.media.epkMdEn),
+    logos: artist.site.media.logosZip || ARTIST.site.media.logosZip,
+  }), [artist.site.media, isPortuguese]);
 
   const [isCopied, setIsCopied] = useState(false);
   const handleCopyBio = useCallback(() => {
@@ -128,7 +128,7 @@ const PressKitPage: React.FC = () => {
         color: 'bg-gradient-to-br from-blue-500/80 to-blue-700/80'
       },
       {
-        number: `${CURRENT_YEAR - artist.stats.startingYear}+`,
+        number: `${new Date().getFullYear() - artist.stats.startingYear}+`,
         label: t('presskit.stats.years'),
         icon: <Calendar size={32} />,
         color: 'bg-gradient-to-br from-purple-500/80 to-purple-700/80'
@@ -538,4 +538,3 @@ const PressKitPage: React.FC = () => {
 
 // ⚡ Bolt: Wrapped with React.memo to prevent unnecessary React reconciliation loops when parent layout components (like routers) trigger render cycles.
 export default React.memo(PressKitPage);
-

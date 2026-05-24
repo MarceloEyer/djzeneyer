@@ -320,6 +320,19 @@ class Zen_SEO_REST_API
     {
         $settings = Zen_SEO_Helpers::get_global_settings();
 
+        $parse_list = static function ($value): array {
+            if (!\is_string($value) || $value === '') {
+                return [];
+            }
+
+            $decoded = \json_decode($value, true);
+            if (\is_array($decoded)) {
+                return $decoded;
+            }
+
+            return [];
+        };
+
         // Map data to match React object structure (src/data/artistData.ts)
         $profile = [
             'identity' => [
@@ -351,12 +364,34 @@ class Zen_SEO_REST_API
             'stats' => [
                 'startingYear'    => (int) ($settings['starting_year'] ?? 2015),
                 'countriesPlayed' => (int) ($settings['countries_played'] ?? 10),
+                'lastUpdated' => \current_time('Y-m-d'),
             ],
             'identifiers' => [
                 'isni'        => $settings['isni_code'] ?? '',
                 'musicbrainz' => $settings['musicbrainz'] ?? '',
                 'wikidata'    => $settings['wikidata'] ?? '',
             ],
+            'site' => [
+                'baseUrl' => \home_url(),
+                'defaultDescription' => $settings['default_description'] ?? '',
+                'media' => [
+                    'epkPdf' => $settings['epk_pdf'] ?? '',
+                    'epkPdfPt' => $settings['epk_pdf_pt'] ?? '',
+                    'epkPdfEn' => $settings['epk_pdf_en'] ?? '',
+                    'epkMdPt' => $settings['epk_md_pt'] ?? '',
+                    'epkMdEn' => $settings['epk_md_en'] ?? '',
+                    'photosUrl' => $settings['photos_url'] ?? '',
+                    'logosZip' => $settings['logos_zip'] ?? '',
+                ],
+            ],
+            'contact' => [
+                'email' => $settings['contact_email'] ?? '',
+                'whatsapp' => [
+                    'number' => $settings['whatsapp_number'] ?? '',
+                ],
+            ],
+            'festivals' => $parse_list($settings['festivals_json'] ?? ''),
+            'mediaClipping' => $parse_list($settings['media_clipping_json'] ?? ''),
             'awards' => !empty($settings['awards_list']) ? \array_filter(\array_map('trim', \explode("\n", (string) ($settings['awards_list'] ?? '')))) : []
         ];
 
