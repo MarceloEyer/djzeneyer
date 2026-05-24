@@ -32,11 +32,11 @@ const STALE_TIME = {
   /** Eventos: 30 minutos — agenda sincronizada via prerender; detalhe muda raramente */
   EVENTS: 30 * 60 * 1000,
 
-  /** News/Posts: 15 minutos — conteúdo editorial, não em tempo real */
-  POSTS: 15 * 60 * 1000,
+  /** News/Posts: 24 horas - conteudo editorial muda mensalmente ou menos */
+  POSTS: 24 * 60 * 60 * 1000,
 
-  /** Produtos: 30 minutos (catálogo estável durante a sessão) */
-  PRODUCTS: 30 * 60 * 1000,
+  /** Produtos: 24 horas - catalogo estavel; carrinho continua separado e curto */
+  PRODUCTS: 24 * 60 * 60 * 1000,
 
   /** Carrinho: 30 segundos (muda frequentemente) */
   CART: 30 * 1000,

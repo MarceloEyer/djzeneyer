@@ -22,6 +22,13 @@ Core navigation model:
 - Discover More: About, Releases, Encyclopedia, Media, FAQ.
 - Support / Donation: keep directly accessible in the footer as its own important payment/support path.
 
+Operational preference:
+
+- The site is intentionally low-update and cache-friendly. Events usually update weekly; Releases/news/reviews and public text update monthly, quarterly, or less; artist identity, official links, and payment data are effectively static.
+- For SEO, GEO, AEO, and Knowledge Panel support, prefer prerendered/static factual surfaces, long-lived caches, and simple WordPress REST queries over complex runtime aggregation.
+- Public pages should avoid routine runtime requests when the same information can be shipped statically or prerendered without harming freshness.
+- Query-string filters are useful for users, but they are weaker SEO surfaces than canonical indexable routes or well-structured evergreen pages. Create indexable category/tag/term pages only when there is enough unique, durable content to justify them.
+
 The former Artistic Philosophy page should not be treated as a permanent standalone destination. Its content should be redistributed across About, FAQ, Music, Work With Me, and Encyclopedia.
 
 ## Page Roles
