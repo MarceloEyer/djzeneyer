@@ -668,6 +668,9 @@ class Rest_Routes
     {
         $user = get_userdata($user_id);
         $meta = get_user_meta($user_id);
+        if (!is_array($meta)) {
+            $meta = [];
+        }
 
         // Avatar: prefer Google OAuth photo, then Gravatar (with 404 default so empty is returned if no Gravatar)
         $google_avatar = self::first_user_meta_value($meta, 'zeneyer_google_avatar');
@@ -703,7 +706,7 @@ class Rest_Routes
 
         $value = maybe_unserialize($meta[$key][0]);
 
-        if ($value === '' || $value === null) {
+        if ($value === '' || $value === null || $value === false) {
             return $default;
         }
 
