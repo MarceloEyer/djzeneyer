@@ -1,10 +1,8 @@
 import React, { createContext, useContext, ReactNode, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { fetchArtistProfileFn, ArtistProfile } from '../hooks/useQueries';
-import { ARTIST as FALLBACK_ARTIST } from '../data/artistData';
+import { ARTIST } from '../data/artistData';
 
 interface BrandingContextType {
-  artist: ArtistProfile;
+  artist: typeof ARTIST;
   isLoading: boolean;
   error: Error | null;
 }
@@ -12,33 +10,16 @@ interface BrandingContextType {
 const BrandingContext = createContext<BrandingContextType | undefined>(undefined);
 
 /**
- * BrandingProvider manages the "Source of Truth" for the artist identity.
- * It fetches the latest data from WordPress (Zen SEO Identity settings)
- * and falls back to the static artistData.ts if necessary.
+ * BrandingProvider exposes the static artist identity.
+ * This project updates artist identity rarely, so artistData.ts remains the
+ * runtime SSOT and avoids a global REST request on every public page view.
  */
 export const BrandingProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['artist-profile'],
-    queryFn: fetchArtistProfileFn,
-    staleTime: 1000 * 60 * 60, // 1 hour - branding data is stable
-  });
-
-  // Merge dynamic data with static fallback to ensure no breaks
-  const artist = useMemo(() => {
-    if (!data) return FALLBACK_ARTIST as unknown as ArtistProfile;
-    
-    return {
-      ...data,
-      // Ensure we have at least the critical site fields from fallback if missing
-      site: (FALLBACK_ARTIST as unknown as { site: unknown }).site,
-    };
-  }, [data]);
-
   const value = useMemo(() => ({
-    artist,
-    isLoading,
-    error: error as Error | null,
-  }), [artist, isLoading, error]);
+    artist: ARTIST,
+    isLoading: false,
+    error: null,
+  }), []);
 
   return (
     <BrandingContext.Provider value={value}>

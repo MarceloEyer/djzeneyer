@@ -26,6 +26,8 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Route-scoped prerender payloads:** Home should inline only the next 3 events, `/zouk-events` should inline the list payload, and unrelated routes should not inline events. Track `eventsMode`, `eventsDays`, and `eventsLimit` so SPA navigation or different queries fetch `zen-bit` instead of reusing an incompatible inline cache.
 - **Prerender menu payloads:** Include both `menu.en` and `menu.pt` in every prerender payload. SPA language switches can otherwise fall back to the route locale menu and show the wrong navigation language.
 - **Prerender cache matching:** Normalize query defaults before comparing with `window.__PRERENDER_DATA__` metadata. For example, an omitted `days` parameter that defaults to 365 should still match a prerender payload tagged with `eventsDays: 365`.
+- **Low-update public site:** Prefer long-lived cache and removing routine runtime requests over adding complex aggregation layers. For stable identity data, `artistData.ts` can be a deliberate static SSOT; for ordinary WordPress posts, avoid fetching taxonomies on detail pages unless filters are visible.
+- **Frontend stale times:** Public posts/releases and products can use 24h React Query `staleTime` because updates are rare. Keep cart and authenticated/user-specific data on shorter TTLs because those reflect active user actions.
 
 ## 🎨 Decisões de Marca & SEO
 

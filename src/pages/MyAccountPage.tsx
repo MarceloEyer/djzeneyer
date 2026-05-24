@@ -113,11 +113,20 @@ const MyAccountContent: React.FC = () => {
   }, [user, loadingInitial, loadingGP, navigate, currentLang]);
 
   // React Query Hooks
-  const { data: profileData } = useProfileQuery(user?.token);
-  const { data: newsletterEnabled } = useNewsletterStatusQuery(user?.token);
+  const shouldLoadSettingsData = activeTab === 'settings';
+  const shouldLoadOrdersData = activeTab === 'orders';
+
+  const { data: profileData } = useProfileQuery(user?.token, {
+    enabled: shouldLoadSettingsData,
+  });
+  const { data: newsletterEnabled } = useNewsletterStatusQuery(user?.token, {
+    enabled: shouldLoadSettingsData,
+  });
   const updateProfile = useUpdateProfileMutation(user?.token);
   const updateNewsletter = useUpdateNewsletterMutation(user?.token);
-  const { data: orders = [], isLoading: loadingOrders } = useUserOrdersQuery(user?.id, user?.token, 5);
+  const { data: orders = [], isLoading: loadingOrders } = useUserOrdersQuery(user?.id, user?.token, 5, {
+    enabled: shouldLoadOrdersData,
+  });
 
   const profileDefaults = useMemo<ProfileForm>(() => ({
     realName: profileData?.real_name || user?.name || '',

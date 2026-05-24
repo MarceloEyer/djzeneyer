@@ -573,7 +573,10 @@ export const useNewsQuery = (
   });
 };
 
-export const useNewsTaxonomiesQuery = (lang?: string) => {
+export const useNewsTaxonomiesQuery = (
+  lang?: string,
+  options: { enabled?: boolean } = {}
+) => {
   return useQuery({
     queryKey: QUERY_KEYS.posts.taxonomies(lang),
     queryFn: async () => {
@@ -584,6 +587,7 @@ export const useNewsTaxonomiesQuery = (lang?: string) => {
       return { categories, tags };
     },
     staleTime: STALE_TIME.POSTS,
+    enabled: options.enabled,
   });
 };
 
@@ -865,7 +869,10 @@ export const useZenGameLeaderboard = (limit = 10) => {
 // USER PROFILE & NEWSLETTER (AUTHENTICATED)
 // ============================================================================
 
-export const useProfileQuery = (token?: string) => {
+export const useProfileQuery = (
+  token?: string,
+  options: { enabled?: boolean } = {}
+) => {
   return useQuery<UserProfile | null>({
     queryKey: ['user', 'profile', !!token],
     queryFn: async (): Promise<UserProfile | null> => {
@@ -884,13 +891,18 @@ export const useProfileQuery = (token?: string) => {
       }
       return parsed.data as UserProfile;
     },
-    enabled: !!token,
+    enabled: Boolean(token) && (options.enabled ?? true),
     staleTime: STALE_TIME.USER_PROFILE,
   });
 };
 
 
-export const useUserOrdersQuery = (userId?: number, token?: string, limit = 5) => {
+export const useUserOrdersQuery = (
+  userId?: number,
+  token?: string,
+  limit = 5,
+  options: { enabled?: boolean } = {}
+) => {
   return useQuery<WCOrder[]>({
     queryKey: [...QUERY_KEYS.user.orders(userId, limit), !!token],
     queryFn: async (): Promise<WCOrder[]> => {
@@ -908,7 +920,7 @@ export const useUserOrdersQuery = (userId?: number, token?: string, limit = 5) =
       }
       return [];
     },
-    enabled: Boolean(token && userId),
+    enabled: Boolean(token && userId) && (options.enabled ?? true),
     staleTime: STALE_TIME.USER_PROFILE,
     retry: false,
   });
@@ -933,7 +945,10 @@ export const useUpdateProfileMutation = (token?: string) => {
   });
 };
 
-export const useNewsletterStatusQuery = (token?: string) => {
+export const useNewsletterStatusQuery = (
+  token?: string,
+  options: { enabled?: boolean } = {}
+) => {
   return useQuery<boolean | null>({
     queryKey: ['user', 'newsletter', !!token],
     queryFn: async (): Promise<boolean | null> => {
@@ -946,7 +961,7 @@ export const useNewsletterStatusQuery = (token?: string) => {
       const data = await res.json();
       return data.success ? (data.subscribed as boolean) : false;
     },
-    enabled: !!token,
+    enabled: Boolean(token) && (options.enabled ?? true),
     staleTime: STALE_TIME.USER_PROFILE,
   });
 };
