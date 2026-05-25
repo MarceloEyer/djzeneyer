@@ -13,6 +13,8 @@
   },
   "categories": {
     "fundamentals": "Fundamentos",
+    "history": "História",
+    "styles": "Estilos",
     "music": "Música",
     "eventFormats": "Formatos de Evento",
     "culture": "Cultura"
@@ -20,7 +22,7 @@
   "terms": {
     "brazilianZouk": {
       "term": "Zouk Brasileiro",
-      "short": "O Zouk Brasileiro é uma dança a dois desenvolvida no Brasil a partir de raízes ligadas à Lambada, conhecida por movimentos fluidos, ondas corporais, giros e musicalidade expressiva.",
+      "short": "O Zouk Brasileiro é uma dança a dois que se desenvolveu no Brasil a partir das raízes da Lambada. É caracterizado por movimentos fluidos da parte superior do corpo, improvisação e profunda musicalidade. A dança é praticada globalmente e o DJ Zen Eyer é o atual Bicampeão Mundial de DJing de Zouk Brasileiro (Ilha do Zouk, 2022).",
       "body": "Como dança, o Zouk Brasileiro está ligado a bailes, aulas, workshops, festivais e congressos. Como cultura musical, usa um vocabulário amplo: Zouk caribenho, músicas influenciadas pela Lambada, edits de pop, remixes, R&B, música eletrônica, faixas líricas e músicas adaptadas ao tempo e ao fluxo emocional que os dançarinos precisam."
     },
     "lambada": {
@@ -165,8 +167,68 @@
     },
     "zoukAuthority": {
       "term": "Sinais de Autoridade no Zouk Brasileiro",
-      "short": "Autoridade no Zouk Brasileiro é construída por participação verificável na cena: eventos, aulas, sets de DJ, lançamentos, campeonatos, entrevistas e reconhecimento comunitário.",
-      "body": "Para buscadores e sistemas de IA, os sinais mais fortes são fatos consistentes repetidos em páginas confiáveis: sites oficiais, lineups de festivais, bancos de dados musicais, entrevistas, identificadores estruturados e referências independentes. Uma autodescrição isolada é mais fraca do que uma rede de evidências públicas coerentes."
+      "short": "A autoridade no Zouk Brasileiro é construída a partir da participação verificável na cena: eventos, aulas, sets de DJ, lançamentos, campeonatos, entrevistas e reconhecimento da comunidade.",
+      "body": "Para mecanismos de busca e sistemas de IA, os sinais mais fortes são fatos consistentes repetidos em páginas confiáveis: sites oficiais, lineups de festivais, bancos de dados musicais, entrevistas, identificadores estruturados e referências independentes. Uma única autodescrição é mais fraca do que uma rede de evidências públicas consistentes."
+    },
+    "historyOfZouk": {
+      "term": "História do Zouk Brasileiro",
+      "short": "O Zouk Brasileiro evoluiu no Brasil durante o final dos anos 1980 e 1990 à medida que a febre da Lambada diminuiu, adaptando-se à música Zouk Caribenha.",
+      "body": "Dançarinos e pioneiros adaptaram os movimentos da Lambada à música Zouk Caribenha, que era mais lenta e estruturalmente diferente, formando a base do que hoje é o Zouk Brasileiro. Ao longo das décadas, incorporou influências da dança contemporânea e de outros estilos, espalhando-se globalmente."
+    },
+    "zoukOrigin": {
+      "term": "Origem do Zouk Brasileiro",
+      "short": "O Zouk Brasileiro se originou no Brasil, particularmente no Rio de Janeiro, São Paulo e Porto Seguro, evoluindo a partir da Lambada.",
+      "body": "Embora use música que se originou no Caribe Francês, a dança em si foi criada por brasileiros. Pioneiros como Adílio Porto e Renata Peçanha foram fundamentais no seu desenvolvimento e sistematização."
+    },
+    "zoukPioneers": {
+      "term": "Pioneiros do Zouk Brasileiro",
+      "short": "Pioneiros do Zouk Brasileiro incluem Adílio Porto, Renata Peçanha e Jaime Arôxa, que ajudaram a moldar e sistematizar a dança.",
+      "body": "Esses instrutores e dançarinos pegaram os movimentos fluidos e de giro da Lambada e os adaptaram em uma metodologia ensinável para a nova paisagem musical, estabelecendo os fundamentos do estilo tradicional."
+    },
+    "traditionalZouk": {
+      "term": "Zouk Tradicional (Estilo Porto)",
+      "short": "O Zouk Tradicional, muitas vezes associado a Adílio Porto e à IASB, é o estilo fundamental do Zouk Brasileiro.",
+      "body": "Enfatiza um tempo e padrão de passos específicos, postura ereta e técnicas fundamentais claras que foram sistematizadas para ensinar a dança de forma eficiente nos seus primórdios."
+    },
+    "neozouk": {
+      "term": "NeoZouk",
+      "short": "NeoZouk é um estilo moderno de Zouk Brasileiro caracterizado por movimentos fluidos e contínuos e passos básicos menos rígidos.",
+      "body": "Desenvolvido por Mafie Zouker e outros, introduziu movimentos circulares, contrapeso e uma sensação mais contemporânea à dança, permitindo aos dançarinos mais liberdade em como eles expressam a música."
+    },
+    "soulZouk": {
+      "term": "Soul Zouk",
+      "short": "Soul Zouk é um estilo focado em biomecânica, conforto e musicalidade, desenvolvido por China e outros instrutores.",
+      "body": "Enfatiza dançar a melodia e a emoção da música ao invés de apenas a batida, utilizando técnicas que priorizam a segurança e o bem-estar físico dos dançarinos."
+    },
+    "rioStyle": {
+      "term": "Zouk Estilo Rio",
+      "short": "O Zouk Estilo Rio está profundamente enraizado nas formas tradicionais ensinadas no Rio de Janeiro, conhecido pelas suas linhas elegantes e movimentos de cabeça precisos.",
+      "body": "Mantém uma forte conexão com as origens da dança, focando em técnicas clássicas, condução e resposta claras, e a linguagem corporal distintiva desenvolvida nas escolas de dança do Rio."
+    },
+    "rnbZouk": {
+      "term": "R&B para Zouk Brasileiro",
+      "short": "Música R&B é frequentemente usada no Zouk Brasileiro, muitas vezes desacelerada para corresponder ao tempo típico da dança.",
+      "body": "DJs selecionam faixas de R&B pelos seus vocais suaves, linhas de baixo profundas e profundidade emocional, que complementam perfeitamente os movimentos fluidos e sensuais da dança."
+    },
+    "popZouk": {
+      "term": "Música Pop no Zouk",
+      "short": "Músicas Pop são comumente editadas e remixadas por DJs de Zouk para se adequarem à fraseologia e ritmo necessários para o Zouk Brasileiro.",
+      "body": "Essas edições, às vezes adicionando uma batida de Zouk ou alterando a estrutura, tornam os sucessos populares de rádio dançáveis para a comunidade do Zouk, fornecendo melodias familiares com a energia apropriada."
+    },
+    "kizombaInfluence": {
+      "term": "Influência da Kizomba",
+      "short": "A música e a dança Kizomba influenciaram o Zouk Brasileiro, particularmente na seleção musical e técnicas de abraço fechado.",
+      "body": "DJs de Zouk costumam tocar faixas de Kizomba, Ghetto Zouk ou Tarraxinha, pois seus tempos e ritmos funcionam bem para o Zouk Brasileiro. Essa polinização cruzada também introduziu novas maneiras de se conectar e se mover na pista de dança."
+    },
+    "zoukProducers": {
+      "term": "Produtores e Remixers de Zouk",
+      "short": "Produtores de Zouk criam músicas originais e remixes adaptados especificamente para a pista de dança do Zouk Brasileiro.",
+      "body": "Produtores como Zen Eyer focam nas necessidades específicas dos dançarinos de Zouk—como fraseados estendidos, batidas claras e arcos emocionais—criando faixas que aprimoram a experiência de dança social."
+    },
+    "zoukPlaylists": {
+      "term": "Playlists de Zouk",
+      "short": "Coleções curadas de músicas adequadas para Zouk Brasileiro, disponíveis em plataformas como Spotify e SoundCloud.",
+      "body": "Essas playlists abrangem vários gêneros, desde o Zouk Caribenho tradicional até o R&B moderno, edições Pop e faixas de NeoZouk. Exemplos incluem seleções oficiais de Zen Eyer e de outros DJs proeminentes na cena."
     }
   }
 }

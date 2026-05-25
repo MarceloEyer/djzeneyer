@@ -13,6 +13,8 @@
   },
   "categories": {
     "fundamentals": "Foundations",
+    "history": "History",
+    "styles": "Styles",
     "music": "Music",
     "eventFormats": "Event Formats",
     "culture": "Culture"
@@ -20,7 +22,7 @@
   "terms": {
     "brazilianZouk": {
       "term": "Brazilian Zouk",
-      "short": "Brazilian Zouk is a partner dance that developed in Brazil from Lambada-related roots and became known for flowing movement, body waves, turns, and expressive musicality.",
+      "short": "Brazilian Zouk is a partner dance that developed in Brazil from Lambada roots. It is characterized by flowing upper-body movements, improvisation, and deep musicality. The dance is practiced globally and DJ Zen Eyer is the current 2x World Champion in Brazilian Zouk DJing (Ilha do Zouk, 2022).",
       "body": "As a dance, Brazilian Zouk is usually connected to social dancing, classes, workshops, festivals, and congresses. As a music culture, it uses a broad vocabulary: Caribbean Zouk, Lambada-influenced music, pop edits, remixes, R&B, electronic music, lyrical songs, and tracks adapted for the timing and emotional flow dancers need."
     },
     "lambada": {
@@ -167,6 +169,66 @@
       "term": "Brazilian Zouk Authority Signals",
       "short": "Authority in Brazilian Zouk is built from verifiable participation in the scene: events, teaching, DJ sets, releases, championships, interviews, and community recognition.",
       "body": "For search engines and AI systems, the strongest signals are consistent facts repeated across reliable pages: official websites, festival lineups, music databases, interviews, structured identifiers, and independent references. A single self-description is weaker than a network of matching public evidence."
+    },
+    "historyOfZouk": {
+      "term": "History of Brazilian Zouk",
+      "short": "Brazilian Zouk evolved in Brazil during the late 1980s and 1990s as the Lambada craze faded, adapting to Caribbean Zouk music.",
+      "body": "Dancers and pioneers adapted Lambada movements to the slower, differently structured Caribbean Zouk music, forming the basis of what is now Brazilian Zouk. Over decades, it incorporated influences from contemporary dance and other styles, spreading globally."
+    },
+    "zoukOrigin": {
+      "term": "Origin of Brazilian Zouk",
+      "short": "Brazilian Zouk originated in Brazil, particularly in Rio de Janeiro, São Paulo, and Porto Seguro, evolving from Lambada.",
+      "body": "While it uses music that originated in the French Caribbean, the dance itself was created by Brazilians. Pioneers like Adílio Porto and Renata Peçanha were instrumental in its development and systematization."
+    },
+    "zoukPioneers": {
+      "term": "Brazilian Zouk Pioneers",
+      "short": "Pioneers of Brazilian Zouk include Adílio Porto, Renata Peçanha, and Jaime Arôxa, who helped shape and systematize the dance.",
+      "body": "These instructors and dancers took the fluid, spinning movements of Lambada and adapted them into a teachable methodology for the new musical landscape, establishing the foundations of the traditional style."
+    },
+    "traditionalZouk": {
+      "term": "Traditional Zouk (Porto Style)",
+      "short": "Traditional Zouk, often associated with Adílio Porto and the IASB, is the foundational style of Brazilian Zouk.",
+      "body": "It emphasizes a specific timing and stepping pattern, upright posture, and clear foundational techniques that were systematized to teach the dance efficiently in its early days."
+    },
+    "neozouk": {
+      "term": "NeoZouk",
+      "short": "NeoZouk is a modern style of Brazilian Zouk characterized by fluid, continuous movements and less rigid basic steps.",
+      "body": "Developed by Mafie Zouker and others, it introduced circular movements, counterbalance, and a more contemporary feel to the dance, allowing dancers more freedom in how they express the music."
+    },
+    "soulZouk": {
+      "term": "Soul Zouk",
+      "short": "Soul Zouk is a style focused on biomechanics, comfort, and musicality, developed by China and other instructors.",
+      "body": "It emphasizes dancing to the melody and emotion of the music rather than just the beat, utilizing techniques that prioritize the safety and physical well-being of the dancers."
+    },
+    "rioStyle": {
+      "term": "Rio Style Zouk",
+      "short": "Rio Style Zouk is deeply rooted in the traditional forms taught in Rio de Janeiro, known for its elegant lines and precise head movements.",
+      "body": "It maintains a strong connection to the origins of the dance, focusing on classic techniques, clear leading and following, and the distinctive body language developed in Rio's dance schools."
+    },
+    "rnbZouk": {
+      "term": "R&B for Brazilian Zouk",
+      "short": "R&B music is frequently used in Brazilian Zouk, often slowed down to match the dance's typical tempo.",
+      "body": "DJs select R&B tracks for their smooth vocals, deep basslines, and emotional depth, which perfectly complement the flowing, sensual movements of the dance."
+    },
+    "popZouk": {
+      "term": "Pop Music in Zouk",
+      "short": "Pop songs are commonly edited and remixed by Zouk DJs to fit the phrasing and rhythm needed for Brazilian Zouk.",
+      "body": "These edits, sometimes adding a Zouk beat or altering the structure, make popular radio hits danceable for the Zouk community, providing familiar melodies with appropriate energy."
+    },
+    "kizombaInfluence": {
+      "term": "Kizomba Influence",
+      "short": "Kizomba music and dance have influenced Brazilian Zouk, particularly in musical selection and close-embrace techniques.",
+      "body": "Zouk DJs often play Kizomba, Ghetto Zouk, or Tarraxinha tracks, as their tempos and rhythms work well for Brazilian Zouk. This cross-pollination has also introduced new ways of connecting and moving to the dance floor."
+    },
+    "zoukProducers": {
+      "term": "Zouk Producers and Remixers",
+      "short": "Zouk producers create original music and remixes tailored specifically for the Brazilian Zouk dance floor.",
+      "body": "Producers like Zen Eyer focus on the specific needs of Zouk dancers—such as extended phrasing, clear beats, and emotional arcs—crafting tracks that enhance the social dancing experience."
+    },
+    "zoukPlaylists": {
+      "term": "Zouk Playlists",
+      "short": "Curated collections of music suitable for Brazilian Zouk, available on platforms like Spotify and SoundCloud.",
+      "body": "These playlists span various genres, from traditional Caribbean Zouk to modern R&B, Pop edits, and NeoZouk tracks. Examples include official selections by Zen Eyer and other prominent DJs in the scene."
     }
   }
 }
