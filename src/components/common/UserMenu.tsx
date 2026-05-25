@@ -5,7 +5,7 @@
  * Integrado com UserContext para estado de autenticação.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   User,
@@ -26,6 +26,30 @@ const UserMenu: React.FC = () => {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // ⚡ Bolt: Wrapped menuLinks in useMemo to prevent O(N) recalculations of getLocalizedRoute and array reallocation on every render cycle.
+  const menuLinks = useMemo(() => [
+    {
+      to: getLocalizedRoute('dashboard', currentLang),
+      label: t('nav.dashboard'),
+      icon: <LayoutDashboard size={18} />
+    },
+    {
+      to: getLocalizedRoute('my-account', currentLang),
+      label: t('nav.my_account'),
+      icon: <User size={18} />
+    },
+    {
+      to: `${getLocalizedRoute('my-account', currentLang)}?tab=orders`,
+      label: t('account.orders.title'),
+      icon: <ShoppingBag size={18} />
+    },
+    {
+      to: `${getLocalizedRoute('my-account', currentLang)}?tab=settings`,
+      label: t('account.tabs.settings'),
+      icon: <Settings size={18} />
+    },
+  ], [currentLang, t]);
 
   // Fechar menu ao clicar fora
   useEffect(() => {
@@ -49,29 +73,6 @@ const UserMenu: React.FC = () => {
       console.error('Logout error:', error);
     }
   };
-
-  const menuLinks = [
-    {
-      to: getLocalizedRoute('dashboard', currentLang),
-      label: t('nav.dashboard'),
-      icon: <LayoutDashboard size={18} />
-    },
-    {
-      to: getLocalizedRoute('my-account', currentLang),
-      label: t('nav.my_account'),
-      icon: <User size={18} />
-    },
-    {
-      to: `${getLocalizedRoute('my-account', currentLang)}?tab=orders`,
-      label: t('account.orders.title'),
-      icon: <ShoppingBag size={18} />
-    },
-    {
-      to: `${getLocalizedRoute('my-account', currentLang)}?tab=settings`,
-      label: t('account.tabs.settings'),
-      icon: <Settings size={18} />
-    },
-  ];
 
   return (
     <div className="relative" ref={menuRef}>
