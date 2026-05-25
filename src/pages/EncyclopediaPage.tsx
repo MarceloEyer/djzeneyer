@@ -124,6 +124,33 @@ const EncyclopediaPage: React.FC = () => {
             </p>
           </motion.header>
 
+          <section aria-label="Introduction to Brazilian Zouk" className="mx-auto mb-14 max-w-3xl space-y-8 rounded-2xl bg-surface/30 p-6 md:p-8">
+            <div>
+              <h2 className="mb-3 font-display text-xl font-bold text-white">
+                {t('intro.what_is.q', { ns: 'encyclopedia' })}
+              </h2>
+              <p className="text-white/70 leading-relaxed">
+                {t('intro.what_is.a', { ns: 'encyclopedia' })}
+              </p>
+            </div>
+            <div>
+              <h2 className="mb-3 font-display text-xl font-bold text-white">
+                {t('intro.dance_or_music.q', { ns: 'encyclopedia' })}
+              </h2>
+              <p className="text-white/70 leading-relaxed">
+                {t('intro.dance_or_music.a', { ns: 'encyclopedia' })}
+              </p>
+            </div>
+            <div>
+              <h2 className="mb-3 font-display text-xl font-bold text-white">
+                {t('intro.differences.q', { ns: 'encyclopedia' })}
+              </h2>
+              <p className="text-white/70 leading-relaxed">
+                {t('intro.differences.a', { ns: 'encyclopedia' })}
+              </p>
+            </div>
+          </section>
+
           <section aria-label={t('search_label', { ns: 'encyclopedia' })} className="mx-auto mb-14 max-w-2xl">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35" size={20} />

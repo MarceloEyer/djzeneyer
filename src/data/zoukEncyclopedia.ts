@@ -12,6 +12,46 @@ export interface EncyclopediaTerm {
 
 export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
   {
+    key: 'historyOfBrazilianZouk',
+    category: 'fundamentals',
+    relatedTerms: ['brazilianZouk', 'lambada', 'zoukLove'],
+  },
+  {
+    key: 'brazilianZoukVsLambada',
+    category: 'fundamentals',
+    relatedTerms: ['brazilianZouk', 'lambada', 'lambazouk'],
+  },
+  {
+    key: 'brazilianZoukVsKizomba',
+    category: 'fundamentals',
+    relatedTerms: ['brazilianZouk', 'zoukMusic'],
+  },
+  {
+    key: 'brazilianZoukSongs',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'zoukRemix', 'brazilianZoukDj'],
+  },
+  {
+    key: 'howToDanceBrazilianZouk',
+    category: 'fundamentals',
+    relatedTerms: ['brazilianZouk', 'bodyWave', 'connection', 'leading', 'following'],
+  },
+  {
+    key: 'neoZouk',
+    category: 'culture',
+    relatedTerms: ['brazilianZouk', 'flow', 'elasticity'],
+  },
+  {
+    key: 'soulZouk',
+    category: 'culture',
+    relatedTerms: ['brazilianZouk', 'connection', 'leading', 'following'],
+  },
+  {
+    key: 'zoukLove',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'historyOfBrazilianZouk', 'brazilianZouk'],
+  },
+  {
     key: 'brazilianZouk',
     category: 'fundamentals',
     relatedTerms: ['lambada', 'lambazouk', 'zoukMusic'],

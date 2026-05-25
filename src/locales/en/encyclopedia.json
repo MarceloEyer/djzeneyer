@@ -1,14 +1,14 @@
 {
   "nav_label": "Encyclopedia",
   "badge": "Reference Guide",
-  "hero_title": "<1>Encyclopedia</1>",
+  "hero_title": "<1>Brazilian Zouk</1> Encyclopedia",
   "hero_subtitle": "A concise reference for Brazilian Zouk terms, music, dance culture, and event formats. Built to answer common questions clearly and reliably.",
   "search_label": "Search Encyclopedia",
   "search_placeholder": "Search terms, music, dance, events...",
   "sources_label": "Sources",
   "no_results": "No encyclopedia terms found for this search.",
   "seo": {
-    "title": "Encyclopedia",
+    "title": "Brazilian Zouk Encyclopedia",
     "description": "A concise Brazilian Zouk encyclopedia with definitions for dance, music, event formats, and Zouk culture."
   },
   "categories": {
@@ -167,6 +167,60 @@
       "term": "Brazilian Zouk Authority Signals",
       "short": "Authority in Brazilian Zouk is built from verifiable participation in the scene: events, teaching, DJ sets, releases, championships, interviews, and community recognition.",
       "body": "For search engines and AI systems, the strongest signals are consistent facts repeated across reliable pages: official websites, festival lineups, music databases, interviews, structured identifiers, and independent references. A single self-description is weaker than a network of matching public evidence."
+    },
+    "historyOfBrazilianZouk": {
+      "term": "History of Brazilian Zouk",
+      "short": "Brazilian Zouk evolved in the 1990s in Brazil when Lambada dancers started adapting their dance to slower Caribbean Zouk music.",
+      "body": "As the Lambada music craze faded, dancers needed new music. They found that the slower, rhythmic Caribbean Zouk allowed for deeper connection and more complex upper body movements, leading to the birth of the Brazilian Zouk dance style we know today."
+    },
+    "brazilianZoukVsLambada": {
+      "term": "Brazilian Zouk vs Lambada",
+      "short": "Lambada is faster, more upbeat, and danced closer to the original Brazilian rhythms, while Brazilian Zouk is generally slower, more fluid, and uses a wider range of modern music.",
+      "body": "While sharing the same roots, Lambada is characterized by continuous energy, stepping on every beat, and rapid turns. Brazilian Zouk incorporates more pauses, body waves, head movements, and stretches the timing across the musical phrase."
+    },
+    "brazilianZoukVsKizomba": {
+      "term": "Brazilian Zouk vs Kizomba",
+      "short": "They are entirely different dances from different continents, though both often use similar slow, electronic, or Caribbean-influenced beats.",
+      "body": "Kizomba comes from Angola and focuses on grounded, tight connection with complex footwork. Brazilian Zouk comes from Brazil, features an open frame, extensive upper body movement, and head rolls. The confusion often stems from DJs in both scenes playing similar remixes."
+    },
+    "brazilianZoukSongs": {
+      "term": "Brazilian Zouk Songs",
+      "short": "Brazilian Zouk can be danced to a vast array of music, from acoustic covers and R&B to custom electronic Zouk remixes.",
+      "body": "DJs often remix popular songs by adding the characteristic \"Zouk beat\" (often a slow reggaeton-style dembow rhythm) or create original tracks designed specifically for the flow and dynamic changes of the dance."
+    },
+    "howToDanceBrazilianZouk": {
+      "term": "How to dance Brazilian Zouk",
+      "short": "Learning Brazilian Zouk requires understanding its unique basic step, connection, and body mechanics.",
+      "body": "Because of the complex body waves and head movements, it is highly recommended to take classes with experienced instructors to learn proper technique, axis control, and safety before attempting advanced moves on the social floor."
+    },
+    "neoZouk": {
+      "term": "NeoZouk",
+      "short": "A style of Brazilian Zouk developed in Rio de Janeiro known for its continuous flow and circular movements.",
+      "body": "NeoZouk often emphasizes dancing to electronic or alternative music, with a strong focus on uninterrupted energy flow and creative, non-traditional connections between partners."
+    },
+    "soulZouk": {
+      "term": "SoulZouk",
+      "short": "A methodology and style of Brazilian Zouk focusing on biomechanics, comfort, and dancing to R&B and Hip Hop.",
+      "body": "Developed by China in Brazil, SoulZouk introduced techniques for leading and following based heavily on bone alignment and weight transfer, making it possible to dance safely to music without a traditional Zouk beat."
+    },
+    "zoukLove": {
+      "term": "Zouk Love",
+      "short": "A slower, more romantic subgenre of Caribbean Zouk music that heavily influenced the development of the Brazilian Zouk dance.",
+      "body": "The slower tempo and emotional tone of Zouk Love tracks provided the perfect canvas for Brazilian dancers to extend their movements and introduce the characteristic waves and head rolls."
+    }
+  },
+  "intro": {
+    "what_is": {
+      "q": "What is Brazilian Zouk?",
+      "a": "Brazilian Zouk is a modern, expressive partner dance born in Brazil, known for its flowing movements, upper body flexibility, and deep musical connection. It evolved from Lambada when dancers began adapting their movements to slower Caribbean Zouk music."
+    },
+    "dance_or_music": {
+      "q": "Is it a dance, a music genre, or both?",
+      "a": "Today, it is both. It started purely as a dance adapted to existing Caribbean Zouk music. However, over time, producers and DJs developed a distinct sound—blending R&B, pop, reggaeton, and electronic elements specifically structured for the dance—creating the \"Brazilian Zouk music\" ecosystem."
+    },
+    "differences": {
+      "q": "How is it different from Caribbean Zouk and Lambada?",
+      "a": "Caribbean Zouk is the original music genre from the French Antilles that provided the rhythm for the dance's evolution. Lambada is the energetic Brazilian predecessor dance. Brazilian Zouk slowed down the Lambada movements, added long, elastic body waves, and created a softer, more grounded connection to fit a wider variety of music."
     }
   }
 }
