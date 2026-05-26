@@ -27,7 +27,7 @@ In WordPress admin:
 5. Use this subject line:
    - Portuguese: `Confirme sua inscrição na newsletter Zen Eyer`
    - English: `Confirm your Zen Eyer newsletter subscription`
-6. Configure the MailPoet confirmation/subscription page to point to the matching branded page where possible.
+6. Configure the MailPoet confirmation/subscription page to point to the matching branded page where the plugin UI supports it.
 7. Open **MailPoet → Emails** or the email editor for automated messages and remove any footer text that exposes MailPoet branding when the UI allows it.
 
 ## Confirmation email copy
@@ -68,13 +68,13 @@ Zen Eyer
 
 ## Internal new-subscriber notification
 
-The email currently says `Cheers, The MailPoet Plugin`. That is an internal admin notification, not the subscriber-facing email.
+The email currently says `Cheers, The MailPoet Plugin`. That is an internal admin notification, not the subscriber-facing confirmation email.
 
-Recommended options:
+Recommended configuration-only options:
 
 1. Disable this notification in **MailPoet Settings** if it is not useful.
-2. If the plugin UI exposes a template editor for admin notifications, replace the signature with `Zen Eyer Website`.
-3. If the UI does not expose this template, avoid patching vendor plugin files. Plugin updates would overwrite it and may create maintenance/security risk.
+2. If MailPoet exposes a template editor for admin notifications, replace the signature with `Zen Eyer Website`.
+3. Do not add theme/backend filters for this. Keep the MailPoet email behavior controlled by MailPoet settings or documented template overrides only.
 
 ## Acceptance checks
 
@@ -85,5 +85,5 @@ Before merging/deploying:
 - Confirm all four pages return HTTP 200.
 - Confirm they include `noindex`.
 - Send a fresh subscription test to `eyer.marcelo@gmail.com`.
-- Confirm the subscriber-facing email uses `Zen Eyer`, not `MailPoet`.
+- Confirm the subscriber-facing email uses `Zen Eyer`, not default MailPoet copy.
 - Confirm the unsubscribe/manage-preferences link is visible and easy to use.
