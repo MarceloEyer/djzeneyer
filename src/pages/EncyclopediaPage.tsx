@@ -14,7 +14,7 @@ const HERO_VARIANTS = {
   visible: { opacity: 1, y: 0 },
 };
 
-const CATEGORY_ORDER: EncyclopediaCategory[] = ['fundamentals', 'history', 'styles', 'music', 'eventFormats', 'culture'];
+const CATEGORY_ORDER: EncyclopediaCategory[] = ['fundamentals', 'music', 'eventFormats', 'culture'];
 
 const EncyclopediaPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'encyclopedia']);
