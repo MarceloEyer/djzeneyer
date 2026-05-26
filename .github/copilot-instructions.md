@@ -39,11 +39,11 @@ Responda em Portugues Brasileiro.
 - Nao adicionar `minify: 'esbuild'` no vite.config.ts
 - Nao remover `scripts/prerender.js` do pipeline de build
 - WordPress e API headless (sem frontend server-side WordPress)
-- lucide-react 1.x: icones de marca (Facebook/Instagram/Youtube) removidos — usar `src/components/icons/BrandIcons.tsx`
+- lucide-react 1.x: icones de marca (Facebook/Instagram/YouTube) removidos — usar `src/components/icons/BrandIcons.tsx`
 - `safeUrl(null)` retorna '#' truthy — usar `safeUrl(url, '/fallback')` com segundo argumento
 - Aspas tipograficas em JSX sao rejeitadas pelo OXC — usar `&ldquo;`/`&rdquo;` ou aspas retas
 
 ## WooCommerce / GamiPress
-- `gamipress_get_rank_types()` retorna array associativo (slug como chave) — sempre `array_values()` antes de `[0]`
+- `gamipress_get_rank_types()` retorna array associativo (slug como chave) — sempre usar `reset()` e `key()` para obter o primeiro, nunca `array_values()[0]`
 - `get_avatar_url()` pode retornar `false` (boolean) — coercao obrigatoria antes de JSON encode
 - Polylang: idioma padrao EN sem prefixo de URL; PT usa `/pt/`; passar `?lang=pt` para conteudo traduzido via REST
