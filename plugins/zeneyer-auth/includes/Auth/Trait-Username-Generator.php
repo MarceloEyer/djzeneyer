@@ -41,11 +41,14 @@ trait Username_Generator {
 
         $max_suffix = 0;
 
+        // ⚡ Bolt: [performance improvement] Extracted strlen() out of loop to avoid redundant recalculations in every iteration
+        $username_len = strlen($username);
+
         foreach ($taken_usernames as $taken) {
             // Note: We don't need to check stripos($taken, $username) because the SQL query
             // already filters for usernames starting with our base string.
 
-            $suffix = substr($taken, strlen($username));
+            $suffix = substr($taken, $username_len);
 
             // If it's the base username itself
             if (empty($suffix)) {
