@@ -5,6 +5,7 @@
   "hero_subtitle": "Um guia completo e referenciado sobre a história do Zouk Brasileiro, estilos musicais, pioneiros e cultura da dança.",
   "search_label": "Buscar na Enciclopédia",
   "search_placeholder": "Busque termos, músicas, dança, eventos...",
+  "intro_label": "Visão geral do Zouk Brasileiro",
   "no_results": "Nenhum termo encontrado para esta busca na enciclopédia.",
   "sources_label": "Fontes",
   "seo": {
@@ -20,7 +21,11 @@
     "culture": "Cultura"
   },
   "sources": {
-    "wikipedia_history": "Wikipedia: História do Zouk Brasileiro"
+    "wikipedia_history": "Wikipedia: História do Zouk Brasileiro",
+    "wikipedia_brazilian_zouk": "Wikipedia: Zouk Brasileiro",
+    "wikipedia_lambada": "Wikipedia: Lambada",
+    "brazilian_zouk_council": "Brazilian Zouk Council",
+    "zoukology": "Zoukology"
   },
   "terms": {
     "brazilianZouk": {
@@ -257,6 +262,40 @@
       "term": "Zouk Love",
       "short": "Zouk Love é um subgênero romântico e mais lento da música Zouk Caribenha, historicamente influente para os dançarinos de Zouk Brasileiro.",
       "body": "Enquanto o Zouk Caribenho é a origem musical do nome 'Zouk' na dança, o Zouk Love especificamente forneceu o ritmo melódico e mais lento que permitiu aos dançarinos brasileiros adaptarem seus movimentos de Lambada para o que se tornou o Zouk Brasileiro."
+    },
+    "brazilianZoukVsLambada": {
+      "term": "Zouk Brasileiro vs Lambada",
+      "short": "A Lambada é mais rápida e mais diretamente ligada ao seu contexto musical brasileiro histórico, enquanto o Zouk Brasileiro é geralmente mais lento, mais fluido e dançado com um vocabulário musical moderno mais amplo.",
+      "body": "As duas danças compartilham raízes, mas não são intercambiáveis. A Lambada enfatiza energia contínua, pulso rítmico próximo e giros rápidos. O Zouk Brasileiro preserva parte dessa história enquanto adiciona pausas, tempo elástico, ondas corporais, movimentos de cabeça controlados e interpretação em frases musicais mais longas."
+    },
+    "brazilianZoukVsKizomba": {
+      "term": "Zouk Brasileiro vs Kizomba",
+      "short": "Zouk Brasileiro e Kizomba são danças a dois diferentes, com origens culturais diferentes, embora alguns DJs e dançarinos usem músicas lentas, eletrônicas ou lusófonas em comum.",
+      "body": "A Kizomba vem de Angola e costuma ser mais aterrada, próxima e focada em trabalho de pés. O Zouk Brasileiro vem do Brasil, geralmente usa uma moldura mais aberta e inclui movimento da parte superior do corpo, giros elásticos, ondas corporais e movimentos de cabeça. A confusão costuma vir da sobreposição musical, não de as danças serem iguais."
+    },
+    "howToDanceBrazilianZouk": {
+      "term": "Como Dançar Zouk Brasileiro",
+      "short": "Aprender Zouk Brasileiro exige fundamentos de tempo, conexão entre parceiros, mecânica corporal, controle de eixo e progressão segura antes de movimentos de cabeça avançados.",
+      "body": "Iniciantes normalmente começam com passos básicos, conexão, condução e resposta, giros simples, tempo musical e movimento corporal. Como o Zouk Brasileiro pode incluir ondas complexas e movimentos de cabeça, conteúdos avançados devem ser aprendidos com instrutores qualificados e praticados com consentimento claro e segurança."
+    },
+    "brazilianZoukSongs": {
+      "term": "Músicas de Zouk Brasileiro",
+      "short": "Músicas de Zouk Brasileiro podem incluir Zouk Caribenho, Zouk Love, R&B, edits de pop, faixas com influência de Kizomba, produções eletrônicas, covers líricos e remixes próprios para Zouk.",
+      "body": "DJs escolhem músicas por fraseado, fluxo, arco emocional, clareza de batida e conforto dos dançarinos, não apenas pelo rótulo de gênero. Algumas faixas são produções originais para Zouk Brasileiro, enquanto outras são músicas populares editadas ou remixadas para que tempo, estrutura e transições apoiem a dança social."
+    }
+  },
+  "intro": {
+    "what_is": {
+      "q": "O que é o Zouk Brasileiro?",
+      "a": "O Zouk Brasileiro é uma dança a dois brasileira moderna, conhecida por movimento fluido, expressão da parte superior do corpo, tempo elástico e conexão musical profunda. Ele se desenvolveu a partir das raízes da Lambada quando dançarinos adaptaram esse vocabulário para músicas mais lentas de Zouk Caribenho e, depois, para uma variedade maior de faixas zoukáveis."
+    },
+    "dance_or_music": {
+      "q": "Zouk Brasileiro é dança, gênero musical ou os dois?",
+      "a": "No comportamento de busca, a expressão aponta para os dois contextos. Estritamente, Zouk Brasileiro é a dança; musicalmente, dançarinos usam Zouk Caribenho, Zouk Love, R&B, edits de pop, faixas com influência de Kizomba, música eletrônica e remixes próprios para a pista."
+    },
+    "differences": {
+      "q": "Como ele difere do Zouk Caribenho, da Lambada e da Kizomba?",
+      "a": "Zouk Caribenho é um gênero musical, Lambada é uma dança e fenômeno musical brasileiro anterior, e Kizomba é uma dança angolana. Zouk Brasileiro é uma dança a dois brasileira com raízes na Lambada, fraseado mais lento e elástico, ondas corporais, técnica de movimentos de cabeça e um vocabulário musical moderno mais amplo."
     }
   }
 }

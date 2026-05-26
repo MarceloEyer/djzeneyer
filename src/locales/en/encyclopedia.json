@@ -5,6 +5,7 @@
   "hero_subtitle": "A comprehensive, fact-based guide to Brazilian Zouk history, music styles, pioneers, and dance culture.",
   "search_label": "Search Encyclopedia",
   "search_placeholder": "Search terms, music, dance, events...",
+  "intro_label": "Brazilian Zouk overview",
   "sources_label": "Sources",
   "no_results": "No encyclopedia terms found for this search.",
   "seo": {
@@ -20,7 +21,25 @@
     "culture": "Culture"
   },
   "sources": {
+    "wikipedia_brazilian_zouk": "Wikipedia: Brazilian Zouk",
+    "wikipedia_lambada": "Wikipedia: Lambada",
+    "brazilian_zouk_council": "Brazilian Zouk Council",
+    "zoukology": "Zoukology",
     "wikipedia_history": "Wikipedia: Brazilian Zouk History"
+  },
+  "intro": {
+    "what_is": {
+      "q": "What is Brazilian Zouk?",
+      "a": "Brazilian Zouk is a modern Brazilian partner dance known for flowing movement, upper-body expression, elastic timing, and deep musical connection. It developed from Lambada roots after dancers adapted the movement vocabulary to slower Caribbean Zouk music and, later, to a wider range of Zoukable tracks."
+    },
+    "dance_or_music": {
+      "q": "Is Brazilian Zouk a dance, a music genre, or both?",
+      "a": "In search behavior, the phrase points to both contexts. Strictly, Brazilian Zouk is the dance; musically, dancers use Caribbean Zouk, Zouk Love, R&B, pop edits, Kizomba-influenced tracks, electronic music, and dedicated remixes shaped for the dance floor."
+    },
+    "differences": {
+      "q": "How is it different from Caribbean Zouk, Lambada, and Kizomba?",
+      "a": "Caribbean Zouk is a music genre, Lambada is an older Brazilian dance and music phenomenon, and Kizomba is an Angolan dance. Brazilian Zouk is a Brazilian partner dance with Lambada roots, slower elastic phrasing, body waves, head movement technique, and a broader modern music vocabulary."
+    }
   },
   "terms": {
     "brazilianZouk": {
@@ -43,10 +62,30 @@
       "short": "Music for Brazilian Zouk is not limited to one genre; it is selected or edited for flow, phrasing, elasticity, and the way dancers can interpret it.",
       "body": "A Brazilian Zouk DJ may use Caribbean Zouk, Kizomba-influenced tracks, pop remixes, lyrical songs, R&B, electronic music, covers, and original productions. What matters is not only BPM, but whether the track gives dancers enough structure, emotional arc, and continuity for the dance."
     },
+    "brazilianZoukSongs": {
+      "term": "Brazilian Zouk Songs",
+      "short": "Brazilian Zouk songs can include Caribbean Zouk, Zouk Love, R&B, pop edits, Kizomba-influenced tracks, electronic productions, lyrical covers, and custom Zouk remixes.",
+      "body": "DJs choose songs for phrasing, flow, emotional arc, beat clarity, and dancer comfort rather than genre label alone. Some tracks are original productions for Brazilian Zouk, while others are popular songs edited or remixed so the tempo, structure, and transitions support social dancing."
+    },
     "caribbeanVsBrazilianZouk": {
       "term": "Caribbean Zouk vs Brazilian Zouk",
       "short": "Caribbean Zouk is a music genre from the French Caribbean; Brazilian Zouk is a partner dance developed in Brazil with Lambada-related roots.",
       "body": "The names overlap, but the subjects are different. Brazilian Zouk dancers may dance to Caribbean Zouk music, but the dance also uses pop, R&B, electronic, Kizomba-influenced tracks, covers, and remixes adapted for the social dance floor."
+    },
+    "brazilianZoukVsLambada": {
+      "term": "Brazilian Zouk vs Lambada",
+      "short": "Lambada is faster and more directly tied to its historical Brazilian music context, while Brazilian Zouk is generally slower, more fluid, and danced to a wider modern music vocabulary.",
+      "body": "The two dances share roots, but they are not interchangeable. Lambada emphasizes continuous energy, close rhythmic drive, and fast turns. Brazilian Zouk keeps part of that history while adding pauses, elastic timing, body waves, controlled head movement, and interpretation across longer musical phrases."
+    },
+    "brazilianZoukVsKizomba": {
+      "term": "Brazilian Zouk vs Kizomba",
+      "short": "Brazilian Zouk and Kizomba are different partner dances from different cultural origins, even though some DJs and dancers use overlapping slow, electronic, or Lusophone-influenced music.",
+      "body": "Kizomba comes from Angola and is usually more grounded, close, and footwork-oriented. Brazilian Zouk comes from Brazil, often uses a more open frame, and includes upper-body movement, elastic turns, body waves, and head movement. Confusion often comes from music overlap, not from the dances being the same."
+    },
+    "howToDanceBrazilianZouk": {
+      "term": "How to Dance Brazilian Zouk",
+      "short": "Learning Brazilian Zouk requires foundations in timing, partner connection, body mechanics, axis control, and safe progression before advanced head movement.",
+      "body": "Beginners usually start with basic steps, connection, leading and following, simple turns, musical timing, and body movement. Because Brazilian Zouk can include complex waves and head movement, advanced material should be learned with qualified instructors and practiced with clear consent and safety."
     },
     "cabecada": {
       "term": "Cabecada / Head Movement",
