@@ -3,10 +3,11 @@ import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { CheckCircle2, HeartHandshake, MailCheck, MailQuestion, Settings2, ShieldCheck, Sparkles } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { getLocalizedRoute } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 
 type NewsletterPageMode = 'confirmation' | 'preferences';
+type NewsletterLang = 'en' | 'pt';
 
 interface NewsletterStatusPageProps {
   mode?: NewsletterPageMode;
@@ -14,6 +15,17 @@ interface NewsletterStatusPageProps {
 
 const FADE_IN_UP_INITIAL = { opacity: 0, y: 20 };
 const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
+
+const NEWSLETTER_PATHS: Record<NewsletterPageMode, Record<NewsletterLang, string>> = {
+  confirmation: {
+    en: '/newsletter-confirmation',
+    pt: '/pt/confirmar-newsletter'
+  },
+  preferences: {
+    en: '/newsletter-preferences',
+    pt: '/pt/preferencias-newsletter'
+  }
+};
 
 const copy = {
   en: {
@@ -90,7 +102,7 @@ const copy = {
   }
 } as const;
 
-const getCurrentLangFromPath = (pathname: string): 'en' | 'pt' => (
+const getCurrentLangFromPath = (pathname: string): NewsletterLang => (
   pathname === '/pt' || pathname.startsWith('/pt/') ? 'pt' : 'en'
 );
 
@@ -101,13 +113,12 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
   const sharedCopy = copy[lang];
 
   const canonicalUrl = useMemo(() => {
-    const key = mode === 'confirmation' ? 'newsletter-confirmation' : 'newsletter-preferences';
-    return `${ARTIST.site.baseUrl}${getLocalizedRoute(key, normalizeLanguage(lang))}`;
+    return `${ARTIST.site.baseUrl}${NEWSLETTER_PATHS[mode][lang]}`;
   }, [lang, mode]);
 
   const homePath = lang === 'pt' ? '/pt/' : '/';
   const secondaryPath = mode === 'confirmation'
-    ? getLocalizedRoute('newsletter-preferences', lang)
+    ? NEWSLETTER_PATHS.preferences[lang]
     : getLocalizedRoute('privacy', lang);
   const Icon = mode === 'confirmation' ? MailCheck : Settings2;
 
