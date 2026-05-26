@@ -19,6 +19,7 @@ export default defineConfig(({ command, mode }) => {
         ext: '.gz',
         threshold: 1024, // Só comprime arquivos > 1KB
         deleteOriginFile: false,
+        verbose: false,
         filter: compressibleAssetPattern,
       }),
       // Brotli compression (melhor taxa para Cloudflare/CDN)
@@ -27,6 +28,7 @@ export default defineConfig(({ command, mode }) => {
         ext: '.br',
         threshold: 1024,
         deleteOriginFile: false,
+        verbose: false,
         filter: compressibleAssetPattern,
       }),
     ].filter(Boolean),
