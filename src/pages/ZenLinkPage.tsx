@@ -51,6 +51,14 @@ const LINK_ANIMATE = { opacity: 1, x: 0 };
 const LINK_TRANSITION = { type: 'spring' as const, stiffness: 260, damping: 24 };
 const FOOTER_INITIAL = { opacity: 0 };
 const FOOTER_ANIMATE = { opacity: 1 };
+const CHEVRON_VARIANTS = { open: { rotate: 180 }, closed: { rotate: 0 } };
+const DROPDOWN_INITIAL = { height: 0, opacity: 0 };
+const DROPDOWN_ANIMATE = { height: 'auto', opacity: 1 };
+const DROPDOWN_EXIT = { height: 0, opacity: 0 };
+const HEADER_INITIAL = { opacity: 0, y: -24 };
+const HEADER_ANIMATE = { opacity: 1, y: 0 };
+const MICROFACTS_INITIAL = { opacity: 0 };
+const MICROFACTS_ANIMATE = { opacity: 1 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
@@ -87,7 +95,7 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
               <p className="text-gray-400 text-sm">{t('zenlink.choose_platform')}</p>
             </div>
           </div>
-          <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
+          <motion.div variants={CHEVRON_VARIANTS} animate={isOpen ? 'open' : 'closed'}>
             <ChevronDown className="w-5 h-5 text-gray-400" />
           </motion.div>
         </div>
@@ -96,9 +104,9 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            initial={DROPDOWN_INITIAL}
+            animate={DROPDOWN_ANIMATE}
+            exit={DROPDOWN_EXIT}
             className="overflow-hidden"
           >
             <div className="pt-2 space-y-2">
@@ -171,8 +179,8 @@ const ZenLinkPageComponent = () => {
       <main className="min-h-screen bg-transparent text-zinc-100 font-sans selection:bg-primary/30">
         <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-10 pt-8">
           <motion.header
-            initial={{ opacity: 0, y: -24 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={HEADER_INITIAL}
+            animate={HEADER_ANIMATE}
             className="mb-6"
           >
             <div className="relative rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 shadow-xl backdrop-blur-xl">
@@ -213,8 +221,8 @@ const ZenLinkPageComponent = () => {
 
           {microFacts.length > 0 && (
             <motion.section
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={MICROFACTS_INITIAL}
+              animate={MICROFACTS_ANIMATE}
               className="mb-6 flex gap-2"
             >
               {microFacts.map((fact) => (

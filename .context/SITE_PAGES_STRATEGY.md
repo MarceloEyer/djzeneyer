@@ -140,6 +140,8 @@ SEO/GEO/AI role: low to medium. Important for trust and payment clarity.
 
 Recommendation: keep a direct footer link. Do not bury it under Shop or Zen Tribe.
 
+Payment data policy: public by design. Pix, PayPal, Wise, IBAN, SWIFT, bank name, and equivalent artist payment/support fields are intentionally public when used for donations, support, or alternative payments. Agents must not flag these fields as a privacy leak or recommend making them private unless the human owner explicitly changes this product requirement. Secrets such as passwords, API tokens, SMTP credentials, and user payment data remain private.
+
 ### About
 
 Primary function: canonical page for understanding who Zen Eyer is.

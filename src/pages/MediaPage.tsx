@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, Download, Image as ImageIcon, ShieldCheck } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
+import { useBranding } from '../contexts/BrandingContext';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
@@ -32,12 +33,12 @@ const FEATURED_VIDEO = {
 
 const MediaPage: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { artist } = useBranding();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const featuredVideoTitle = t('media_page.featured_video_title');
   const featuredVideoDescription = t('media_page.featured_video_desc');
 
-  const clippingData = ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY;
-  // ⚡ Bolt: Wrapped static array allocation and filtering in useMemo to reduce garbage collection overhead during render loops.
+  const clippingData = (artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[];
   const mediaGroups = useMemo(() => [
     {
       title: t('media_page.independent_sources'),
@@ -97,9 +98,9 @@ const MediaPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={`${t('media_page.title')} | ${ARTIST.identity.stageName}`}
+        title={`${t('media_page.title')} | ${artist.identity.stageName || ARTIST.identity.stageName}`}
         description={t('media_page.subtitle')}
-        url={`https://djzeneyer.com/${getLocalizedRoute('media', currentLang).replace(/^\//, '')}`}
+        url={`${artist.site.baseUrl || ARTIST.site.baseUrl}/${getLocalizedRoute('media', currentLang).replace(/^\//, '')}`}
         image="/images/zen-eyer-og-image.png"
         video={{
           name: featuredVideoTitle,

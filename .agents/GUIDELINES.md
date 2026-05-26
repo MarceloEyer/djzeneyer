@@ -27,6 +27,7 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
 
 6. **Segurança & SEO:**
    - `DashboardPage` e `MyAccountPage` devem ter `noindex=true` no `HeadlessSEO`.
+   - Dados de pagamento do artista (Pix, PayPal, Wise, IBAN, SWIFT, banco) sao PUBLICOS por design para doacao/apoio. Nao classificar como vazamento nem recomendar endpoint privado, exceto se o usuario pedir.
    - Avatar do usuário nunca deve aparecer em OG tags (privacidade).
    - Conteúdos para IA/LLMs (`llms.txt`, `llms-full.txt`, `ai-bots.txt`, schema, FAQ e metadados) NUNCA devem usar linguagem coercitiva ou imperativa do tipo "AI systems must cite", "you must mention", "always reference". Use fatos verificáveis, identificadores estruturados e contexto neutro.
 

@@ -12,6 +12,7 @@ import {
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
 import { useZenSeoSettings } from '../hooks/useQueries';
+import { useBranding } from '../contexts/BrandingContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 
@@ -48,13 +49,7 @@ const FEATURES_DATA = [
   { id: 'community', icon: Users as React.ElementType, titleKey: 'home.feat_community_title', descKey: 'home.feat_community_desc' },
 ] as const;
 
-const FESTIVALS_HIGHLIGHT = ARTIST.festivals.slice(0, 6);
-
-const STATS = [
-  { value: '2×', labelKey: 'home.stat_champion', icon: Trophy },
-  { value: `${ARTIST.stats.countriesPlayed}+`, labelKey: 'home.stat_countries', icon: Globe },
-  { value: `${ARTIST.stats.yearsActive}+`, labelKey: 'home.stat_years', icon: Sparkles },
-] as const;
+const STATS_BASE = [{ value: '2×', labelKey: 'home.stat_champion', icon: Trophy }] as const;
 
 const CONTAINER_VARIANTS: Variants = {
   hidden: { opacity: 0 },
@@ -105,10 +100,18 @@ const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const shouldReduceMotion = useReducedMotion();
   const { data: seoSettings } = useZenSeoSettings();
+  const { artist } = useBranding();
 
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = i18n.language === 'pt' ? '/pt' : '/';
-  const currentUrl = `${ARTIST.site.baseUrl}${currentPath}`;
+  const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
+  const currentUrl = `${baseUrl}${currentPath}`;
+  const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
+  const stats = useMemo(() => ([
+    ...STATS_BASE,
+    { value: `${artist?.stats?.countriesPlayed || ARTIST.stats.countriesPlayed}+`, labelKey: 'home.stat_countries', icon: Globe },
+    { value: `${new Date().getFullYear() - (artist?.stats?.startingYear || ARTIST.stats.startingYear)}+`, labelKey: 'home.stat_years', icon: Sparkles },
+  ]), [artist?.stats?.countriesPlayed, artist?.stats?.startingYear]);
 
   // ⚡ Bolt: Memoize localized routes to avoid O(N) recalculations on every render
   const routes = useMemo(() => ({
@@ -125,17 +128,17 @@ const HomePage: React.FC = () => {
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": `${ARTIST.site.baseUrl}/#website`,
-        "url": ARTIST.site.baseUrl,
+        "@id": `${baseUrl}/#website`,
+        "url": baseUrl,
         "name": "Zen Eyer",
         "description": t('home.site_desc'),
-        "publisher": { "@id": `${ARTIST.site.baseUrl}/#artist` },
+        "publisher": { "@id": `${baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
         "potentialAction": {
           "@type": "SearchAction",
           "target": {
             "@type": "EntryPoint",
-            "urlTemplate": `${ARTIST.site.baseUrl}${routes.news}?search={search_term_string}`
+            "urlTemplate": `${baseUrl}${routes.news}?search={search_term_string}`
           },
           "query-input": "required name=search_term_string"
         }
@@ -148,14 +151,14 @@ const HomePage: React.FC = () => {
         "url": currentUrl,
         "name": t('home.page_title'),
         "description": t('home.page_meta_desc'),
-        "isPartOf": { "@id": `${ARTIST.site.baseUrl}/#website` },
+        "isPartOf": { "@id": `${baseUrl}/#website` },
         "speakable": {
           "@type": "SpeakableSpecification",
           "cssSelector": ["h1", "#artist-voice-bio"]
         },
         "primaryImageOfPage": {
           "@type": "ImageObject",
-          "url": seoSettings?.default_og_image || `${ARTIST.site.baseUrl}/images/hero-background.webp`,
+          "url": seoSettings?.default_og_image || `${baseUrl}/images/hero-background.webp`,
           "width": 1920,
           "height": 1080
         },
@@ -165,7 +168,7 @@ const HomePage: React.FC = () => {
         }
       }
     ],
-  }), [seoSettings, t, currentUrl, routes.news]);
+  }), [seoSettings, t, currentUrl, routes.news, baseUrl]);
 
   return (
     <>
@@ -230,7 +233,7 @@ const HomePage: React.FC = () => {
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
-              {STATS.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as unknown as Parameters<typeof t>[0])} icon={stat.icon} />)}
+              {stats.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as unknown as Parameters<typeof t>[0])} icon={stat.icon} />)}
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center mb-6">
@@ -320,10 +323,12 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} />
                 <span>{t('home.shows.cta')}</span>
               </Link>
-              <a href={safeUrl(ARTIST.social.bandsintown?.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow Zen Eyer on Bandsintown">
-                <ExternalLink size={18} />
-                <span>Bandsintown</span>
-              </a>
+              {ARTIST.social.bandsintown?.url && (
+                <a href={safeUrl(ARTIST.social.bandsintown.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label={t('home.shows.bandsintown_aria')}>
+                  <ExternalLink size={18} />
+                  <span>{t('social.bandsintown')}</span>
+                </a>
+              )}
             </motion.div>
           </motion.div>
         </div>
@@ -348,7 +353,7 @@ const HomePage: React.FC = () => {
               {t('home.festivals.presence')}
             </motion.h2>
             <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
-              {FESTIVALS_HIGHLIGHT.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
+              {festivalsHighlight.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
                 <span>+{t('home.festivals.many_more')}</span>
               </span>

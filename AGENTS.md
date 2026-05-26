@@ -46,6 +46,13 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - `gamipress_get_rank_types()` e similares retornam arrays associativos (slug como chave).
 - **LEI:** Use sempre `array_values($array)[0]` ou `reset($array)` para acessar o primeiro elemento. Nunca use `$array[0]` direto.
 
+### 5. Dados de Pagamento Publicos por Design
+
+- Campos de pagamento e apoio (`payment`, Pix, PayPal, Wise, IBAN, SWIFT, banco) podem aparecer em endpoints e paginas publicas.
+- **REGRA DE PRODUTO:** isso e intencional para receber doacoes, apoio financeiro e pagamentos alternativos.
+- **NAO marcar como bug/vazamento:** nao recomendar tornar esses dados privados, remover de `/zen-seo/v1/profile`, nem separar em endpoint autenticado, salvo se o usuario pedir explicitamente.
+- O que continua proibido: expor senhas, tokens, chaves secretas, credenciais SMTP/API ou dados de pagamento de terceiros/usuarios.
+
 ---
 
 ## ⚠️ Armadilhas Conhecidas

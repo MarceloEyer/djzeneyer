@@ -493,6 +493,33 @@ final class REST_Handler
 
         $ach_types = \gamipress_get_achievement_types();
         $all = [];
+        $earned_ids_by_type = [];
+
+        if ($status !== 'earned' && \function_exists('gamipress_get_user_achievements')) {
+            $earned_all = \gamipress_get_user_achievements([
+                'user_id' => $user_id,
+            ]);
+
+            if (\is_array($earned_all) || $earned_all instanceof \Traversable) {
+                foreach ($earned_all as $earned) {
+                    if (!\is_object($earned) || !isset($earned->ID)) {
+                        continue;
+                    }
+
+                    $post_type = '';
+                    if (isset($earned->post_type) && \is_string($earned->post_type)) {
+                        $post_type = $earned->post_type;
+                    } else {
+                        $maybe_type = \get_post_type((int) $earned->ID);
+                        $post_type = \is_string($maybe_type) ? $maybe_type : '';
+                    }
+
+                    if ($post_type !== '') {
+                        $earned_ids_by_type[$post_type][] = (int) $earned->ID;
+                    }
+                }
+            }
+        }
 
         foreach ($ach_types as $type_key => $type) {
             // gamipress_get_achievement_types() retorna array associativo chave=slug,
@@ -508,17 +535,8 @@ final class REST_Handler
                     'achievement_type' => $type_slug,
                 ]);
             } else {
-                // Collect earned IDs to exclude, then fetch locked in a single query
-                $earned_ids = [];
-                if (\function_exists('gamipress_get_user_achievements')) {
-                    $earned_objects = \gamipress_get_user_achievements([
-                        'user_id' => $user_id,
-                        'achievement_type' => $type_slug,
-                    ]);
-                    foreach ($earned_objects as $earned) {
-                        if (isset($earned->ID)) $earned_ids[] = (int) $earned->ID;
-                    }
-                }
+                // Reuse IDs collected in one pass to avoid per-type earned query fan-out.
+                $earned_ids = $earned_ids_by_type[$type_slug] ?? [];
 
                 $query_args = [
                     'post_type' => $type_slug,

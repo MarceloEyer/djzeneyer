@@ -624,7 +624,7 @@ class Rest_Routes
                        MAX(CASE WHEN im.meta_key = '_qty' THEN im.meta_value END) as quantity,
                        MAX(CASE WHEN im.meta_key = '_line_total' THEN im.meta_value END) as total
                 FROM {$wpdb->prefix}woocommerce_order_items i
-                INNER JOIN {$wpdb->prefix}woocommerce_order_itemmeta im
+                LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta im
                     ON i.order_item_id = im.order_item_id
                    AND im.meta_key IN ('_qty', '_line_total')
                 WHERE i.order_id IN ($placeholders)
