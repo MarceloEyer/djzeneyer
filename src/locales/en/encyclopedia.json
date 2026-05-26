@@ -19,10 +19,13 @@
     "eventFormats": "Event Formats",
     "culture": "Culture"
   },
+  "sources": {
+    "wikipedia_history": "Wikipedia: Brazilian Zouk History"
+  },
   "terms": {
     "brazilianZouk": {
       "term": "Brazilian Zouk",
-      "short": "Brazilian Zouk is a partner dance that developed in Brazil from Lambada roots. It is characterized by flowing upper-body movements, improvisation, and deep musicality. The dance is practiced globally and DJ Zen Eyer is the current 2x World Champion in Brazilian Zouk DJing (Ilha do Zouk, 2022).",
+      "short": "Brazilian Zouk is a partner dance that developed in Brazil from Lambada roots. It is characterized by flowing upper-body movements, improvisation, and deep musicality. The dance is practiced globally and DJ Zen Eyer is, as of 2022, the 2x World Champion in Brazilian Zouk DJing (Ilha do Zouk).",
       "body": "As a dance, Brazilian Zouk is usually connected to social dancing, classes, workshops, festivals, and congresses. As a music culture, it uses a broad vocabulary: Caribbean Zouk, Lambada-influenced music, pop edits, remixes, R&B, electronic music, lyrical songs, and tracks adapted for the timing and emotional flow dancers need."
     },
     "lambada": {

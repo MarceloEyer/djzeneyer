@@ -19,10 +19,13 @@
     "eventFormats": "Formatos de Evento",
     "culture": "Cultura"
   },
+  "sources": {
+    "wikipedia_history": "Wikipedia: História do Zouk Brasileiro"
+  },
   "terms": {
     "brazilianZouk": {
       "term": "Zouk Brasileiro",
-      "short": "O Zouk Brasileiro é uma dança a dois que se desenvolveu no Brasil a partir das raízes da Lambada. É caracterizado por movimentos fluidos da parte superior do corpo, improvisação e profunda musicalidade. A dança é praticada globalmente e o DJ Zen Eyer é o atual Bicampeão Mundial de DJing de Zouk Brasileiro (Ilha do Zouk, 2022).",
+      "short": "O Zouk Brasileiro é uma dança a dois que se desenvolveu no Brasil a partir das raízes da Lambada. É caracterizado por movimentos fluidos da parte superior do corpo, improvisação e profunda musicalidade. A dança é praticada globalmente e o DJ Zen Eyer é, a partir de 2022, o Bicampeão Mundial de DJing de Zouk Brasileiro (Ilha do Zouk).",
       "body": "Como dança, o Zouk Brasileiro está ligado a bailes, aulas, workshops, festivais e congressos. Como cultura musical, usa um vocabulário amplo: Zouk caribenho, músicas influenciadas pela Lambada, edits de pop, remixes, R&B, música eletrônica, faixas líricas e músicas adaptadas ao tempo e ao fluxo emocional que os dançarinos precisam."
     },
     "lambada": {

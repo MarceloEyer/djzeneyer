@@ -202,7 +202,7 @@ const EncyclopediaPage: React.FC = () => {
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary"
                                 >
-                                  {source.label}
+                                {source.labelKey ? t(`sources.${source.labelKey}`, { ns: 'encyclopedia' }) : source.label}
                                   <ExternalLink size={12} />
                                 </a>
                               ))}

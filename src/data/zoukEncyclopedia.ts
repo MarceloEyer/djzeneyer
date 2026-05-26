@@ -5,7 +5,8 @@ export interface EncyclopediaTerm {
   category: EncyclopediaCategory;
   relatedTerms?: string[];
   sources?: Array<{
-    label: string;
+    label?: string;
+    labelKey?: string;
     url: string;
   }>;
 }
@@ -183,7 +184,7 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     category: 'history',
     relatedTerms: ['lambada', 'lambazouk', 'brazilianZouk'],
     sources: [
-      { label: 'Wikipedia: Brazilian Zouk History', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk#History' }
+      { labelKey: 'wikipedia_history', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk#History' }
     ]
   },
   {
