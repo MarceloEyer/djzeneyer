@@ -472,6 +472,8 @@ class Zen_SEO_REST_API
         // Optimization: Batch pre-load posts and metadata to avoid N+1 queries in the loop
         $batch_ids = \wp_list_pluck($posts, 'ID');
         \_prime_post_caches($batch_ids, true, true);
+        // ⚡ Bolt: Prime meta cache to prevent N+1 queries when fetching post metadata
+        \update_meta_cache('post', $batch_ids);
 
         $pll_exists = \function_exists('pll_get_post_language');
 
