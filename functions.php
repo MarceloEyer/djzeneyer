@@ -17,6 +17,7 @@ require_once get_theme_file_path('/inc/seo-head.php');
 require_once get_theme_file_path('/inc/vite.php');
 require_once get_theme_file_path('/inc/spa.php');
 require_once get_theme_file_path('/inc/cpt.php');
+require_once get_theme_file_path('/inc/mailpoet-branding.php');
 
 // Context-aware loading
 $is_admin = is_admin();
