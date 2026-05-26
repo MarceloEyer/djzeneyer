@@ -339,7 +339,9 @@ const EventListContent = ({ lang }: { lang: string }) => {
 const EventsPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
   const { t, i18n } = useTranslation();
+  const { artist } = useBranding();
   const lang = normalizeLanguage(i18n.language);
+  const pressKitUrl = artist?.site?.media?.epkPdf || ARTIST.site.media.epkPdf;
 
   if (id) {
     return (
@@ -370,7 +372,7 @@ const EventsPage: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
             <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <a href={safeUrl(artist.site.media.epkPdf || ARTIST.site.media.epkPdf, '/')} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
+            <a href={safeUrl(pressKitUrl, '/')} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
           </div>
         </section>
       </div>

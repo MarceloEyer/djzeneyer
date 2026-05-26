@@ -326,7 +326,7 @@ class Zen_SEO_REST_API
             }
 
             $decoded = \json_decode($value, true);
-            if (\is_array($decoded)) {
+            if (\is_array($decoded) && \array_keys($decoded) === \range(0, \count($decoded) - 1)) {
                 return $decoded;
             }
 
@@ -339,7 +339,7 @@ class Zen_SEO_REST_API
                 'stageName' => $settings['stage_name'] ?? 'DJ Zen Eyer',
                 'shortName' => $settings['short_name'] ?? 'Zen Eyer',
                 'fullName'  => $settings['real_name'] ?? 'Marcelo Eyer Fernandes',
-                'birthDate' => $settings['birth_date'] ?? '1989-08-30',
+                'birthDate' => $settings['birth_date'] ?? '1985-08-20',
                 'cnpj'      => $settings['cnpj'] ?? '',
                 'city'      => $settings['city'] ?? '',
                 'state'     => $settings['state'] ?? '',

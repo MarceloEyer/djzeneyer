@@ -317,6 +317,7 @@
   },
   "social": {
     "instagram": "Instagram",
+    "bandsintown": "Bandsintown",
     "YouTube": "YouTube",
     "youtube_music": "YouTube Music",
     "tiktok": "TikTok",
@@ -402,7 +403,8 @@
     },
     "shows": {
       "title": "Upcoming Events",
-      "cta": "View All Events"
+      "cta": "View All Events",
+      "bandsintown_aria": "Follow Zen Eyer on Bandsintown"
     },
     "festivals": {
       "presence": "International Festival Presence",

@@ -104,14 +104,14 @@ const HomePage: React.FC = () => {
 
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = i18n.language === 'pt' ? '/pt' : '/';
-  const baseUrl = artist.site.baseUrl || ARTIST.site.baseUrl;
+  const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
-  const festivalsHighlight = useMemo(() => (artist.festivals || ARTIST.festivals).slice(0, 6), [artist.festivals]);
+  const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
   const stats = useMemo(() => ([
     ...STATS_BASE,
-    { value: `${artist.stats.countriesPlayed}+`, labelKey: 'home.stat_countries', icon: Globe },
-    { value: `${artist.stats.yearsActive}+`, labelKey: 'home.stat_years', icon: Sparkles },
-  ]), [artist.stats.countriesPlayed, artist.stats.yearsActive]);
+    { value: `${artist?.stats?.countriesPlayed || ARTIST.stats.countriesPlayed}+`, labelKey: 'home.stat_countries', icon: Globe },
+    { value: `${new Date().getFullYear() - (artist?.stats?.startingYear || ARTIST.stats.startingYear)}+`, labelKey: 'home.stat_years', icon: Sparkles },
+  ]), [artist?.stats?.countriesPlayed, artist?.stats?.startingYear]);
 
   // ⚡ Bolt: Memoize localized routes to avoid O(N) recalculations on every render
   const routes = useMemo(() => ({
@@ -324,9 +324,9 @@ const HomePage: React.FC = () => {
                 <span>{t('home.shows.cta')}</span>
               </Link>
               {ARTIST.social.bandsintown?.url && (
-                <a href={safeUrl(ARTIST.social.bandsintown.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow Zen Eyer on Bandsintown">
+                <a href={safeUrl(ARTIST.social.bandsintown.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label={t('home.shows.bandsintown_aria')}>
                   <ExternalLink size={18} />
-                  <span>Bandsintown</span>
+                  <span>{t('social.bandsintown')}</span>
                 </a>
               )}
             </motion.div>

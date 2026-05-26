@@ -13,6 +13,7 @@ Este documento define os princípios de desenvolvimento e as restrições operac
     - Identidade: `.context/IDENTITY.md` + `src/data/artistData.ts`.
     - Rotas: `src/config/routes-slugs.json`.
 - **Perfil operacional do site:** O site tem baixo volume de atualizacoes. Eventos costumam atualizar semanalmente; posts/releases/reviews e copy publica atualizam mensalmente, trimestralmente ou menos; identidade, links oficiais e dados de pagamento raramente mudam. Prefira caches longos, prerender, dados estaticos para identidade e reducao de requests rotineiros antes de criar endpoints/agregadores complexos.
+- **Dados de pagamento publicos:** Dados de pagamento do artista (Pix, PayPal, Wise, IBAN, SWIFT, banco) sao publicos por design para doacoes/apoio/pagamentos alternativos. Nao tratar como vazamento nem recomendar endpoint privado sem pedido explicito do usuario. Segredos reais (tokens, senhas, credenciais SMTP/API) continuam proibidos.
 - **SEO/GEO/AEO/Knowledge Panel:** Priorize informacao factual, rastreavel e estruturada para bots, com baixo consumo de recursos. Solucoes simples e cacheaveis vencem otimizacoes pequenas que aumentam fragilidade.
 
 ---

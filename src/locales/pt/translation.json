@@ -351,6 +351,7 @@
   "events_add_google": "Adicionar à Agenda",
   "social": {
     "instagram": "Instagram",
+    "bandsintown": "Bandsintown",
     "YouTube": "YouTube",
     "youtube_music": "YouTube Music",
     "tiktok": "TikTok",
@@ -442,7 +443,8 @@
     },
     "shows": {
       "title": "Próximos Shows",
-      "cta": "Agenda completa"
+      "cta": "Agenda completa",
+      "bandsintown_aria": "Seguir Zen Eyer no Bandsintown"
     },
     "press": {
       "title": "Imprensa & Mídia",
