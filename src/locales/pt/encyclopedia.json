@@ -1,15 +1,15 @@
 {
   "nav_label": "Enciclopédia",
   "badge": "Guia de Referência",
-  "hero_title": "<1>Enciclopédia</1>",
-  "hero_subtitle": "Uma referência concisa sobre termos, música, dança, cultura e formatos de eventos do Zouk Brasileiro. Feita para responder perguntas comuns com clareza e confiabilidade.",
-  "search_label": "Pesquisar na Enciclopédia",
-  "search_placeholder": "Busque termos, música, dança, eventos...",
-  "no_results": "Nenhum verbete encontrado para esta busca.",
+  "hero_title": "Enciclopédia de <1>Zouk Brasileiro</1>",
+  "hero_subtitle": "Um guia completo e referenciado sobre a história do Zouk Brasileiro, estilos musicais, pioneiros e cultura da dança.",
+  "search_label": "Buscar na Enciclopédia",
+  "search_placeholder": "Busque termos, músicas, dança, eventos...",
+  "no_results": "Nenhum termo encontrado para esta busca na enciclopédia.",
   "sources_label": "Fontes",
   "seo": {
-    "title": "Enciclopédia",
-    "description": "Uma enciclopédia concisa de Zouk Brasileiro com definições sobre dança, música, formatos de eventos e cultura zouk."
+    "title": "Enciclopédia e História do Zouk Brasileiro",
+    "description": "Uma enciclopédia concisa de Zouk Brasileiro com definições sobre dança, música, formatos de eventos e a cultura do Zouk."
   },
   "categories": {
     "fundamentals": "Fundamentos",

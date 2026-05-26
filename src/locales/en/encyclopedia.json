@@ -1,14 +1,14 @@
 {
   "nav_label": "Encyclopedia",
   "badge": "Reference Guide",
-  "hero_title": "<1>Encyclopedia</1>",
-  "hero_subtitle": "A concise reference for Brazilian Zouk terms, music, dance culture, and event formats. Built to answer common questions clearly and reliably.",
+  "hero_title": "Brazilian Zouk <1>Encyclopedia</1>",
+  "hero_subtitle": "A comprehensive, fact-based guide to Brazilian Zouk history, music styles, pioneers, and dance culture.",
   "search_label": "Search Encyclopedia",
   "search_placeholder": "Search terms, music, dance, events...",
   "sources_label": "Sources",
   "no_results": "No encyclopedia terms found for this search.",
   "seo": {
-    "title": "Encyclopedia",
+    "title": "Brazilian Zouk Encyclopedia & History",
     "description": "A concise Brazilian Zouk encyclopedia with definitions for dance, music, event formats, and Zouk culture."
   },
   "categories": {
