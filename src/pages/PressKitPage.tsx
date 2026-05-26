@@ -473,9 +473,11 @@ const PressKitPage: React.FC = () => {
                   <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline btn-lg flex items-center justify-center gap-3">
                     <Mail size={20} /> Email
                   </a>
-                  <a href={safeUrl(artist.social.instagram?.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center justify-center gap-3">
-                    <InstagramIcon size={20} /> Instagram
-                  </a>
+                  {artist.social.instagram?.url && (
+                    <a href={safeUrl(artist.social.instagram.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center justify-center gap-3">
+                      <InstagramIcon size={20} /> Instagram
+                    </a>
+                  )}
                 </div>
 
                 <div className="mt-8 sm:mt-16 border-t border-white/10 pt-6 sm:pt-10">

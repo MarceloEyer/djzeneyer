@@ -320,10 +320,12 @@ const HomePage: React.FC = () => {
                 <Calendar size={20} />
                 <span>{t('home.shows.cta')}</span>
               </Link>
-              <a href={safeUrl(ARTIST.social.bandsintown?.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow Zen Eyer on Bandsintown">
-                <ExternalLink size={18} />
-                <span>Bandsintown</span>
-              </a>
+              {ARTIST.social.bandsintown?.url && (
+                <a href={safeUrl(ARTIST.social.bandsintown.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label="Follow Zen Eyer on Bandsintown">
+                  <ExternalLink size={18} />
+                  <span>Bandsintown</span>
+                </a>
+              )}
             </motion.div>
           </motion.div>
         </div>
