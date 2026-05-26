@@ -152,6 +152,10 @@ jobs:
             for dir in plugins/*/; do
               if [ -f "$dir/composer.json" ]; then
                 cd "$dir"
+                if [ ! -f composer.lock ]; then
+                  echo "composer.lock missing in $dir; run composer update and commit the lock file"
+                  exit 1
+                fi
                 # ⚠️ CI hardening note (do not "optimize" this without validation):
                 # Composer 2.9+ can block packages flagged by Packagist security advisories.
                 # IMPORTANT: NEVER add --no-audit here; this option is not available in composer install
