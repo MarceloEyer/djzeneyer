@@ -342,8 +342,9 @@ export const getLanguagePrefix = (lang: Language): string => {
  */
 export const buildFullPath = (path: string, lang: Language): string => {
   const prefix = getLanguagePrefix(lang);
-  if (!path) return prefix; // Index route
-  return prefix === '/' ? `/${path}` : `${prefix}/${path}`;
+  if (!path) return prefix === '/' ? '/' : `${prefix}/`; // Index route
+  const full = prefix === '/' ? `/${path}` : `${prefix}/${path}`;
+  return full.endsWith('/') ? full : `${full}/`;
 };
 
 /**
