@@ -7,6 +7,10 @@ const ZenLinkPage = lazyWithRetry(
   () => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })),
   'route:zenlink-standalone'
 );
+const NewsletterStatusPage = lazyWithRetry(
+  () => import('../pages/NewsletterStatusPage'),
+  'route:newsletter-status'
+);
 // CORREÇÃO: Apontando para o local correto onde você definiu suas rotas
 import {
   ROUTES_CONFIG,
@@ -89,6 +93,80 @@ const STATIC_ROUTES: RouteObject[] = [
       </ErrorBoundary>
     ),
     children: generateRoutes('en'),
+  },
+
+  // ✉️ Newsletter system pages — branded MailPoet UX shell
+  {
+    path: '/newsletter-confirmation',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          <ErrorBoundary>
+            <NewsletterStatusPage mode="confirmation" />
+          </ErrorBoundary>
+        ),
+      },
+    ],
+  },
+  {
+    path: '/newsletter-preferences',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          <ErrorBoundary>
+            <NewsletterStatusPage mode="preferences" />
+          </ErrorBoundary>
+        ),
+      },
+    ],
+  },
+  {
+    path: '/pt/confirmar-newsletter',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          <ErrorBoundary>
+            <NewsletterStatusPage mode="confirmation" />
+          </ErrorBoundary>
+        ),
+      },
+    ],
+  },
+  {
+    path: '/pt/preferencias-newsletter',
+    element: (
+      <ErrorBoundary>
+        <MainLayout />
+      </ErrorBoundary>
+    ),
+    children: [
+      {
+        index: true,
+        element: (
+          <ErrorBoundary>
+            <NewsletterStatusPage mode="preferences" />
+          </ErrorBoundary>
+        ),
+      },
+    ],
   },
 
   // 🔗 ZenLink — página independente (sem Navbar/Footer)
