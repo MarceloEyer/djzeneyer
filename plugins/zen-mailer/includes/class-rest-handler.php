@@ -2,7 +2,7 @@
 /**
  * Endpoints REST para diagnóstico e teste de envio.
  *
- * GET  /wp-json/zen-mailer/v1/health      → status da configuração (público)
+ * GET  /wp-json/zen-mailer/v1/health      → status da configuração (admin)
  * POST /wp-json/zen-mailer/v1/send-test   → dispara email de teste (admin)
  *
  * @package Zen_Mailer
@@ -24,7 +24,7 @@ class RestHandler {
         register_rest_route( self::NS, '/health', [
             'methods'             => \WP_REST_Server::READABLE,
             'callback'            => [ __CLASS__, 'health' ],
-            'permission_callback' => '__return_true',
+            'permission_callback' => [ __CLASS__, 'is_admin' ],
         ] );
 
         register_rest_route( self::NS, '/send-test', [
