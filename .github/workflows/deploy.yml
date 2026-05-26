@@ -179,8 +179,6 @@ jobs:
           name: build-theme-${{ steps.commit.outputs.hash }}
           path: |
             functions.php
-            style.css
-            screenshot.png
             header.php
             footer.php
             index.php
@@ -230,6 +228,7 @@ jobs:
             parts
             templates
           sparse-checkout-cone-mode: false
+          fetch-depth: 2
 
       # --- DOWNLOAD ARTIFACTS ---
       - name: 📥 Download dist
@@ -363,7 +362,7 @@ jobs:
           port: ${{ env.SSH_PORT }}
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "functions.php,style.css,screenshot.png,header.php,footer.php,index.php"
+          source: "functions.php,header.php,footer.php,index.php"
           target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
           strip_components: 0
 
