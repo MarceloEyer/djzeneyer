@@ -551,18 +551,21 @@ async function prerender() {
     });
 
     const createPrerenderPage = async (routePayload) => {
+      // Inicia uma nova página (tab) no Puppeteer
       const page = await browser.newPage();
-
-      // 🛡️ API INTERCEPTION: Global for all pages
-      // __PRERENDER_DATA__ é injetado no Puppeteer E gravado no HTML (ver abaixo).
-      // Isso elimina os fetches de events e menu do critical path de carregamento.
-      await page.evaluateOnNewDocument((payload) => {
-        window.__PRERENDER_DATA__ = payload;
-      }, routePayload);
-
+      
+      // Bloquear requests desnecessários para poupar memória no CI/CD
       await page.setRequestInterception(true);
       page.on('request', request => {
         const reqUrl = request.url();
+        const resourceType = request.resourceType();
+        
+        // Bloqueia fontes, analytics e mídias pesadas que não afetam o DOM/SEO
+        if (['font', 'media', 'websocket'].includes(resourceType) || reqUrl.includes('google-analytics') || reqUrl.includes('googletagmanager')) {
+            request.abort();
+            return;
+        }
+
         const urlObj = new URL(reqUrl);
         const lang = (urlObj.searchParams.get('lang') || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
 
@@ -646,81 +649,87 @@ async function prerender() {
     };
 
     let successCount = 0;
+    const BATCH_SIZE = 5; // Process 5 routes concurrently to speed up CI/CD without blowing up memory
 
-    for (const route of CONFIG.routes) {
-      const cleanRoute = route.replace(/^\//, '');
-      const url = `${CONFIG.serverBase}/${cleanRoute}`;
+    for (let i = 0; i < CONFIG.routes.length; i += BATCH_SIZE) {
+      const batch = CONFIG.routes.slice(i, i + BATCH_SIZE);
+      console.log(`\n⏳ Processando lote ${Math.floor(i / BATCH_SIZE) + 1} de ${Math.ceil(CONFIG.routes.length / BATCH_SIZE)}...`);
+      
+      await Promise.all(batch.map(async (route) => {
+        const cleanRoute = route.replace(/^\//, '');
+        const url = `${CONFIG.serverBase}/${cleanRoute}`;
 
-      let outputPath;
-      if (route === '/' || route === '') {
-        outputPath = join(CONFIG.distDir, 'index.html');
-      } else {
-        const targetDir = join(CONFIG.distDir, cleanRoute);
-        if (!existsSync(targetDir)) mkdirSync(targetDir, { recursive: true });
-        outputPath = join(targetDir, 'index.html');
-      }
-
-      let page = null;
-      let previousHtml = null;
-      try {
-        if (route !== '/' && route !== '' && existsSync(outputPath)) {
-          previousHtml = readFileSync(outputPath, 'utf8');
-          unlinkSync(outputPath);
+        let outputPath;
+        if (route === '/' || route === '') {
+          outputPath = join(CONFIG.distDir, 'index.html');
+        } else {
+          const targetDir = join(CONFIG.distDir, cleanRoute);
+          if (!existsSync(targetDir)) mkdirSync(targetDir, { recursive: true });
+          outputPath = join(targetDir, 'index.html');
         }
 
-        const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, menuData);
-        page = await createPrerenderPage(prerenderPayloadObj);
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-
+        let page = null;
+        let previousHtml = null;
         try {
-          // Aguarda o <h1> estar no DOM (garante que React renderizou o conteúdo real, não skeleton)
-          await page.waitForSelector('h1', { timeout: 10000 });
-          // Respiro estendido: i18next PT precisa de mais tempo para carregar traduções + Helmet injetar tags
-          await wait(4000);
-        } catch (e) {
-          console.warn(`⚠️ Warning: Timeout on ${route}`);
-        }
-
-        const html = await page.content();
-
-        if (html.length > 500) {
-          // ⭐ Injeta __PRERENDER_DATA__ no HTML salvo para que usuários reais também
-          // usem os dados sem chamar a API (elimina o fetch de events/menu do critical path).
-          // JSON.stringify com escape de </script> para evitar XSS por dados maliciosos.
-          const prerenderPayload = JSON.stringify(prerenderPayloadObj).replace(/<\/script>/gi, '<\\/script>');
-          const prerenderInlineScript = `<script>window.__PRERENDER_DATA__=${prerenderPayload};</script>`;
-
-          let finalHtml = html.includes('name="prerender-generated"')
-            ? html
-            : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
-
-          // Injeta antes do </head> (garante que está disponível antes do JS principal)
-          if (finalHtml.includes('window.__PRERENDER_DATA__')) {
-            finalHtml = finalHtml.replace(
-              /<script>window\.__PRERENDER_DATA__=.*?<\/script>/s,
-              prerenderInlineScript
-            );
-          } else {
-            finalHtml = finalHtml.replace('</head>', `${prerenderInlineScript}\n</head>`);
+          if (route !== '/' && route !== '' && existsSync(outputPath)) {
+            previousHtml = readFileSync(outputPath, 'utf8');
+            unlinkSync(outputPath);
           }
 
-          finalHtml = dedupePrerenderHead(finalHtml);
+          const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, menuData);
+          page = await createPrerenderPage(prerenderPayloadObj);
+          
+          // Injeta o __PRERENDER_DATA__ na window do navegador Headless
+          await page.evaluateOnNewDocument((payload) => {
+            window.__PRERENDER_DATA__ = payload;
+          }, prerenderPayloadObj);
 
-          writeFileSync(outputPath, finalHtml, 'utf8');
-          console.log(`✅ ${route} (${finalHtml.length}b)`);
-          successCount++;
+          await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+          try {
+            await page.waitForSelector('h1', { timeout: 10000 });
+            await wait(2000); // Reduzido de 4000 para 2000ms devido ao ganho de performance
+          } catch (e) {
+            console.warn(`⚠️ Warning: Timeout on ${route}`);
+          }
+
+          const html = await page.content();
+
+          if (html.length > 500) {
+            const prerenderPayload = JSON.stringify(prerenderPayloadObj).replace(/<\/script>/gi, '<\\/script>');
+            const prerenderInlineScript = `<script>window.__PRERENDER_DATA__=${prerenderPayload};</script>`;
+
+            let finalHtml = html.includes('name="prerender-generated"')
+              ? html
+              : html.replace('<head>', `<head>\n<meta name="prerender-generated" content="true">`);
+
+            if (finalHtml.includes('window.__PRERENDER_DATA__')) {
+              finalHtml = finalHtml.replace(
+                /<script>window\.__PRERENDER_DATA__=.*?<\/script>/s,
+                prerenderInlineScript
+              );
+            } else {
+              finalHtml = finalHtml.replace('</head>', `${prerenderInlineScript}\n</head>`);
+            }
+
+            finalHtml = dedupePrerenderHead(finalHtml);
+
+            writeFileSync(outputPath, finalHtml, 'utf8');
+            console.log(`✅ ${route} (${finalHtml.length}b)`);
+            successCount++;
+          }
+        } catch (error) {
+          console.error(`❌ Erro em ${route}: ${error.message}`);
+          if (previousHtml !== null && !existsSync(outputPath)) {
+            writeFileSync(outputPath, previousHtml, 'utf8');
+            console.warn(`HTML anterior preservado para ${route}`);
+          }
+        } finally {
+          if (page && !page.isClosed()) {
+            await page.close();
+          }
         }
-      } catch (error) {
-        console.error(`❌ Erro em ${route}: ${error.message}`);
-        if (previousHtml !== null && !existsSync(outputPath)) {
-          writeFileSync(outputPath, previousHtml, 'utf8');
-          console.warn(`HTML anterior preservado para ${route}`);
-        }
-      } finally {
-        if (page && !page.isClosed()) {
-          await page.close();
-        }
-      }
+      }));
     }
 
     console.log(`\n🎉 Prerender concluído: ${successCount}/${CONFIG.routes.length} rotas.`);
