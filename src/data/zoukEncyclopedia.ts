@@ -1,11 +1,12 @@
-export type EncyclopediaCategory = 'fundamentals' | 'music' | 'eventFormats' | 'culture';
+export type EncyclopediaCategory = 'fundamentals' | 'history' | 'styles' | 'music' | 'eventFormats' | 'culture';
 
 export interface EncyclopediaTerm {
   key: string;
   category: EncyclopediaCategory;
   relatedTerms?: string[];
   sources?: Array<{
-    label: string;
+    label?: string;
+    labelKey?: string;
     url: string;
   }>;
 }
@@ -16,9 +17,9 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     category: 'fundamentals',
     relatedTerms: ['lambada', 'lambazouk', 'zoukMusic'],
     sources: [
-      { label: 'Wikipedia: Brazilian Zouk', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk' },
-      { label: 'Brazilian Zouk Council', url: 'https://www.brazilianzoukcouncil.com/' },
-      { label: 'Zoukology', url: 'https://www.zoukology.com/' },
+      { labelKey: 'wikipedia_brazilian_zouk', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk' },
+      { labelKey: 'brazilian_zouk_council', url: 'https://www.brazilianzoukcouncil.com/' },
+      { labelKey: 'zoukology', url: 'https://www.zoukology.com/' },
     ],
   },
   {
@@ -26,8 +27,8 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     category: 'fundamentals',
     relatedTerms: ['brazilianZouk', 'lambazouk'],
     sources: [
-      { label: 'Wikipedia: Lambada', url: 'https://en.wikipedia.org/wiki/Lambada' },
-      { label: 'Brazilian Zouk Council', url: 'https://www.brazilianzoukcouncil.com/' },
+      { labelKey: 'wikipedia_lambada', url: 'https://en.wikipedia.org/wiki/Lambada' },
+      { labelKey: 'brazilian_zouk_council', url: 'https://www.brazilianzoukcouncil.com/' },
     ],
   },
   {
@@ -35,14 +36,29 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     category: 'fundamentals',
     relatedTerms: ['lambada', 'brazilianZouk'],
     sources: [
-      { label: 'Wikipedia: Brazilian Zouk', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk' },
-      { label: 'Zoukology', url: 'https://www.zoukology.com/' },
+      { labelKey: 'wikipedia_brazilian_zouk', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk' },
+      { labelKey: 'zoukology', url: 'https://www.zoukology.com/' },
     ],
   },
   {
     key: 'caribbeanVsBrazilianZouk',
     category: 'fundamentals',
     relatedTerms: ['zoukMusic', 'brazilianZouk', 'lambada'],
+  },
+  {
+    key: 'brazilianZoukVsLambada',
+    category: 'fundamentals',
+    relatedTerms: ['brazilianZouk', 'lambada', 'lambazouk', 'historyOfZouk'],
+  },
+  {
+    key: 'brazilianZoukVsKizomba',
+    category: 'fundamentals',
+    relatedTerms: ['brazilianZouk', 'zoukMusic', 'kizombaInfluence'],
+  },
+  {
+    key: 'howToDanceBrazilianZouk',
+    category: 'fundamentals',
+    relatedTerms: ['brazilianZouk', 'bodyWave', 'connection', 'leading', 'following'],
   },
   {
     key: 'cabecada',
@@ -75,6 +91,11 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     relatedTerms: ['brazilianZouk', 'zoukRemix', 'cremosidade', 'brazilianZoukDj'],
   },
   {
+    key: 'brazilianZoukSongs',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'zoukRemix', 'brazilianZoukDj', 'zoukPlaylists'],
+  },
+  {
     key: 'brazilianZoukDj',
     category: 'music',
     relatedTerms: ['zoukMusic', 'musicality', 'zoukDjSet', 'zoukRemix'],
@@ -99,8 +120,8 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     category: 'music',
     relatedTerms: ['zoukMusic', 'cremosidade', 'brazilianZouk', 'zoukBpm'],
     sources: [
-      { label: 'Brazilian Zouk Council', url: 'https://www.brazilianzoukcouncil.com/' },
-      { label: 'Zoukology', url: 'https://www.zoukology.com/' },
+      { labelKey: 'brazilian_zouk_council', url: 'https://www.brazilianzoukcouncil.com/' },
+      { labelKey: 'zoukology', url: 'https://www.zoukology.com/' },
     ],
   },
   {
@@ -178,4 +199,92 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     category: 'culture',
     relatedTerms: ['brazilianZouk', 'brazilianZoukDj', 'zoukCongress'],
   },
+  {
+    key: 'historyOfZouk',
+    category: 'history',
+    relatedTerms: ['lambada', 'lambazouk', 'brazilianZouk'],
+    sources: [
+      { labelKey: 'wikipedia_history', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk#History' }
+    ]
+  },
+  {
+    key: 'zoukOrigin',
+    category: 'history',
+    relatedTerms: ['brazilianZouk', 'lambada'],
+  },
+  {
+    key: 'zoukPioneers',
+    category: 'history',
+    relatedTerms: ['historyOfZouk', 'traditionalZouk'],
+  },
+  {
+    key: 'traditionalZouk',
+    category: 'styles',
+    relatedTerms: ['historyOfZouk', 'zoukPioneers'],
+  },
+  {
+    key: 'neozouk',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'soulZouk',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'musicality'],
+  },
+  {
+    key: 'rioStyle',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'rnbZouk',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'musicality'],
+  },
+  {
+    key: 'popZouk',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'zoukRemix'],
+  },
+  {
+    key: 'kizombaInfluence',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'caribbeanVsBrazilianZouk'],
+  },
+  {
+    key: 'zoukProducers',
+    category: 'music',
+    relatedTerms: ['brazilianZoukDj', 'zoukRemix'],
+  },
+  {
+    key: 'zoukPlaylists',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'brazilianZoukDj'],
+  },
+  {
+    key: 'zoukFlow',
+    category: 'styles',
+    relatedTerms: ['neozouk', 'brazilianZouk'],
+  },
+  {
+    key: 'mzouk',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'urbanZouk',
+    category: 'styles',
+    relatedTerms: ['rnbZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'modernZouk',
+    category: 'styles',
+    relatedTerms: ['neozouk', 'brazilianZouk'],
+  },
+  {
+    key: 'zoukLove',
+    category: 'music',
+    relatedTerms: ['caribbeanVsBrazilianZouk', 'zoukMusic'],
+  }
 ];

@@ -14,7 +14,7 @@ const HERO_VARIANTS = {
   visible: { opacity: 1, y: 0 },
 };
 
-const CATEGORY_ORDER: EncyclopediaCategory[] = ['fundamentals', 'music', 'eventFormats', 'culture'];
+const CATEGORY_ORDER: EncyclopediaCategory[] = ['fundamentals', 'history', 'styles', 'music', 'eventFormats', 'culture'];
 
 const EncyclopediaPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'encyclopedia']);
@@ -124,6 +124,21 @@ const EncyclopediaPage: React.FC = () => {
             </p>
           </motion.header>
 
+          <section aria-label={t('intro_label', { ns: 'encyclopedia' })} className="mx-auto mb-14 max-w-4xl">
+            <div className="grid gap-6 md:grid-cols-3">
+              {(['what_is', 'dance_or_music', 'differences'] as const).map((item) => (
+                <div key={item} className="border-t border-white/10 pt-5">
+                  <h2 className="mb-3 font-display text-lg font-bold leading-tight text-white">
+                    {t(`intro.${item}.q`, { ns: 'encyclopedia' })}
+                  </h2>
+                  <p className="text-sm leading-relaxed text-white/62">
+                    {t(`intro.${item}.a`, { ns: 'encyclopedia' })}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
           <section aria-label={t('search_label', { ns: 'encyclopedia' })} className="mx-auto mb-14 max-w-2xl">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35" size={20} />
@@ -202,7 +217,7 @@ const EncyclopediaPage: React.FC = () => {
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary"
                                 >
-                                  {source.label}
+                                  {source.labelKey ? t(`sources.${source.labelKey}`, { ns: 'encyclopedia' }) : source.label}
                                   <ExternalLink size={12} />
                                 </a>
                               ))}
