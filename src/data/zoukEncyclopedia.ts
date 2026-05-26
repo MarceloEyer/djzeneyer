@@ -240,5 +240,30 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     key: 'zoukPlaylists',
     category: 'music',
     relatedTerms: ['zoukMusic', 'brazilianZoukDj'],
+  },
+  {
+    key: 'zoukFlow',
+    category: 'styles',
+    relatedTerms: ['neozouk', 'brazilianZouk'],
+  },
+  {
+    key: 'mzouk',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'urbanZouk',
+    category: 'styles',
+    relatedTerms: ['rnbZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'modernZouk',
+    category: 'styles',
+    relatedTerms: ['neozouk', 'brazilianZouk'],
+  },
+  {
+    key: 'zoukLove',
+    category: 'music',
+    relatedTerms: ['caribbeanVsBrazilianZouk', 'zoukMusic'],
   }
 ];
