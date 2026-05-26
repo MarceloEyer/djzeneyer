@@ -1,4 +1,4 @@
-export type EncyclopediaCategory = 'fundamentals' | 'music' | 'eventFormats' | 'culture';
+export type EncyclopediaCategory = 'fundamentals' | 'history' | 'styles' | 'music' | 'eventFormats' | 'culture';
 
 export interface EncyclopediaTerm {
   key: string;
@@ -178,4 +178,92 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     category: 'culture',
     relatedTerms: ['brazilianZouk', 'brazilianZoukDj', 'zoukCongress'],
   },
+  {
+    key: 'historyOfZouk',
+    category: 'history',
+    relatedTerms: ['lambada', 'lambazouk', 'brazilianZouk'],
+    sources: [
+      { label: 'Wikipedia: Brazilian Zouk History', url: 'https://en.wikipedia.org/wiki/Brazilian_zouk#History' }
+    ]
+  },
+  {
+    key: 'zoukOrigin',
+    category: 'history',
+    relatedTerms: ['brazilianZouk', 'lambada'],
+  },
+  {
+    key: 'zoukPioneers',
+    category: 'history',
+    relatedTerms: ['historyOfZouk', 'traditionalZouk'],
+  },
+  {
+    key: 'traditionalZouk',
+    category: 'styles',
+    relatedTerms: ['historyOfZouk', 'zoukPioneers'],
+  },
+  {
+    key: 'neozouk',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'soulZouk',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'musicality'],
+  },
+  {
+    key: 'rioStyle',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'rnbZouk',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'musicality'],
+  },
+  {
+    key: 'popZouk',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'zoukRemix'],
+  },
+  {
+    key: 'kizombaInfluence',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'caribbeanVsBrazilianZouk'],
+  },
+  {
+    key: 'zoukProducers',
+    category: 'music',
+    relatedTerms: ['brazilianZoukDj', 'zoukRemix'],
+  },
+  {
+    key: 'zoukPlaylists',
+    category: 'music',
+    relatedTerms: ['zoukMusic', 'brazilianZoukDj'],
+  },
+  {
+    key: 'zoukFlow',
+    category: 'styles',
+    relatedTerms: ['neozouk', 'brazilianZouk'],
+  },
+  {
+    key: 'mzouk',
+    category: 'styles',
+    relatedTerms: ['traditionalZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'urbanZouk',
+    category: 'styles',
+    relatedTerms: ['rnbZouk', 'brazilianZouk'],
+  },
+  {
+    key: 'modernZouk',
+    category: 'styles',
+    relatedTerms: ['neozouk', 'brazilianZouk'],
+  },
+  {
+    key: 'zoukLove',
+    category: 'music',
+    relatedTerms: ['caribbeanVsBrazilianZouk', 'zoukMusic'],
+  }
 ];
