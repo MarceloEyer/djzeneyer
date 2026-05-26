@@ -32,7 +32,7 @@ permissions:
   deployments: write
 
 env:
-  NODE_VERSION: 22
+  NODE_VERSION: 22.13.0
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
   SSH_HOST: 147.79.84.222
   SSH_PORT: 65002

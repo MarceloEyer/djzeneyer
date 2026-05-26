@@ -19,7 +19,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Mojibake:** Arquivos JSON de locale e logs de IA devem ser UTF-8 limpo. Cuidado com `Ã§` e `Â©`.
 - **Lockfile Sync:** Alterações em `package.json` SEMPRE exigem atualização do `package-lock.json` no mesmo commit.
 - **Composer plugin locks:** Todo `plugins/*/composer.json` deve ter `composer.lock` commitado. O deploy deve usar `composer install` a partir do lockfile, nunca resolver dependências novas em produção.
-- **Node CI baseline:** Puppeteer 25 e a toolchain atual (Vite/ESLint) exigem Node ≥ 22.13 no CI. Manter `.github/workflows/deploy.yml`, `package.json#engines` e `package-lock.json` alinhados ao elevar requisitos de engine em dependências.
+- **Node CI baseline:** Puppeteer 25 e o toolchain atual (Vite/ESLint) exigem Node ≥ 22.13 no CI. Mantenha `.github/workflows/deploy.yml`, `package.json#engines` e `package-lock.json` alinhados quando atualizações de dependências elevarem requisitos de engine.
 - **Vite Build:** Use sempre o minificador OXC (Vite 8 padrão). Nunca remover assets hashados antigos de `dist/assets` durante o deploy para evitar `ChunkLoadError`.
 - **safeUrl fallback:** `safeUrl(null)` retorna `'#'` (truthy). O padrão `safeUrl(url) || fallback` nunca funciona. Sempre: `safeUrl(url, '/fallback.svg')` para imagens, `safeUrl(url, '/')` para links.
 - **artistData.ts chaves capitalizadas:** As chaves `YouTube` e `YouTubeMusic` no objeto `social` são escritas com capital Y e T. Não usar `youtube` ou `youtubeMusic` (lowercase) — essas chaves não existem.
