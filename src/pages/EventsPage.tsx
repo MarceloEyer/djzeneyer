@@ -8,6 +8,7 @@ import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { ARTIST } from '../data/artistData';
+import { useBranding } from '../contexts/BrandingContext';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { getDateTimeFormatter } from '../utils/date';
@@ -172,7 +173,8 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 
 const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
-  const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
+  const { artist } = useBranding();
+  const origin = typeof window !== 'undefined' ? window.location.origin : artist.site.baseUrl;
   const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',
     days: 365,
@@ -368,7 +370,7 @@ const EventsPage: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
             <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <a href={safeUrl(ARTIST.site.media.epkPdf, '/')} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
+            <a href={safeUrl(artist.site.media.epkPdf || ARTIST.site.media.epkPdf, '/')} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
           </div>
         </section>
       </div>
