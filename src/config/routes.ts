@@ -536,14 +536,17 @@ export const getAlternateLinks = (
   }
   if (!route) return alternates;
 
-  // Pega os slugs primários
-  const enSlug = Array.isArray(route.paths.en) ? route.paths.en[0] : route.paths.en;
-  const ptSlug = Array.isArray(route.paths.pt) ? route.paths.pt[0] : route.paths.pt;
+  // Pega os slugs primários, removendo segmentos dinâmicos (:id, :slug, etc.)
+  // para que hreflang nunca produza literais como "/zouk-events/:id/slug-real"
+  const rawEnSlug = (Array.isArray(route.paths.en) ? (route.paths.en[0] ?? '') : route.paths.en) || '';
+  const rawPtSlug = (Array.isArray(route.paths.pt) ? (route.paths.pt[0] ?? '') : route.paths.pt) || '';
+  const enSlug = rawEnSlug.split('/:')[0];
+  const ptSlug = rawPtSlug.split('/:')[0];
 
   // Calcula o sufixo dinâmico (ID do evento, slug da noticia, etc)
   let suffix = '';
   const currentClean = normalizeRouteKey(currentPath);
-  
+
   // Encontra qual slug (ou alias) deu match para calcular o sufixo corretamente.
   // Usa a rota de detalhe (ex: events-detail) para ter os paths com /:slug.
   const detailRoute = KEY_ROUTE_MAP.get(key) ?? route;
