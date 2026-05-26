@@ -156,12 +156,19 @@ class Zen_SEO_Sitemap
         \_prime_post_caches($batch_ids, true, true);
 
         // Pre-prime translation IDs as well to avoid N+1 in get_permalink()
-        if (\function_exists('pll_get_post_translations')) {
+        // ⚡ Bolt: [performance improvement] Hoist function existence check to a static variable to avoid redundant evaluations.
+        static $pll_exists = null;
+        if ($pll_exists === null) {
+            $pll_exists = \function_exists('pll_get_post_translations');
+        }
+
+        if ($pll_exists) {
             $all_ids = $batch_ids;
             foreach ($posts as $post) {
                 $trans = \pll_get_post_translations($post->ID);
-                if (\is_array($trans)) {
-                    $all_ids = \array_merge($all_ids, \array_values($trans));
+                if (\is_array($trans) && !empty($trans)) {
+                    // ⚡ Bolt: [performance improvement] Prevent O(N^2) memory reallocation by avoiding array_merge in loop. Spread operator array_push is significantly faster.
+                    \array_push($all_ids, ...\array_values($trans));
                 }
             }
             $all_ids = \array_unique($all_ids);

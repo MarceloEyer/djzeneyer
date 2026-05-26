@@ -64,7 +64,13 @@ class Zen_SEO_Helpers
     {
         $translations = [];
 
-        if (!\function_exists('pll_get_post_translations')) {
+        // ⚡ Bolt: [performance improvement] Hoist function existence check to a static variable to avoid redundant evaluations inside the loop.
+        static $pll_exists = null;
+        if ($pll_exists === null) {
+            $pll_exists = \function_exists('pll_get_post_translations');
+        }
+
+        if (!$pll_exists) {
             // No Polylang, return current post only.
             $translations['en'] = \get_permalink($post_id);
 
