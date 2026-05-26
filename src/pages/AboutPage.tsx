@@ -220,6 +220,20 @@ const AboutPage: React.FC = () => {
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}
         leadAnswer={t('about.seo.lead_answer')}
+        faqs={[
+          {
+            q: "Who is DJ Zen Eyer?",
+            a: "Zen Eyer is a Brazilian Zouk DJ and producer known for pioneering the modern Zouk sound globally."
+          },
+          {
+            q: "What is Brazilian Zouk music?",
+            a: "Brazilian Zouk is a dance and music style originating from Brazil, characterized by slow, melodic rhythms and deep bass."
+          },
+          {
+            q: "Where is DJ Zen Eyer based?",
+            a: "DJ Zen Eyer travels internationally performing at the biggest Brazilian Zouk festivals across Europe, the Americas, and beyond."
+          }
+        ]}
       />
 
       {/* Layout visual */}
