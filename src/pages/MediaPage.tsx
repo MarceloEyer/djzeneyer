@@ -37,7 +37,8 @@ const MediaPage: React.FC = () => {
   const featuredVideoDescription = t('media_page.featured_video_desc');
 
   const clippingData = ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY;
-  const mediaGroups = [
+  // ⚡ Bolt: Wrapped static array allocation and filtering in useMemo to reduce garbage collection overhead during render loops.
+  const mediaGroups = useMemo(() => [
     {
       title: t('media_page.independent_sources'),
       items: clippingData.filter((item) => ['Media', 'Report'].includes(item.type)),
@@ -58,9 +59,19 @@ const MediaPage: React.FC = () => {
       title: t('media_page.distribution_sources'),
       items: clippingData.filter((item) => ['Press Release'].includes(item.type)),
     },
-  ].filter((group) => group.items.length > 0);
+  ].filter((group) => group.items.length > 0), [clippingData, t]);
 
-  const mediaAssets = [
+  // ⚡ Bolt: Wrapped static array allocation in useMemo to reduce garbage collection overhead during render loops.
+  // ⚡ Bolt: Extracted static media facts array from inline render loop map
+  const mediaFacts = useMemo(() => [
+    { label: t('media_page.artist_name'), value: ARTIST.identity.stageName },
+    { label: t('media_page.legal_name'), value: ARTIST.identity.fullName },
+    { label: t('media_page.genre'), value: t('media_page.genre_value') },
+    { label: t('media_page.location'), value: t('media_page.location_value') },
+    { label: t('media_page.cnpj'), value: ARTIST.identity.taxId },
+  ], [t]);
+
+  const mediaAssets = useMemo(() => [
     {
       title: t('media_page.high_res_photos'),
       description: t('media_page.high_res_photos_desc'),
@@ -81,7 +92,7 @@ const MediaPage: React.FC = () => {
       icon: Download,
       available: false
     }
-  ];
+  ], [t]);
 
   return (
     <>
@@ -251,13 +262,7 @@ const MediaPage: React.FC = () => {
                   {t('media_page.quick_facts')}
                 </h3>
                 <div className="space-y-6">
-                  {[
-                    { label: t('media_page.artist_name'), value: ARTIST.identity.stageName },
-                    { label: t('media_page.legal_name'), value: ARTIST.identity.fullName },
-                    { label: t('media_page.genre'), value: t('media_page.genre_value') },
-                    { label: t('media_page.location'), value: t('media_page.location_value') },
-                    { label: t('media_page.cnpj'), value: ARTIST.identity.taxId },
-                  ].map((fact, i) => (
+                  {mediaFacts.map((fact, i) => (
                     <div key={i} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
                       <div className="text-xs text-primary font-black uppercase tracking-[0.2em] mb-1">{fact.label}</div>
                       <div className="text-white font-bold text-sm">{fact.value}</div>
