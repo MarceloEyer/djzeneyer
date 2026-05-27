@@ -139,21 +139,23 @@ class JWT_Manager
             return $decoded;
 
         } catch (\Firebase\JWT\ExpiredException $e) {
-            error_log('ZenEyer Auth [Security Audit]: Token expired. IP: ' . self::get_client_ip());
             return new WP_Error(
                 'jwt_expired',
                 __('Token has expired. Please login again.', 'zeneyer-auth'),
                 ['status' => 401]
             );
         } catch (\Firebase\JWT\SignatureInvalidException $e) {
-            error_log('ZenEyer Auth [Security Audit]: Invalid token signature detected. Potential tampering attempt from IP: ' . self::get_client_ip());
+            $safe_ip = str_replace(["\r", "\n"], ' ', self::get_client_ip());
+            error_log('ZenEyer Auth [Security Audit]: Invalid token signature detected. Potential tampering attempt from IP: ' . $safe_ip);
             return new WP_Error(
                 'jwt_invalid_signature',
                 __('Invalid token signature', 'zeneyer-auth'),
                 ['status' => 401]
             );
         } catch (\Exception $e) {
-            error_log('ZenEyer Auth [Security Audit]: Malformed token. IP: ' . self::get_client_ip() . ' Error: ' . $e->getMessage());
+            $safe_ip = str_replace(["\r", "\n"], ' ', self::get_client_ip());
+            $safe_msg = str_replace(["\r", "\n"], ' ', $e->getMessage());
+            error_log('ZenEyer Auth [Security Audit]: Malformed token. IP: ' . $safe_ip . ' Error: ' . $safe_msg);
             return new WP_Error(
                 'jwt_invalid_token',
                 __('Invalid or malformed token', 'zeneyer-auth'),
