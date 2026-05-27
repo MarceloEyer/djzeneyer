@@ -7,27 +7,37 @@ if (!\defined('ABSPATH')) {
 
 class Zen_SEO_Cache
 {
-
-    /**
-     * Cache durations
-     */
     const SITEMAP_DURATION = 7 * DAY_IN_SECONDS;
     const SCHEMA_DURATION = 3 * DAY_IN_SECONDS;
     const META_DURATION = 24 * HOUR_IN_SECONDS;
+    const APCU_PREFIX = 'zen_seo_l1_';
 
     /**
-     * Get cached data
+     * Get cached data from APCu L1 first, then WordPress transients.
      *
      * @param string $key
      * @return mixed|false
      */
     public static function get($key)
     {
-        return \get_transient(self::get_cache_key($key));
+        $cache_key = self::get_cache_key($key);
+        $l1_cached = self::apcu_get($cache_key);
+
+        if ($l1_cached !== false) {
+            return $l1_cached;
+        }
+
+        $cached = \get_transient($cache_key);
+
+        if ($cached !== false) {
+            self::apcu_set($cache_key, $cached, self::META_DURATION);
+        }
+
+        return $cached;
     }
 
     /**
-     * Set cached data
+     * Set cached data in APCu L1 and WordPress transients.
      *
      * @param string $key
      * @param mixed $data
@@ -40,28 +50,36 @@ class Zen_SEO_Cache
             $expiration = self::META_DURATION;
         }
 
-        return \set_transient(self::get_cache_key($key), $data, $expiration);
+        $cache_key = self::get_cache_key($key);
+        self::apcu_set($cache_key, $data, (int) $expiration);
+
+        return \set_transient($cache_key, $data, $expiration);
     }
 
     /**
-     * Delete cached data
+     * Delete cached data from APCu L1 and WordPress transients.
      *
      * @param string $key
      * @return bool
      */
     public static function delete($key)
     {
-        return \delete_transient(self::get_cache_key($key));
+        $cache_key = self::get_cache_key($key);
+        self::apcu_delete($cache_key);
+
+        return \delete_transient($cache_key);
     }
 
     /**
-     * Clear all plugin caches
+     * Clear all plugin caches.
      *
-     * @return int Number of caches cleared
+     * @return int Number of transient rows cleared.
      */
     public static function clear_all()
     {
         global $wpdb;
+
+        self::apcu_clear_prefix();
 
         $count = $wpdb->query(
             $wpdb->prepare(
@@ -79,7 +97,7 @@ class Zen_SEO_Cache
     }
 
     /**
-     * Clear sitemap cache
+     * Clear sitemap cache.
      *
      * @return void
      */
@@ -90,7 +108,7 @@ class Zen_SEO_Cache
     }
 
     /**
-     * Clear schema cache for a post
+     * Clear schema cache for a post.
      *
      * @param int $post_id
      * @return void
@@ -102,7 +120,7 @@ class Zen_SEO_Cache
     }
 
     /**
-     * Clear meta cache for a post
+     * Clear meta cache for a post.
      *
      * @param int $post_id
      * @return void
@@ -114,7 +132,7 @@ class Zen_SEO_Cache
     }
 
     /**
-     * Get full cache key with prefix
+     * Get full cache key with prefix.
      *
      * @param string $key
      * @return string
@@ -124,8 +142,57 @@ class Zen_SEO_Cache
         return 'zen_seo_' . $key;
     }
 
+    public static function apcu_available(): bool
+    {
+        return \function_exists('apcu_enabled') && \apcu_enabled();
+    }
+
+    private static function apcu_key(string $key): string
+    {
+        return self::APCU_PREFIX . $key;
+    }
+
+    private static function apcu_get(string $key)
+    {
+        if (!self::apcu_available() || !\function_exists('apcu_fetch')) {
+            return false;
+        }
+
+        $success = false;
+        $value = \apcu_fetch(self::apcu_key($key), $success);
+
+        return $success ? $value : false;
+    }
+
+    private static function apcu_set(string $key, $value, int $ttl): void
+    {
+        if (!self::apcu_available() || !\function_exists('apcu_store')) {
+            return;
+        }
+
+        \apcu_store(self::apcu_key($key), $value, $ttl);
+    }
+
+    private static function apcu_delete(string $key): void
+    {
+        if (!self::apcu_available() || !\function_exists('apcu_delete')) {
+            return;
+        }
+
+        \apcu_delete(self::apcu_key($key));
+    }
+
+    private static function apcu_clear_prefix(): void
+    {
+        if (!self::apcu_available() || !\class_exists('\APCUIterator') || !\function_exists('apcu_delete')) {
+            return;
+        }
+
+        \apcu_delete(new \APCUIterator('/^' . \preg_quote(self::APCU_PREFIX, '/') . '/'));
+    }
+
     /**
-     * Get cache statistics
+     * Get cache statistics.
      *
      * @return array
      */
@@ -153,6 +220,7 @@ class Zen_SEO_Cache
             'total_items' => (int) $total,
             'total_size' => (int) $size,
             'size_formatted' => \size_format($size),
+            'apcu_available' => self::apcu_available(),
         ];
     }
 }

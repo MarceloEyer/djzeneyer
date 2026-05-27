@@ -602,6 +602,14 @@ class Zen_SEO_Admin
                             <?php echo \esc_html($stats['size_formatted']); ?>
                         </td>
                     </tr>
+                    <tr>
+                        <th>
+                            <?php _e('APCu L1 Cache', 'zen-seo'); ?>
+                        </th>
+                        <td>
+                            <?php echo $stats['apcu_available'] ? \esc_html__('Active', 'zen-seo') : \esc_html__('Inactive', 'zen-seo'); ?>
+                        </td>
+                    </tr>
                 </table>
             </div>
 
