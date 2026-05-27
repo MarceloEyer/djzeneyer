@@ -215,7 +215,8 @@ const AboutPage: React.FC = () => {
         title={t('about.seo.title')}
         description={t('about.seo.description')}
         url={currentUrl}
-        image={`${artist.site.baseUrl}/images/artist/dj-zen-eyer-nature-portrait.jpg`}
+        image={`${artist.site.baseUrl}/images/og/zen-eyer-about-og.jpg`}
+        imageAlt="Portrait of Zen Eyer, Brazilian Zouk DJ and music artist"
         type="profile"
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}

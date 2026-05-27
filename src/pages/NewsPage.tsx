@@ -18,6 +18,7 @@ import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { getDateTimeFormatter } from '../utils/date';
+import { findReleaseByNewsSlug, getReleaseOpenGraphAlt, getReleaseOpenGraphType } from '../utils/openGraph';
 import NotFoundPage from './NotFoundPage';
 
 // ============================================================================
@@ -141,6 +142,10 @@ const NewsPage: React.FC = () => {
       '/images/zen-eyer-og-image.png'
     );
     const postUrl = `${ARTIST.site.baseUrl}${generatePath(newsDetailRoute, { slug: singlePost.slug })}`;
+    const release = findReleaseByNewsSlug(singlePost.slug, normalizedLanguage);
+    const releaseImage = release?.image.includes('/images/zen-eyer-og-image.png')
+      ? `${ARTIST.site.baseUrl}/images/og/zen-eyer-music-og.jpg`
+      : release?.image;
     const authorName = singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author');
     const isCanonicalAuthor = [
       t('news.default_author'),
@@ -178,8 +183,9 @@ const NewsPage: React.FC = () => {
           title={`${stripHtml(singlePost?.title?.rendered || '')} | ${t('news.title')}`}
           description={stripHtml(singlePost?.excerpt?.rendered || '')}
           url={postUrl}
-          image={postImage}
-          type="article"
+          image={releaseImage || postImage}
+          imageAlt={release ? getReleaseOpenGraphAlt(release.name) : stripHtml(singlePost?.title?.rendered || '')}
+          type={release ? getReleaseOpenGraphType(release.type) : 'article'}
           schema={articleSchema}
         />
         <div className="min-h-screen bg-background text-white pt-24 pb-20">
@@ -239,6 +245,8 @@ const NewsPage: React.FC = () => {
         title={t('news_page_title')}
         description={t('news_page_meta_desc')}
         url={`${window.location.origin}${newsRoute}`}
+        image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-press-og.jpg`}
+        imageAlt="Official press image of Zen Eyer for releases and news"
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20 relative overflow-hidden">
         {/* Background Decorations - Premium Glows */}

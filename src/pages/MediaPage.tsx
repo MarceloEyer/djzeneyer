@@ -101,7 +101,8 @@ const MediaPage: React.FC = () => {
         title={`${t('media_page.title')} | ${artist.identity.stageName || ARTIST.identity.stageName}`}
         description={t('media_page.subtitle')}
         url={`${artist.site.baseUrl || ARTIST.site.baseUrl}/${getLocalizedRoute('media', currentLang).replace(/^\//, '')}`}
-        image="/images/zen-eyer-og-image.png"
+        image="/images/og/zen-eyer-press-og.jpg"
+        imageAlt="Official media image of Zen Eyer"
         video={{
           name: featuredVideoTitle,
           description: featuredVideoDescription,

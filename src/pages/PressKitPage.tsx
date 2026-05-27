@@ -215,7 +215,8 @@ const PressKitPage: React.FC = () => {
         title={t('presskit.page_title')}
         description={t('presskit.page_meta_desc')}
         url={currentUrl}
-        image={`${artist.site.baseUrl}/images/artist/dj-zen-eyer-official-hero.jpg`}
+        image={`${artist.site.baseUrl}/images/og/zen-eyer-press-og.jpg`}
+        imageAlt="Official press image of Zen Eyer"
       />
 
       <div className="min-h-screen bg-[#0a0a0a] text-white">
