@@ -12,7 +12,8 @@ type SupportedNamespace =
   | 'conduct'
   | 'privacy'
   | 'about'
-  | 'zentribe';
+  | 'zentribe'
+  | 'newsletter';
 type TranslationLoader = () => Promise<Record<string, unknown>>;
 
 const normalizeLanguage = (lang: string): SupportedLang => {
@@ -31,6 +32,7 @@ const namespaceLoaders: Record<SupportedLang, Record<SupportedNamespace, Transla
     privacy: async () => (await import('./locales/en/privacy.json')).default as Record<string, unknown>,
     about: async () => (await import('./locales/en/about.json')).default as Record<string, unknown>,
     zentribe: async () => (await import('./locales/en/zentribe.json')).default as Record<string, unknown>,
+    newsletter: async () => (await import('./locales/en/newsletter.json')).default as Record<string, unknown>,
   },
   pt: {
     translation: async () => (await import('./locales/pt/translation.json')).default as Record<string, unknown>,
@@ -42,6 +44,7 @@ const namespaceLoaders: Record<SupportedLang, Record<SupportedNamespace, Transla
     privacy: async () => (await import('./locales/pt/privacy.json')).default as Record<string, unknown>,
     about: async () => (await import('./locales/pt/about.json')).default as Record<string, unknown>,
     zentribe: async () => (await import('./locales/pt/zentribe.json')).default as Record<string, unknown>,
+    newsletter: async () => (await import('./locales/pt/newsletter.json')).default as Record<string, unknown>,
   },
 };
 
@@ -77,7 +80,7 @@ i18n
     debug: false,
     showSupportNotice: false,
     supportedLngs: ['en', 'pt'],
-    ns: ['translation', 'quiz', 'encyclopedia', 'faq', 'legal', 'conduct', 'privacy', 'about', 'zentribe'],
+    ns: ['translation', 'quiz', 'encyclopedia', 'faq', 'legal', 'conduct', 'privacy', 'about', 'zentribe', 'newsletter'],
     defaultNS: 'translation',
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,

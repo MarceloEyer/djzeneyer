@@ -1,0 +1,37 @@
+{
+  "confirmation": {
+    "eyebrow": "Zen Tribe Newsletter",
+    "title": "Almost there. Please confirm your email.",
+    "lead": "One last step keeps the list clean and protects you from unwanted email. Open the message we sent and tap the confirmation button.",
+    "primary": "Back to Zen Eyer",
+    "secondary": "Manage email preferences",
+    "seoTitle": "Confirm Your Zen Eyer Newsletter Subscription",
+    "seoDescription": "Confirm your Zen Eyer newsletter subscription and choose what kind of updates you want to receive.",
+    "steps": [
+      "Check your inbox for the confirmation email from Zen Eyer.",
+      "Tap the confirmation link once.",
+      "After confirmation, you will receive only selected Zen Eyer updates."
+    ],
+    "note": "Did not ask to subscribe? You can ignore the email safely. No newsletter will be sent unless the subscription is confirmed."
+  },
+  "preferences": {
+    "eyebrow": "Email preferences",
+    "title": "Choose what you want to receive.",
+    "lead": "This page is where subscribers can update their email status, change lists, or unsubscribe without friction.",
+    "primary": "Back to Zen Eyer",
+    "secondary": "Privacy policy",
+    "seoTitle": "Manage Zen Eyer Newsletter Preferences",
+    "seoDescription": "Manage your Zen Eyer newsletter subscription, email preferences, and unsubscribe options.",
+    "steps": [
+      "Use the form below to keep receiving Zen Eyer updates or unsubscribe.",
+      "Changes should be simple, explicit, and reversible when possible.",
+      "You can resubscribe later from the website if you change your mind."
+    ],
+    "note": "A clean preference center reduces spam complaints, improves deliverability, and keeps the audience relationship respectful.",
+    "recommended_standard": "Recommended standard: keep the unsubscribe option visible, without requiring login and without hiding the main action."
+  },
+  "embedPlaceholder": "MailPoet form area",
+  "embedHelper": "In WordPress, place the MailPoet confirmation or manage-subscription block/shortcode here. The React page gives the public route, branding, copy, and SEO shell.",
+  "trustTitle": "No spam. No noise.",
+  "trustCopy": "Updates are for music releases, Zouk events, useful content, and important Zen Eyer news. You stay in control."
+}

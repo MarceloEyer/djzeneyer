@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { CheckCircle2, HeartHandshake, MailCheck, MailQuestion, Settings2, ShieldCheck, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute } from '../config/routes';
 import { ARTIST } from '../data/artistData';
@@ -16,92 +17,6 @@ interface NewsletterStatusPageProps {
 const FADE_IN_UP_INITIAL = { opacity: 0, y: 20 };
 const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
 
-const NEWSLETTER_PATHS: Record<NewsletterPageMode, Record<NewsletterLang, string>> = {
-  confirmation: {
-    en: '/newsletter-confirmation',
-    pt: '/pt/confirmar-newsletter'
-  },
-  preferences: {
-    en: '/newsletter-preferences',
-    pt: '/pt/preferencias-newsletter'
-  }
-};
-
-const copy = {
-  en: {
-    confirmation: {
-      eyebrow: 'Zen Tribe Newsletter',
-      title: 'Almost there. Please confirm your email.',
-      lead: 'One last step keeps the list clean and protects you from unwanted email. Open the message we sent and tap the confirmation button.',
-      primary: 'Back to Zen Eyer',
-      secondary: 'Manage email preferences',
-      seoTitle: 'Confirm Your Zen Eyer Newsletter Subscription',
-      seoDescription: 'Confirm your Zen Eyer newsletter subscription and choose what kind of updates you want to receive.',
-      steps: [
-        'Check your inbox for the confirmation email from Zen Eyer.',
-        'Tap the confirmation link once.',
-        'After confirmation, you will receive only selected Zen Eyer updates.'
-      ],
-      note: 'Did not ask to subscribe? You can ignore the email safely. No newsletter will be sent unless the subscription is confirmed.'
-    },
-    preferences: {
-      eyebrow: 'Email preferences',
-      title: 'Choose what you want to receive.',
-      lead: 'This page is where subscribers can update their email status, change lists, or unsubscribe without friction.',
-      primary: 'Back to Zen Eyer',
-      secondary: 'Privacy policy',
-      seoTitle: 'Manage Zen Eyer Newsletter Preferences',
-      seoDescription: 'Manage your Zen Eyer newsletter subscription, email preferences, and unsubscribe options.',
-      steps: [
-        'Use the form below to keep receiving Zen Eyer updates or unsubscribe.',
-        'Changes should be simple, explicit, and reversible when possible.',
-        'You can resubscribe later from the website if you change your mind.'
-      ],
-      note: 'A clean preference center reduces spam complaints, improves deliverability, and keeps the audience relationship respectful.'
-    },
-    embedPlaceholder: 'MailPoet form area',
-    embedHelper: 'In WordPress, place the MailPoet confirmation or manage-subscription block/shortcode here. The React page gives the public route, branding, copy, and SEO shell.',
-    trustTitle: 'No spam. No noise.',
-    trustCopy: 'Updates are for music releases, Zouk events, useful content, and important Zen Eyer news. You stay in control.'
-  },
-  pt: {
-    confirmation: {
-      eyebrow: 'Newsletter Zen Tribe',
-      title: 'Quase lá. Confirme seu e-mail.',
-      lead: 'Esse último passo mantém a lista limpa e protege você de e-mails indesejados. Abra a mensagem que enviamos e toque no botão de confirmação.',
-      primary: 'Voltar para o site',
-      secondary: 'Gerenciar preferências',
-      seoTitle: 'Confirme sua inscrição na newsletter Zen Eyer',
-      seoDescription: 'Confirme sua inscrição na newsletter Zen Eyer e escolha quais atualizações deseja receber.',
-      steps: [
-        'Procure na sua caixa de entrada o e-mail de confirmação enviado por Zen Eyer.',
-        'Clique uma única vez no link de confirmação.',
-        'Depois disso, você receberá apenas atualizações selecionadas do Zen Eyer.'
-      ],
-      note: 'Não pediu para se inscrever? Pode ignorar o e-mail com segurança. A newsletter não será enviada se a inscrição não for confirmada.'
-    },
-    preferences: {
-      eyebrow: 'Preferências de e-mail',
-      title: 'Escolha o que você quer receber.',
-      lead: 'Esta é a página para assinantes atualizarem o status do e-mail, mudarem listas ou cancelarem a inscrição sem fricção.',
-      primary: 'Voltar para o site',
-      secondary: 'Política de privacidade',
-      seoTitle: 'Gerencie suas preferências da newsletter Zen Eyer',
-      seoDescription: 'Gerencie sua inscrição na newsletter Zen Eyer, preferências de e-mail e opções de cancelamento.',
-      steps: [
-        'Use o formulário abaixo para continuar recebendo novidades do Zen Eyer ou cancelar a inscrição.',
-        'As mudanças devem ser simples, explícitas e reversíveis quando possível.',
-        'Você pode se inscrever novamente pelo site se mudar de ideia.'
-      ],
-      note: 'Um centro de preferências claro reduz reclamações de spam, melhora a entregabilidade e mantém a relação com o público respeitosa.'
-    },
-    embedPlaceholder: 'Área do formulário MailPoet',
-    embedHelper: 'No WordPress, coloque aqui o bloco ou shortcode do MailPoet de confirmação ou gerenciamento de assinatura. A página React entrega a rota pública, branding, texto e SEO.',
-    trustTitle: 'Sem spam. Sem ruído.',
-    trustCopy: 'Os envios são para lançamentos, eventos de Zouk, conteúdos úteis e novidades importantes do Zen Eyer. Você mantém o controle.'
-  }
-} as const;
-
 const getCurrentLangFromPath = (pathname: string): NewsletterLang => (
   pathname === '/pt' || pathname.startsWith('/pt/') ? 'pt' : 'en'
 );
@@ -109,24 +24,23 @@ const getCurrentLangFromPath = (pathname: string): NewsletterLang => (
 const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'confirmation' }) => {
   const location = useLocation();
   const lang = getCurrentLangFromPath(location.pathname);
-  const pageCopy = copy[lang][mode];
-  const sharedCopy = copy[lang];
+  const { t } = useTranslation('newsletter');
 
   const canonicalUrl = useMemo(() => {
-    return `${ARTIST.site.baseUrl}${NEWSLETTER_PATHS[mode][lang]}`;
+    return `${ARTIST.site.baseUrl}${getLocalizedRoute(`newsletter-${mode}`, lang)}`;
   }, [lang, mode]);
 
-  const homePath = lang === 'pt' ? '/pt/' : '/';
+  const homePath = getLocalizedRoute('home', lang);
   const secondaryPath = mode === 'confirmation'
-    ? NEWSLETTER_PATHS.preferences[lang]
+    ? getLocalizedRoute('newsletter-preferences', lang)
     : getLocalizedRoute('privacy', lang);
   const Icon = mode === 'confirmation' ? MailCheck : Settings2;
 
   return (
     <>
       <HeadlessSEO
-        title={pageCopy.seoTitle}
-        description={pageCopy.seoDescription}
+        title={t(`${mode}.seoTitle`)}
+        description={t(`${mode}.seoDescription`)}
         url={canonicalUrl}
         noindex
       />
@@ -146,23 +60,23 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
               <div>
                 <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-bold uppercase tracking-[0.2em] text-primary">
                   <Sparkles size={16} />
-                  {pageCopy.eyebrow}
+                  {t(`${mode}.eyebrow`)}
                 </div>
 
                 <h1 className="font-display text-4xl font-black leading-tight md:text-6xl">
-                  {pageCopy.title}
+                  {t(`${mode}.title`)}
                 </h1>
 
                 <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
-                  {pageCopy.lead}
+                  {t(`${mode}.lead`)}
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link to={homePath} className="btn btn-primary rounded-full px-7 py-3 text-center font-bold transition-transform hover:scale-105">
-                    {pageCopy.primary}
+                    {t(`${mode}.primary`)}
                   </Link>
                   <Link to={secondaryPath} className="btn btn-outline rounded-full border border-white/30 px-7 py-3 text-center font-bold transition-transform hover:scale-105 hover:bg-white/10">
-                    {pageCopy.secondary}
+                    {t(`${mode}.secondary`)}
                   </Link>
                 </div>
               </div>
@@ -172,7 +86,7 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                   <Icon size={34} />
                 </div>
                 <ol className="space-y-4">
-                  {pageCopy.steps.map((step, index) => (
+                  {(t(`${mode}.steps`, { returnObjects: true }) as string[]).map((step, index) => (
                     <li key={step} className="flex gap-3 text-white/80">
                       <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-sm font-bold text-primary">
                         {index + 1}
@@ -196,10 +110,10 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/20 text-primary">
                   <MailQuestion size={22} />
                 </div>
-                <h2 className="font-display text-2xl font-bold">{sharedCopy.embedPlaceholder}</h2>
+                <h2 className="font-display text-2xl font-bold">{t('embedPlaceholder')}</h2>
               </div>
               <div className="rounded-2xl border border-dashed border-white/20 bg-white/[0.03] p-6 text-white/70">
-                <p className="leading-relaxed">{sharedCopy.embedHelper}</p>
+                <p className="leading-relaxed">{t('embedHelper')}</p>
               </div>
             </div>
 
@@ -208,15 +122,15 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/20 text-primary">
                   <ShieldCheck size={22} />
                 </div>
-                <h2 className="font-display text-2xl font-bold">{sharedCopy.trustTitle}</h2>
+                <h2 className="font-display text-2xl font-bold">{t('trustTitle')}</h2>
               </div>
-              <p className="leading-relaxed text-white/70">{sharedCopy.trustCopy}</p>
+              <p className="leading-relaxed text-white/70">{t('trustCopy')}</p>
               <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/10 p-4 text-sm leading-relaxed text-white/75">
                 <div className="mb-2 flex items-center gap-2 font-bold text-primary">
                   <HeartHandshake size={18} />
                   Zen Eyer
                 </div>
-                {pageCopy.note}
+                {t(`${mode}.note`)}
               </div>
             </aside>
           </motion.section>
@@ -230,9 +144,7 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
             >
               <CheckCircle2 className="flex-shrink-0 text-primary" size={24} />
               <p className="leading-relaxed">
-                {lang === 'pt'
-                  ? 'Padrão recomendado: deixar a opção de cancelar inscrição sempre visível, sem exigir login e sem esconder o botão principal.'
-                  : 'Recommended standard: keep the unsubscribe option visible, without requiring login and without hiding the main action.'}
+                {t('preferences.recommended_standard')}
               </p>
             </motion.div>
           )}
