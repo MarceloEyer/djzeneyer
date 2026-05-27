@@ -15,6 +15,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
@@ -69,6 +70,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
@@ -112,6 +114,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
@@ -171,6 +174,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
@@ -207,6 +211,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
@@ -244,6 +249,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
@@ -281,6 +287,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
@@ -318,6 +325,7 @@ Disallow: /readme.html
 Disallow: /license.txt
 Disallow: /wp-trackback.php
 Disallow: /cgi-bin/
+Disallow: /cdn-cgi/
 Disallow: /.git/
 Disallow: /node_modules/
 Disallow: /.env
