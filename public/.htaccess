@@ -122,7 +122,7 @@ CacheKeyModify -qs:_ga
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), display-capture=()"
-  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+  # HSTS gerenciado exclusivamente pelo Cloudflare — não definir aqui para evitar duplicidade
   
   # CORREÇÃO CRÍTICA: Permite que o popup do Google Login se comunique com o site
   # TRADEOFF: unsafe-none é necessário para Google Sign-In via popup (FedCM não suporta COOP: same-origin)
@@ -133,19 +133,18 @@ CacheKeyModify -qs:_ga
   # sem passar pela origem correta — reduz hotlinking e ataques de reutilização de recurso
   Header always set Cross-Origin-Resource-Policy "same-site"
 
-  # CSP removida aqui intencionalmente: é gerada dinamicamente via PHP (inc/csp.php)
-  # com nonce por requisição, o que é mais seguro que um header estático no .htaccess
-  Header unset Content-Security-Policy
-  Header always unset Content-Security-Policy
+  # CSP gerada dinamicamente via PHP (inc/csp.php) com nonce por requisição.
+  # Não fazer unset aqui: mod_headers roda após PHP e removeria o header gerado pelo csp.php.
 </IfModule>
 
 # ==============================================================================
 # 4. CORS (FIXED FOR ADMIN DASHBOARD & API)
 # ==============================================================================
 <IfModule mod_headers.c>
-    # 1. Detecta a Origem (Site principal, staging, preview ou Localhost)
-    SetEnvIf Origin "^https?://([a-z0-9-]+\.)*(djzeneyer\.com|localhost:5173)$" ALLOWED_ORIGIN=$0
-    
+    # 1. Detecta a Origem — apenas domínios exatos autorizados com credentials
+    SetEnvIfNoCase Origin "^https://(www\.)?djzeneyer\.com$" ALLOWED_ORIGIN=$0
+    SetEnvIfNoCase Origin "^http://localhost:5173$" ALLOWED_ORIGIN=$0
+
     # 2. Fallback para acesso direto (Painel Admin/Same-Origin) onde o header Origin é vazio
     SetEnvIf Origin "^$" ALLOWED_ORIGIN=https://djzeneyer.com
 
@@ -159,10 +158,11 @@ CacheKeyModify -qs:_ga
         Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-WP-Nonce, X-Requested-With"
     </If>
     
-    # Tratamento de Preflight (OPTIONS)
+    # Tratamento de Preflight (OPTIONS) — restrito à API para não afetar outras rotas
     RewriteEngine On
     RewriteCond %{REQUEST_METHOD} OPTIONS
-    RewriteRule ^(.*)$ $1 [R=204,L]
+    RewriteCond %{REQUEST_URI} ^/wp-json/ [NC]
+    RewriteRule ^ - [R=204,L]
 
 </IfModule>
 
