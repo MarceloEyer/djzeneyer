@@ -30,7 +30,9 @@ class Zen_SEO_Cache
         $cached = \get_transient($cache_key);
 
         if ($cached !== false) {
-            self::apcu_set($cache_key, $cached, self::META_DURATION);
+            $timeout = (int) \get_option('_transient_timeout_' . $cache_key);
+            $remaining = $timeout > 0 ? max(1, $timeout - \time()) : self::META_DURATION;
+            self::apcu_set($cache_key, $cached, min($remaining, self::META_DURATION));
         }
 
         return $cached;

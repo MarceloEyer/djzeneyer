@@ -604,7 +604,7 @@ class Zen_SEO_Admin
                     </tr>
                     <tr>
                         <th>
-                            <?php _e('APCu L1 Cache', 'zen-seo'); ?>
+                            <?php \esc_html_e('APCu L1 Cache', 'zen-seo'); ?>
                         </th>
                         <td>
                             <?php echo $stats['apcu_available'] ? \esc_html__('Active', 'zen-seo') : \esc_html__('Inactive', 'zen-seo'); ?>
