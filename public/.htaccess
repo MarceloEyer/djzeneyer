@@ -177,9 +177,6 @@ CacheKeyModify -qs:_ga
 # 6. CACHE CONTROL (ASSETS)
 # ==============================================================================
 <IfModule mod_headers.c>
-    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
-        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
-    </If>
     <FilesMatch "\.(css|js|mjs|woff|woff2|ttf|otf)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
