@@ -20,7 +20,7 @@
  * - ZenLink: zenlink / links-zen
  */
 
-import { ComponentType } from 'react';
+import { ComponentType, createElement } from 'react';
 import { lazyWithRetry } from '../utils/lazyWithRetry';
 
 // ============================================================================
@@ -81,6 +81,18 @@ const ZoukPersonaQuizPage = lazyWithRetry(() => import('../pages/ZoukPersonaQuiz
 const EncyclopediaPage = lazyWithRetry(() => import('../pages/EncyclopediaPage'), 'route:encyclopedia');
 const VerifiedFactsPage = lazyWithRetry(() => import('../pages/VerifiedFactsPage'), 'route:verified-facts');
 const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'), 'route:not-found');
+const NewsletterConfirmationPage = lazyWithRetry(
+  () => import('../pages/NewsletterStatusPage').then(m => ({
+    default: function NewsletterConfirmation() { return createElement(m.default, { mode: 'confirmation' as const }); }
+  })),
+  'route:newsletter-confirmation'
+);
+const NewsletterPreferencesPage = lazyWithRetry(
+  () => import('../pages/NewsletterStatusPage').then(m => ({
+    default: function NewsletterPreferences() { return createElement(m.default, { mode: 'preferences' as const }); }
+  })),
+  'route:newsletter-preferences'
+);
 
 import routesSlugs from './routes-slugs.json';
 
@@ -309,6 +321,18 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'reset-password',
     component: ResetPasswordPage,
     paths: { en: slug('reset-password', 'en') as string, pt: slug('reset-password', 'pt') as string },
+  },
+
+  // Newsletter system pages (noindex, excluded from sitemap — see routes-slugs.json)
+  {
+    key: 'newsletter-confirmation',
+    component: NewsletterConfirmationPage,
+    paths: { en: slug('newsletter-confirmation', 'en') as string, pt: slug('newsletter-confirmation', 'pt') as string },
+  },
+  {
+    key: 'newsletter-preferences',
+    component: NewsletterPreferencesPage,
+    paths: { en: slug('newsletter-preferences', 'en') as string, pt: slug('newsletter-preferences', 'pt') as string },
   },
 
 ];

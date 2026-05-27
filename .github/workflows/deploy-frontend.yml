@@ -28,6 +28,7 @@ env:
   REMOTE_ROOT: /home/u790739895/domains/djzeneyer.com/public_html
   THEME_NAME: zentheme
   SITE_URL: https://djzeneyer.com
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   build-and-deploy:

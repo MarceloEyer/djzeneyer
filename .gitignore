@@ -39,3 +39,6 @@ pr_comments*.json
 check_client_error.mjs
 comments_200.txt
 tmp/
+
+# Configurações locais (senhas/tokens)
+.mcp.json

@@ -1,0 +1,37 @@
+{
+  "confirmation": {
+    "eyebrow": "Newsletter Zen Tribe",
+    "title": "Quase lá. Confirme seu e-mail.",
+    "lead": "Esse último passo mantém a lista limpa e protege você de e-mails indesejados. Abra a mensagem que enviamos e toque no botão de confirmação.",
+    "primary": "Voltar para o site",
+    "secondary": "Gerenciar preferências",
+    "seoTitle": "Confirme sua inscrição na newsletter Zen Eyer",
+    "seoDescription": "Confirme sua inscrição na newsletter Zen Eyer e escolha quais atualizações deseja receber.",
+    "steps": [
+      "Procure na sua caixa de entrada o e-mail de confirmação enviado por Zen Eyer.",
+      "Clique uma única vez no link de confirmação.",
+      "Depois disso, você receberá apenas atualizações selecionadas do Zen Eyer."
+    ],
+    "note": "Não pediu para se inscrever? Pode ignorar o e-mail com segurança. A newsletter não será enviada se a inscrição não for confirmada."
+  },
+  "preferences": {
+    "eyebrow": "Preferências de e-mail",
+    "title": "Escolha o que você quer receber.",
+    "lead": "Esta é a página para assinantes atualizarem o status do e-mail, mudarem listas ou cancelarem a inscrição sem fricção.",
+    "primary": "Voltar para o site",
+    "secondary": "Política de privacidade",
+    "seoTitle": "Gerencie suas preferências da newsletter Zen Eyer",
+    "seoDescription": "Gerencie sua inscrição na newsletter Zen Eyer, preferências de e-mail e opções de cancelamento.",
+    "steps": [
+      "Use o formulário abaixo para continuar recebendo novidades do Zen Eyer ou cancelar a inscrição.",
+      "As mudanças devem ser simples, explícitas e reversíveis quando possível.",
+      "Você pode se inscrever novamente pelo site se mudar de ideia."
+    ],
+    "note": "Um centro de preferências claro reduz reclamações de spam, melhora a entregabilidade e mantém a relação com o público respeitosa.",
+    "recommended_standard": "Padrão recomendado: deixar a opção de cancelar inscrição sempre visível, sem exigir login e sem esconder o botão principal."
+  },
+  "embedPlaceholder": "Área do formulário MailPoet",
+  "embedHelper": "No WordPress, coloque aqui o bloco ou shortcode do MailPoet de confirmação ou gerenciamento de assinatura. A página React entrega a rota pública, branding, texto e SEO.",
+  "trustTitle": "Sem spam. Sem ruído.",
+  "trustCopy": "Os envios são para lançamentos, eventos de Zouk, conteúdos úteis e novidades importantes do Zen Eyer. Você mantém o controle."
+}
