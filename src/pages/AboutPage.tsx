@@ -220,6 +220,11 @@ const AboutPage: React.FC = () => {
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}
         leadAnswer={t('about.seo.lead_answer')}
+        faqs={[
+          { q: t('about.faqs.q1'), a: t('about.faqs.a1') },
+          { q: t('about.faqs.q2'), a: t('about.faqs.a2') },
+          { q: t('about.faqs.q3'), a: t('about.faqs.a3') },
+        ]}
       />
 
       {/* Layout visual */}

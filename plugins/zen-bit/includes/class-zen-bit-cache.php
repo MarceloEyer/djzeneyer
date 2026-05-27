@@ -1,25 +1,22 @@
 <?php
 /**
- * Zen BIT — Cache Manager
- * Responsabilidade: cache de eventos com SWR (Stale-While-Revalidate),
- * anti-stampede, TTLs por contexto e health/status.
+ * Zen BIT Cache Manager.
  *
- * TTLs padrão:
- *   Upcoming: zen_bit_ttl_upcoming (padrão 6h)
- *   Detail:   zen_bit_ttl_detail   (padrão 24h)
- *   Past:     zen_bit_ttl_past     (padrão 7d)
+ * Owns event cache with stale-while-revalidate, anti-stampede locking,
+ * context-specific TTLs, persistent fallback data, and health/status.
  */
 
 namespace ZenBit;
 
-if (!defined('ABSPATH'))
+if (!defined('ABSPATH')) {
     exit;
+}
 
 class Zen_BIT_Cache
 {
-    // Versão do normalizer — mudar aqui invalida todos os caches de payload
     const NORMALIZER_VERSION = 'v2';
-    const LOCK_TTL = 30;  // segundos — anti-stampede
+    const LOCK_TTL = 30;
+    const APCU_PREFIX = 'zen_bit_l1_';
 
     // =========================================================================
     // TTLs
@@ -28,7 +25,7 @@ class Zen_BIT_Cache
     public static function ttl_upcoming(): int
     {
         $v = (int) get_option('zen_bit_ttl_upcoming', 21600);
-        return max(300, $v); // mínimo 5 minutos
+        return max(300, $v);
     }
 
     public static function ttl_detail(): int
@@ -40,18 +37,18 @@ class Zen_BIT_Cache
     public static function ttl_past(): int
     {
         $v = (int) get_option('zen_bit_ttl_past', 604800);
-        return max(3600, $v); // mínimo 1h para past
+        return max(3600, $v);
     }
 
     // =========================================================================
-    // CHAVES DE CACHE
+    // Cache keys
     // =========================================================================
 
     /**
-     * Gera uma chave de transient robusta e versionada.
+     * Generate a versioned transient key.
      *
-     * @param array $params Parâmetros relevantes (artist_id, mode, days, date, limit, lang)
-     * @return string  Máximo 172 chars (limite WordPress: 172)
+     * @param array $params Relevant parameters: artist_id, mode, days, date, limit, lang.
+     * @return string Maximum 172 chars for WordPress transient compatibility.
      */
     public static function make_key(array $params): string
     {
@@ -68,33 +65,91 @@ class Zen_BIT_Cache
 
     public static function make_fallback_key(string $cache_key): string
     {
-        return $cache_key . '_fb'; // fallback em wp_options (persistente)
+        return $cache_key . '_fb';
     }
 
     // =========================================================================
-    // SWR — Stale-While-Revalidate
+    // APCu L1
+    // =========================================================================
+
+    public static function apcu_available(): bool
+    {
+        return \function_exists('apcu_enabled') && \apcu_enabled();
+    }
+
+    private static function apcu_key(string $key): string
+    {
+        return self::APCU_PREFIX . $key;
+    }
+
+    private static function apcu_get(string $key)
+    {
+        if (!self::apcu_available() || !\function_exists('apcu_fetch')) {
+            return false;
+        }
+
+        $success = false;
+        $value = \apcu_fetch(self::apcu_key($key), $success);
+
+        return $success ? $value : false;
+    }
+
+    private static function apcu_set(string $key, $value, int $ttl): void
+    {
+        if (!self::apcu_available() || !\function_exists('apcu_store')) {
+            return;
+        }
+
+        \apcu_store(self::apcu_key($key), $value, $ttl);
+    }
+
+    private static function apcu_delete(string $key): void
+    {
+        if (!self::apcu_available() || !\function_exists('apcu_delete')) {
+            return;
+        }
+
+        \apcu_delete(self::apcu_key($key));
+    }
+
+    private static function apcu_clear_prefix(): void
+    {
+        if (!self::apcu_available() || !\class_exists('\APCUIterator') || !\function_exists('apcu_delete')) {
+            return;
+        }
+
+        \apcu_delete(new \APCUIterator('/^' . \preg_quote(self::APCU_PREFIX, '/') . '/'));
+    }
+
+    // =========================================================================
+    // SWR - Stale-While-Revalidate
     // =========================================================================
 
     /**
-     * Recupera do cache ou executa $fn() com SWR.
+     * Read cache or execute $fn() with SWR.
      *
-     * Fluxo:
-     *  1. Cache HIT  → retorna imediatamente com X-Zen-Cache: hit
-     *  2. Cache MISS + lock livre → executa $fn(), salva cache, retorna com X-Zen-Cache: miss
-     *  3. Cache MISS + lock ocupado (stampede) → retorna stale do fallback com X-Zen-Cache: stale
-     *  4. $fn() falha → retorna stale + registra erro no health
-     *
-     * @param string   $key     Chave de transient
-     * @param callable $fn      Callable que busca e normaliza dados frescos; deve retornar array
-     * @param int      $ttl     TTL do cache em segundos
-     * @return array ['data' => array, 'cache_status' => 'hit|miss|stale', 'fetch_ms' => int]
+     * @param string   $key Transient key.
+     * @param callable $fn  Fetch/normalize callback. Must return an array.
+     * @param int      $ttl Cache TTL in seconds.
+     * @return array{data:array, cache_status:string, fetch_ms:int}
      */
     public static function get_with_swr(string $key, callable $fn, int $ttl): array
     {
+        $l1_cached = self::apcu_get($key);
+
+        if ($l1_cached !== false && is_array($l1_cached)) {
+            return [
+                'data' => $l1_cached,
+                'cache_status' => 'hit',
+                'fetch_ms' => 0,
+            ];
+        }
+
         $cached = get_transient($key);
 
-        // ---- HIT ----
         if ($cached !== false && is_array($cached)) {
+            self::apcu_set($key, $cached, $ttl);
+
             return [
                 'data' => $cached,
                 'cache_status' => 'hit',
@@ -102,12 +157,10 @@ class Zen_BIT_Cache
             ];
         }
 
-        // ---- MISS — verificar lock anti-stampede ----
         $lock_key = self::make_lock_key($key);
         $fallback_key = self::make_fallback_key($key);
 
         if (get_transient($lock_key)) {
-            // Outra requisição está atualizando — serve stale
             $stale = get_option($fallback_key, []);
             return [
                 'data' => is_array($stale) ? $stale : [],
@@ -116,10 +169,8 @@ class Zen_BIT_Cache
             ];
         }
 
-        // Adquire lock
         set_transient($lock_key, true, self::LOCK_TTL);
 
-        // ---- FETCH EXTERNO ----
         $t0 = microtime(true);
         try {
             $fresh = $fn();
@@ -129,13 +180,11 @@ class Zen_BIT_Cache
         }
         $fetch_ms = (int) round((microtime(true) - $t0) * 1000);
 
-        // Libera lock após fetch
         delete_transient($lock_key);
 
         if (!is_array($fresh) || empty($fresh)) {
-            // Fetch falhou — serve stale
             $stale = get_option($fallback_key, []);
-            self::health_update(false, $fetch_ms, 'Fetch retornou vazio ou exception', count(is_array($stale) ? $stale : []), 0);
+            self::health_update(false, $fetch_ms, 'Fetch returned empty data or exception', count(is_array($stale) ? $stale : []), 0);
             return [
                 'data' => is_array($stale) ? $stale : [],
                 'cache_status' => 'stale',
@@ -143,9 +192,9 @@ class Zen_BIT_Cache
             ];
         }
 
-        // Sucesso: salva transient + fallback persistente
         set_transient($key, $fresh, $ttl);
-        update_option($fallback_key, $fresh, false); // autoload = false
+        self::apcu_set($key, $fresh, $ttl);
+        update_option($fallback_key, $fresh, false);
 
         $bytes = strlen(maybe_serialize($fresh));
         self::health_update(true, $fetch_ms, '', count($fresh), $bytes);
@@ -158,25 +207,31 @@ class Zen_BIT_Cache
     }
 
     // =========================================================================
-    // INVALIDAÇÃO
+    // Invalidation
     // =========================================================================
 
     /**
-     * Remove transients de uma chave (não remove o fallback — é proposital).
+     * Remove transient and APCu entries for one cache key.
      */
     public static function clear(string $key): void
     {
         delete_transient($key);
         delete_transient(self::make_lock_key($key));
+        self::apcu_delete($key);
+        self::apcu_delete(self::make_lock_key($key));
     }
 
     /**
-     * Remove todos os transients do Zen BIT.
-     * Usa wpdb para encontrar por prefixo.
+     * Remove all Zen BIT transients and APCu L1 entries.
+     *
+     * Persistent fallback options are intentionally preserved.
      */
     public static function clear_all(): void
     {
         global $wpdb;
+
+        self::apcu_clear_prefix();
+
         $wpdb->query(
             $wpdb->prepare(
                 "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
@@ -187,7 +242,7 @@ class Zen_BIT_Cache
     }
 
     // =========================================================================
-    // HEALTH / STATUS
+    // Health / status
     // =========================================================================
 
     private static function health_option(): string
@@ -195,9 +250,6 @@ class Zen_BIT_Cache
         return 'zen_bit_health';
     }
 
-    /**
-     * Atualiza o registro de health após um fetch.
-     */
     public static function health_update(bool $ok, int $fetch_ms, string $error, int $count, int $bytes): void
     {
         $health = self::health_get();
@@ -230,17 +282,9 @@ class Zen_BIT_Cache
     }
 
     // =========================================================================
-    // HELPERS DE RESPONSE HEADERS
+    // Response headers
     // =========================================================================
 
-    /**
-     * Adiciona headers de observabilidade na WP_REST_Response.
-     *
-     * @param \WP_REST_Response $response
-     * @param string $cache_status  'hit' | 'miss' | 'stale'
-     * @param int    $fetch_ms      Duração do fetch externo (0 se foi cache hit)
-     * @param int    $ttl           TTL configurado para Cache-Control
-     */
     public static function add_headers(\WP_REST_Response $response, string $cache_status, int $fetch_ms, int $ttl): void
     {
         $response->header('X-Zen-Cache', $cache_status);
@@ -253,7 +297,6 @@ class Zen_BIT_Cache
             $response->header('Cache-Control', 'public, max-age=' . $ttl);
             $response->header('Expires', gmdate('D, d M Y H:i:s', time() + $ttl) . ' GMT');
         } else {
-            // stale e miss: max-age curto para o browser/CDN não cachear por muito tempo
             $response->header('Cache-Control', 'public, max-age=60, stale-while-revalidate=300');
         }
     }

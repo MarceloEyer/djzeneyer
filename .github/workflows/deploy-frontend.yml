@@ -1,0 +1,140 @@
+name: 🚀 Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vite.config.ts'
+      - 'tailwind.config.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-deploy
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 22.13.0
+  SSH_HOST: 147.79.84.222
+  SSH_PORT: 65002
+  SSH_USER: u790739895
+  REMOTE_ROOT: /home/u790739895/domains/djzeneyer.com/public_html
+  THEME_NAME: zentheme
+  SITE_URL: https://djzeneyer.com
+
+jobs:
+  build-and-deploy:
+    name: 🏗️ Build & Deploy React App
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: 🗺️ Generate sitemaps
+        run: |
+          npm run generate-sitemaps
+          if [ ! -f "public/sitemap.xml" ]; then echo "❌ sitemap missing"; exit 1; fi
+
+      - name: 🔨 Build production
+        env:
+          NODE_ENV: production
+          PRERENDER_MODE: 'true'
+          VITE_WP_SITE_URL: ${{ env.SITE_URL }}
+          VITE_WP_REST_URL: ${{ env.SITE_URL }}/wp-json/
+          VITE_WC_CONSUMER_KEY: ${{ secrets.VITE_WC_CONSUMER_KEY }}
+          VITE_WC_CONSUMER_SECRET: ${{ secrets.VITE_WC_CONSUMER_SECRET }}
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+        run: npm run build
+
+      - name: 🎨 Prerender pages (SSG)
+        run: |
+          npx puppeteer browsers install chrome-headless-shell
+          node scripts/prerender.js
+          if [ ! -f "dist/index.html" ]; then echo "❌ Prerender failed"; exit 1; fi
+
+      - name: 🔐 Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          name: id_rsa
+
+      - name: 📦 Prepare and Backup Remote
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            NEXT_DIST_PATH="${THEME_PATH}/dist-next"
+            rm -rf "${NEXT_DIST_PATH}"
+            mkdir -p "${NEXT_DIST_PATH}"
+
+      - name: 🚀 Deploy dist/
+        uses: burnett01/rsync-deployments@8.0.5
+        with:
+          switches: -avzr --delete --checksum
+          path: dist/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/dist-next/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🔁 Activate dist
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            THEME_PATH="${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}"
+            mv "${THEME_PATH}/dist-next" "${THEME_PATH}/dist-new"
+            rm -rf "${THEME_PATH}/dist-prev"
+            [ -d "${THEME_PATH}/dist" ] && mv "${THEME_PATH}/dist" "${THEME_PATH}/dist-prev"
+            mv "${THEME_PATH}/dist-new" "${THEME_PATH}/dist"
+
+      - name: 📄 Deploy public assets
+        uses: burnett01/rsync-deployments@8.0.5
+        with:
+          switches: -avz --ignore-missing-args
+          path: public/
+          remote_path: ${{ env.REMOTE_ROOT }}/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 🧹 Purge caches
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            WP_CLI="/usr/local/bin/wp" # or other paths
+            $WP_CLI --path="${{ env.REMOTE_ROOT }}" transient delete --search="djz_vite_manifest" 2>/dev/null || true
+            php -r "opcache_reset();" 2>/dev/null || true

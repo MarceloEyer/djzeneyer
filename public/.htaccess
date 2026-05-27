@@ -121,15 +121,22 @@ CacheKeyModify -qs:_ga
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), display-capture=()"
   Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
   
   # CORREÇÃO CRÍTICA: Permite que o popup do Google Login se comunique com o site
+  # TRADEOFF: unsafe-none é necessário para Google Sign-In via popup (FedCM não suporta COOP: same-origin)
+  # Consequência: impede Cross-Origin-Embedder-Policy (COEP) — aceitável para este projeto
   Header always set Cross-Origin-Opener-Policy "unsafe-none"
 
+  # Impede que outros sites embutam diretamente recursos deste domínio (imagens, fontes, scripts)
+  # sem passar pela origem correta — reduz hotlinking e ataques de reutilização de recurso
+  Header always set Cross-Origin-Resource-Policy "same-site"
+
+  # CSP removida aqui intencionalmente: é gerada dinamicamente via PHP (inc/csp.php)
+  # com nonce por requisição, o que é mais seguro que um header estático no .htaccess
   Header unset Content-Security-Policy
   Header always unset Content-Security-Policy
-  # NOTA: A CSP é gerada dinamicamente pelo PHP (inc/csp.php)
 </IfModule>
 
 # ==============================================================================
@@ -170,9 +177,6 @@ CacheKeyModify -qs:_ga
 # 6. CACHE CONTROL (ASSETS)
 # ==============================================================================
 <IfModule mod_headers.c>
-    <If "%{REQUEST_URI} =~ m#^/wp-json/#">
-        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
-    </If>
     <FilesMatch "\.(css|js|mjs|woff|woff2|ttf|otf)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
@@ -283,6 +287,9 @@ RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
   AddCharset UTF-8 .txt
   <IfModule mod_headers.c>
     Header set Content-Type "text/plain; charset=utf-8"
+    # Cache de 24h: bots de AI indexam periodicamente; evita requisições excessivas
+    # e garante que recebam o conteúdo mais recente sem sobrecarregar o servidor
+    Header set Cache-Control "public, max-age=86400, stale-while-revalidate=3600"
   </IfModule>
 </FilesMatch>
 

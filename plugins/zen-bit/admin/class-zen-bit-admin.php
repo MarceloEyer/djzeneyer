@@ -117,6 +117,7 @@ class Zen_BIT_Admin
                     <h2 style="color:#fff;margin-top:0;">📡 Health</h2>
                     <table style="width:100%;border-collapse:collapse;font-size:.9em;">
                         <?php $rows = [
+                            [__('APCu L1 Cache', 'zen-bit'), Zen_BIT_Cache::apcu_available() ? __('Active', 'zen-bit') : __('Inactive', 'zen-bit')],
                             ['Último fetch OK', $ok_at],
                             ['Duração do fetch', $fetch_ms > 0 ? "{$fetch_ms} ms" : '—'],
                             ['Eventos em cache', $ev_count],
