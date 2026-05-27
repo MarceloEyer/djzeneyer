@@ -48,6 +48,12 @@ const hasPath = (obj, dottedPath) => {
 
 const loadLocaleResources = (lang) => {
   const langDir = path.join(localesDir, lang);
+
+  if (!fs.existsSync(langDir)) {
+    console.error(`[i18n-check] Locale directory not found for "${lang}": ${langDir}`);
+    process.exit(1);
+  }
+
   const resources = {};
 
   for (const entry of fs.readdirSync(langDir, { withFileTypes: true })) {
