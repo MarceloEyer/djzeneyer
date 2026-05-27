@@ -550,7 +550,7 @@ async function prerender() {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
-    const createPrerenderPage = async (routePayload) => {
+    const createPrerenderPage = async () => {
       // Inicia uma nova página (tab) no Puppeteer
       const page = await browser.newPage();
       
@@ -650,6 +650,7 @@ async function prerender() {
 
     let successCount = 0;
     const BATCH_SIZE = 5; // Process 5 routes concurrently to speed up CI/CD without blowing up memory
+    const PRERENDER_WAIT_MS = Math.max(1, parseInt(process.env.PRERENDER_WAIT_MS || '3000', 10) || 3000);
 
     for (let i = 0; i < CONFIG.routes.length; i += BATCH_SIZE) {
       const batch = CONFIG.routes.slice(i, i + BATCH_SIZE);
@@ -677,7 +678,7 @@ async function prerender() {
           }
 
           const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, menuData);
-          page = await createPrerenderPage(prerenderPayloadObj);
+          page = await createPrerenderPage();
           
           // Injeta o __PRERENDER_DATA__ na window do navegador Headless
           await page.evaluateOnNewDocument((payload) => {
@@ -688,7 +689,7 @@ async function prerender() {
 
           try {
             await page.waitForSelector('h1', { timeout: 10000 });
-            await wait(2000); // Reduzido de 4000 para 2000ms devido ao ganho de performance
+            await wait(PRERENDER_WAIT_MS);
           } catch (e) {
             console.warn(`⚠️ Warning: Timeout on ${route}`);
           }
