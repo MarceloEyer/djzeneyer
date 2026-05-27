@@ -26,4 +26,6 @@ jobs:
 
     - name: Run API Contract Tests
       continue-on-error: true
+      env:
+        CI_BYPASS_SECRET: ${{ secrets.CI_BYPASS_SECRET }}
       run: npx tsx scripts/test-contracts.ts

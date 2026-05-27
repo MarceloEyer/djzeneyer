@@ -2,12 +2,16 @@ import { z } from 'zod';
 import { EventsApiResponseSchema } from '../src/schemas/events.js';
 
 const SITE_URL = process.env.SITE_URL || 'https://djzeneyer.com';
+const CI_BYPASS_SECRET = process.env.CI_BYPASS_SECRET;
 
 async function testEventsEndpoint() {
   try {
     console.log(`Fetching events from ${SITE_URL}/wp-json/zen-bit/v2/events?mode=upcoming...`);
-    
-    const response = await fetch(`${SITE_URL}/wp-json/zen-bit/v2/events?mode=upcoming`);
+
+    const headers: HeadersInit = { 'User-Agent': 'djzeneyer-contract-test/1.0' };
+    if (CI_BYPASS_SECRET) headers['X-CI-Secret'] = CI_BYPASS_SECRET;
+
+    const response = await fetch(`${SITE_URL}/wp-json/zen-bit/v2/events?mode=upcoming`, { headers });
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
