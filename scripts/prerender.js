@@ -634,15 +634,19 @@ async function prerender() {
     });
 
       page.on('console', msg => {
+        if (msg.type() !== 'error') return;
         const text = msg.text();
-        // Silenciar erros de assets (imagens/svgs) para não sujar o log principal
-        if (msg.type() === 'error' && !text.includes('.png') && !text.includes('.svg') && !text.includes('.jpg')) {
-          console.log(`[JS ERROR]: ${text}`);
-        }
+        // "Failed to load resource" = network-level failure (external APIs unreachable in CI); not a JS error
+        if (text.startsWith('Failed to load resource:')) return;
+        if (text.includes('.png') || text.includes('.svg') || text.includes('.jpg')) return;
+        console.log(`[JS ERROR]: ${text}`);
       });
 
       page.on('pageerror', err => {
-        console.log(`[PAGE FATAL ERROR]: ${err.toString()}`);
+        const msg = err.toString();
+        // DOMException NetworkError = external fetch blocked in CI headless env; expected, not a render failure
+        if (msg.includes('NetworkError') || msg.includes('Failed to fetch')) return;
+        console.log(`[PAGE FATAL ERROR]: ${msg}`);
       });
 
       return page;
