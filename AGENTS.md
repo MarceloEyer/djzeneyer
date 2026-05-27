@@ -81,6 +81,10 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - SQL direto em `wp_posts` para pedidos WooCommerce.
 - Reintroduzir music player embutido sem decisão explícita.
 - `minify: 'esbuild'` no Vite config (OXC é o padrão do Vite 8).
+- **Editar dentro de `# BEGIN LSCACHE` / `# END LSCACHE` ou `# BEGIN NON_LSCACHE` / `# END NON_LSCACHE`** no `.htaccess` — esses blocos pertencem ao plugin LiteSpeed WP Cache e são sobrescritos automaticamente.
+- **Adicionar regras NOCACHE para `/wp-json/`, `/feed/`, `/api/`** — o frontend é SSG (pré-renderizado em build time). Cachear essas rotas é CORRETO. Adicionar NOCACHE quebraria a estratégia de performance do site.
+- **`Header unset Content-Security-Policy` ou `Header always unset Content-Security-Policy` no `.htaccess`** — `mod_headers` roda após o PHP e remove a CSP dinâmica gerada por `inc/csp.php`, deixando o cliente sem proteção.
+- **`Strict-Transport-Security` no `.htaccess`** — HSTS é gerenciado pelo Cloudflare. Definir nos dois lugares cria duas fontes de verdade.
 
 ---
 

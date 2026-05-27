@@ -143,7 +143,7 @@ CacheKeyModify -qs:_ga
 <IfModule mod_headers.c>
     # 1. Detecta a Origem — apenas domínios exatos autorizados com credentials
     SetEnvIfNoCase Origin "^https://(www\.)?djzeneyer\.com$" ALLOWED_ORIGIN=$0
-    SetEnvIfNoCase Origin "^http://localhost:5173$" ALLOWED_ORIGIN=$0
+    SetEnvIfNoCase Origin "^https?://localhost:5173$" ALLOWED_ORIGIN=$0
 
     # 2. Fallback para acesso direto (Painel Admin/Same-Origin) onde o header Origin é vazio
     SetEnvIf Origin "^$" ALLOWED_ORIGIN=https://djzeneyer.com
@@ -240,7 +240,7 @@ RewriteRule ^pt/noticias-zouk/?$ /pt/lancamentos/ [R=301,L,NC]
 
 # Legacy/static release detail placeholders -> canonical releases hub
 RewriteRule ^releases/(dont-stop-zen-eyer-remix-kaysha|na-ponta-ela-fica-brazilian-zouk-cover|still-loving-you-sax-cover-walter-xavier|baila-flaquita-original-single|porta-do-sol-brazilian-zouk-cover|preview)/?$ /releases/ [R=301,L,NC]
-RewriteRule ^pt/lancamentos/(dont-stop-remix-zen-eyer-kaysha|na-ponta-ela-fica-cover-zouk-brasileiro|still-loving-you-cover-sax-walter-xavier|baila-flaquita-single-original|porta-do-sol-cover-zouk-brasileiro)/?$ /pt/lancamentos/ [R=301,L,NC]
+RewriteRule ^pt/lancamentos/(dont-stop-remix-zen-eyer-kaysha|na-ponta-ela-fica-cover-zouk-brasileiro|still-loving-you-cover-sax-walter-xavier|baila-flaquita-single-original|porta-do-sol-cover-zouk-brasileiro|preview)/?$ /pt/lancamentos/ [R=301,L,NC]
 
 RewriteRule ^support-the-artist/?$ /support-dj-zen-eyer/ [R=301,L]
 RewriteRule ^pt/apoie-o-artista/?$ /pt/apoie-dj-zen-eyer/ [R=301,L]
