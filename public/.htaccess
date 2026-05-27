@@ -237,6 +237,11 @@ RewriteRule ^news/?$ /releases/ [R=301,L,NC]
 RewriteRule ^zouk-dance-news/?$ /releases/ [R=301,L,NC]
 RewriteRule ^pt/noticias/?$ /pt/lancamentos/ [R=301,L,NC]
 RewriteRule ^pt/noticias-zouk/?$ /pt/lancamentos/ [R=301,L,NC]
+
+# Legacy/static release detail placeholders -> canonical releases hub
+RewriteRule ^releases/(dont-stop-zen-eyer-remix-kaysha|na-ponta-ela-fica-brazilian-zouk-cover|still-loving-you-sax-cover-walter-xavier|baila-flaquita-original-single|porta-do-sol-brazilian-zouk-cover|preview)/?$ /releases/ [R=301,L,NC]
+RewriteRule ^pt/lancamentos/(dont-stop-remix-zen-eyer-kaysha|na-ponta-ela-fica-cover-zouk-brasileiro|still-loving-you-cover-sax-walter-xavier|baila-flaquita-single-original|porta-do-sol-cover-zouk-brasileiro)/?$ /pt/lancamentos/ [R=301,L,NC]
+
 RewriteRule ^support-the-artist/?$ /support-dj-zen-eyer/ [R=301,L]
 RewriteRule ^pt/apoie-o-artista/?$ /pt/apoie-dj-zen-eyer/ [R=301,L]
 RewriteRule ^trabalhe-comigo/?$ /pt/trabalhe-comigo/ [R=301,L,NC]

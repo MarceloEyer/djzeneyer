@@ -30,6 +30,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Prerender cache matching:** Normalize query defaults before comparing with `window.__PRERENDER_DATA__` metadata. For example, an omitted `days` parameter that defaults to 365 should still match a prerender payload tagged with `eventsDays: 365`.
 - **Low-update public site:** Prefer long-lived cache and removing routine runtime requests over adding complex aggregation layers. For stable identity data, `artistData.ts` can be a deliberate static SSOT; for ordinary WordPress posts, avoid fetching taxonomies on detail pages unless filters are visible.
 - **Frontend stale times:** Public posts/releases and products can use 24h React Query `staleTime` because updates are rare. Keep cart and authenticated/user-specific data on shorter TTLs because those reflect active user actions.
+- **Bing `/cdn-cgi/content` audit noise:** Bing Webmaster Tools can report Cloudflare `/cdn-cgi/content?...` URLs as missing meta/title issues. Treat these as crawl-noise unless they appear in sitemap or first-party links; prioritize fixing real 4xx first-party URLs and missing referenced assets.
 
 ## 🎨 Decisões de Marca & SEO
 
