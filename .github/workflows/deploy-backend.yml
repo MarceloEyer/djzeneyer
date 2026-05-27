@@ -1,0 +1,123 @@
+name: 🚀 Deploy Backend PHP
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/**'
+      - 'inc/**'
+      - 'parts/**'
+      - 'templates/**'
+      - '*.php'
+  workflow_dispatch:
+
+concurrency:
+  group: backend-deploy
+  cancel-in-progress: false
+
+env:
+  SSH_HOST: 147.79.84.222
+  SSH_PORT: 65002
+  SSH_USER: u790739895
+  REMOTE_ROOT: /home/u790739895/domains/djzeneyer.com/public_html
+  THEME_NAME: zentheme
+  SITE_URL: https://djzeneyer.com
+
+jobs:
+  deploy-backend:
+    name: 🚀 Deploy WP Plugins and Theme PHP
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔨 Build plugin dependencies (Composer)
+        run: |
+          if [ -d "plugins" ]; then
+            for dir in plugins/*/; do
+              if [ -f "$dir/composer.json" ]; then
+                cd "$dir"
+                composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-interaction
+                cd - > /dev/null
+              fi
+            done
+          fi
+
+      - name: 🔐 Setup SSH
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: unnecessary
+          name: id_rsa
+
+      - name: 🔌 Deploy plugins/
+        if: hashFiles('plugins/**') != ''
+        uses: burnett01/rsync-deployments@8.0.5
+        with:
+          switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
+          path: plugins/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/plugins/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📚 Deploy inc/
+        if: hashFiles('inc/**') != ''
+        uses: burnett01/rsync-deployments@8.0.5
+        with:
+          switches: -avzr --delete --checksum
+          path: inc/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/inc/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📚 Deploy parts/
+        if: hashFiles('parts/**') != ''
+        uses: burnett01/rsync-deployments@8.0.5
+        with:
+          switches: -avzr --delete --checksum
+          path: parts/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/parts/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📚 Deploy templates/
+        if: hashFiles('templates/**') != ''
+        uses: burnett01/rsync-deployments@8.0.5
+        with:
+          switches: -avzr --delete --checksum
+          path: templates/
+          remote_path: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/templates/
+          remote_host: ${{ env.SSH_HOST }}
+          remote_user: ${{ env.SSH_USER }}
+          remote_port: ${{ env.SSH_PORT }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: 📝 Deploy root theme PHP files
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "functions.php,header.php,footer.php,index.php"
+          target: ${{ env.REMOTE_ROOT }}/wp-content/themes/${{ env.THEME_NAME }}/
+          strip_components: 0
+
+      - name: 🧹 Purge caches
+        continue-on-error: true
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ env.SSH_HOST }}
+          port: ${{ env.SSH_PORT }}
+          username: ${{ env.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            php -r "opcache_reset();" 2>/dev/null || true
