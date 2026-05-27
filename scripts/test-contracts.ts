@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { EventsApiResponseSchema } from '../src/schemas/events.js';
 
 const SITE_URL = process.env.SITE_URL || 'https://djzeneyer.com';
