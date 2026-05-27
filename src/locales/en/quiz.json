@@ -82,6 +82,7 @@
     "ui": {
       "question_count": "Question {{current}} of {{total}}",
       "complete": "{{percent}}% Complete",
+      "you_are": "You are...",
       "share_result": "Share Result",
       "take_again": "Take Again",
       "take_quiz_at": "Take the quiz at:",

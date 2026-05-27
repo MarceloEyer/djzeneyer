@@ -112,11 +112,6 @@ const collectUsedKeys = (code) => {
 const en = loadLocaleResources('en');
 const pt = loadLocaleResources('pt');
 
-const allNamespaces = new Set([
-  ...Object.keys(en),
-  ...Object.keys(pt),
-]);
-
 const files = walk(srcDir);
 const usedKeys = new Map();
 
@@ -133,33 +128,43 @@ for (const file of files) {
   }
 }
 
-const hasKey = (resources, key, namespaces) => {
-  if (key.includes(':')) {
-    const [namespace, ...rest] = key.split(':');
-    return hasPath(resources[namespace], rest.join(':'));
-  }
-
-  const candidateNamespaces = new Set(namespaces);
-
-  for (const namespace of allNamespaces) {
-    if (hasPath(resources[namespace], key)) {
-      candidateNamespaces.add(namespace);
-    }
-  }
-
-  for (const namespace of candidateNamespaces) {
-    if (hasPath(resources[namespace], key)) return true;
-  }
-
-  return false;
-};
-
 const missingInPt = [];
 const missingInEn = [];
+const pushMissing = (target, key) => {
+  if (!target.includes(key)) target.push(key);
+};
 
 for (const [key, namespaces] of [...usedKeys.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-  if (!hasKey(pt, key, namespaces)) missingInPt.push(key);
-  if (!hasKey(en, key, namespaces)) missingInEn.push(key);
+  if (key.includes(':')) {
+    const [namespace, ...rest] = key.split(':');
+    const pathKey = rest.join(':');
+
+    if (!hasPath(pt[namespace], pathKey)) pushMissing(missingInPt, key);
+    if (!hasPath(en[namespace], pathKey)) pushMissing(missingInEn, key);
+    continue;
+  }
+
+  let foundInPt = false;
+  let foundInEn = false;
+
+  for (const namespace of namespaces) {
+    const namespacedKey = `${namespace}:${key}`;
+    const existsInPt = hasPath(pt[namespace], key);
+    const existsInEn = hasPath(en[namespace], key);
+
+    if (existsInPt) foundInPt = true;
+    if (existsInEn) foundInEn = true;
+
+    if (existsInPt && !existsInEn) pushMissing(missingInEn, namespacedKey);
+    if (existsInEn && !existsInPt) pushMissing(missingInPt, namespacedKey);
+  }
+
+  if (!foundInPt && !foundInEn) {
+    const [primaryNamespace = 'translation'] = namespaces;
+    const namespacedKey = `${primaryNamespace}:${key}`;
+    pushMissing(missingInPt, namespacedKey);
+    pushMissing(missingInEn, namespacedKey);
+  }
 }
 
 if (missingInPt.length === 0 && missingInEn.length === 0) {
