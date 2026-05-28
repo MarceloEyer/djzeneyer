@@ -135,8 +135,8 @@ const MusicPage: React.FC = () => {
         release.deezerUrl,
         release.tidalUrl,
         release.amazonMusicUrl,
-        release.YouTubeMusicUrl,
-        release.YouTubeUrl,
+        release.youtubeMusicUrl,
+        release.youtubeUrl,
         release.soundcloudUrl,
       ].filter(isReleaseSpecificUrl);
       if (sameAsLinks.length > 0) releaseNode.sameAs = sameAsLinks;
@@ -152,7 +152,7 @@ const MusicPage: React.FC = () => {
           // Only emit duration if it's a real value (not placeholder)
           if (track.duration) trackNode.duration = track.duration;
           if (track.isrcCode) trackNode.isrcCode = track.isrcCode;
-          const trackSameAs = [track.spotifyUrl, track.YouTubeMusicUrl].filter(isReleaseSpecificUrl);
+          const trackSameAs = [track.spotifyUrl, track.youtubeMusicUrl, track.youtubeUrl].filter(isReleaseSpecificUrl);
           if (trackSameAs.length > 0) trackNode.sameAs = trackSameAs;
           return trackNode;
         });
