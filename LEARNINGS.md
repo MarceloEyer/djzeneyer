@@ -38,6 +38,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **YouTube embeds e Permissions-Policy:** O iframe oficial do YouTube pode tentar `compute-pressure` e gerar aviso de console quando a policy do servidor nao delega essa feature. Corrigir no `inc/csp.php` com `Permissions-Policy` para YouTube e no `allow` do iframe; nao editar `.htaccess`/LiteSpeed para isso.
 - **CORS com credentials — apenas domínios exatos:** `Access-Control-Allow-Credentials: true` com regex ampla de subdomínios é risco de segurança. Aceitar apenas `https://(www\.)?djzeneyer\.com` e `https?://localhost:5173`. Adicionar staging/preview somente quando necessário.
 - **Bing `/cdn-cgi/content` audit noise:** Bing Webmaster Tools can report Cloudflare `/cdn-cgi/content?...` URLs as missing meta/title issues. Treat these as crawl-noise unless they appear in sitemap or first-party links; prioritize fixing real 4xx first-party URLs and missing referenced assets.
+- **Content Signals em robots.txt:** Declare preferências de uso por IA com `Content-Signal: ai-train=no, search=yes, ai-input=no` no bloco `User-agent: *` e também no bloco específico de bots de IA para parsers que consideram apenas o grupo mais específico. Isso permite indexação/search, mas reserva direitos contra treino e RAG/grounding generativo.
 
 ## 🎨 Decisões de Marca & SEO
 
