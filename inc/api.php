@@ -448,7 +448,8 @@ function djz_query_products(array $options = [])
             $img_ids = djz_get_product_image_ids($product, empty($slug));
             $product_images_map[$product->get_id()] = $img_ids;
             if (!empty($img_ids)) {
-                $all_img_ids = array_merge($all_img_ids, $img_ids);
+                // ⚡ Bolt: Replace O(N^2) array_merge with faster array_push spreading to avoid memory reallocation overhead
+                \array_push($all_img_ids, ...\array_values($img_ids));
             }
         }
 
@@ -769,8 +770,10 @@ function djz_get_shop_page($request)
                 $img_ids = djz_get_product_image_ids($product, true); // true = list view
                 $product_images_map[$product->get_id()] = $img_ids;
 
-                if (!empty($img_ids))
-                    $all_img_ids = array_merge($all_img_ids, $img_ids);
+                if (!empty($img_ids)) {
+                    // ⚡ Bolt: Replace O(N^2) array_merge with faster array_push spreading to avoid memory reallocation overhead
+                    \array_push($all_img_ids, ...\array_values($img_ids));
+                }
             }
 
             if (!empty($all_img_ids))
