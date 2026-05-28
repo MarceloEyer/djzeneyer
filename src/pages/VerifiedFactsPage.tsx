@@ -29,8 +29,8 @@ const FACT_ROWS = [
   ['legal_name', 'Marcelo Eyer Fernandes', 'Mensa/profile/source', 'P1477'],
   ['birth_date', '20 Aug 1985', 'ISNI/MusicBrainz', 'P569'],
   ['genre', 'Brazilian Zouk', 'Official site, All About Jazz', 'P136'],
-  ['award_remix', 'Best Remix, 2022', 'Ilha do Zouk', 'P166'],
-  ['award_performance', 'Best DJ Performance, 2022', 'Ilha do Zouk', 'P166'],
+  ['award_remix', 'verified_facts.facts.award_remix_value', 'verified_facts.facts.award_source', 'P166'],
+  ['award_performance', 'verified_facts.facts.award_performance_value', 'verified_facts.facts.award_source', 'P166'],
   ['residence', 'Niterói, RJ', 'Official site', 'P551'],
 ] as const;
 
@@ -129,8 +129,8 @@ const VerifiedFactsPage: React.FC = () => {
                   {FACT_ROWS.map(([key, value, source, property]) => (
                     <tr key={key}>
                       <td className="px-4 py-4 font-bold text-white">{t(`verified_facts.facts.${key}`)}</td>
-                      <td className="px-4 py-4 text-white/75">{value}</td>
-                      <td className="px-4 py-4 text-white/65">{source}</td>
+                      <td className="px-4 py-4 text-white/75">{t(value, { defaultValue: value })}</td>
+                      <td className="px-4 py-4 text-white/65">{t(source, { defaultValue: source })}</td>
                       <td className="px-4 py-4 font-mono text-primary/80">{property}</td>
                     </tr>
                   ))}

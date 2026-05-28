@@ -32,13 +32,13 @@ export const ARTIST = {
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
   titles: {
     primary: 'World Champion Brazilian Zouk DJ (Best Remix & Best Performance)',
-    event: 'Ilha do Zouk DJ Championship',
-    eventUrl: 'https://alexdecarvalho.com.br/ilhadozouk/dj-championship/',
+    event: 'Zouk DJ Championship',
+    eventUrl: 'https://alexdecarvalho.com.br/ilhadozouk/pt-br/campeonato-de-djs/',
     location: 'Ilha Grande, Rio de Janeiro, Brazil',
     year: 2022,
     categories: ['Best DJ Performance', 'Best Remix'],
     description:
-      'Winner of two world titles at Ilha do Zouk 2022: Best DJ Performance and Best Remix.',
+      'Winner of two world titles at the Zouk DJ Championship 2022: Best DJ Performance and Best Remix.',
   },
 
   // 🧠 Diferencial (Mensa)
@@ -235,7 +235,7 @@ export const ARTIST = {
     },
     {
       title: 'DJ Zen Eyer - World Champion DJ Profile',
-      description: 'Professional profile highlighting the two world titles won at the Ilha do Zouk DJ Championship.',
+      description: 'Professional profile highlighting the two world titles won at the Zouk DJ Championship.',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
       source: 'Ilha do Zouk',
       date: '2022-12-05',
@@ -389,7 +389,7 @@ export const ARTIST = {
   site: {
     baseUrl: 'https://djzeneyer.com',
     defaultDescription:
-      'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at Ilha do Zouk DJ Championship.',
+      'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at the Zouk DJ Championship.',
     media: {
       photosUrl: 'https://photos.djzeneyer.com',
       epkPdf: '/dj-zen-eyer-presskit.pdf',
@@ -465,7 +465,7 @@ export const ARTIST_SCHEMA_BASE = {
   name: 'Zen Eyer',
   alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Ilha do Zouk DJ Championship 2022.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Zouk DJ Championship 2022.',
   disambiguatingDescription: DISAMBIGUATING_DESCRIPTION,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
@@ -795,13 +795,13 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'MusicEvent',
-      name: 'Ilha do Zouk DJ Championship 2022',
+      name: 'Zouk DJ Championship 2022',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
       startDate: '2022-04-20',
       endDate: '2022-04-24',
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      description: 'DJ Zen Eyer wins two world titles at the Ilha do Zouk DJ Championship 2022 — Best DJ Performance and Best Remix — in Ilha Grande, Rio de Janeiro, Brazil.',
+      description: 'DJ Zen Eyer wins two world titles at the Zouk DJ Championship 2022 — Best DJ Performance and Best Remix — in Ilha Grande, Rio de Janeiro, Brazil.',
       image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
       location: {
         '@type': 'Place',
@@ -1037,8 +1037,8 @@ export const MUSICGROUP_SCHEMA = {
   // Ligação bidirecional com a entidade Person
   member: [{ '@id': `${ARTIST.site.baseUrl}/#artist` }],
   award: [
-    'World Champion 2022 (DJ) at Ilha do Zouk',
-    'World Champion 2022 (Remix) at Ilha do Zouk',
+    'World Champion 2022 (DJ) at the Zouk DJ Championship',
+    'World Champion 2022 (Remix) at the Zouk DJ Championship',
   ],
   influencedBy: ['Lambada'],
   sameAs: [...ARTIST_SCHEMA_SAME_AS],

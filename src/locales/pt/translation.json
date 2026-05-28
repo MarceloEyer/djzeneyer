@@ -344,7 +344,7 @@
     "spotify_subtitle": "Ouça minhas músicas",
     "spotify_title": "Spotify",
     "micro_champion": "2× Campeão Mundial",
-    "micro_island": "Ilha do Zouk (2022)",
+    "micro_island": "Zouk DJ Championship (2022)",
     "micro_years_label": "anos de pista",
     "whatsapp_message": "Olá Zen! Vi seu link na bio."
   },
@@ -373,7 +373,7 @@
   "home": {
     "site_desc": "Site oficial de Zen Eyer, bicampeão mundial de Zouk Brasileiro e produtor musical, também conhecido como DJ Zen Eyer.",
     "page_title": "Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
-    "page_meta_desc": "Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Brazilian Zouk World Championships. Contrate para eventos internacionais.",
+    "page_meta_desc": "Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Zouk DJ Championship 2022. Contrate para eventos internacionais.",
     "headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
     "subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
     "welcome": "Bem-vindo ao Zen Eyer",
@@ -389,7 +389,7 @@
     "feat_community_desc": "Conecte-se com amantes de música e Zen Eyer",
     "cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
     "cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
-    "hero_badge": "Bicampeão Mundial - Zouk World Championships",
+    "hero_badge": "Bicampeão Mundial - Zouk DJ Championship",
     "hero_title": "Zen Eyer",
     "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
     "pronunciation_summary": " (Fonética: /zɛn ˈaɪər/. Eyer soa como Buyer sem o B, ou 'Eye' seguido de 'er').",
@@ -399,7 +399,7 @@
     "stat_countries": "Países",
     "stat_events": "Eventos",
     "stat_years": "Experiência",
-    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Ilha do Zouk (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em mais de 15 países.",
+    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Zouk DJ Championship (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 14 países.",
     "bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
     "bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
     "festivals_title": "Festivais & Eventos",
@@ -422,7 +422,7 @@
     "cta_booking": "Booking / Press Kit",
     "cta_music": "Explorar Músicas",
     "bio_title": "Quem é Zen Eyer?",
-    "bio_intro": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) é <strong>DJ de Brazilian Zouk</strong> e produtor musical. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Brazilian Zouk World Championships (Ilha do Zouk), sendo reconhecido pela precisão técnica e sensibilidade musical.",
+    "bio_intro": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) é <strong>DJ de Brazilian Zouk</strong> e produtor musical. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Zouk DJ Championship, sendo reconhecido pela precisão técnica e sensibilidade musical.",
     "bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
     "bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Frequenta palcos de peso como o Rio Zouk Congress.",
     "verified": "Perfis Verificados",
@@ -643,7 +643,10 @@
       "birth_date": "Data de nascimento",
       "genre": "Gênero",
       "award_remix": "Prêmio",
+      "award_remix_value": "Melhor Remix, 2022",
       "award_performance": "Prêmio",
+      "award_performance_value": "Melhor Performance de DJ, 2022",
+      "award_source": "Zouk DJ Championship",
       "residence": "Residência"
     }
   },
@@ -879,7 +882,7 @@
     "bio": {
       "title": "A Jornada Sonora",
       "p1": "<strong>Zen Eyer</strong> é DJ e produtor musical de Brazilian Zouk focado em festivais, maratonas e pistas que precisam de alcance emocional, controle musical e confiança.",
-      "p2": "Ele se apresentou presencialmente em 14 países e venceu dois prêmios no Ilha do Zouk em 2022, levando um som cremoso e emocional que dá aos dançarinos tempo para respirar, conectar e permanecer na pista.",
+      "p2": "Ele se apresentou presencialmente em 14 países e venceu dois títulos mundiais no Zouk DJ Championship em 2022, levando um som cremoso e emocional que dá aos dançarinos tempo para respirar, conectar e permanecer na pista.",
       "p3": "Seus sets são construídos para organizadores que precisam de um DJ capaz de ler públicos mistos, sustentar a sala com segurança e transformar um horário da programação em uma experiência lembrada na pista.",
       "quickStats": {
         "cremosidade": "Cremosidade",
@@ -927,7 +930,7 @@
       "copy_button": "Copiar Bio",
       "copied": "Copiado!",
       "whatsapp_default_msg": "Olá Zen Eyer! Gostaria de conversar sobre booking.",
-      "text": "Zen Eyer é DJ e produtor musical de Brazilian Zouk de Niterói, Brasil. Também conhecido como DJ Zen Eyer, venceu dois prêmios no Ilha do Zouk em 2022: Best Remix e Best DJ Performance. Ele se apresentou presencialmente em 14 países e é conhecido por sets cremosos e emocionais, criados para festivais, maratonas e pistas sociais de Brazilian Zouk."
+      "text": "Zen Eyer é DJ e produtor musical de Brazilian Zouk de Niterói, Brasil. Também conhecido como DJ Zen Eyer, venceu dois títulos mundiais no Zouk DJ Championship em 2022: Best Remix e Best DJ Performance. Ele se apresentou presencialmente em 14 países e é conhecido por sets cremosos e emocionais, criados para festivais, maratonas e pistas sociais de Brazilian Zouk."
     }
   },
   "support": {

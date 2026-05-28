@@ -223,7 +223,7 @@ class Zen_SEO_Schema
             'name' => 'Zen Eyer',
             'alternateName' => ['DJ Zen Eyer'],
             'birthName' => 'Marcelo Eyer Fernandes',
-            'description' => 'Zen Eyer is a Brazilian Zouk DJ, music producer, and remixer, two-time World Champion at the Ilha do Zouk DJ Championship 2022.',
+            'description' => 'Zen Eyer is a Brazilian Zouk DJ, music producer, and remixer, two-time World Champion at the Zouk DJ Championship 2022.',
             'disambiguatingDescription' => 'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used stage-name variant; Zen Ayer is a common misspelling, not an official artist name.',
             'url' => $base_url,
             'image' => $image,
@@ -371,6 +371,10 @@ class Zen_SEO_Schema
             'additionalProperty' => [
                 ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zɛn ˈaɪər/'],
                 ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.'],
+            ],
+            'award' => [
+                'World Champion 2022 (DJ) at the Zouk DJ Championship',
+                'World Champion 2022 (Remix) at the Zouk DJ Championship',
             ],
         ];
 
