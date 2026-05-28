@@ -57,9 +57,9 @@ add_action('send_headers', function() {
         
         "img-src 'self' https: data: blob: filesystem:",
         
-        "connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://challenges.cloudflare.com",
+        "connect-src 'self' https://djzeneyer.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://api.bandsintown.com https://rest.bandsintown.com https://widget.bandsintown.com https://cdn.bandsintown.com https://photos.bandsintown.com https://www.googletagmanager.com https://cloudflareinsights.com https://static.cloudflareinsights.com https://challenges.cloudflare.com https://www.youtube.com https://www.youtube-nocookie.com https://googleads.g.doubleclick.net https://www.gstatic.com",
         
-        "frame-src 'self' https://accounts.google.com https://widget.bandsintown.com https://challenges.cloudflare.com",
+        "frame-src 'self' https://accounts.google.com https://widget.bandsintown.com https://challenges.cloudflare.com https://www.youtube.com https://www.youtube-nocookie.com",
         
         "object-src 'none'",
         
@@ -67,6 +67,22 @@ add_action('send_headers', function() {
     ]) . ';';
 
     header('Content-Security-Policy: ' . $policy);
+
+    $permissions_policy = implode(', ', [
+        'geolocation=()',
+        'microphone=()',
+        'camera=()',
+        'payment=()',
+        'usb=()',
+        'magnetometer=()',
+        'display-capture=()',
+        'accelerometer=(self "https://www.youtube.com" "https://www.youtube-nocookie.com")',
+        'gyroscope=(self "https://www.youtube.com" "https://www.youtube-nocookie.com")',
+        'compute-pressure=(self "https://www.youtube.com" "https://www.youtube-nocookie.com")',
+    ]);
+
+    header('Permissions-Policy: ' . $permissions_policy);
+    header('Cross-Origin-Opener-Policy: same-origin-allow-popups');
 }, 20);
 
 /**
