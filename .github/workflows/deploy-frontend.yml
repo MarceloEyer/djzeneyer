@@ -154,7 +154,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -n "$INDEXNOW_KEY" ]; then
-            node scripts/submit-indexnow.mjs
+            npm run indexnow
           else
             echo "⚠️  INDEXNOW_KEY not set — skipping IndexNow submission."
           fi

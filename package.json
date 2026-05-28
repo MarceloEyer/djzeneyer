@@ -18,7 +18,8 @@
     "format": "prettier --write .",
     "perf:baseline": "node scripts/perf-baseline.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
-    "rollback": "node scripts/rollback.js"
+    "rollback": "node scripts/rollback.js",
+    "indexnow": "node scripts/submit-indexnow.mjs"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.2",
