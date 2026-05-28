@@ -14,7 +14,7 @@ Conseguir paginas independentes, indexaveis e contextuais que conectem Zen Eyer 
 ### Passo a passo
 
 1. Publicar 1 artigo por mes em Zoukology ou outro veiculo de Zouk, sempre com byline "Zen Eyer".
-2. Incluir uma bio curta no final: "Zen Eyer is a Brazilian Zouk DJ and music producer, two-time Ilha do Zouk DJ Championship winner in 2022, and creator of the Cremosidade concept."
+2. Incluir uma bio curta no final: "Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Zouk DJ Championship 2022, and creator of the Cremosidade concept."
 3. Pedir link editorial para `https://djzeneyer.com/about-dj-zen-eyer` e, quando o tema for tecnico, para `https://djzeneyer.com/zouk-encyclopedia`.
 4. Evitar texto autopromocional. O artigo deve resolver uma pergunta real da comunidade.
 5. Depois de publicado, adicionar o link em Media/Clipping se for uma publicacao externa relevante.
@@ -43,12 +43,12 @@ Trocar mencoes efemeras de Instagram/Facebook por paginas permanentes que buscad
 1. Sempre que fechar um evento, pedir ao organizador uma pagina web publica com lineup de DJs.
 2. Se o organizador so usa Instagram/Facebook, pedir pelo menos uma pagina simples no site, Notion publico, Sympla/Eventbrite, Resident Advisor, Bandsintown, Songkick ou pagina oficial do festival.
 3. Enviar uma bio padrao curta com links oficiais.
-4. Pedir que o texto inclua "Brazilian Zouk DJ", "Zen Eyer" e, se caber naturalmente, "Ilha do Zouk DJ Championship 2022".
+4. Pedir que o texto inclua "Brazilian Zouk DJ", "Zen Eyer" e, se caber naturalmente, "Zouk DJ Championship 2022".
 5. Salvar o link final para futura inclusao em Media/Clipping e `subjectOf` no schema.
 
 ### Bio curta para organizadores
 
-Zen Eyer is a Brazilian Zouk DJ and music producer from Rio de Janeiro/Niteroi, Brazil. He won two Ilha do Zouk DJ Championship titles in 2022: Best DJ Performance and Best Remix. His sets are known for Cremosidade: smooth musical flow, emotional continuity, and dancer comfort.
+Zen Eyer is a Brazilian Zouk DJ and music producer from Rio de Janeiro/Niteroi, Brazil. He won two world titles at the Zouk DJ Championship 2022: Best DJ Performance and Best Remix. His sets are known for Cremosidade: smooth musical flow, emotional continuity, and dancer comfort.
 
 Official website: https://djzeneyer.com
 Music: https://djzeneyer.com/zouk-music

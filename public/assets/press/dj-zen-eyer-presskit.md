@@ -1,4 +1,4 @@
-# Zen Eyer Press Kit
+# DJ Zen Eyer Press Kit
 
 Brazilian Zouk DJ and music producer for festivals, congresses and dance marathons that need a musical journey built for dancers.
 
@@ -15,8 +15,8 @@ Zen Eyer is a dance-floor-first Brazilian Zouk DJ. His sets are built around lon
 
 ## Credibility
 
-- Winner of Best DJ Performance at Ilha do Zouk DJ Championship 2022.
-- Winner of Best Remix at Ilha do Zouk DJ Championship 2022.
+- Winner of Best DJ Performance at the Zouk DJ Championship 2022.
+- Winner of Best Remix at the Zouk DJ Championship 2022.
 - Brazilian Zouk DJ and music producer from Rio de Janeiro, Brazil.
 - Member of Mensa International.
 
@@ -40,7 +40,7 @@ Official music profiles, remixes and releases are available on the main streamin
 
 - Spotify: https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw
 - Apple Music: https://music.apple.com/us/artist/1439280950
-- YouTube: https://YouTube.com/@djzeneyer
+- YouTube: https://youtube.com/@djzeneyer
 - Instagram: https://www.instagram.com/djzeneyer/
 - Photos: https://photos.djzeneyer.com
 
@@ -54,4 +54,4 @@ For festival, congress and marathon bookings, send the event city, country, date
 
 ## Suggested Credit
 
-Zen Eyer (Marcelo Eyer Fernandes), Brazilian Zouk DJ and music producer.
+DJ Zen Eyer (Marcelo Eyer Fernandes), Brazilian Zouk DJ and music producer.

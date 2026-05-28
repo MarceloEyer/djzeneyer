@@ -14,6 +14,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 ## ⚠️ Armadilhas & "Anti-Erros" (Obrigatório Ler)
 
 - **Identity Drift:** O nome "Zen Ayer" foi banido de metadados. Nome canônico: **Zen Eyer**. Alias: **DJ Zen Eyer**.
+- **Championship naming drift:** Nunca substituir o nome do evento vencido por nomes genéricos de "campeonato mundial de Zouk" em inglês, e nunca confundir com Zouk Worlds. O campeonato de DJs vencido foi o **Zouk DJ Championship 2022** / **I Campeonato Internacional de DJs** (Best DJ Performance + Best Remix). "Bicampeão mundial" deve ser mantido como credencial; o nome principal da competição é Zouk DJ Championship.
 - **Pronúncia Única:** Sempre use `/zɛn ˈaɪər/` (IPA). Nunca inventar outras transcrições.
 - **GamiPress Associative Arrays:** `gamipress_get_rank_types()` retorna slugs como chaves. Usar `array_values()` antes de `[0]` é obrigatório. Sempre use `array_values()` ou `reset()` para evitar resultados vazios.
 - **Mojibake:** Arquivos JSON de locale e logs de IA devem ser UTF-8 limpo. Cuidado com `Ã§` e `Â©`.

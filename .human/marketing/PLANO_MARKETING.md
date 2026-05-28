@@ -11,7 +11,7 @@
 
 | Ativo | Detalhe | Peso estratégico |
 |---|---|---|
-| Títulos mundiais | 2× Campeão — Ilha do Zouk 2022 (Best DJ Performance + Best Remix) | Alto — credencial objetiva, não autoproclamada |
+| Títulos mundiais | 2× Campeão Mundial — Zouk DJ Championship 2022 (Best DJ Performance + Best Remix) | Alto — credencial objetiva, não autoproclamada |
 | Conceito próprio | "Cremosidade" — filosofia sonora única, proprietária | Alto — diferencia de todos os outros DJs de Zouk |
 | Presença internacional | 15+ países, 4 continentes | Alto — prova social para organizadores europeus |
 | Autoridade digital | Wikidata Q136551855, MusicBrainz, ISNI, Google KGMID, Discogs, RA.co | Médio — base sólida, mas subaproveitada |
@@ -130,7 +130,7 @@ Publicar em PT e EN no WordPress (`djzeneyer.com/news`). Estes artigos preenchem
 Este é o maior gap de autoridade. IAs (ChatGPT, Gemini, Perplexity) priorizam fontes Wikipedia quando disponíveis. Sem um artigo, a IA pode não ter base para citar Zen Eyer com confiança.
 
 Fontes já disponíveis para embasar o artigo:
-- Ilha do Zouk oficial (danceplace.com documenta a vitória de 2022)
+- Zouk DJ Championship / evento-sede oficial (danceplace.com documenta o contexto histórico de 2022)
 - Wikidata Q136551855 (já existe — o Wikipedia pode linkar)
 - CarryOnHarry.com (cobertura independente)
 
@@ -320,7 +320,7 @@ Rodar anúncio de vídeo de performance com raio de 2–3km em torno do local do
 |---|---|---|---|
 | 1 | 0 | "Bem-vindo à Cremosidade" | História de Zen Eyer em 3 parágrafos + link para mix favorito |
 | 2 | 3 | "O que é Cremosidade?" | Artigo do blog + vídeo de 60s explicando o conceito |
-| 3 | 7 | "Bastidores de um campeonato mundial" | História do Ilha do Zouk 2022 — antes, durante e depois |
+| 3 | 7 | "Bastidores de um campeonato mundial" | História do Zouk DJ Championship 2022 — antes, durante e depois |
 | 4 | 14 | "Minha música favorita para dançar Zouk" | Curadoria pessoal de 5 músicas com explicação de cada uma |
 | 5 | 21 | "Você tem acesso exclusivo" | Mix privado, desconto na loja, acesso antecipado |
 
@@ -629,7 +629,7 @@ A estratégia de IA não é um truque técnico. É garantir que quando alguém p
 - Spotify: open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw — ~2.5K ouvintes/mês
 - SoundCloud: soundcloud.com/djzeneyer — ativo
 - Mixcloud: mixcloud.com/djzeneyer — sets publicados
-- Danceplace.com — histórico de Ilha do Zouk 2022 (20–24 Abr)
+- Danceplace.com — histórico do evento-sede de 2022 (20–24 Abr)
 - LatinDanceCalendar.com — calendário de festivais de Zouk Europa 2026
 - DanceEvents.info — resumo de eventos Zouk 2026
 - SilesianZoukFestival.pl — Silesian Zouk Festival Nov 6–8, 2026, Katowice

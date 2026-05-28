@@ -311,7 +311,7 @@
     "spotify_title": "Spotify",
     "subtitle": "2× World Champion Brazilian Zouk",
     "micro_champion": "2× World Champion",
-    "micro_island": "Ilha do Zouk (2022)",
+    "micro_island": "Zouk DJ Championship (2022)",
     "micro_years_label": "years on stage",
     "whatsapp_message": "Hi Zen! I saw your link in bio."
   },
@@ -339,7 +339,7 @@
   "home": {
     "site_desc": "Official website of Zen Eyer, also known as DJ Zen Eyer, 2x World Champion Brazilian Zouk DJ and music producer",
     "page_title": "Zen Eyer | Brazilian Zouk DJ & Music Producer",
-    "page_meta_desc": "Zen Eyer, Brazilian Zouk DJ and music producer, two-time world champion at Ilha do Zouk. Book for international events.",
+    "page_meta_desc": "Zen Eyer, Brazilian Zouk DJ and music producer, two-time world champion at the Zouk DJ Championship. Book for international events.",
     "headline": "Experience the <1>Zen</1> in Brazilian Zouk",
     "subheadline": "Transforming dance floors into immersive audio experiences",
     "welcome": "Welcome to Zen Eyer",
@@ -355,7 +355,7 @@
     "feat_community_desc": "Connect with music lovers and Zen Eyer",
     "cta_title": "Ready to Join the Zen Tribe?",
     "cta_subtitle": "Join thousands of members and transform your experience",
-    "hero_badge": "2x World Champion - Zouk World Championships",
+    "hero_badge": "2x World Champion - Zouk DJ Championship",
     "hero_title": "Zen Eyer",
     "hero_subtitle": "Brazilian Zouk DJ & Music Producer",
     "pronunciation_summary": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B, or like 'Eye' followed by 'er').",
@@ -365,7 +365,7 @@
     "stat_countries": "Countries",
     "stat_events": "Events",
     "stat_years": "Years Active",
-    "bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at Ilha do Zouk (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 14 countries.",
+    "bio_p1": "is a Brazilian DJ and producer focused on Brazilian Zouk. In 2022, I had the honor of receiving two world titles at the Zouk DJ Championship (Best Remix and Best DJ Performance), consolidating a journey that started early on the dance floor and now takes me to play in 14 countries.",
     "bio_p2": "Known for a sound focused on the pure 'flow' of the dance — a vibe our community affectionately calls 'cremosidade' —, I prioritize sets where the energy builds gradually, giving the dancer time and space to connect without rush.",
     "bio_p3": "Whether at reZENha, at Renata Peçanha's Rio Zouk Congress (where I have the honor of playing annually), or at festivals around the world, the mission is always the same: to create the perfect atmosphere for those who love Brazilian Zouk.",
     "festivals_title": "Performed at International Festivals",
@@ -388,7 +388,7 @@
     "cta_booking": "Booking / Press Kit",
     "cta_music": "Explore Music",
     "bio_title": "Who is DJ Zen Eyer?",
-    "bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>Brazilian Zouk DJ</strong> and music producer. In 2022, he won the Best Remix and Best DJ Performance awards at the Brazilian Zouk World Championships (Ilha do Zouk), recognized for his technical precision and musical sensitivity.",
+    "bio_intro": "<strong>DJ Zen Eyer</strong> (Marcelo Eyer Fernandes) is a <strong>Brazilian Zouk DJ</strong> and music producer. In 2022, he won the Best Remix and Best DJ Performance awards at the Zouk DJ Championship, recognized for his technical precision and musical sensitivity.",
     "bio_style": "Known for his \"creamy\" and engaging style, Zen prioritizes connection. No rush. His signature drop <em>\"Zen? Zen? Zen? Eyer? Eyer?\"</em> is already a classic at festivals.",
     "bio_mensa": "Member of <strong>Mensa International</strong>, he creates perfect emotional journeys for the \"flow\" in dance. He is a regular at major stages like Rio Zouk Congress.",
     "verified": "Verified Profiles",
@@ -644,7 +644,10 @@
       "birth_date": "Birth date",
       "genre": "Genre",
       "award_remix": "Award",
+      "award_remix_value": "Best Remix, 2022",
       "award_performance": "Award",
+      "award_performance_value": "Best DJ Performance, 2022",
+      "award_source": "Zouk DJ Championship",
       "residence": "Residence"
     }
   },
@@ -875,7 +878,7 @@
     "bio": {
       "title": "The Sonic Journey",
       "p1": "<strong>Zen Eyer</strong> is a Brazilian Zouk DJ and music producer focused on festivals, marathons, and dance floors that need emotional range, musical control, and trust.",
-      "p2": "He has performed in 14 countries and won two awards at Ilha do Zouk in 2022, bringing a creamy, emotional sound that gives dancers time to breathe, connect, and stay on the floor.",
+      "p2": "He has performed in 14 countries and won two world titles at the Zouk DJ Championship in 2022, bringing a creamy, emotional sound that gives dancers time to breathe, connect, and stay on the floor.",
       "p3": "His sets are built for organizers who need a DJ able to read mixed-level crowds, hold the room with confidence, and turn a program slot into a remembered dance-floor experience.",
       "quickStats": {
         "cremosidade": "Cremosidade",
@@ -923,7 +926,7 @@
       "copy_button": "Copy Bio",
       "copied": "Copied!",
       "whatsapp_default_msg": "Hello Zen Eyer! I'd like to talk about booking.",
-      "text": "Zen Eyer is a Brazilian Zouk DJ and music producer from Niter?i, Brazil. Also known as DJ Zen Eyer, he won two awards at Ilha do Zouk in 2022: Best Remix and Best DJ Performance. He has performed in 14 countries in person and is known for creamy, emotional sets designed for Brazilian Zouk festivals, marathons, and social dance floors."
+      "text": "Zen Eyer is a Brazilian Zouk DJ and music producer from Niterói, Brazil. Also known as DJ Zen Eyer, he won two world titles at the Zouk DJ Championship in 2022: Best Remix and Best DJ Performance. He has performed in 14 countries in person and is known for creamy, emotional sets designed for Brazilian Zouk festivals, marathons, and social dance floors."
     }
   },
   "events_add_google": "Add to Calendar",

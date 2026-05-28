@@ -1,10 +1,10 @@
-# Press Kit Zen Eyer
+# Press Kit DJ Zen Eyer
 
 DJ e produtor musical de Zouk Brasileiro para festivais, congressos e maratonas que precisam de uma jornada musical feita para quem dança.
 
 ## Por que contratar Zen Eyer
 
-Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias no Ilha do Zouk Championship em 2022: Best DJ Performance e Best Remix. O press kit reúne informações para organizadores de festivais, congressos, maratonas e eventos sociais de Zouk Brasileiro.
+Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias no Zouk DJ Championship em 2022: Best DJ Performance e Best Remix. O press kit reúne informações para organizadores de festivais, congressos, maratonas e eventos sociais de Zouk Brasileiro.
 
 ## Ideal para festivais e maratonas
 
@@ -15,8 +15,8 @@ Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias
 
 ## Credibilidade
 
-- Vencedor de Best DJ Performance no Ilha do Zouk DJ Championship 2022.
-- Vencedor de Best Remix no Ilha do Zouk DJ Championship 2022.
+- Vencedor de Best DJ Performance no Zouk DJ Championship 2022.
+- Vencedor de Best Remix no Zouk DJ Championship 2022.
 - DJ e produtor musical de Zouk Brasileiro do Rio de Janeiro, Brasil.
 - Membro da Mensa International.
 
@@ -40,7 +40,7 @@ Perfis oficiais de musica, remixes e lancamentos estao disponiveis nas principai
 
 - Spotify: https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw
 - Apple Music: https://music.apple.com/us/artist/1439280950
-- YouTube: https://YouTube.com/@djzeneyer
+- YouTube: https://youtube.com/@djzeneyer
 - Instagram: https://www.instagram.com/djzeneyer/
 - Photos: https://photos.djzeneyer.com
 
@@ -54,4 +54,4 @@ Para bookings em festivais, congressos e maratonas, envie cidade, pais, datas, f
 
 ## Credito sugerido
 
-Zen Eyer (Marcelo Eyer Fernandes), DJ e produtor musical de Zouk Brasileiro.
+DJ Zen Eyer (Marcelo Eyer Fernandes), DJ e produtor musical de Zouk Brasileiro.
