@@ -682,7 +682,7 @@ export const ARTIST_SCHEMA_BASE = {
           addressCountry: 'NL',
         },
       },
-      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
       offers: {
         '@type': 'Offer',
         url: 'https://www.dutchzouk.nl/',
@@ -708,7 +708,7 @@ export const ARTIST_SCHEMA_BASE = {
           addressCountry: 'PT',
         },
       },
-      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
       offers: {
         '@type': 'Offer',
         url: 'https://www.lisbonzoukmarathon.com/march2026',
@@ -734,7 +734,7 @@ export const ARTIST_SCHEMA_BASE = {
           addressCountry: 'SI',
         },
       },
-      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
       offers: {
         '@type': 'Offer',
         url: 'https://slovenianzoukmarathon.com/',
@@ -760,7 +760,7 @@ export const ARTIST_SCHEMA_BASE = {
           addressCountry: 'BR',
         },
       },
-      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
       offers: {
         '@type': 'Offer',
         url: 'https://neozouk.com/',
@@ -786,7 +786,7 @@ export const ARTIST_SCHEMA_BASE = {
           addressCountry: 'BR',
         },
       },
-      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
       offers: {
         '@type': 'Offer',
         url: 'https://renatapecanha.wixsite.com/zoukinrio/c%C3%B3pia-artistas',
@@ -813,7 +813,7 @@ export const ARTIST_SCHEMA_BASE = {
           addressCountry: 'BR',
         },
       },
-      performer: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+      performer: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
       offers: {
         '@type': 'Offer',
         url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',

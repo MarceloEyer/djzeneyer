@@ -134,6 +134,75 @@ class Zen_SEO_Schema
     }
 
     /**
+     * Canonical external identifiers shared by Person and MusicGroup nodes.
+     *
+     * @return array<int, string>
+     */
+    private function get_canonical_same_as_urls()
+    {
+        return [
+            'https://www.wikidata.org/wiki/Q136551855',
+            'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
+            'https://www.discogs.com/artist/16872046',
+            'https://isni.org/isni/0000000528931015',
+            'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
+            'https://music.apple.com/us/artist/1439280950',
+            'https://www.youtube.com/@djzeneyer',
+            'https://www.instagram.com/djzeneyer/',
+            'https://www.facebook.com/djzeneyer/',
+            'https://www.linkedin.com/in/eyermarcelo',
+            'https://soundcloud.com/djzeneyer',
+            'https://www.deezer.com/artist/52900762',
+            'https://tidal.com/artist/10492592',
+            'https://djzeneyer.bandcamp.com',
+            'https://music.amazon.com/artists/B07JKCDCG8',
+            'https://www.mixcloud.com/djzeneyer',
+            'https://www.last.fm/music/Zen+Eyer',
+            'https://www.songkick.com/artists/8815204-zen-eyer',
+            'https://www.bandsintown.com/a/15619775-zen-eyer',
+            'https://ra.co/dj/djzeneyer',
+            'https://bsky.app/profile/djzeneyer.bsky.social',
+            'https://www.threads.net/@djzeneyer',
+            'https://www.shazam.com/artist/1439280950',
+            'https://www.patreon.com/djzeneyer',
+            'https://medium.com/@djzeneyer',
+        ];
+    }
+
+    /**
+     * Canonical identifiers for Knowledge Graph reconciliation.
+     *
+     * @return array<int, array<string, string>>
+     */
+    private function get_canonical_identifier_nodes()
+    {
+        return [
+            ['@type' => 'PropertyValue', 'propertyID' => 'Wikidata', 'value' => 'Q136551855'],
+            ['@type' => 'PropertyValue', 'propertyID' => 'MusicBrainz', 'value' => '13afa63c-8164-4697-9cad-c5100062a154'],
+            ['@type' => 'PropertyValue', 'propertyID' => 'ISNI', 'value' => '0000000528931015'],
+            ['@type' => 'PropertyValue', 'propertyID' => 'Discogs', 'value' => '16872046'],
+            ['@type' => 'PropertyValue', 'propertyID' => 'Google KG ID', 'value' => '/g/11ff3mhh10'],
+            ['@type' => 'PropertyValue', 'propertyID' => 'Spotify', 'value' => '68SHKGndTlq3USQ2LZmyLw'],
+            ['@type' => 'PropertyValue', 'propertyID' => 'Apple Music', 'value' => '1439280950'],
+            ['@type' => 'PropertyValue', 'propertyID' => 'YouTube', 'value' => 'djzeneyer'],
+        ];
+    }
+
+    /**
+     * Canonical sameAs plus any additional admin-configured URLs.
+     *
+     * @param array<string, mixed> $settings
+     * @return array<int, string>
+     */
+    private function get_schema_same_as_urls($settings)
+    {
+        return \array_values(\array_unique(\array_filter(\array_merge(
+            $this->get_canonical_same_as_urls(),
+            $this->get_same_as_urls($settings)
+        ))));
+    }
+
+    /**
      * Generate Person schema (the artist)
      *
      * @return array
@@ -142,24 +211,47 @@ class Zen_SEO_Schema
     {
         $settings = Zen_SEO_Helpers::get_global_settings();
 
-        $blog_name = (string) \get_bloginfo('name');
-        $real_name = !empty($settings['real_name']) ? (string) $settings['real_name'] : $blog_name;
-        $name = \sanitize_text_field($real_name ?: 'DJ Zen Eyer');
+        $base_url = Zen_SEO_Helpers::get_frontend_url(\home_url('/'));
+        $artist_id = Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'));
+        $musicgroup_id = Zen_SEO_Helpers::get_frontend_url(\home_url('/#musicgroup'));
+        $default_image = Zen_SEO_Helpers::get_frontend_url(\home_url('/images/zen-eyer-og-image.png'));
+        $image = !empty($settings['default_image']) ? \esc_url((string) $settings['default_image']) : $default_image;
 
         $person = [
             '@type' => 'Person',
-            '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist')),
-            'name' => $name,
-            'url' => Zen_SEO_Helpers::get_frontend_url(\home_url('/')),
+            '@id' => $artist_id,
+            'name' => 'Zen Eyer',
+            'alternateName' => ['DJ Zen Eyer'],
+            'birthName' => 'Marcelo Eyer Fernandes',
+            'description' => 'Zen Eyer is a Brazilian Zouk DJ, music producer, and remixer, two-time World Champion at the Ilha do Zouk DJ Championship 2022.',
+            'disambiguatingDescription' => 'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used stage-name variant; Zen Ayer is a common misspelling, not an official artist name.',
+            'url' => $base_url,
+            'image' => $image,
             'jobTitle' => ['DJ', 'Music Producer', 'Remixer'],
-            'knowsAbout' => ['Brazilian Zouk', 'Zouk', 'Kizomba', 'Music Production', 'DJing'],
+            'genre' => ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+            'knowsAbout' => [
+                'Brazilian Zouk',
+                'Zouk Brasileiro',
+                'DJing',
+                'Music Production',
+                'Remixing',
+                'Cremosidade',
+                'Partner Dancing',
+                'Latin Dance Music',
+                'Dance Music Production',
+                'Brazilian Music',
+                'Social Dancing',
+                'Festival DJ Sets',
+            ],
+            'knowsLanguage' => ['pt-BR', 'en'],
             'gender' => 'Male',
+            'identifier' => $this->get_canonical_identifier_nodes(),
+            'sameAs' => $this->get_schema_same_as_urls($settings),
+            'additionalProperty' => [
+                ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zɛn ˈaɪər/'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.'],
+            ],
         ];
-
-        // Image
-        if (!empty($settings['default_image'])) {
-            $person['image'] = \esc_url((string) ($settings['default_image'] ?? ''));
-        }
 
         // Nationality
         $person['nationality'] = [
@@ -167,30 +259,16 @@ class Zen_SEO_Schema
             'name' => 'Brazil'
         ];
 
-        // Birth place
-        if (!empty($settings['birth_place'])) {
-            $person['birthPlace'] = [
-                '@type' => 'Place',
-                'name' => \sanitize_text_field((string) $settings['birth_place'])
-            ];
-        }
+        $person['birthPlace'] = [
+            '@type' => 'City',
+            'name' => !empty($settings['birth_place']) ? \sanitize_text_field((string) $settings['birth_place']) : 'Rio de Janeiro',
+            'addressCountry' => 'BR',
+        ];
 
-        // Home location
-        if (!empty($settings['home_location'])) {
-            $person['homeLocation'] = [
-                '@type' => 'Place',
-                'name' => \sanitize_text_field((string) $settings['home_location'])
-            ];
-        }
-
-        // ISNI identifier
-        if (!empty($settings['isni_code'])) {
-            $person['identifier'] = [
-                '@type' => 'PropertyValue',
-                'propertyID' => 'ISNI',
-                'value' => \sanitize_text_field((string) $settings['isni_code'])
-            ];
-        }
+        $person['homeLocation'] = [
+            '@type' => 'Place',
+            'name' => !empty($settings['home_location']) ? \sanitize_text_field((string) $settings['home_location']) : 'Niterói, Rio de Janeiro, Brazil',
+        ];
 
         // Contact point - Only if email is set
         if (!empty($settings['booking_email'])) {
@@ -202,25 +280,46 @@ class Zen_SEO_Schema
             ];
         }
 
-        // Mensa membership
-        if (!empty($settings['mensa_url'])) {
-            $person['memberOf'] = [
+        $person['memberOf'] = [
+            [
                 '@type' => 'Organization',
                 'name' => 'Mensa International',
-                'url' => \esc_url((string) ($settings['mensa_url'] ?? ''))
-            ];
-        }
+                'url' => !empty($settings['mensa_url']) ? \esc_url((string) $settings['mensa_url']) : 'https://www.mensa.org',
+                'description' => 'High-IQ society for individuals in the top 2% of intelligence.',
+            ],
+            ['@id' => $musicgroup_id],
+        ];
 
-        // Awards
+        $person['award'] = [
+            'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
+            'World Champion Brazilian Zouk DJ - Best Remix, 2022',
+        ];
         if (!empty($settings['awards_list'])) {
             $awards = \array_filter(\array_map('trim', \explode("\n", (string) ($settings['awards_list'] ?? ''))));
             if (!empty($awards)) {
-                $person['award'] = \array_values($awards);
+                $person['award'] = \array_values(\array_unique(\array_merge($person['award'], $awards)));
             }
         }
 
-        // SameAs (social profiles)
-        $person['sameAs'] = $this->get_same_as_urls($settings);
+        $person['hasOccupation'] = [
+            [
+                '@type' => 'Occupation',
+                'name' => 'DJ',
+                'occupationLocation' => ['@type' => 'Country', 'name' => 'Brazil'],
+                'description' => 'Professional DJ specializing in Brazilian Zouk, performing at international festivals and congresses in 14 countries across 4 continents.',
+                'skills' => 'DJ Mixing, Music Curation, Live Performance, Cremosidade Transitions',
+            ],
+            [
+                '@type' => 'Occupation',
+                'name' => 'Music Producer',
+                'description' => 'Music producer creating original tracks, remixes, and edits for Brazilian Zouk dancing.',
+                'skills' => 'Music Production, Remixing, Arranging, Sound Design',
+            ],
+        ];
+
+        $person['mainEntityOfPage'] = [
+            '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/about-dj-zen-eyer#webpage')),
+        ];
 
         return $person;
     }
@@ -233,27 +332,47 @@ class Zen_SEO_Schema
     private function generate_musicgroup_schema()
     {
         $settings = Zen_SEO_Helpers::get_global_settings();
-        $same_as = $this->get_same_as_urls($settings);
+        $base_url = Zen_SEO_Helpers::get_frontend_url(\home_url('/'));
+        $musicgroup_id = Zen_SEO_Helpers::get_frontend_url(\home_url('/#musicgroup'));
+        $artist_id = Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'));
+        $default_image = Zen_SEO_Helpers::get_frontend_url(\home_url('/images/zen-eyer-og-image.png'));
+        $image = !empty($settings['default_image']) ? \esc_url((string) $settings['default_image']) : $default_image;
 
         $musicgroup = [
             '@type' => 'MusicGroup',
-            '@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#musicgroup')),
+            '@id' => $musicgroup_id,
             'name' => 'Zen Eyer',
             'alternateName' => ['DJ Zen Eyer'],
-            'url' => Zen_SEO_Helpers::get_frontend_url(\home_url('/')),
-            'genre' => ['Brazilian Zouk', 'Zouk', 'Dance Music'],
+            'description' => 'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is a commonly used stage-name variant.',
+            'disambiguatingDescription' => 'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.',
+            'url' => $base_url,
+            'image' => $image,
+            'genre' => ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
+            'foundingDate' => '2015',
+            'foundingLocation' => [
+                '@type' => 'Place',
+                'name' => 'Rio de Janeiro, Brazil',
+                'address' => [
+                    '@type' => 'PostalAddress',
+                    'addressLocality' => 'Rio de Janeiro',
+                    'addressCountry' => 'BR',
+                ],
+            ],
             'member' => [
-                ['@id' => Zen_SEO_Helpers::get_frontend_url(\home_url('/#artist'))]
+                ['@id' => $artist_id]
+            ],
+            'award' => [
+                'World Champion 2022 (DJ) at Ilha do Zouk',
+                'World Champion 2022 (Remix) at Ilha do Zouk',
+            ],
+            'influencedBy' => ['Lambada'],
+            'sameAs' => $this->get_schema_same_as_urls($settings),
+            'identifier' => $this->get_canonical_identifier_nodes(),
+            'additionalProperty' => [
+                ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zɛn ˈaɪər/'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.'],
             ],
         ];
-
-        if (!empty($settings['default_image'])) {
-            $musicgroup['image'] = \esc_url((string) $settings['default_image']);
-        }
-
-        if (!empty($same_as)) {
-            $musicgroup['sameAs'] = $same_as;
-        }
 
         return $musicgroup;
     }

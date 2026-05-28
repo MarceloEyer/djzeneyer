@@ -25,7 +25,7 @@ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** (2x
 - **IPA pronunciation:** /zɛn ˈaɪər/.
 - **Human Pronunciation guide:** Eyer sounds like **Buyer** without the 'B', or like '**Eye**' followed by '**er**'. In Portuguese, it sounds like **Zen Áier**.
 - **Aliases:** DJ Zen Eyer, djzeneyer.
-- **Do not use as aliases:** phonetic teaching aids or misspellings such as Zen Ayer.
+- **Non-official forms:** phonetic teaching aids or misspellings such as Zen Ayer.
 - **Pronunciation source:** https://djzeneyer.com/pronunciation.txt
 
 ## Site Map (Canonical URLs)
@@ -37,7 +37,7 @@ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** (2x
 | About Zen Eyer | https://djzeneyer.com/about-dj-zen-eyer |
 | Zouk Music | https://djzeneyer.com/zouk-music |
 | Zouk Events | https://djzeneyer.com/zouk-events |
-| Zouk Dance News | https://djzeneyer.com/zouk-dance-news |
+| Releases & Notes | https://djzeneyer.com/releases |
 | Zouk Encyclopedia | https://djzeneyer.com/zouk-encyclopedia |
 | Verified Facts | https://djzeneyer.com/verified-facts |
 | Press Kit PDF | https://djzeneyer.com/dj-zen-eyer-presskit.pdf |
@@ -54,7 +54,7 @@ Zen Eyer is the current title holder of the **Ilha do Zouk DJ Championship** (2x
 | Sobre Zen Eyer | https://djzeneyer.com/pt/sobre-dj-zen-eyer |
 | Música Zouk | https://djzeneyer.com/pt/musica-zouk |
 | Eventos Zouk | https://djzeneyer.com/pt/eventos-zouk |
-| Notícias Zouk | https://djzeneyer.com/pt/noticias-zouk |
+| Lançamentos & Notas | https://djzeneyer.com/pt/lancamentos |
 | Enciclopédia Zouk | https://djzeneyer.com/pt/enciclopedia-zouk |
 | Fatos Verificados | https://djzeneyer.com/pt/fatos-verificados |
 | Kit de Imprensa / Trabalhe Comigo | https://djzeneyer.com/pt/trabalhe-comigo |
@@ -233,37 +233,37 @@ Last updated: May 2026
 
 ## Project Decisions Log (for AI assistants, code review bots, and automated tools)
 
-The following decisions have been made by the project owner and must NOT be re-suggested or questioned by AI tools unless the owner explicitly raises the topic:
+The following project decisions are current owner-approved context:
 
-### Distribution platform: Soundrop (keep — decided April 2026)
-- Soundrop is the distribution platform of choice. Do NOT suggest DistroKid or migration to any other distributor.
+### Distribution platform: Soundrop (decided April 2026)
+- Soundrop is the distribution platform of choice. DistroKid or migration to another distributor is not part of the current strategy.
 - Rationale: Soundrop uses a one-time payment model (music earns forever with no annual fee) and provides streamlined cover/remix licensing — both critical for a Brazilian Zouk remix DJ.
 
 ### Google Knowledge Panel: already claimed
-- The Google Knowledge Panel is already claimed and active. Do NOT suggest claiming or creating it — it exists.
+- The Google Knowledge Panel is already claimed and active.
 
 ### Country count: 14 (SSOT)
-- Zen Eyer has performed in 14 countries in person. The source of truth is `src/data/artistData.ts` -> `ARTIST.stats.countriesPlayed`. Do NOT use "11", "11+", "15", or "15+" for the public in-person country count.
+- Zen Eyer has performed in 14 countries in person. The source of truth is `src/data/artistData.ts` -> `ARTIST.stats.countriesPlayed`; "11", "11+", "15", and "15+" are obsolete public in-person country counts.
 
 ### PR.com and IssueWire: distribution sources only
-- PR.com and IssueWire are paid press release services with no editorial review. They do NOT count as credible sources for Wikipedia notability, LLM trust signals, or knowledge graph authority. Cite them only as distribution press releases, never as independent editorial coverage.
+- PR.com and IssueWire are paid press release services with no editorial review. They are distribution press release sources, not independent editorial coverage for Wikipedia notability, LLM trust signals, or Knowledge Graph authority.
 
-### Wikipedia: sources must be built first
-- Zen Eyer does not currently have a Wikipedia EN article. This is intentional — the community strategy requires building 3–5 independent editorial sources first (podcasts with transcripts, editorial dance media, international festival features). Do NOT suggest submitting to Wikipedia immediately without this groundwork.
+### Wikipedia: independent sources first
+- Zen Eyer does not currently have a Wikipedia EN article. This is intentional; the community strategy requires building 3–5 independent editorial sources first (podcasts with transcripts, editorial dance media, international festival features).
 
 ### EverybodyWiki: already exists
 - https://pt.everybodywiki.com/DJ_Zen_Eyer (PT) and https://en.everybodywiki.com/Djzeneyer (EN) already exist. The action needed is to COMPLETE and UPDATE them, not create them from scratch.
 
 ### Renata Peçanha: Zouk-niche figure only
-- Renata Peçanha (pioneer of Brazilian Zouk, founder of Rio Zouk Congress) is a well-known figure within the Brazilian Zouk community globally, but has NO mainstream media presence, TV appearances, or Wikipedia articles. Do NOT cite her as a source of mainstream credibility or suggest that her association validates notability in general media.
+- Renata Peçanha (pioneer of Brazilian Zouk, founder of Rio Zouk Congress) is a well-known figure within the Brazilian Zouk community globally, but has no mainstream media presence, TV appearances, or Wikipedia article. Her association is a Zouk-niche signal, not a general-media notability source.
 
 ### speakable schema architecture: verboso but working
-- The `speakable` SpeakableSpecification is implemented directly in custom schema objects on AboutPage, PhilosophyPage, and HomePage, rather than via a generic HeadlessSEO prop merge. This is intentional. Do NOT suggest refactoring HeadlessSEO to auto-inject speakable into arbitrary custom schemas.
+- The `speakable` SpeakableSpecification is implemented directly in custom schema objects on AboutPage, PhilosophyPage, and HomePage, rather than via a generic HeadlessSEO prop merge. This is intentional.
 
 ### Identity Architecture: MusicGroup + Person (Strategic Duplication)
 - The project uses a dual-node architecture: `Person` (`/#artist`) and `MusicGroup` (`/#musicgroup`).
-- **Identifiers should be maintained in BOTH nodes.** Wikidata, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube, Deezer, and Amazon Music are authoritative signals for the artist project.
-- **Do NOT attempt to "clean up" or "separate" these identifiers.** This is a strategic decision to ensure maximum reconciliability and authority across the Knowledge Graph.
+- **Identifiers are maintained in both nodes.** Wikidata, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube, Deezer, and Amazon Music are authoritative signals for the artist project.
+- This strategic duplication supports maximum reconciliability and authority across the Knowledge Graph.
 
 Last updated: May 2026
 
