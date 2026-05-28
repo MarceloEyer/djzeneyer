@@ -177,7 +177,6 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 
 const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
-  const { artist } = useBranding();
   // FIX: Use ARTIST.site.baseUrl instead of window.location.origin.
   // During prerender, Puppeteer has window defined so the typeof check is always true,
   // causing window.location.origin to resolve to http://localhost:5173 and producing
