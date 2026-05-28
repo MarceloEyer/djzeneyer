@@ -233,7 +233,7 @@ const MediaPage: React.FC = () => {
                     src={safeUrl(FEATURED_VIDEO.embedUrl, '/')}
                     title={featuredVideoTitle}
                     loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; compute-pressure"
                     allowFullScreen
                   />
                 </div>
