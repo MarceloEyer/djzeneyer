@@ -1,0 +1,58 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://djzeneyer.com/.well-known/api-catalog",
+      "item": [
+        {
+          "href": "https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context",
+          "type": "application/json",
+          "title": "Zen Eyer AI context"
+        },
+        {
+          "href": "https://djzeneyer.com/wp-json/djzeneyer/v1/menu",
+          "type": "application/json",
+          "title": "Localized public navigation"
+        },
+        {
+          "href": "https://djzeneyer.com/wp-json/zen-bit/v2/events",
+          "type": "application/json",
+          "title": "Public Zouk event listings"
+        },
+        {
+          "href": "https://djzeneyer.com/wp-json/zen-bit/v2/events/schema",
+          "type": "application/ld+json",
+          "title": "MusicEvent schema feed"
+        },
+        {
+          "href": "https://djzeneyer.com/wp-json/zen-seo/v1/meta",
+          "type": "application/json",
+          "title": "Headless SEO metadata"
+        },
+        {
+          "href": "https://djzeneyer.com/wp-json/zen-seo/v1/profile",
+          "type": "application/json",
+          "title": "Public artist profile and identity metadata"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://djzeneyer.com/llms.txt",
+          "type": "text/plain",
+          "title": "LLM-readable site guide"
+        },
+        {
+          "href": "https://djzeneyer.com/llms-full.txt",
+          "type": "text/plain",
+          "title": "Full LLM-readable reference"
+        }
+      ],
+      "service-desc": [
+        {
+          "href": "https://djzeneyer.com/.well-known/ai-plugin.json",
+          "type": "application/json",
+          "title": "AI plugin manifest"
+        }
+      ]
+    }
+  ]
+}

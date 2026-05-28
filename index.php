@@ -56,6 +56,33 @@ $possible_route = $real_dist_path . rtrim(ltrim($request_uri, '/'), '/') . '/ind
 
 $serve_file = null;
 
+if (!function_exists('djz_is_homepage_request')) {
+    function djz_is_homepage_request(string $request_uri): bool
+    {
+        $path = strtok($request_uri, '?');
+        $path = is_string($path) ? rtrim($path, '/') : '';
+
+        return $path === '' || $path === '/index.html';
+    }
+}
+
+if (!function_exists('djz_send_agent_discovery_link_headers')) {
+    function djz_send_agent_discovery_link_headers(string $request_uri): void
+    {
+        if (!djz_is_homepage_request($request_uri) || headers_sent()) {
+            return;
+        }
+
+        header(
+            'Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", ' .
+            '</.well-known/ai-plugin.json>; rel="service-desc"; type="application/json", ' .
+            '</llms.txt>; rel="service-doc"; type="text/plain", ' .
+            '</llms-full.txt>; rel="describedby"; type="text/plain"',
+            false
+        );
+    }
+}
+
 // 6. Verificação de Segurança (Path Traversal Robusto)
 if (file_exists($possible_file) && is_file($possible_file)) {
     $real_file_path = realpath($possible_file);
@@ -118,6 +145,7 @@ if ($serve_file) {
         }
 
         header('Content-Type: text/html; charset=UTF-8');
+        djz_send_agent_discovery_link_headers($request_uri_raw);
         echo $html_content;
         exit;
     }
