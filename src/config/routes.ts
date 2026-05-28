@@ -81,6 +81,10 @@ const ZoukPersonaQuizPage = lazyWithRetry(() => import('../pages/ZoukPersonaQuiz
 const EncyclopediaPage = lazyWithRetry(() => import('../pages/EncyclopediaPage'), 'route:encyclopedia');
 const VerifiedFactsPage = lazyWithRetry(() => import('../pages/VerifiedFactsPage'), 'route:verified-facts');
 const NotFoundPage = lazyWithRetry(() => import('../pages/NotFoundPage'), 'route:not-found');
+const ZoukHistoryPage = lazyWithRetry(() => import('../pages/ZoukHistoryPage'), 'route:zouk-history');
+const ZoukMusicalityPage = lazyWithRetry(() => import('../pages/ZoukMusicalityPage'), 'route:zouk-musicality');
+const ZoukFestivalsPage = lazyWithRetry(() => import('../pages/ZoukFestivalsPage'), 'route:zouk-festivals');
+const ArtistCollaborationsPage = lazyWithRetry(() => import('../pages/ArtistCollaborationsPage'), 'route:artist-collaborations');
 const NewsletterConfirmationPage = lazyWithRetry(
   () => import('../pages/NewsletterStatusPage').then(m => ({
     default: function NewsletterConfirmation() { return createElement(m.default, { mode: 'confirmation' as const }); }
@@ -314,6 +318,28 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'verified-facts',
     component: VerifiedFactsPage,
     paths: { en: slug('verified-facts', 'en') as string, pt: slug('verified-facts', 'pt') as string },
+  },
+
+  // Content Gaps - SEO Hub Pages
+  {
+    key: 'zouk-history',
+    component: ZoukHistoryPage,
+    paths: { en: slug('zouk-history', 'en') as string, pt: slug('zouk-history', 'pt') as string },
+  },
+  {
+    key: 'zouk-musicality',
+    component: ZoukMusicalityPage,
+    paths: { en: slug('zouk-musicality', 'en') as string, pt: slug('zouk-musicality', 'pt') as string },
+  },
+  {
+    key: 'zouk-festivals',
+    component: ZoukFestivalsPage,
+    paths: { en: slug('zouk-festivals', 'en') as string, pt: slug('zouk-festivals', 'pt') as string },
+  },
+  {
+    key: 'artist-collaborations',
+    component: ArtistCollaborationsPage,
+    paths: { en: slug('artist-collaborations', 'en') as string, pt: slug('artist-collaborations', 'pt') as string },
   },
 
   // Password Reset
