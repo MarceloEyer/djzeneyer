@@ -29,6 +29,7 @@ env:
   THEME_NAME: zentheme
   SITE_URL: https://djzeneyer.com
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
 
 jobs:
   build-and-deploy:
@@ -53,6 +54,15 @@ jobs:
         run: |
           npm run generate-sitemaps
           if [ ! -f "public/sitemap.xml" ]; then echo "❌ sitemap missing"; exit 1; fi
+
+      - name: 🔑 Write IndexNow key verification file
+        run: |
+          if [ -n "$INDEXNOW_KEY" ]; then
+            echo -n "$INDEXNOW_KEY" > "public/${INDEXNOW_KEY}.txt"
+            echo "✅ IndexNow key file written: public/${INDEXNOW_KEY}.txt"
+          else
+            echo "⚠️  INDEXNOW_KEY secret not set — skipping key file."
+          fi
 
       - name: 🔨 Build production
         env:
@@ -139,3 +149,12 @@ jobs:
             WP_CLI="/usr/local/bin/wp" # or other paths
             $WP_CLI --path="${{ env.REMOTE_ROOT }}" transient delete --search="djz_vite_manifest" 2>/dev/null || true
             php -r "opcache_reset();" 2>/dev/null || true
+
+      - name: 📡 Submit URLs to IndexNow
+        continue-on-error: true
+        run: |
+          if [ -n "$INDEXNOW_KEY" ]; then
+            node scripts/submit-indexnow.mjs
+          else
+            echo "⚠️  INDEXNOW_KEY not set — skipping IndexNow submission."
+          fi
