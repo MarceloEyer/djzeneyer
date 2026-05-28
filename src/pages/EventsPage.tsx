@@ -58,7 +58,11 @@ const EventDetailSkeleton = () => (
 
 const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const { t } = useTranslation();
-  const origin = typeof window !== 'undefined' ? window.location.origin : ARTIST.site.baseUrl;
+  // FIX: Use ARTIST.site.baseUrl instead of window.location.origin.
+  // During prerender, Puppeteer has window defined so the typeof check is always true,
+  // causing window.location.origin to resolve to http://localhost:5173 and producing
+  // a localhost canonical URL — a fatal SEO error.
+  const origin = ARTIST.site.baseUrl;
   const { data: event } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
 
@@ -70,7 +74,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const cleanDescription = stripHtml(event.description || '');
 
   const share = () => {
-    const canonical = event.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
+    const canonical = event.canonical_url || `${ARTIST.site.baseUrl}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
     if (navigator.share) {
       navigator.share({ title: event.title, url: canonical });
     } else {
@@ -173,8 +177,11 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 
 const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
-  const { artist } = useBranding();
-  const origin = typeof window !== 'undefined' ? window.location.origin : artist.site.baseUrl;
+  // FIX: Use ARTIST.site.baseUrl instead of window.location.origin.
+  // During prerender, Puppeteer has window defined so the typeof check is always true,
+  // causing window.location.origin to resolve to http://localhost:5173 and producing
+  // a localhost canonical URL — a fatal SEO error.
+  const origin = ARTIST.site.baseUrl;
   const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',
     days: 365,
@@ -220,7 +227,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
 
   const share = (e: ZenBitEventListItem) => {
-    const canonical = e.canonical_url || `${window.location.origin}${getLocalizedRoute('events', lang as Language)}/${e.event_id}`;
+    const canonical = e.canonical_url || `${ARTIST.site.baseUrl}${getLocalizedRoute('events', lang as Language)}/${e.event_id}`;
     if (navigator.share) {
       navigator.share({ title: e.title, url: canonical });
     } else {
