@@ -488,6 +488,44 @@ async function fetchMenuData() {
   return result;
 }
 
+/**
+ * Busca posts do WordPress para injetar no __PRERENDER_DATA__.
+ * Inclui todos os campos necessários para lista e detalhe de post.
+ */
+async function fetchPosts() {
+  const POSTS_FIELDS = 'id,date,modified,slug,title,content,excerpt,categories,tags,featured_image_src,featured_image_src_full,author_name';
+  const POSTS_PER_PAGE = 10;
+  const result = { list: { en: [], pt: [] }, bySlugEn: {}, bySlugPt: {} };
+
+  await Promise.all(['en', 'pt'].map(async (lang) => {
+    try {
+      const url = `${SITE_BASE_URL}/wp-json/wp/v2/posts?per_page=${POSTS_PER_PAGE}&lang=${lang}&_fields=${encodeURIComponent(POSTS_FIELDS)}`;
+      const res = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        signal: AbortSignal.timeout(10000),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        result.list[lang] = Array.isArray(data) ? data : [];
+        console.log(`📰 Posts (${lang}): ${result.list[lang].length} carregados.`);
+      } else {
+        console.warn(`⚠️ Posts (${lang}): API respondeu ${res.status}.`);
+      }
+    } catch (e) {
+      console.warn(`⚠️ Posts (${lang}): Falha ao buscar — ${e.message}`);
+    }
+  }));
+
+  // Indexar por slug para responder requisições de detalhe no Puppeteer
+  result.list.en.forEach(post => { if (post.slug) result.bySlugEn[post.slug] = post; });
+  result.list.pt.forEach(post => { if (post.slug) result.bySlugPt[post.slug] = post; });
+
+  return result;
+}
+
+const NEWS_ROUTE_EN = '/releases';
+const NEWS_ROUTE_PT = '/lancamentos';
+
 function getRouteLang(route) {
   return route === '/pt' || route.startsWith('/pt/') ? 'pt' : 'en';
 }
@@ -500,7 +538,11 @@ function isEventsListRoute(route) {
   return route === EVENTS_ROUTE_EN || route === EVENTS_ROUTE_PT;
 }
 
-function buildPrerenderPayloadForRoute(route, bandsintownData, menuData) {
+function isNewsListRoute(route) {
+  return route === NEWS_ROUTE_EN || route === NEWS_ROUTE_PT;
+}
+
+function buildPrerenderPayloadForRoute(route, bandsintownData, menuData, postsData) {
   const lang = getRouteLang(route);
   const payload = {
     menu: {
@@ -520,6 +562,8 @@ function buildPrerenderPayloadForRoute(route, bandsintownData, menuData) {
     payload.eventsLimit = PRERENDER_EVENTS_LIST_LIMIT;
     payload.eventsMode = 'upcoming';
     payload.eventsDays = PRERENDER_EVENTS_DAYS;
+  } else if (isNewsListRoute(route)) {
+    payload.news = { [lang]: postsData?.list?.[lang] || [] };
   }
 
   return payload;
@@ -529,7 +573,7 @@ async function prerender() {
   let browser = null;
   try {
     await startDevServer();
-    const [bandsintownData, menuData] = await Promise.all([fetchEvents(), fetchMenuData()]);
+    const [bandsintownData, menuData, postsData] = await Promise.all([fetchEvents(), fetchMenuData(), fetchPosts()]);
 
     // 🌟 Inject Dynamic Event Routes into Prerender List
     if (bandsintownData && bandsintownData.list) {
@@ -543,6 +587,22 @@ async function prerender() {
         }
       });
       console.log(`📋 Rotas dinâmicas de eventos injetadas. Total:`, CONFIG.routes.length);
+    }
+
+    // 🌟 Inject Dynamic Post Routes into Prerender List
+    const NEWS_SLUG_BY_LANG = { en: 'releases', pt: 'lancamentos' };
+    if (postsData && postsData.list) {
+      ['en', 'pt'].forEach(lang => {
+        if (Array.isArray(postsData.list[lang])) {
+          postsData.list[lang].forEach(post => {
+            if (post.slug) {
+              const path = `/${NEWS_SLUG_BY_LANG[lang]}/${post.slug}`;
+              if (!CONFIG.routes.includes(path)) CONFIG.routes.push(path);
+            }
+          });
+        }
+      });
+      console.log(`📋 Rotas dinâmicas de posts injetadas. Total:`, CONFIG.routes.length);
     }
 
     browser = await puppeteer.launch({
@@ -572,15 +632,17 @@ async function prerender() {
         if (reqUrl.includes('/wp-json/')) {
         let mockData = [];
         if (reqUrl.includes('/posts')) {
-          mockData = [{ 
-            id: 1, 
-            title: { rendered: 'Build Preview' }, 
-            slug: 'preview', 
-            date: new Date().toISOString(),
-            excerpt: { rendered: 'Prerender Preview Excerpt' },
-            content: { rendered: '<p>Prerender Preview Content</p>' },
-            author_name: 'System'
-          }];
+          const slugParam = urlObj.searchParams.get('slug');
+          if (slugParam) {
+            // Detalhe de post por slug — responde com o post específico
+            const postsBySlug = lang === 'pt' ? postsData?.bySlugPt : postsData?.bySlugEn;
+            const post = postsBySlug?.[slugParam] || null;
+            mockData = post ? [post] : [];
+          } else {
+            // Lista de posts — responde com os posts reais paginados
+            const perPage = Number(urlObj.searchParams.get('per_page') || 10);
+            mockData = (postsData?.list?.[lang] || postsData?.list?.en || []).slice(0, perPage);
+          }
         }
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
@@ -681,7 +743,7 @@ async function prerender() {
             unlinkSync(outputPath);
           }
 
-          const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, menuData);
+          const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, menuData, postsData);
           page = await createPrerenderPage();
           
           // Injeta o __PRERENDER_DATA__ na window do navegador Headless
