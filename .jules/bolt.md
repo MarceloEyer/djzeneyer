@@ -136,3 +136,7 @@
 
 **Learning:** Declaring static inline arrays like `[0, 1, 2]` or `['leader', 'follower']` inside a React component return creates a new array reference on each render.
 **Action:** Extract reused static arrays to module scope when they are used for render iteration. For dynamic lengths, prefer the clearest expression and avoid claiming allocation savings unless the rendered children themselves are also memoized.
+
+## 2026-05-27 - Render Loop Purity with Date Objects
+**Learning:** Instantiating `new Date()` or using `Date.now()` within the component render body can trigger React purity linting errors (react-hooks/purity) and cause unnecessary object allocation during each render cycle.
+**Action:** Extracted these instances into module-scoped constants like `CURRENT_YEAR` or replaced them with safer, statically evaluated variants to preserve pure renders and reduce GC overhead.
