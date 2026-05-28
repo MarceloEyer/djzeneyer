@@ -42,6 +42,8 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Bing `/cdn-cgi/content` audit noise:** Bing Webmaster Tools can report Cloudflare `/cdn-cgi/content?...` URLs as missing meta/title issues. Treat these as crawl-noise unless they appear in sitemap or first-party links; prioritize fixing real 4xx first-party URLs and missing referenced assets.
 - **Content Signals em robots.txt:** Declare preferências de uso por IA com `Content-Signal: ai-train=no, search=yes, ai-input=yes` no bloco `User-agent: *` e também no bloco específico de bots de IA para parsers que consideram apenas o grupo mais específico. `ai-train=no` bloqueia uso como dado de treino; `ai-input=yes` permite indexação/grounding generativo (consistente com llms.txt e ai-context endpoint).
 - **Agent discovery headers:** Homepage responses should advertise machine-readable resources with RFC 8288 `Link` headers. Keep `/.well-known/api-catalog` as a static `application/linkset+json` document and expose it with `rel="api-catalog"` alongside `llms.txt`, `llms-full.txt`, and `.well-known/ai-plugin.json`.
+- **PR review completeness:** Antes de agir em PR, ler `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`; CodeRabbit, Gemini, Codex e CodeQL podem postar achados em reviews/threads, não apenas em comments. Com `gh`: `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
+- **Perguntar antes de mudar regra de produto:** Se um achado parecer segurança/privacidade mas afetar comportamento intencional de produto, pergunte antes de alterar. Exemplo: dados de pagamento do artista são públicos por design para doações e pagamentos alternativos.
 
 ## 🎨 Decisões de Marca & SEO
 
