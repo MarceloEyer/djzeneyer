@@ -37,6 +37,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **CSP — nunca fazer unset no .htaccess:** `inc/csp.php` gera a CSP dinâmica com nonce por requisição. `mod_headers` roda APÓS o PHP — qualquer `Header unset Content-Security-Policy` ou `Header always unset Content-Security-Policy` no `.htaccess` remove silenciosamente o header que o PHP acabou de criar. O cliente fica sem CSP.
 - **CORS com credentials — apenas domínios exatos:** `Access-Control-Allow-Credentials: true` com regex ampla de subdomínios é risco de segurança. Aceitar apenas `https://(www\.)?djzeneyer\.com` e `https?://localhost:5173`. Adicionar staging/preview somente quando necessário.
 - **Bing `/cdn-cgi/content` audit noise:** Bing Webmaster Tools can report Cloudflare `/cdn-cgi/content?...` URLs as missing meta/title issues. Treat these as crawl-noise unless they appear in sitemap or first-party links; prioritize fixing real 4xx first-party URLs and missing referenced assets.
+- **Content Signals em robots.txt:** Declare preferências de uso por IA com `Content-Signal: ai-train=no, search=yes, ai-input=no` no bloco `User-agent: *` e também no bloco específico de bots de IA para parsers que consideram apenas o grupo mais específico. Isso permite indexação/search, mas reserva direitos contra treino e RAG/grounding generativo.
 
 ## 🎨 Decisões de Marca & SEO
 
