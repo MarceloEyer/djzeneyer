@@ -22,6 +22,42 @@ $request_uri_raw = $_SERVER['REQUEST_URI'];
 $request_uri = strtok($request_uri_raw, '?');
 $request_uri = str_replace("\0", '', rawurldecode($request_uri));
 
+function djz_accepts_markdown(): bool
+{
+    $accept = isset($_SERVER['HTTP_ACCEPT']) ? strtolower((string) $_SERVER['HTTP_ACCEPT']) : '';
+
+    if ($accept === '') {
+        return false;
+    }
+
+    return str_contains($accept, 'text/markdown') || str_contains($accept, 'text/x-markdown');
+}
+
+function djz_approx_markdown_tokens(string $markdown): int
+{
+    // str_word_count() is not multibyte-safe; use regex-based counting for UTF-8
+    $text = strip_tags($markdown);
+    $word_count = preg_match_all('/\S+/u', $text, $matches) ?: 0;
+
+    return max(1, (int) ceil($word_count * 1.35));
+}
+
+function djz_send_markdown_file(string $markdown_file): void
+{
+    $markdown_content = file_get_contents($markdown_file);
+    if ($markdown_content === false) {
+        status_header(500);
+        nocache_headers();
+        exit('Failed to read Markdown file.');
+    }
+
+    header('Content-Type: text/markdown; charset=UTF-8');
+    header('Vary: Accept');
+    header('X-Markdown-Tokens: ' . djz_approx_markdown_tokens($markdown_content));
+    echo $markdown_content;
+    exit;
+}
+
 // 3. Atalho: Se for um arquivo físico que NÃO está na dist (ex: wp-admin, wp-includes, uploads)
 // Deixa o WordPress ou o servidor tratar diretamente.
 if (preg_match('/^\/(wp-admin|wp-includes|wp-json|wp-content|wp-login)/', $request_uri)) {
@@ -110,7 +146,7 @@ if (!$serve_file && !empty($GLOBALS['DJZ_SPA_ROUTED'])) {
 // 5. Entrega o arquivo (Se validado e seguro)
 if ($serve_file) {
     // Whitelist de extensões permitidas (Camada extra de segurança)
-    $allowed_ext = ['html', 'xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
+    $allowed_ext = ['html', 'md', 'xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
     $extension = strtolower(pathinfo($serve_file, PATHINFO_EXTENSION));
 
     if (!in_array($extension, $allowed_ext, true)) {
@@ -121,6 +157,16 @@ if ($serve_file) {
 
     // Caso especial: HTML (SPA Shell ou Prerenderizado)
     if ($extension === 'html') {
+        if (djz_accepts_markdown()) {
+            $markdown_candidate = preg_replace('/\.html$/i', '.md', $serve_file);
+            if (is_string($markdown_candidate) && file_exists($markdown_candidate) && is_file($markdown_candidate)) {
+                $real_markdown_path = realpath($markdown_candidate);
+                if ($real_markdown_path && strpos($real_markdown_path, $real_dist_path) === 0) {
+                    djz_send_markdown_file($real_markdown_path);
+                }
+            }
+        }
+
         $html_content = file_get_contents($serve_file);
         if ($html_content === false) {
             status_header(500);
@@ -145,12 +191,14 @@ if ($serve_file) {
         }
 
         header('Content-Type: text/html; charset=UTF-8');
+        header('Vary: Accept');
         djz_send_agent_discovery_link_headers($request_uri_raw);
         echo $html_content;
         exit;
     }
 
     $mime_types = [
+        'md' => 'text/markdown; charset=UTF-8',
         'xml' => 'application/xml; charset=UTF-8',
         'txt' => 'text/plain; charset=UTF-8',
         'css' => 'text/css',
