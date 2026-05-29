@@ -216,6 +216,26 @@
             "key": "verified-facts",
             "en": "verified-facts",
             "pt": "fatos-verificados"
+        },
+        {
+            "key": "zouk-history",
+            "en": "brazilian-zouk-history",
+            "pt": "historia-zouk-brasileiro"
+        },
+        {
+            "key": "zouk-musicality",
+            "en": "zouk-musicality-guide",
+            "pt": "guia-musicalidade-zouk"
+        },
+        {
+            "key": "zouk-festivals",
+            "en": "zouk-festivals-directory",
+            "pt": "diretorio-festivais-zouk"
+        },
+        {
+            "key": "artist-collaborations",
+            "en": "collaborations",
+            "pt": "colaboracoes"
         }
     ]
 }
