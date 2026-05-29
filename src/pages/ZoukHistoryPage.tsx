@@ -13,15 +13,15 @@ const ZoukHistoryPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title="Brazilian Zouk History & Origins | DJ Zen Eyer"
-        description="Explore the rich history and origins of Brazilian Zouk dance and music, from Lambada to modern Cremosidade."
+        title={t('hub_pages.zouk_history.seo_title')}
+        description={t('hub_pages.zouk_history.seo_description')}
         url={pageUrl}
       />
       <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
         <div className="container mx-auto max-w-5xl">
-          <Breadcrumb items={[{ label: 'History' }]} className="mb-10" />
-          <h1 className="mb-6 font-display text-4xl font-black md:text-6xl text-primary">Brazilian Zouk History</h1>
-          <p className="text-white/70">Content coming soon...</p>
+          <Breadcrumb items={[{ label: t('hub_pages.zouk_history.breadcrumb') }]} className="mb-10" />
+          <h1 className="mb-6 font-display text-4xl font-black md:text-6xl text-primary">{t('hub_pages.zouk_history.h1')}</h1>
+          <p className="text-white/70">{t('hub_pages.coming_soon')}</p>
         </div>
       </div>
     </>

@@ -13,15 +13,15 @@ const ArtistCollaborationsPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title="Artist Collaborations & Interviews | DJ Zen Eyer"
-        description="Interviews and collaborations with Zouk artists, producers, and dancers."
+        title={t('hub_pages.artist_collaborations.seo_title')}
+        description={t('hub_pages.artist_collaborations.seo_description')}
         url={pageUrl}
       />
       <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
         <div className="container mx-auto max-w-5xl">
-          <Breadcrumb items={[{ label: 'Collaborations' }]} className="mb-10" />
-          <h1 className="mb-6 font-display text-4xl font-black md:text-6xl text-primary">Artist Collaborations</h1>
-          <p className="text-white/70">Content coming soon...</p>
+          <Breadcrumb items={[{ label: t('hub_pages.artist_collaborations.breadcrumb') }]} className="mb-10" />
+          <h1 className="mb-6 font-display text-4xl font-black md:text-6xl text-primary">{t('hub_pages.artist_collaborations.h1')}</h1>
+          <p className="text-white/70">{t('hub_pages.coming_soon')}</p>
         </div>
       </div>
     </>

@@ -13,15 +13,15 @@ const ZoukMusicalityPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title="Brazilian Zouk Musicality & Rhythms | DJ Zen Eyer"
-        description="A definitive guide to Brazilian Zouk musicality, rhythms, BPM, and the Cremosidade style by DJ Zen Eyer."
+        title={t('hub_pages.zouk_musicality.seo_title')}
+        description={t('hub_pages.zouk_musicality.seo_description')}
         url={pageUrl}
       />
       <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
         <div className="container mx-auto max-w-5xl">
-          <Breadcrumb items={[{ label: 'Musicality' }]} className="mb-10" />
-          <h1 className="mb-6 font-display text-4xl font-black md:text-6xl text-primary">Zouk Musicality Guide</h1>
-          <p className="text-white/70">Content coming soon...</p>
+          <Breadcrumb items={[{ label: t('hub_pages.zouk_musicality.breadcrumb') }]} className="mb-10" />
+          <h1 className="mb-6 font-display text-4xl font-black md:text-6xl text-primary">{t('hub_pages.zouk_musicality.h1')}</h1>
+          <p className="text-white/70">{t('hub_pages.coming_soon')}</p>
         </div>
       </div>
     </>

@@ -1121,5 +1121,32 @@
     "title": "Algo deu errado",
     "description": "Ocorreu um erro inesperado ao carregar esta página.",
     "reload": "Recarregar página"
+  },
+  "hub_pages": {
+    "coming_soon": "Conteúdo em breve...",
+    "zouk_history": {
+      "seo_title": "História e Origens do Zouk Brasileiro | DJ Zen Eyer",
+      "seo_description": "Explore a rica história e as origens do Zouk Brasileiro, do Lambada à Cremosidade moderna.",
+      "breadcrumb": "História",
+      "h1": "História do Zouk Brasileiro"
+    },
+    "zouk_musicality": {
+      "seo_title": "Musicalidade e Ritmos do Zouk Brasileiro | DJ Zen Eyer",
+      "seo_description": "Um guia definitivo sobre musicalidade, ritmos, BPM e o estilo Cremosidade no Zouk Brasileiro por DJ Zen Eyer.",
+      "breadcrumb": "Musicalidade",
+      "h1": "Guia de Musicalidade Zouk"
+    },
+    "zouk_festivals": {
+      "seo_title": "Diretório de Festivais de Zouk Brasileiro | DJ Zen Eyer",
+      "seo_description": "Descubra os melhores festivais e congressos de Zouk Brasileiro ao redor do mundo.",
+      "breadcrumb": "Festivais",
+      "h1": "Festivais Globais de Zouk"
+    },
+    "artist_collaborations": {
+      "seo_title": "Colaborações e Entrevistas com Artistas | DJ Zen Eyer",
+      "seo_description": "Entrevistas e colaborações com artistas, produtores e bailarinos de Zouk.",
+      "breadcrumb": "Colaborações",
+      "h1": "Colaborações com Artistas"
+    }
   }
 }

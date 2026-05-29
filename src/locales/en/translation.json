@@ -1117,5 +1117,32 @@
     "title": "Something went wrong",
     "description": "An unexpected error occurred while loading this page.",
     "reload": "Reload page"
+  },
+  "hub_pages": {
+    "coming_soon": "Content coming soon...",
+    "zouk_history": {
+      "seo_title": "Brazilian Zouk History & Origins | DJ Zen Eyer",
+      "seo_description": "Explore the rich history and origins of Brazilian Zouk dance and music, from Lambada to modern Cremosidade.",
+      "breadcrumb": "History",
+      "h1": "Brazilian Zouk History"
+    },
+    "zouk_musicality": {
+      "seo_title": "Brazilian Zouk Musicality & Rhythms | DJ Zen Eyer",
+      "seo_description": "A definitive guide to Brazilian Zouk musicality, rhythms, BPM, and the Cremosidade style by DJ Zen Eyer.",
+      "breadcrumb": "Musicality",
+      "h1": "Zouk Musicality Guide"
+    },
+    "zouk_festivals": {
+      "seo_title": "Global Brazilian Zouk Festivals Directory | DJ Zen Eyer",
+      "seo_description": "Discover the best Brazilian Zouk festivals and congresses around the world.",
+      "breadcrumb": "Festivals",
+      "h1": "Global Zouk Festivals"
+    },
+    "artist_collaborations": {
+      "seo_title": "Artist Collaborations & Interviews | DJ Zen Eyer",
+      "seo_description": "Interviews and collaborations with Zouk artists, producers, and dancers.",
+      "breadcrumb": "Collaborations",
+      "h1": "Artist Collaborations"
+    }
   }
 }
