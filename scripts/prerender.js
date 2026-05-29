@@ -524,7 +524,7 @@ async function fetchPosts() {
 }
 
 const NEWS_ROUTE_EN = '/releases';
-const NEWS_ROUTE_PT = '/lancamentos';
+const NEWS_ROUTE_PT = '/pt/lancamentos';
 
 function getRouteLang(route) {
   return route === '/pt' || route.startsWith('/pt/') ? 'pt' : 'en';
@@ -590,7 +590,7 @@ async function prerender() {
     }
 
     // 🌟 Inject Dynamic Post Routes into Prerender List
-    const NEWS_SLUG_BY_LANG = { en: 'releases', pt: 'lancamentos' };
+    const NEWS_SLUG_BY_LANG = { en: 'releases', pt: 'pt/lancamentos' };
     if (postsData && postsData.list) {
       ['en', 'pt'].forEach(lang => {
         if (Array.isArray(postsData.list[lang])) {
