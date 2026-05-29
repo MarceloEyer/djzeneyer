@@ -2,7 +2,8 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Newspaper, ExternalLink, Download, Image as ImageIcon, ShieldCheck } from 'lucide-react';
-import { ARTIST } from '../data/artistData';
+import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
+import { PUBLISHED_WORKS } from '../data/publishedWorks';
 import { useBranding } from '../contexts/BrandingContext';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
@@ -37,12 +38,21 @@ const MediaPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const featuredVideoTitle = t('media_page.featured_video_title');
   const featuredVideoDescription = t('media_page.featured_video_desc');
+  const currentPath = getLocalizedRoute('media', currentLang);
+  const currentUrl = `${artist.site.baseUrl || ARTIST.site.baseUrl}/${currentPath.replace(/^\//, '')}`;
 
-  const clippingData = (artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[];
+  const clippingData = useMemo(
+    () => [
+      ...PUBLISHED_WORKS,
+      ...((artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[]),
+    ],
+    [artist.mediaClipping]
+  );
+
   const mediaGroups = useMemo(() => [
     {
       title: t('media_page.independent_sources'),
-      items: clippingData.filter((item) => ['Media', 'Report'].includes(item.type)),
+      items: clippingData.filter((item) => ['Article', 'Essay', 'Media', 'Report'].includes(item.type)),
     },
     {
       title: t('media_page.festival_lineups'),
@@ -61,6 +71,61 @@ const MediaPage: React.FC = () => {
       items: clippingData.filter((item) => ['Press Release'].includes(item.type)),
     },
   ].filter((group) => group.items.length > 0), [clippingData, t]);
+
+  const mediaPageSchema = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@graph': [
+      ARTIST_SCHEMA_BASE,
+      MUSICGROUP_SCHEMA,
+      {
+        '@type': 'CollectionPage',
+        '@id': `${currentUrl}#webpage`,
+        url: currentUrl,
+        name: `${t('media_page.title')} | ${artist.identity.stageName || ARTIST.identity.stageName}`,
+        description: t('media_page.subtitle'),
+        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+        about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
+        mainEntity: {
+          '@type': 'ItemList',
+          itemListElement: PUBLISHED_WORKS.map((work, index) => ({
+            '@type': 'ListItem',
+            position: index + 1,
+            item: { '@id': `${work.url}#article` },
+          })),
+        },
+        inLanguage: currentLang === 'pt' ? 'pt-BR' : 'en',
+      },
+      ...PUBLISHED_WORKS.map((work) => ({
+        '@type': work.type,
+        '@id': `${work.url}#article`,
+        headline: work.title,
+        name: work.title,
+        url: work.url,
+        description: work.description,
+        author: {
+          '@type': 'Person',
+          '@id': `${ARTIST.site.baseUrl}/#artist`,
+          name: ARTIST.identity.stageName,
+          url: `${ARTIST.site.baseUrl}${ARTIST.site.pages.about}`,
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: work.source,
+          url: work.publisherUrl,
+        },
+        about: [
+          {
+            '@type': 'Thing',
+            name: 'Brazilian Zouk',
+          },
+          {
+            '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
+          },
+        ],
+        mainEntityOfPage: work.url,
+      })),
+    ],
+  }), [artist.identity.stageName, currentLang, currentUrl, t]);
 
   // ⚡ Bolt: Wrapped static array allocation in useMemo to reduce garbage collection overhead during render loops.
   // ⚡ Bolt: Extracted static media facts array from inline render loop map
@@ -100,9 +165,10 @@ const MediaPage: React.FC = () => {
       <HeadlessSEO
         title={`${t('media_page.title')} | ${artist.identity.stageName || ARTIST.identity.stageName}`}
         description={t('media_page.subtitle')}
-        url={`${artist.site.baseUrl || ARTIST.site.baseUrl}/${getLocalizedRoute('media', currentLang).replace(/^\//, '')}`}
+        url={currentUrl}
         image="/images/og/zen-eyer-press-og.jpg"
         imageAlt={t('og.image_alt.press')}
+        schema={mediaPageSchema}
         video={{
           name: featuredVideoTitle,
           description: featuredVideoDescription,
