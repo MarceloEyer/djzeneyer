@@ -1,0 +1,17 @@
+{
+  "issuer": "https://djzeneyer.com",
+  "agent_registration_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration",
+  "agent_revocation_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke",
+  "scopes_supported": [
+    "public:read"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "credential_types_supported": [
+    "user_claimed",
+    "anonymous_public"
+  ],
+  "claim_ceremony_supported": false,
+  "documentation": "https://djzeneyer.com/.well-known/auth.md"
+}

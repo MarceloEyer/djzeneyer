@@ -16,6 +16,7 @@ require_once get_theme_file_path('/inc/cleanup.php');
 require_once get_theme_file_path('/inc/seo-head.php');
 require_once get_theme_file_path('/inc/vite.php');
 require_once get_theme_file_path('/inc/spa.php');
+require_once get_theme_file_path('/inc/agent-discovery.php');
 require_once get_theme_file_path('/inc/cpt.php');
 
 // Context-aware loading

@@ -92,33 +92,6 @@ $possible_route = $real_dist_path . rtrim(ltrim($request_uri, '/'), '/') . '/ind
 
 $serve_file = null;
 
-if (!function_exists('djz_is_homepage_request')) {
-    function djz_is_homepage_request(string $request_uri): bool
-    {
-        $path = strtok($request_uri, '?');
-        $path = is_string($path) ? rtrim($path, '/') : '';
-
-        return $path === '' || $path === '/index.html';
-    }
-}
-
-if (!function_exists('djz_send_agent_discovery_link_headers')) {
-    function djz_send_agent_discovery_link_headers(string $request_uri): void
-    {
-        if (!djz_is_homepage_request($request_uri) || headers_sent()) {
-            return;
-        }
-
-        header(
-            'Link: </.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", ' .
-            '</.well-known/ai-plugin.json>; rel="service-desc"; type="application/json", ' .
-            '</llms.txt>; rel="service-doc"; type="text/plain", ' .
-            '</llms-full.txt>; rel="describedby"; type="text/plain"',
-            false
-        );
-    }
-}
-
 // 6. Verificação de Segurança (Path Traversal Robusto)
 if (file_exists($possible_file) && is_file($possible_file)) {
     $real_file_path = realpath($possible_file);
@@ -149,7 +122,11 @@ if ($serve_file) {
     $allowed_ext = ['html', 'md', 'xml', 'txt', 'css', 'js', 'json', 'png', 'jpg', 'jpeg', 'svg', 'ico', 'webmanifest'];
     $extension = strtolower(pathinfo($serve_file, PATHINFO_EXTENSION));
 
-    if (!in_array($extension, $allowed_ext, true)) {
+    $allowed_extensionless = ['api-catalog', 'oauth-protected-resource', 'oauth-authorization-server', 'agent-registration'];
+    $basename = basename($serve_file);
+    $is_allowed_extensionless = $extension === '' && in_array($basename, $allowed_extensionless, true);
+
+    if (!in_array($extension, $allowed_ext, true) && !$is_allowed_extensionless) {
         // Bloqueia tentativas de ler .php, .env, etc dentro da dist
         http_response_code(403);
         exit;
@@ -192,7 +169,6 @@ if ($serve_file) {
 
         header('Content-Type: text/html; charset=UTF-8');
         header('Vary: Accept');
-        djz_send_agent_discovery_link_headers($request_uri_raw);
         echo $html_content;
         exit;
     }
@@ -212,7 +188,16 @@ if ($serve_file) {
         'webmanifest' => 'application/manifest+json'
     ];
 
-    $content_type = isset($mime_types[$extension]) ? $mime_types[$extension] : 'text/html; charset=UTF-8';
+    $extensionless_mime_types = [
+        'api-catalog' => 'application/linkset+json; charset=UTF-8',
+        'oauth-protected-resource' => 'application/json; charset=UTF-8',
+        'oauth-authorization-server' => 'application/json; charset=UTF-8',
+        'agent-registration' => 'application/json; charset=UTF-8',
+    ];
+
+    $content_type = isset($mime_types[$extension])
+        ? $mime_types[$extension]
+        : ($extensionless_mime_types[$basename] ?? 'text/html; charset=UTF-8');
 
     header('Content-Type: ' . $content_type);
 

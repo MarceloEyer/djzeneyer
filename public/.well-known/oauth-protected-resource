@@ -1,0 +1,13 @@
+{
+  "resource": "https://djzeneyer.com",
+  "authorization_servers": [
+    "https://djzeneyer.com"
+  ],
+  "bearer_methods_supported": [
+    "header"
+  ],
+  "scopes_supported": [
+    "public:read"
+  ],
+  "resource_documentation": "https://djzeneyer.com/.well-known/auth.md"
+}

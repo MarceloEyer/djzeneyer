@@ -1,0 +1,38 @@
+{
+  "name": "Zen Eyer Public Context Agent",
+  "description": "Discovery card for public Zen Eyer artist context, LLM-readable references, music metadata, and event resources.",
+  "url": "https://djzeneyer.com",
+  "provider": {
+    "name": "Zen Eyer",
+    "url": "https://djzeneyer.com"
+  },
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false,
+    "stateTransitionHistory": false
+  },
+  "skills": [
+    {
+      "id": "artist-context",
+      "name": "Artist context",
+      "description": "Read structured public context about Zen Eyer.",
+      "tags": ["artist", "music", "brazilian-zouk", "public-context"]
+    },
+    {
+      "id": "llms-reference",
+      "name": "LLM reference",
+      "description": "Read concise and full LLM-readable references for Zen Eyer.",
+      "tags": ["llms", "grounding", "seo", "geo"]
+    }
+  ],
+  "defaultInputModes": ["application/json", "text/plain"],
+  "defaultOutputModes": ["application/json", "text/plain"],
+  "securitySchemes": {
+    "publicRead": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "Optional informational token from /wp-json/djzeneyer/v1/agent-registration. Public resources also work without a token."
+    }
+  }
+}

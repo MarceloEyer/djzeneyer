@@ -23,6 +23,187 @@ class DJZ_AI_Authority
             'callback' => [$this, 'get_context'],
             'permission_callback' => '__return_true',
         ]);
+
+        register_rest_route('djzeneyer/v1', '/mcp', [
+            'methods' => 'POST',
+            'callback' => [$this, 'handle_mcp_request'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        register_rest_route('djzeneyer/v1', '/agent-registration', [
+            'methods' => 'POST',
+            'callback' => [$this, 'register_public_agent'],
+            'permission_callback' => '__return_true',
+        ]);
+
+        register_rest_route('djzeneyer/v1', '/agent-revoke', [
+            'methods' => 'POST',
+            'callback' => [$this, 'revoke_public_agent'],
+            'permission_callback' => '__return_true',
+        ]);
+    }
+
+    public function register_public_agent($request)
+    {
+        $scope = $request->get_param('scope');
+        $requested_scope = is_array($scope) ? implode(' ', array_map('sanitize_text_field', $scope)) : sanitize_text_field((string) $scope);
+        $agent_seed = wp_json_encode([
+            'ua' => isset($_SERVER['HTTP_USER_AGENT']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_USER_AGENT'])) : '',
+            'scope' => $requested_scope,
+            'day' => gmdate('Y-m-d'),
+        ]);
+
+        return rest_ensure_response([
+            'access_token' => 'djz_public_' . hash('sha256', (string) $agent_seed),
+            'token_type' => 'Bearer',
+            'expires_in' => 86400,
+            'scope' => 'public:read',
+            'agent_id' => 'public-' . substr(hash('sha256', (string) $agent_seed), 0, 16),
+            'issued_at' => gmdate('c'),
+            'note' => 'This token is informational and grants only public read access. Zen Eyer public AI resources are also available without registration.',
+        ]);
+    }
+
+    public function revoke_public_agent()
+    {
+        return rest_ensure_response([
+            'status' => 'revoked',
+            'revoked_at' => gmdate('c'),
+            'note' => 'Public read tokens are stateless and expire automatically.',
+        ]);
+    }
+
+    public function handle_mcp_request($request)
+    {
+        $body = $request->get_json_params();
+        if (!is_array($body)) {
+            return $this->mcp_error(null, -32700, 'Parse error');
+        }
+
+        $id = $body['id'] ?? null;
+        $method = isset($body['method']) ? (string) $body['method'] : '';
+        $params = isset($body['params']) && is_array($body['params']) ? $body['params'] : [];
+
+        switch ($method) {
+            case 'initialize':
+                return $this->mcp_result($id, [
+                    'protocolVersion' => '2025-06-18',
+                    'capabilities' => [
+                        'resources' => [
+                            'listChanged' => false,
+                        ],
+                        'tools' => new stdClass(),
+                        'prompts' => new stdClass(),
+                    ],
+                    'serverInfo' => [
+                        'name' => 'djzeneyer',
+                        'version' => '1.0.0',
+                    ],
+                ]);
+
+            case 'resources/list':
+                return $this->mcp_result($id, [
+                    'resources' => $this->get_mcp_resources(),
+                ]);
+
+            case 'resources/read':
+                $uri = isset($params['uri']) ? esc_url_raw((string) $params['uri']) : '';
+                $content = $this->read_mcp_resource($uri);
+                if (is_wp_error($content)) {
+                    return $this->mcp_error($id, -32602, $content->get_error_message());
+                }
+
+                return $this->mcp_result($id, [
+                    'contents' => [$content],
+                ]);
+
+            case 'tools/list':
+                return $this->mcp_result($id, ['tools' => []]);
+
+            case 'prompts/list':
+                return $this->mcp_result($id, ['prompts' => []]);
+
+            case 'notifications/initialized':
+                return new WP_REST_Response(null, 202);
+
+            default:
+                return $this->mcp_error($id, -32601, 'Method not found');
+        }
+    }
+
+    private function mcp_result($id, array $result)
+    {
+        return rest_ensure_response([
+            'jsonrpc' => '2.0',
+            'id' => $id,
+            'result' => $result,
+        ]);
+    }
+
+    private function mcp_error($id, int $code, string $message)
+    {
+        return rest_ensure_response([
+            'jsonrpc' => '2.0',
+            'id' => $id,
+            'error' => [
+                'code' => $code,
+                'message' => $message,
+            ],
+        ]);
+    }
+
+    private function get_mcp_resources()
+    {
+        $base_url = untrailingslashit(home_url());
+
+        return [
+            [
+                'uri' => $base_url . '/wp-json/djzeneyer/v1/ai-context',
+                'name' => 'artist-context',
+                'description' => 'Structured JSON context about Zen Eyer for AI grounding.',
+                'mimeType' => 'application/json',
+            ],
+            [
+                'uri' => $base_url . '/llms.txt',
+                'name' => 'llms-summary',
+                'description' => 'Concise LLM-readable site guide.',
+                'mimeType' => 'text/plain',
+            ],
+            [
+                'uri' => $base_url . '/llms-full.txt',
+                'name' => 'llms-full',
+                'description' => 'Full LLM-readable reference for Zen Eyer.',
+                'mimeType' => 'text/plain',
+            ],
+        ];
+    }
+
+    private function read_mcp_resource(string $uri)
+    {
+        $base_url = untrailingslashit(home_url());
+
+        if ($uri === $base_url . '/wp-json/djzeneyer/v1/ai-context') {
+            return [
+                'uri' => $uri,
+                'mimeType' => 'application/json',
+                'text' => wp_json_encode($this->build_structure(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            ];
+        }
+
+        $public_files = [
+            $base_url . '/llms.txt' => ABSPATH . 'llms.txt',
+            $base_url . '/llms-full.txt' => ABSPATH . 'llms-full.txt',
+        ];
+
+        if (!isset($public_files[$uri]) || !is_readable($public_files[$uri])) {
+            return new WP_Error('resource_not_found', 'Resource not found');
+        }
+
+        return [
+            'uri' => $uri,
+            'mimeType' => 'text/plain',
+            'text' => (string) file_get_contents($public_files[$uri]),
+        ];
     }
 
     /**

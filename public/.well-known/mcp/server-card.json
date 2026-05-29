@@ -3,15 +3,15 @@
   "serverInfo": {
     "name": "djzeneyer",
     "version": "1.0.0",
-    "displayName": "DJ Zen Eyer",
-    "description": "Artist context server for DJ Zen Eyer — 2× World Champion Brazilian Zouk DJ & Music Producer. Provides structured artist data, biography, events and releases.",
+    "displayName": "Zen Eyer Public Context",
+    "description": "Public artist context server for Zen Eyer, also known as DJ Zen Eyer, a two-time World Champion Brazilian Zouk DJ and music producer. Provides structured artist data, biography, events, releases, and LLM-readable references.",
     "logoUrl": "https://djzeneyer.com/images/zen-eyer-og-image.png",
     "contactEmail": "booking@djzeneyer.com",
     "legalInfoUrl": "https://djzeneyer.com/privacy-policy"
   },
   "transport": {
-    "type": "http",
-    "endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context"
+    "type": "streamable-http",
+    "endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/mcp"
   },
   "capabilities": {
     "resources": true,
@@ -23,24 +23,25 @@
     {
       "uri": "https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context",
       "name": "artist-context",
-      "description": "Full structured context about DJ Zen Eyer: biography, credentials, discography, events, social links, identifiers (Wikidata Q136551855, MusicBrainz 13afa63c-8164-4697-9cad-c5100062a154, ISNI 0000000528931015).",
+      "description": "Full structured context about Zen Eyer: biography, credentials, discography, events, social links, identifiers (Wikidata Q136551855, MusicBrainz 13afa63c-8164-4697-9cad-c5100062a154, ISNI 0000000528931015).",
       "mimeType": "application/json"
     },
     {
       "uri": "https://djzeneyer.com/llms.txt",
       "name": "llms-summary",
-      "description": "Concise LLM-optimised summary of DJ Zen Eyer for language model grounding.",
+      "description": "Concise LLM-optimized summary of Zen Eyer for language model grounding.",
       "mimeType": "text/plain"
     },
     {
       "uri": "https://djzeneyer.com/llms-full.txt",
       "name": "llms-full",
-      "description": "Full LLM reference document for DJ Zen Eyer, including verified facts, FAQ, discography and event history.",
+      "description": "Full LLM reference document for Zen Eyer, including verified facts, FAQ, discography and event history.",
       "mimeType": "text/plain"
     }
   ],
   "auth": {
-    "type": "none"
+    "type": "none",
+    "documentation": "https://djzeneyer.com/.well-known/auth.md"
   },
   "identifiers": {
     "wikidata": "Q136551855",

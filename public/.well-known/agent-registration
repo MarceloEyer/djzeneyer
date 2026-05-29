@@ -1,0 +1,10 @@
+{
+  "status": "available",
+  "endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration",
+  "method": "POST",
+  "contentType": "application/json",
+  "scope": "public:read",
+  "privateAccountAccess": false,
+  "description": "Optional public-read agent registration for Zen Eyer discovery resources. Tokens are informational and do not grant private account access.",
+  "documentation": "https://djzeneyer.com/.well-known/auth.md"
+}
