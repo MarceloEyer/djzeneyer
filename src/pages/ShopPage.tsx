@@ -414,7 +414,7 @@ const ShopPage: React.FC = () => {
         description={t('shop.page_meta_desc')}
         url={canonicalUrl}
         image={featuredProduct?.images?.[0]?.sizes?.large || featuredProduct?.images?.[0]?.src || '/images/og/zen-eyer-shop-og.jpg'}
-        imageAlt={featuredProduct ? `${featuredProduct.name} by Zen Eyer` : 'Zen Eyer official shop and tickets'}
+        imageAlt={featuredProduct ? t('og.image_alt.product', { name: featuredProduct.name }) : t('og.image_alt.shop')}
       />
 
       <Toast

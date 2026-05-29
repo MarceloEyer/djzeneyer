@@ -216,7 +216,7 @@ const MusicPage: React.FC = () => {
         description={t('music_page_meta_desc')}
         url={`${ARTIST.site.baseUrl}${getLocalizedRoute('music', currentLang)}`}
         image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-music-og.jpg`}
-        imageAlt="Zen Eyer at the DJ decks for his Brazilian Zouk music catalog"
+        imageAlt={t('og.image_alt.music')}
         schema={musicListingSchema}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20">

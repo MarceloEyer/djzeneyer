@@ -71,7 +71,7 @@ const VerifiedFactsPage: React.FC = () => {
         description={t('verified_facts.seo.description')}
         url={pageUrl}
         image="/images/og/zen-eyer-facts-og.jpg"
-        imageAlt="Zen Eyer with his Brazilian Zouk DJ world championship trophy"
+        imageAlt={t('og.image_alt.facts')}
         type="profile"
         schema={schema}
       />

@@ -12,7 +12,6 @@ import { ensureTrailingSlash } from '../utils/seo';
 import { stripHtml } from '../utils/text';
 import {
   DEFAULT_OG_IMAGE,
-  DEFAULT_OG_IMAGE_ALT,
   OG_IMAGE_HEIGHT,
   OG_IMAGE_WIDTH,
   getMetaDescription,
@@ -221,7 +220,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const defaultImage = `${baseUrl}${DEFAULT_OG_IMAGE}`;
   const routeAwareImage = getOpenGraphImageForPath(location.pathname, baseUrl);
   const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || data?.og_image || image || routeAwareImage, baseUrl), defaultImage);
-  const finalImageAlt = data?.og_image_alt || imageAlt || getOpenGraphAltForPath(location.pathname) || DEFAULT_OG_IMAGE_ALT;
+  const finalImageAlt = data?.og_image_alt || imageAlt || getOpenGraphAltForPath(location.pathname, currentLang);
   const finalImageType = getOpenGraphImageType(finalImage);
   const finalOpenGraphType = type === 'website' && events?.length === 1 ? 'event' : type;
 

@@ -177,7 +177,7 @@ const HomePage: React.FC = () => {
         description={t('home.page_meta_desc')}
         url={currentUrl}
         image={seoSettings?.default_og_image || `${baseUrl}/images/og/zen-eyer-home-og.jpg`}
-        imageAlt="Zen Eyer performing live at an international Brazilian Zouk event"
+        imageAlt={t('og.image_alt.home')}
         isHomepage={true}
         schema={schemaData}
         keywords={t('home.seo.keywords')}

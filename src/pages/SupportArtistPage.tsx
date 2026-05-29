@@ -137,7 +137,7 @@ const SupportArtistPage: React.FC = () => {
         keywords={t('support.seo.keywords')}
         url={`https://djzeneyer.com/${getLocalizedRoute('support', currentLang).replace(/^\//, '')}`}
         image="/images/og/zen-eyer-support-og.jpg"
-        imageAlt="Zen Eyer connected with the Brazilian Zouk dance community"
+        imageAlt={t('og.image_alt.support')}
       />
 
       <div className="container mx-auto px-4 max-w-5xl">

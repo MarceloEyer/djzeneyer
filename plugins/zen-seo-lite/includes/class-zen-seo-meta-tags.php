@@ -290,7 +290,7 @@ class Zen_SEO_Meta_Tags
             'description' => (string) \get_bloginfo('description'),
             'canonical' => Zen_SEO_Helpers::get_frontend_url(\home_url($request_uri)),
             'image' => $settings['default_image'] ?? '',
-            'image_alt' => 'Zen Eyer performing a Brazilian Zouk DJ set',
+            'image_alt' => \__('Zen Eyer performing a Brazilian Zouk DJ set', 'zen-seo-lite'),
             'og_type' => 'website',
             'locale' => 'en_US',
             'noindex' => false,

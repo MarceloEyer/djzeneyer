@@ -216,7 +216,7 @@ const AboutPage: React.FC = () => {
         description={t('about.seo.description')}
         url={currentUrl}
         image={`${artist.site.baseUrl}/images/og/zen-eyer-about-og.jpg`}
-        imageAlt="Portrait of Zen Eyer, Brazilian Zouk DJ and music artist"
+        imageAlt={t('og.image_alt.about')}
         type="profile"
         schema={ABOUT_SCHEMA}
         keywords={t('about.seo.keywords')}

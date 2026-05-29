@@ -116,7 +116,7 @@ const ProductPage: React.FC = () => {
         description={product.short_description || product.description || product.name}
         url={canonicalUrl}
         image={product.images?.[0]?.sizes?.large || product.images?.[0]?.src}
-        imageAlt={product.images?.[0]?.alt || `${product.name} by Zen Eyer`}
+        imageAlt={product.images?.[0]?.alt || t('og.image_alt.product', { name: product.name })}
         type="product"
       />
 

@@ -1144,5 +1144,22 @@
       "breadcrumb": "Collaborations",
       "h1": "Artist Collaborations"
     }
+  },
+  "og": {
+    "image_alt": {
+      "default": "Zen Eyer performing a Brazilian Zouk DJ set",
+      "home": "Zen Eyer performing live at an international Brazilian Zouk event",
+      "about": "Portrait of Zen Eyer, Brazilian Zouk DJ and music artist",
+      "events_list": "Zen Eyer playing a Brazilian Zouk DJ set for dancers",
+      "events_detail": "{{eventTitle}} – Brazilian Zouk event with {{artist}}",
+      "music": "Zen Eyer at the DJ decks for his Brazilian Zouk music catalog",
+      "press": "Official press image of Zen Eyer",
+      "facts": "Zen Eyer with his Brazilian Zouk DJ world championship trophy",
+      "shop": "Zen Eyer celebrating with the Brazilian Zouk community",
+      "support": "Zen Eyer connected with the Brazilian Zouk dance community",
+      "news": "Official press image of Zen Eyer for releases and news",
+      "product": "{{name}} by Zen Eyer",
+      "zenlink": "Official Zen Eyer links for music, booking and support"
+    }
   }
 }

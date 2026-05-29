@@ -90,7 +90,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         description={cleanDescription.substring(0, 160)}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
-        imageAlt={`${event.title} - Brazilian Zouk event with ${ARTIST.identity.stageName}`}
+        imageAlt={t('og.image_alt.events_detail', { eventTitle: event.title, artist: ARTIST.identity.stageName })}
         type="event"
         events={[event]}
         leadAnswer={cleanDescription ? cleanDescription.substring(0, 300) : undefined}
@@ -257,7 +257,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         description={t('events_page_meta_desc')}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}`}
         image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-events-og.jpg`}
-        imageAlt="Zen Eyer playing a Brazilian Zouk DJ set for dancers"
+        imageAlt={t('og.image_alt.events_list')}
         events={events as EventSchemaData[]}
       />
       {/* Filter Bar */}

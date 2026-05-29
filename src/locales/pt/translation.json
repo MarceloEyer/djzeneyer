@@ -1148,5 +1148,22 @@
       "breadcrumb": "Colaborações",
       "h1": "Colaborações com Artistas"
     }
+  },
+  "og": {
+    "image_alt": {
+      "default": "Zen Eyer numa performance de DJ de Zouk Brasileiro",
+      "home": "Zen Eyer ao vivo num evento internacional de Zouk Brasileiro",
+      "about": "Retrato de Zen Eyer, DJ e músico de Zouk Brasileiro",
+      "events_list": "Zen Eyer tocando Zouk Brasileiro para os dançarinos",
+      "events_detail": "{{eventTitle}} – evento de Zouk Brasileiro com {{artist}}",
+      "music": "Zen Eyer nas pick-ups do seu catálogo de música Zouk Brasileiro",
+      "press": "Imagem oficial de imprensa de Zen Eyer",
+      "facts": "Zen Eyer com seu troféu de campeão mundial de DJ de Zouk Brasileiro",
+      "shop": "Zen Eyer celebrando com a comunidade de Zouk Brasileiro",
+      "support": "Zen Eyer conectado com a comunidade de dança Zouk Brasileiro",
+      "news": "Imagem oficial de imprensa de Zen Eyer para lançamentos e notícias",
+      "product": "{{name}} por Zen Eyer",
+      "zenlink": "Links oficiais de Zen Eyer para música, booking e apoio"
+    }
   }
 }

@@ -184,7 +184,7 @@ const NewsPage: React.FC = () => {
           description={stripHtml(singlePost?.excerpt?.rendered || '')}
           url={postUrl}
           image={releaseImage || postImage}
-          imageAlt={release ? getReleaseOpenGraphAlt(release.name) : stripHtml(singlePost?.title?.rendered || '')}
+          imageAlt={release ? getReleaseOpenGraphAlt(release.name, normalizedLanguage) : stripHtml(singlePost?.title?.rendered || '')}
           type={release ? getReleaseOpenGraphType(release.type) : 'article'}
           schema={articleSchema}
         />
@@ -246,7 +246,7 @@ const NewsPage: React.FC = () => {
         description={t('news_page_meta_desc')}
         url={`${window.location.origin}${newsRoute}`}
         image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-press-og.jpg`}
-        imageAlt="Official press image of Zen Eyer for releases and news"
+        imageAlt={t('og.image_alt.news')}
       />
       <div className="min-h-screen bg-background text-white pt-24 pb-20 relative overflow-hidden">
         {/* Background Decorations - Premium Glows */}
