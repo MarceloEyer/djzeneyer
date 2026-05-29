@@ -33,7 +33,11 @@ async function waitForKeyFile(maxAttempts = 6, delayMs = 5000) {
   const url = `${BASE}/${KEY}.txt`;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const res = await fetch(url, { cache: 'no-store' });
+      const res = await fetch(url, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(5000),
+        headers: { 'Cache-Control': 'no-cache' },
+      });
       if (res.ok) {
         const body = (await res.text()).trim();
         if (body === KEY) {
