@@ -189,6 +189,7 @@ function htmlToMarkdown(html) {
 
   // ── Phase 4: Strip remaining block/inline tags ───────────────────────────────
 
+  // Phase 4a: semantic replacements (li → bullet, br/block-elements → newlines)
   content = content
     .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_, text) => {
       const item = normalizeWhitespace(decodeHtml(stripTags(text)));
@@ -196,9 +197,17 @@ function htmlToMarkdown(html) {
     })
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/(p|div|section|article|main|aside|ul|ol|blockquote)>/gi, '\n')
-    .replace(/<(p|div|section|article|main|aside|ul|ol|blockquote)[^>]*>/gi, '\n')
+    .replace(/<(p|div|section|article|main|aside|ul|ol|blockquote)[^>]*>/gi, '\n');
+
+  // Phase 4b: general tag stripper in a loop-until-stable so that reconstituted
+  // tags (e.g. <<script>script> → <script> after inner removal) are also removed.
+  // CodeQL requires the loop to be explicit and per-pattern to verify fixed-point.
+  let prevTagStrip;
+  do {
+    prevTagStrip = content;
     // Strip remaining inline tags (e.g. <strong>, <em>) without leaving extra spaces
-    .replace(/<(?:[^>"']|"[^"]*"|'[^']*')*>/g, '');
+    content = content.replace(/<(?:[^>"']|"[^"]*"|'[^']*')*>/g, '');
+  } while (content !== prevTagStrip);
 
   // ── Phase 5: Belt-and-suspenders — re-run script/style loops after tag strip ─
   // The general tag stripper in Phase 4 may have exposed new sequences; two
