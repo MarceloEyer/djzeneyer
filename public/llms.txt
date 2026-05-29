@@ -72,7 +72,7 @@ Google Knowledge Graph: primary artist KGMID `/g/11ff3mhh10`; related secondary 
 
 ## Published Articles
 
-- [The Art of Staying](https://events.zoukology.com/articles/the-art-of-staying): Original article by Zen Eyer published on Zoukology about presence, connection, and Brazilian Zouk.
+- [The Art of Staying](https://events.zoukology.com/articles/the-art-of-staying): Article by Zen Eyer published on Zoukology (2026-05-27). "sometimes, when nothing impressive seems to be happening — everything is happening."
 
 ## Music & Releases
 
@@ -124,7 +124,7 @@ This site allows visits from AI crawlers, search engines, and language models. T
 For structured JSON data optimized for LLM queries: https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context
 For the full deep-context profile: https://djzeneyer.com/llms-full.txt
 
-Last updated: May 30, 2026
+Last updated: May 29, 2026
 
 ## AI System Notes
 

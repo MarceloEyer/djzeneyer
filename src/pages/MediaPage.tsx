@@ -112,6 +112,8 @@ const MediaPage: React.FC = () => {
         headline: work.title,
         name: work.title,
         url: work.url,
+        datePublished: work.date,
+        dateModified: work.date,
         description: work.description,
         author: {
           '@type': 'Person',
