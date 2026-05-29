@@ -1,7 +1,7 @@
 // src/pages/ZenLinkPage.tsx
 // v2.0 — Premium link-in-bio redesign (glassmorphism + smart music card)
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
@@ -140,23 +140,24 @@ const ZenLinkPageComponent = () => {
   const { artist } = useBranding();
   const lang = i18n.language.startsWith('pt') ? 'pt' : 'en';
 
-  const MUSIC_PLATFORMS = [
+  // ⚡ Bolt: Wrapped static arrays in useMemo to prevent O(N) recalculations of getLocalizedRoute and array reallocations on every render cycle.
+  const MUSIC_PLATFORMS = useMemo(() => [
     { name: 'SoundCloud', icon: <Music2 className="w-5 h-5" />, rawUrl: artist.social.soundcloud?.url, color: '#ff5500' },
     { name: 'Spotify', icon: <SpotifyIcon />, rawUrl: artist.social.spotify?.url, color: '#1DB954' },
     { name: 'Apple Music', icon: <AppleMusicIcon />, rawUrl: artist.social.appleMusic?.url, color: '#FA243C' },
     { name: t('social.youtube_music'), icon: <YouTubeMusicIcon />, rawUrl: artist.social.YouTubeMusic?.url, color: '#FF0000' },
   ]
     .filter((platform) => !!platform.rawUrl)
-    .map(({ rawUrl, ...platform }) => ({ ...platform, url: safeUrl(rawUrl, '/') }));
+    .map(({ rawUrl, ...platform }) => ({ ...platform, url: safeUrl(rawUrl, '/') })), [artist.social, t]);
 
-  const microFacts = [
+  const microFacts = useMemo(() => [
     {
       icon: <Trophy className="h-4 w-4" />,
       label: t('zenlink.micro_champion'),
     },
-  ];
+  ], [t]);
 
-  const MAIN_LINKS = [
+  const MAIN_LINKS = useMemo(() => [
     { title: t('zenlink.booking_title'), subtitle: t('zenlink.booking_subtitle'), url: getLocalizedRoute('booking', lang), icon: <Calendar className="h-5 w-5" />, highlight: true, internal: true },
     { title: t('zenlink.quiz_title'), subtitle: t('zenlink.quiz_subtitle'), url: getLocalizedRoute('quiz', lang), icon: <Wand2 className="h-5 w-5" />, highlight: true, internal: true },
     { title: t('social.YouTube'), subtitle: t('zenlink.YouTube_subtitle'), url: safeUrl(artist.social.YouTube?.url, '/'), icon: <YouTubeIcon size={20} className="h-5 w-5" /> },
@@ -165,7 +166,7 @@ const ZenLinkPageComponent = () => {
     // Payment links from Dashboard
     ...(artist.payment.paypal.me ? [{ title: 'PayPal', subtitle: 'Support my music', url: safeUrl(artist.payment.paypal.me, '/'), icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
     ...(artist.payment.wise.url ? [{ title: 'Wise', subtitle: 'International support', url: safeUrl(artist.payment.wise.url, '/'), icon: <ExternalLinkIcon className="h-5 w-5" /> }] : []),
-  ].filter((link) => link.url !== '/');
+  ].filter((link) => link.url !== '/'), [t, lang, artist.social.YouTube?.url, artist.identity.whatsapp, artist.payment.paypal.me, artist.payment.wise.url]);
 
   return (
     <>
