@@ -173,6 +173,8 @@ const ZenLinkPageComponent = () => {
         title="Zen Link | Zen Eyer"
         description="Página oficial de links de Zen Eyer para Instagram bio."
         url={`${artist.site.baseUrl}/zenlink`}
+        image="/images/og/zen-eyer-support-og.jpg"
+        imageAlt={t('og.image_alt.zenlink')}
         robots="noindex, follow"
       />
 

@@ -70,7 +70,8 @@ const VerifiedFactsPage: React.FC = () => {
         title={t('verified_facts.seo.title')}
         description={t('verified_facts.seo.description')}
         url={pageUrl}
-        image="/images/zen-eyer-og-image.png"
+        image="/images/og/zen-eyer-facts-og.jpg"
+        imageAlt={t('og.image_alt.facts')}
         type="profile"
         schema={schema}
       />

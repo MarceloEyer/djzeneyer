@@ -119,6 +119,12 @@ class Zen_SEO_Meta_Tags
             echo '
 <meta property="og:image" content="' . \esc_url($data['image']) . '">' . "\n";
             echo '
+<meta property="og:image:alt" content="' . \esc_attr($data['image_alt']) . '">' . "\n";
+            if (!empty($data['image_type'])) {
+                echo '
+<meta property="og:image:type" content="' . \esc_attr($data['image_type']) . '">' . "\n";
+            }
+            echo '
 <meta property="og:image:width" content="1200">' . "\n";
             echo '
 <meta property="og:image:height" content="630">' . "\n";
@@ -156,6 +162,8 @@ class Zen_SEO_Meta_Tags
         if (!empty($data['image'])) {
             echo '
 <meta name="twitter:image" content="' . \esc_url($data['image']) . '">' . "\n";
+            echo '
+<meta name="twitter:image:alt" content="' . \esc_attr($data['image_alt']) . '">' . "\n";
         }
 
         // Add Twitter handle if available
@@ -248,6 +256,7 @@ class Zen_SEO_Meta_Tags
                 Zen_SEO_Helpers::generate_excerpt(\get_post_field('post_content', $post)),
             'canonical' => Zen_SEO_Helpers::get_frontend_url(\get_permalink($post)),
             'image' => !empty($meta['image']) ? $meta['image'] : Zen_SEO_Helpers::get_featured_image($post_id),
+            'image_alt' => $this->get_featured_image_alt($post_id, \get_the_title($post)),
             'noindex' => !empty($meta['noindex']),
             'translations' => Zen_SEO_Helpers::get_translations($post_id),
             'og_type' => 'article',
@@ -281,6 +290,7 @@ class Zen_SEO_Meta_Tags
             'description' => (string) \get_bloginfo('description'),
             'canonical' => Zen_SEO_Helpers::get_frontend_url(\home_url($request_uri)),
             'image' => $settings['default_image'] ?? '',
+            'image_alt' => \__('Zen Eyer performing a Brazilian Zouk DJ set', 'zen-seo-lite'),
             'og_type' => 'website',
             'locale' => 'en_US',
             'noindex' => false,
@@ -309,6 +319,16 @@ class Zen_SEO_Meta_Tags
             $data['image'] = $settings['default_image'];
         }
 
+        if (empty($data['image'])) {
+            $data['image'] = Zen_SEO_Helpers::get_frontend_url(\home_url('/images/zen-eyer-og-image.png'));
+        }
+
+        if (empty($data['image_alt'])) {
+            $data['image_alt'] = 'Zen Eyer performing a Brazilian Zouk DJ set';
+        }
+
+        $data['image_type'] = $this->get_image_type((string) $data['image']);
+
         // Ensure title has site name
         $site_name = (string) \get_bloginfo('name');
         $data['title'] = (string) ($data['title'] ?? '');
@@ -318,5 +338,32 @@ class Zen_SEO_Meta_Tags
         }
 
         return \apply_filters('zen_seo_page_data', $data);
+    }
+
+    private function get_featured_image_alt($post_id, $fallback)
+    {
+        $image_id = \get_post_thumbnail_id($post_id);
+        if (!$image_id) {
+            return (string) $fallback;
+        }
+
+        $alt = \get_post_meta($image_id, '_wp_attachment_image_alt', true);
+        return !empty($alt) ? (string) $alt : (string) $fallback;
+    }
+
+    private function get_image_type($image_url)
+    {
+        $path = \strtolower((string) \parse_url($image_url, PHP_URL_PATH));
+        if (\str_ends_with($path, '.jpg') || \str_ends_with($path, '.jpeg')) {
+            return 'image/jpeg';
+        }
+        if (\str_ends_with($path, '.png')) {
+            return 'image/png';
+        }
+        if (\str_ends_with($path, '.webp')) {
+            return 'image/webp';
+        }
+
+        return '';
     }
 }

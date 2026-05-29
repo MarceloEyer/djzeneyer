@@ -44,6 +44,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Agent discovery headers:** Homepage responses should advertise machine-readable resources with RFC 8288 `Link` headers. Keep `/.well-known/api-catalog` as a static `application/linkset+json` document and expose it with `rel="api-catalog"` alongside `llms.txt`, `llms-full.txt`, and `.well-known/ai-plugin.json`.
 - **PR review completeness:** Antes de agir em PR, ler `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`; CodeRabbit, Gemini, Codex e CodeQL podem postar achados em reviews/threads, não apenas em comments. Com `gh`: `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
 - **Perguntar antes de mudar regra de produto:** Se um achado parecer segurança/privacidade mas afetar comportamento intencional de produto, pergunte antes de alterar. Exemplo: dados de pagamento do artista são públicos por design para doações e pagamentos alternativos.
+- **Open Graph image SSOT:** Social previews should use route-aware 1200x630 assets from `public/images/og/` through `src/utils/openGraph.ts`. Avoid rebuilding page-specific fallback logic inside individual pages; pass explicit `image`/`imageAlt` only when the page has a stronger content-specific image such as an event, product, or release.
 
 ## 🎨 Decisões de Marca & SEO
 

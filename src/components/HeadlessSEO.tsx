@@ -10,6 +10,17 @@ import { getAlternateLinks, getLocalizedRoute, normalizeLanguage } from '../conf
 import { safeUrl } from '../utils/sanitize';
 import { ensureTrailingSlash } from '../utils/seo';
 import { stripHtml } from '../utils/text';
+import {
+  DEFAULT_OG_IMAGE,
+  OG_IMAGE_HEIGHT,
+  OG_IMAGE_WIDTH,
+  getMetaDescription,
+  getOpenGraphAltForPath,
+  getOpenGraphDescription,
+  getOpenGraphImageForPath,
+  getOpenGraphImageType,
+  getOpenGraphTitle,
+} from '../utils/openGraph';
 
 // ============================================================================
 // 1. INTERFACES
@@ -53,6 +64,8 @@ interface ZenSeoPluginData {
   title?: string;
   desc?: string;
   image?: string;
+  og_image?: string;
+  og_image_alt?: string;
   noindex?: boolean;
   canonical?: string;
   event_date?: string;
@@ -77,6 +90,7 @@ interface HeadlessSEOProps {
   description?: string;
   url?: string;
   image?: string;
+  imageAlt?: string;
   type?: string;
   hrefLang?: HrefLang[];
   noindex?: boolean;
@@ -124,6 +138,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   description,
   url,
   image,
+  imageAlt,
   type = 'website',
   hrefLang = [],
   noindex = false,
@@ -190,9 +205,9 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     ? `${leadAnswer.trim()}${leadAnswer.endsWith('.') ? '' : '.'} ${rawDescription}`
     : rawDescription;
 
-  const truncatedDesc = finalDescription.length > 160
-    ? `${finalDescription.substring(0, 157)}...`
-    : finalDescription;
+  const metaDescription = getMetaDescription(finalDescription);
+  const openGraphDescription = getOpenGraphDescription(finalDescription);
+  const finalOpenGraphTitle = getOpenGraphTitle(finalTitle);
 
   // Fallback: usa a URL atual da página (pathname + baseUrl) em vez da homepage.
   // Evita canonical incorreto quando url prop não é passado — corrige
@@ -202,8 +217,12 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const absoluteUrl = ensureAbsoluteUrl(finalUrlRaw, baseUrl);
   const finalUrl = safeUrl(ensureTrailingSlash(absoluteUrl), '/');
 
-  const defaultImage = `${baseUrl}/images/zen-eyer-og-image.png`;
-  const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || image || defaultImage, baseUrl), defaultImage);
+  const defaultImage = `${baseUrl}${DEFAULT_OG_IMAGE}`;
+  const routeAwareImage = getOpenGraphImageForPath(location.pathname, baseUrl);
+  const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || data?.og_image || image || routeAwareImage, baseUrl), defaultImage);
+  const finalImageAlt = data?.og_image_alt || imageAlt || getOpenGraphAltForPath(location.pathname, currentLang);
+  const finalImageType = getOpenGraphImageType(finalImage);
+  const finalOpenGraphType = type === 'website' && events?.length === 1 ? 'event' : type;
 
   const shouldNoIndex = data?.noindex || noindex;
   const robotsContent = robots || (shouldNoIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
@@ -222,7 +241,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       authorLastName: nameParts.slice(1).join(' ') || artist.identity.stageName
     };
   }, [artist.identity.fullName, artist.identity.stageName]);
-  const isProfileType = type === 'profile';
+  const isProfileType = finalOpenGraphType === 'profile';
 
   // Schema Generation (Mantido igual)
   let finalSchema: Record<string, unknown> | undefined = schema as Record<string, unknown> | undefined;
@@ -250,7 +269,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
           isPartOf: { '@id': `${baseUrl}/#website` },
           about: { '@id': `${baseUrl}/#artist` },
           mainEntity: { '@id': `${baseUrl}/#artist` },
-          description: truncatedDesc,
+          description: openGraphDescription,
           inLanguage: htmlLangAttribute,
         },
       ],
@@ -489,7 +508,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       name: finalTitle,
       isPartOf: { '@id': `${baseUrl}/#website` },
       about: { '@id': `${baseUrl}/#artist` },
-      description: truncatedDesc,
+      description: openGraphDescription,
       inLanguage: htmlLangAttribute,
       ...speakableSpec,
     };
@@ -569,7 +588,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Basic SEO */}
       <title>{finalTitle}</title>
-      <meta name="description" content={truncatedDesc} />
+      <meta name="description" content={metaDescription} />
       <link rel="canonical" href={finalUrl} />
       {keywords && <meta name="keywords" content={keywords} />}
       <meta name="author" content={artist.identity.stageName} />
@@ -585,17 +604,18 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Open Graph (Facebook/LinkedIn) */}
       <meta property="og:site_name" content="Zen Eyer" />
-      <meta property="og:type" content={type} />
-      <meta property="og:title" content={finalTitle} />
-      <meta property="og:description" content={truncatedDesc} />
+      <meta property="og:type" content={finalOpenGraphType} />
+      <meta property="og:title" content={finalOpenGraphTitle} />
+      <meta property="og:description" content={openGraphDescription} />
       <meta property="og:url" content={finalUrl} />
 
       {/* Garante que as imagens sempre apareçam */}
       {finalImage && <meta property="og:image" content={finalImage} />}
       {finalImage && finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
-      {finalImage && <meta property="og:image:alt" content={finalTitle} />}
-      {finalImage && <meta property="og:image:width" content="1200" />}
-      {finalImage && <meta property="og:image:height" content="630" />}
+      {finalImage && <meta property="og:image:alt" content={finalImageAlt} />}
+      {finalImageType && <meta property="og:image:type" content={finalImageType} />}
+      {finalImage && <meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />}
+      {finalImage && <meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />}
 
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
@@ -605,11 +625,13 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
       {/* Twitter Cards (X) */}
       <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={finalTitle} />
-      <meta name="twitter:description" content={truncatedDesc} />
+      <meta name="twitter:title" content={finalOpenGraphTitle} />
+      <meta name="twitter:description" content={openGraphDescription} />
       <meta name="twitter:image" content={finalImage} />
+      <meta name="twitter:image:alt" content={finalImageAlt} />
       <meta name="twitter:site" content="@djzeneyer" />
       <meta name="twitter:creator" content="@djzeneyer" />
+      {finalOpenGraphType.startsWith('music.') && <meta property="music:musician" content={`${baseUrl}/#musicgroup`} />}
 
       {/* Hreflang Tags */}
       {computedHrefLang.map(({ lang, url: hrefUrl }) => (

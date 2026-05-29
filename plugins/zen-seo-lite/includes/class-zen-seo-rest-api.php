@@ -188,6 +188,8 @@ class Zen_SEO_REST_API
             'description' => $page_data['description'],
             'canonical' => $page_data['canonical'],
             'og_image' => $page_data['image'],
+            'og_image_alt' => $page_data['image_alt'] ?? '',
+            'og_image_type' => $page_data['image_type'] ?? '',
             'og_type' => $page_data['og_type'],
             'locale' => $page_data['locale'],
             'robots' => $page_data['noindex'] ? 'noindex, follow' : 'index, follow',

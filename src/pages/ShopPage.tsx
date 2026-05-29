@@ -413,6 +413,8 @@ const ShopPage: React.FC = () => {
         title={`${t('shop.page_title')} | ${t('common.artist_name')}`}
         description={t('shop.page_meta_desc')}
         url={canonicalUrl}
+        image={featuredProduct?.images?.[0]?.sizes?.large || featuredProduct?.images?.[0]?.src || '/images/og/zen-eyer-shop-og.jpg'}
+        imageAlt={featuredProduct ? t('og.image_alt.product', { name: featuredProduct.name }) : t('og.image_alt.shop')}
       />
 
       <Toast
