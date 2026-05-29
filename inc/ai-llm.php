@@ -25,9 +25,16 @@ class DJZ_AI_Authority
         ]);
 
         register_rest_route('djzeneyer/v1', '/mcp', [
-            'methods' => 'POST',
-            'callback' => [$this, 'handle_mcp_request'],
-            'permission_callback' => '__return_true',
+            [
+                'methods' => 'GET',
+                'callback' => [$this, 'handle_mcp_get'],
+                'permission_callback' => '__return_true',
+            ],
+            [
+                'methods' => 'POST',
+                'callback' => [$this, 'handle_mcp_request'],
+                'permission_callback' => '__return_true',
+            ],
         ]);
 
         register_rest_route('djzeneyer/v1', '/agent-registration', [
@@ -71,6 +78,23 @@ class DJZ_AI_Authority
             'revoked_at' => gmdate('c'),
             'note' => 'Public read tokens are stateless and expire automatically.',
         ]);
+    }
+
+    /**
+     * GET /wp-json/djzeneyer/v1/mcp
+     * Discovery response for clients that probe the endpoint before connecting.
+     */
+    public function handle_mcp_get(): WP_REST_Response
+    {
+        return new WP_REST_Response([
+            'name'     => 'djzeneyer',
+            'version'  => '1.0.0',
+            'protocol' => 'MCP/2025-06-18',
+            'transport' => 'streamable-http',
+            'endpoint' => rest_url('djzeneyer/v1/mcp'),
+            'resources' => count($this->get_mcp_resources()),
+            'tools'    => 0,
+        ], 200);
     }
 
     public function handle_mcp_request($request)
@@ -124,7 +148,8 @@ class DJZ_AI_Authority
                 return $this->mcp_result($id, ['prompts' => []]);
 
             case 'notifications/initialized':
-                return new WP_REST_Response(null, 202);
+                // Notifications are one-way; no response body per MCP spec.
+                return new WP_REST_Response(null, 204);
 
             default:
                 return $this->mcp_error($id, -32601, 'Method not found');
