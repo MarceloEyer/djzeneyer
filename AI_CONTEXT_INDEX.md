@@ -24,6 +24,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **`PRONUNCIATION.md`**: SSOT específico para pronúncia, voz, desambiguação fonética e limites de uso de erros como `Zen Ayer`.
 - **`ARCHITECTURE.md`**: Visão geral do sistema (React + WP Headless).
 - **`ENGINEERING.md`**: Padrões de código PHP, TSX, CI/CD, Build e safeUrl.
+- **`OPERATIONS.md`**: Memória operacional compartilhada entre agentes: cache/deploy, IndexNow, validação local, revisores de IA, PRs e armadilhas de ambiente.
 - **`API_ENDPOINTS.md`**: Referência de rotas REST.
 - **`PROJECT.md`**: Metas de negócio e visão geral do projeto.
 - **`SITE_PAGES_STRATEGY.md`**: SSOT estratégico para função, linguagem, marketing, SEO/GEO/IA e relação entre páginas públicas.
@@ -56,6 +57,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **i18n:** Toda string visível na UI deve usar `t('chave')`. Adicionar em EN e PT simultaneamente.
 - **MusicEvent:** `eventStatus`, `endDate`, `location.address`, `description`, `image`, `offers` e `performer` são campos obrigatórios (ver `AGENTS.md`).
 - **Páginas públicas:** Antes de alterar navegação, copy, SEO/GEO, schema ou propósito de página, consulte `.context/SITE_PAGES_STRATEGY.md`.
+- **Memória operacional:** Decisões descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`; não deixar conhecimento essencial preso ao Claude/Codex/Antigravity.
 
 ---
 
