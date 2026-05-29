@@ -16,6 +16,7 @@ const ZoukFestivalsPage: React.FC = () => {
         title={t('hub_pages.zouk_festivals.seo_title')}
         description={t('hub_pages.zouk_festivals.seo_description')}
         url={pageUrl}
+        noindex
       />
       <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
         <div className="container mx-auto max-w-5xl">
