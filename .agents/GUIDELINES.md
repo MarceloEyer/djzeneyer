@@ -55,6 +55,7 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
 2. **Git & Workflows:**
    - `fetch-depth` nos workflows deve ser `2`.
    - NUNCA use `--no-security-blocking` no Composer sem uma justificativa crítica documentada em `LEARNINGS.md`.
+   - Decisões operacionais descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`, nunca mantidas apenas em memória local de Claude/Codex/Antigravity.
    - Antes de alterar, fechar ou mergear qualquer PR, leia `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`. Com GitHub CLI, use `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
    - Se um PR ou review levantar risco de segurança, privacidade ou comportamento de produto, pergunte ao usuário antes de agir quando houver ambiguidade. Não transforme decisão de produto em "correção de segurança" por suposição.
 
