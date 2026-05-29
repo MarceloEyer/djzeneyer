@@ -95,6 +95,17 @@ const MediaPage: React.FC = () => {
         },
         inLanguage: currentLang === 'pt' ? 'pt-BR' : 'en',
       },
+      {
+        '@type': 'VideoObject',
+        '@id': `${currentUrl}#featured-video`,
+        name: featuredVideoTitle,
+        description: featuredVideoDescription,
+        thumbnailUrl: FEATURED_VIDEO.thumbnailUrl,
+        uploadDate: FEATURED_VIDEO.uploadDate,
+        embedUrl: FEATURED_VIDEO.embedUrl,
+        contentUrl: FEATURED_VIDEO.contentUrl,
+        duration: FEATURED_VIDEO.duration,
+      },
       ...PUBLISHED_WORKS.map((work) => ({
         '@type': work.type,
         '@id': `${work.url}#article`,
@@ -125,7 +136,7 @@ const MediaPage: React.FC = () => {
         mainEntityOfPage: work.url,
       })),
     ],
-  }), [artist.identity.stageName, currentLang, currentUrl, t]);
+  }), [artist.identity.stageName, currentLang, currentUrl, featuredVideoDescription, featuredVideoTitle, t]);
 
   // ⚡ Bolt: Wrapped static array allocation in useMemo to reduce garbage collection overhead during render loops.
   // ⚡ Bolt: Extracted static media facts array from inline render loop map
@@ -169,15 +180,6 @@ const MediaPage: React.FC = () => {
         image="/images/og/zen-eyer-press-og.jpg"
         imageAlt={t('og.image_alt.press')}
         schema={mediaPageSchema}
-        video={{
-          name: featuredVideoTitle,
-          description: featuredVideoDescription,
-          thumbnailUrl: FEATURED_VIDEO.thumbnailUrl,
-          uploadDate: FEATURED_VIDEO.uploadDate,
-          embedUrl: FEATURED_VIDEO.embedUrl,
-          contentUrl: FEATURED_VIDEO.contentUrl,
-          duration: FEATURED_VIDEO.duration,
-        }}
       />
 
       <div className="min-h-screen pt-24 sm:pt-40 pb-16 sm:pb-24 bg-background relative overflow-hidden">
