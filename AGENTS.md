@@ -53,6 +53,14 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - **NAO marcar como bug/vazamento:** nao recomendar tornar esses dados privados, remover de `/zen-seo/v1/profile`, nem separar em endpoint autenticado, salvo se o usuario pedir explicitamente.
 - O que continua proibido: expor senhas, tokens, chaves secretas, credenciais SMTP/API ou dados de pagamento de terceiros/usuarios.
 
+### 6. Content Signals & Treinamento por IA
+
+- **REGRA DE PRODUTO:** o site quer permitir que IAs usem o conteudo publico, incluindo a enciclopedia, para discovery, grounding, indexacao e treinamento.
+- `public/robots.txt` deve declarar `Content-Signal: ai-train=yes, search=yes, ai-input=yes`.
+- Manter a diretiva tanto no bloco `User-agent: *` quanto no bloco especifico de bots de IA.
+- `public/.well-known/ai-bots.txt` deve continuar coerente com `allow_training: yes`.
+- Nunca mudar `ai-train` para `no` sem pedido explicito do usuario.
+
 ---
 
 ## ⚠️ Armadilhas Conhecidas
