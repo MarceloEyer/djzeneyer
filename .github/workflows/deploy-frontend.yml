@@ -83,6 +83,11 @@ jobs:
           node scripts/prerender.js
           if [ ! -f "dist/index.html" ]; then echo "❌ Prerender failed"; exit 1; fi
 
+      - name: 🤖 Generate Markdown for Agents
+        run: |
+          npm run generate-markdown
+          if [ ! -f "dist/index.md" ]; then echo "❌ Markdown generation failed"; exit 1; fi
+
       - name: 🔐 Setup SSH
         uses: shimataro/ssh-key-action@v2
         with:
