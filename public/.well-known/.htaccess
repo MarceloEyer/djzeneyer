@@ -1,0 +1,37 @@
+# Content-Type for extensionless RFC well-known files
+# Serves api-catalog, oauth-*, agent-registration without .json extension
+
+<IfModule mod_mime.c>
+  # RFC 9727 — API Catalog
+  <Files "api-catalog">
+    ForceType "application/linkset+json"
+    Header set Content-Type "application/linkset+json; profile=\"https://www.rfc-editor.org/info/rfc9727\""
+    Header set Cache-Control "public, max-age=3600"
+    Header set Access-Control-Allow-Origin "*"
+  </Files>
+
+  # OAuth 2.0 metadata (RFC 8414)
+  <Files "oauth-authorization-server">
+    ForceType "application/json"
+    Header set Content-Type "application/json; charset=UTF-8"
+    Header set Cache-Control "public, max-age=3600"
+    Header set Access-Control-Allow-Origin "*"
+  </Files>
+
+  <Files "oauth-protected-resource">
+    ForceType "application/json"
+    Header set Content-Type "application/json; charset=UTF-8"
+    Header set Cache-Control "public, max-age=3600"
+    Header set Access-Control-Allow-Origin "*"
+  </Files>
+
+  # Agent registration endpoint listing
+  <Files "agent-registration">
+    ForceType "application/json"
+    Header set Content-Type "application/json; charset=UTF-8"
+    Header set Cache-Control "public, max-age=3600"
+    Header set Access-Control-Allow-Origin "*"
+  </Files>
+</IfModule>
+
+Options -Indexes
