@@ -57,7 +57,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **i18n:** Toda string visível na UI deve usar `t('chave')`. Adicionar em EN e PT simultaneamente.
 - **MusicEvent:** `eventStatus`, `endDate`, `location.address`, `description`, `image`, `offers` e `performer` são campos obrigatórios (ver `AGENTS.md`).
 - **Páginas públicas:** Antes de alterar navegação, copy, SEO/GEO, schema ou propósito de página, consulte `.context/SITE_PAGES_STRATEGY.md`.
-- **Memória operacional:** Decisões descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`; não deixar conhecimento essencial preso ao Claude/Codex/Antigravity.
+- **Memória operacional:** Decisões descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`; não deixar conhecimento essencial preso ao Claude/Codex/Antigravity.
 
 ---
 
