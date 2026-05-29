@@ -122,25 +122,40 @@ function extractBody(html) {
 function htmlToMarkdown(html) {
   let content = extractBody(html);
 
-  // Remove dangerous/irrelevant block elements.
-  // Loop until stable to handle nested/doubled patterns (incomplete sanitization guard).
-  const BLOCK_PATTERNS = [
-    /<script[\s\S]*?<\/script\s*>/gi,
-    /<style[\s\S]*?<\/style\s*>/gi,
-    /<noscript[\s\S]*?<\/noscript\s*>/gi,
-    /<svg[\s\S]*?<\/svg\s*>/gi,
-    /<nav[\s\S]*?<\/nav\s*>/gi,
-    /<header[\s\S]*?<\/header\s*>/gi,
-    /<footer[\s\S]*?<\/footer\s*>/gi,
+  // ── Phase 1: Remove <script> and <style> blocks ──────────────────────────────
+  // Explicit individual do-while loops so CodeQL can verify loop-until-stable.
+  // Closing tags use [^>]* to match attributes (e.g. </script lang="js">).
+
+  let prevScript;
+  do {
+    prevScript = content;
+    content = content.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
+  } while (content !== prevScript);
+
+  let prevStyle;
+  do {
+    prevStyle = content;
+    content = content.replace(/<style[^>]*>[\s\S]*?<\/style[^>]*>/gi, '');
+  } while (content !== prevStyle);
+
+  // ── Phase 2: Remove other irrelevant block elements ──────────────────────────
+  const OTHER_BLOCK_PATTERNS = [
+    /<noscript[^>]*>[\s\S]*?<\/noscript[^>]*>/gi,
+    /<svg[^>]*>[\s\S]*?<\/svg[^>]*>/gi,
+    /<nav[^>]*>[\s\S]*?<\/nav[^>]*>/gi,
+    /<header[^>]*>[\s\S]*?<\/header[^>]*>/gi,
+    /<footer[^>]*>[\s\S]*?<\/footer[^>]*>/gi,
   ];
 
-  for (const pattern of BLOCK_PATTERNS) {
+  for (const pattern of OTHER_BLOCK_PATTERNS) {
     let prev;
     do {
       prev = content;
       content = content.replace(pattern, '');
     } while (content !== prev);
   }
+
+  // ── Phase 3: Convert semantic elements to Markdown ───────────────────────────
 
   content = content.replace(/<img\s+[^>]*>/gi, tag => {
     const src = getAttribute(tag, 'src');
@@ -172,6 +187,8 @@ function htmlToMarkdown(html) {
     });
   }
 
+  // ── Phase 4: Strip remaining block/inline tags ───────────────────────────────
+
   content = content
     .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, (_, text) => {
       const item = normalizeWhitespace(decodeHtml(stripTags(text)));
@@ -183,12 +200,21 @@ function htmlToMarkdown(html) {
     // Strip remaining inline tags (e.g. <strong>, <em>) without leaving extra spaces
     .replace(/<(?:[^>"']|"[^"]*"|'[^']*')*>/g, '');
 
-  // Final safety pass: ensure no script/style fragments survived (incomplete multi-char guard)
-  let prev;
+  // ── Phase 5: Belt-and-suspenders — re-run script/style loops after tag strip ─
+  // The general tag stripper in Phase 4 may have exposed new sequences; two
+  // independent loops keep each pattern's stable-point detection separate.
+
+  let prevScript2;
   do {
-    prev = content;
-    content = content.replace(/<script[\s\S]*?<\/script\s*>/gi, '').replace(/<style[\s\S]*?<\/style\s*>/gi, '');
-  } while (content !== prev);
+    prevScript2 = content;
+    content = content.replace(/<script[^>]*>[\s\S]*?<\/script[^>]*>/gi, '');
+  } while (content !== prevScript2);
+
+  let prevStyle2;
+  do {
+    prevStyle2 = content;
+    content = content.replace(/<style[^>]*>[\s\S]*?<\/style[^>]*>/gi, '');
+  } while (content !== prevStyle2);
 
   return normalizeWhitespace(decodeHtml(content));
 }
