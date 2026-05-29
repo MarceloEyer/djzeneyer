@@ -153,8 +153,9 @@ jobs:
           username: ${{ env.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            WP_CLI="/usr/local/bin/wp" # or other paths
+            WP_CLI="/usr/local/bin/wp"
             $WP_CLI --path="${{ env.REMOTE_ROOT }}" transient delete --search="djz_vite_manifest" 2>/dev/null || true
+            $WP_CLI --path="${{ env.REMOTE_ROOT }}" litespeed-purge all 2>/dev/null || true
             php -r "opcache_reset();" 2>/dev/null || true
 
       - name: 📡 Submit URLs to IndexNow

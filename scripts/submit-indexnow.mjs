@@ -21,6 +21,47 @@ if (!KEY) {
   process.exit(0); // soft exit so CI doesn't fail
 }
 
+// ── Key-file readiness check ──────────────────────────────────────────────────
+
+/**
+ * Polls https://<host>/<key>.txt until it responds 200 with the correct key
+ * content, or until MAX_ATTEMPTS is reached.
+ * Needed because LiteSpeed may serve a cached 404 for a few seconds after
+ * a newly-deployed file lands on the server.
+ */
+async function waitForKeyFile(maxAttempts = 6, delayMs = 5000) {
+  const url = `${BASE}/${KEY}.txt`;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (res.ok) {
+        const body = (await res.text()).trim();
+        if (body === KEY) {
+          console.log(`✅ Key file verified at ${url} (attempt ${attempt})`);
+          return true;
+        }
+        console.warn(`⚠️  Key file content mismatch on attempt ${attempt} — got: "${body.slice(0, 40)}"`);
+      } else {
+        console.warn(`⚠️  Key file not ready (HTTP ${res.status}) — attempt ${attempt}/${maxAttempts}`);
+      }
+    } catch (err) {
+      console.warn(`⚠️  Key file fetch error on attempt ${attempt}: ${err.message}`);
+    }
+    if (attempt < maxAttempts) {
+      console.log(`   Retrying in ${delayMs / 1000}s…`);
+      await new Promise(r => setTimeout(r, delayMs));
+    }
+  }
+  return false;
+}
+
+console.log(`\n🔑 Verifying key file at https://${HOST}/${KEY}.txt…`);
+const keyReady = await waitForKeyFile();
+if (!keyReady) {
+  console.error(`❌ Key file not accessible after all attempts — skipping submission to avoid wasted 403s.`);
+  process.exit(0); // soft exit: don't fail the deploy, but don't submit either
+}
+
 // ── Collect URLs ─────────────────────────────────────────────────────────────
 
 /**
