@@ -29,9 +29,9 @@ function walkHtmlFiles(dir, files = []) {
 }
 
 function decodeHtml(value) {
+  // Decode &amp; LAST to prevent double-unescaping (e.g. &amp;lt; → &lt;, not <)
   return String(value || '')
     .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
@@ -39,7 +39,8 @@ function decodeHtml(value) {
     .replace(/&#x27;/gi, "'")
     .replace(/&#x2f;/gi, '/')
     .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
-    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)));
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+    .replace(/&amp;/gi, '&');
 }
 
 function stripTags(value) {
@@ -121,14 +122,25 @@ function extractBody(html) {
 function htmlToMarkdown(html) {
   let content = extractBody(html);
 
-  content = content
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '')
-    .replace(/<noscript[\s\S]*?<\/noscript>/gi, '')
-    .replace(/<svg[\s\S]*?<\/svg>/gi, '')
-    .replace(/<nav[\s\S]*?<\/nav>/gi, '')
-    .replace(/<header[\s\S]*?<\/header>/gi, '')
-    .replace(/<footer[\s\S]*?<\/footer>/gi, '');
+  // Remove dangerous/irrelevant block elements.
+  // Loop until stable to handle nested/doubled patterns (incomplete sanitization guard).
+  const BLOCK_PATTERNS = [
+    /<script[\s\S]*?<\/script\s*>/gi,
+    /<style[\s\S]*?<\/style\s*>/gi,
+    /<noscript[\s\S]*?<\/noscript\s*>/gi,
+    /<svg[\s\S]*?<\/svg\s*>/gi,
+    /<nav[\s\S]*?<\/nav\s*>/gi,
+    /<header[\s\S]*?<\/header\s*>/gi,
+    /<footer[\s\S]*?<\/footer\s*>/gi,
+  ];
+
+  for (const pattern of BLOCK_PATTERNS) {
+    let prev;
+    do {
+      prev = content;
+      content = content.replace(pattern, '');
+    } while (content !== prev);
+  }
 
   content = content.replace(/<img\s+[^>]*>/gi, tag => {
     const src = getAttribute(tag, 'src');
@@ -170,6 +182,13 @@ function htmlToMarkdown(html) {
     .replace(/<(p|div|section|article|main|aside|ul|ol|blockquote)[^>]*>/gi, '\n')
     // Strip remaining inline tags (e.g. <strong>, <em>) without leaving extra spaces
     .replace(/<(?:[^>"']|"[^"]*"|'[^']*')*>/g, '');
+
+  // Final safety pass: ensure no script/style fragments survived (incomplete multi-char guard)
+  let prev;
+  do {
+    prev = content;
+    content = content.replace(/<script[\s\S]*?<\/script\s*>/gi, '').replace(/<style[\s\S]*?<\/style\s*>/gi, '');
+  } while (content !== prev);
 
   return normalizeWhitespace(decodeHtml(content));
 }
