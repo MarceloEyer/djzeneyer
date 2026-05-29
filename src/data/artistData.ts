@@ -280,6 +280,14 @@ export const ARTIST = {
       source: 'PR.com',
       date: '2025-11-24',
       type: 'Press Release'
+    },
+    {
+      title: 'The Art of Staying',
+      description: 'sometimes, when nothing impressive seems to be happening — everything is happening.',
+      url: 'https://events.zoukology.com/articles/the-art-of-staying',
+      source: 'Zoukology',
+      date: '2026-05-27',
+      type: 'Article'
     }
   ],
 
