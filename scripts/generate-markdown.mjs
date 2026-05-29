@@ -43,7 +43,8 @@ function decodeHtml(value) {
 }
 
 function stripTags(value) {
-  return String(value || '').replace(/<[^>]+>/g, ' ');
+  // Handles quoted attribute values that may contain '>' (e.g. data-val="a>b")
+  return String(value || '').replace(/<(?:[^>"']|"[^"]*"|'[^']*')*>/g, ' ');
 }
 
 function normalizeWhitespace(value) {
@@ -56,8 +57,10 @@ function normalizeWhitespace(value) {
 }
 
 function getAttribute(tag, attribute) {
-  const pattern = new RegExp(`\\s${attribute}\\s*=\\s*["']([^"']*)["']`, 'i');
-  return decodeHtml(pattern.exec(tag)?.[1] || '');
+  // Captures single- or double-quoted attribute values (does not cross quote boundaries)
+  const pattern = new RegExp(`\\s${attribute}\\s*=\\s*(?:"([^"]*)"|'([^']*)')`, 'i');
+  const m = pattern.exec(tag);
+  return decodeHtml(m ? (m[1] !== undefined ? m[1] : m[2]) : '');
 }
 
 function yamlString(value) {
@@ -165,7 +168,8 @@ function htmlToMarkdown(html) {
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<\/(p|div|section|article|main|aside|ul|ol|blockquote)>/gi, '\n')
     .replace(/<(p|div|section|article|main|aside|ul|ol|blockquote)[^>]*>/gi, '\n')
-    .replace(/<[^>]+>/g, ' ');
+    // Strip remaining inline tags (e.g. <strong>, <em>) without leaving extra spaces
+    .replace(/<(?:[^>"']|"[^"]*"|'[^']*')*>/g, '');
 
   return normalizeWhitespace(decodeHtml(content));
 }
@@ -191,8 +195,9 @@ function buildMarkdown(html) {
     sections.push(bodyMarkdown);
   }
 
-  if (jsonLdBlocks.length > 0) {
-    sections.push(`\n\`\`\`json\n${jsonLdBlocks.join('\n')}\n\`\`\``);
+  for (const block of jsonLdBlocks) {
+    // Each JSON-LD block gets its own fenced code block to ensure valid JSON per block
+    sections.push(`\n\`\`\`json\n${block}\n\`\`\``);
   }
 
   return `${sections.join('\n\n')}\n`;

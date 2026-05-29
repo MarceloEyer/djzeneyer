@@ -30,12 +30,14 @@ function djz_accepts_markdown(): bool
         return false;
     }
 
-    return strpos($accept, 'text/markdown') !== false || strpos($accept, 'text/x-markdown') !== false;
+    return str_contains($accept, 'text/markdown') || str_contains($accept, 'text/x-markdown');
 }
 
 function djz_approx_markdown_tokens(string $markdown): int
 {
-    $word_count = str_word_count(strip_tags($markdown));
+    // str_word_count() is not multibyte-safe; use regex-based counting for UTF-8
+    $text = strip_tags($markdown);
+    $word_count = preg_match_all('/\S+/u', $text, $matches) ?: 0;
 
     return max(1, (int) ceil($word_count * 1.35));
 }
