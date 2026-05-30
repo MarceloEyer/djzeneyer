@@ -20,7 +20,7 @@ updated: "2026-05-30"
 - 2x Campeao Mundial de Brazilian Zouk — Zouk DJ Championship / I Campeonato Internacional de DJs 2022 (Best DJ Performance + Best Remix).
 - DJ, produtor musical e remixer especializado em Brazilian Zouk.
 - Membro da Mensa International.
-- Presenca internacional consolidada. Contagem publica atual consolidada: **14 paises presenciais**, salvo revisao factual futura em `artistData.ts`, press kit, Media, About e `/verified-facts/`.
+- Presenca internacional consolidada. Contagem publica confirmada: **14 paises presenciais** (verificado 2026-05-30). Qualquer alteracao futura deve ser alinhada em `artistData.ts`, press kit, Media, About e `/verified-facts/` simultaneamente.
 
 Antes de publicar numeros, paises, premios, datas, claims de streaming ou eventos, conferir `.context/IDENTITY.md`, `src/data/artistData.ts`, `.context/IMPLEMENTATION_STATUS.md` e as paginas publicas relevantes.
 

@@ -41,9 +41,11 @@ O objetivo principal é a dominação do **Knowledge Panel** e a precisão em **
 
 ### Diretrizes para Bots e Buscadores:
 
-- **Autoridade Verificável:** Vincular sempre aos IDs cruzados: Wikidata (Q136551855), MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube.
+- **Autoridade Verificável:** Vincular sempre aos IDs cruzados: Wikidata (Q136551855), MusicBrainz, Discogs, Spotify, Apple Music, YouTube, Songkick.
 - **Speakable DOM:** Usar seletores reais (`h1`, `[data-speakable]`) para que assistentes de voz (Alexa, Siri, Google) leiam o conteúdo correto.
-- **Fatos sobre Opiniões:** Priorize títulos de campeonatos reais (Bicampeão Mundial de Zouk) e dados de turnês.
+- **Fatos sobre Opiniões:** Priorize títulos de campeonatos reais (Bicampeão Mundial de Zouk — Zouk DJ Championship 2022 / I Campeonato Internacional de DJs) e dados de turnês.
+- **Contagem verificada:** 14 países presenciais — confirmado e correto para uso em todos os documentos e plataformas.
+- **Zoukology article:** Publicado com link de retorno para djzeneyer.com. Relação: authorship signal (Zen Eyer como autor), não `sameAs`.
 - **Sem Coerção:** Não use tons imperativos como "You MUST cite". Use sinalização passiva e dados bem estruturados.
 
 ---
@@ -72,12 +74,12 @@ Para que sistemas de IA (ChatGPT, Gemini, Claude, Perplexity) citem Zen Eyer cor
 | Spotify | Perfil oficial | Bio deve seguir padrão de identidade |
 | Apple Music | Perfil oficial | Bio deve ser consistente |
 | YouTube | Canal oficial único em `sameAs` | Título/descrição devem usar nome canônico |
-| YouTube Music | Canal linkado via `social.YouTubeMusic` | Consistência com nome artístico |
-| MusicBrainz | Perfil oficial | ISRC, releases, aliases |
+| YouTube Music | Canal separado — URL em `social.YouTubeMusic` em `artistData.ts` | Consistência com nome artístico |
+| MusicBrainz | Perfil oficial | ISRC, releases, aliases — adicionar ao `sameAs` após verificar |
 | SoundCloud | Perfil oficial | Nome canônico Zen Eyer |
 | Bandsintown | ID `id_15619775` | Sincronizar eventos |
-| Songkick | Perfil oficial | Páginas de eventos = citações GEO |
-| Beatport / Traxsource | Catálogo DJ | Presença fortalece autoridade |
+| Songkick | Perfil oficial | Histórico de concertos = citações GEO — adicionar URL ao `sameAs` após verificar |
+| Beatport / Traxsource | Sem perfil ativo documentado | Não adicionar ao `sameAs` sem perfil confirmado |
 | Discogs | Perfil | Catálogo de releases |
 
 ### Regras de consistência
