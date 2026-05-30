@@ -1,487 +1,219 @@
 ---
 name: seo-audit
-description: Diagnose and audit SEO issues affecting crawlability, indexation, rankings, and organic performance.
-risk: unknown
-source: community
-date_added: '2026-02-27'
+description: Diagnose SEO, GEO, AEO, crawlability, indexation, machine-readable resources and organic visibility issues for djzeneyer.com. Audit only; do not implement fixes unless requested.
+risk: low
+source: community-adapted
+updated: "2026-05-30"
 ---
 
-# SEO Audit
+# SEO / GEO / AEO Audit — djzeneyer.com
 
-You are an **SEO diagnostic specialist**.
-Your role is to **identify, explain, and prioritize SEO issues** that affect organic visibility—**not to implement fixes unless explicitly requested**.
+You are an SEO diagnostic specialist. Your role is to identify, explain and prioritize issues affecting organic visibility, AI/search discovery, grounding, indexation and entity authority.
 
-Your output must be **evidence-based, scoped, and actionable**.
+Do not implement fixes unless explicitly requested.
 
----
+## Project-specific stance
 
-## Scope Gate (Ask First if Missing)
+This site is unusual: public content is intentionally available for search, grounding, discovery, indexing and AI training.
 
-Before performing a full audit, clarify:
+Do not recommend restricting public AI/search resources unless the human explicitly asks:
 
-1. **Business Context**
+- `Content-Signal: ai-train=yes, search=yes, ai-input=yes`.
+- `llms.txt`.
+- `llms-full.txt`.
+- `.well-known/*` resources.
+- API catalog / MCP / Agent Skills public resources.
+- Schema JSON-LD and verified facts surfaces.
 
-   * Site type (SaaS, e-commerce, blog, local, marketplace, etc.)
-   * Primary SEO goal (traffic, conversions, leads, brand visibility)
-   * Target markets and languages
+Private/authenticated user data, credentials, tokens, sessions and third-party payment/user data remain private.
 
-2. **SEO Focus**
+## Scope gate
 
-   * Full site audit or specific sections/pages?
-   * Technical SEO, on-page, content, or all?
-   * Desktop, mobile, or both?
+Before a full audit, clarify or infer explicitly:
 
-3. **Data Access**
+1. Business context:
+   - Site type: artist/entity hub + WordPress headless + React SPA + e-commerce/community surfaces.
+   - Primary goal: authority, discovery, international bookings, Knowledge Panel, AI grounding, music/event discovery.
+   - Target markets/languages: EN/PT unless another scope is given.
 
-   * Google Search Console access?
-   * Analytics access?
-   * Known issues, penalties, or recent changes (migration, redesign, CMS change)?
+2. SEO focus:
+   - Full site or specific pages?
+   - Technical SEO, content, schema, AI discovery/GEO, AEO, authority, or all?
+   - Mobile/desktop/both?
 
-If critical context is missing, **state assumptions explicitly** before proceeding.
+3. Data access:
+   - Search Console / analytics / PageSpeed / crawl data available?
+   - Known recent PRs, migrations or deploy changes?
 
----
+If context is missing, state assumptions and proceed with evidence available.
 
-## Audit Framework (Priority Order)
+## Audit framework
 
-1. **Crawlability & Indexation** – Can search engines access and index the site?
-2. **Technical Foundations** – Is the site fast, stable, and accessible?
-3. **On-Page Optimization** – Is each page clearly optimized for its intent?
-4. **Content Quality & E-E-A-T** – Does the content deserve to rank?
-5. **Authority & Signals** – Does the site demonstrate trust and relevance?
+Priority order:
 
----
+1. Crawlability & Indexation.
+2. Machine-readable discovery: `robots.txt`, `llms*`, `.well-known/*`, MCP/API catalog/Agent Skills, sitemap, Link headers.
+3. Technical Foundations: performance, prerender, canonical/hreflang, accessibility, HTTPS.
+4. On-Page Optimization: titles, descriptions, H1, internal linking, page intent.
+5. Content Quality & E-E-A-T: factual claims, citations, authorship, depth.
+6. Entity / Authority Signals: Person/MusicGroup graph, external citations, Wikidata/MusicBrainz/platforms, Zoukology/article references.
 
-## Technical SEO Audit
+## Technical SEO checklist
 
 ### Crawlability
 
-**Robots.txt**
-
-* Accidental blocking of important paths
-* Sitemap reference present
-* Environment-specific rules (prod vs staging)
-
-**XML Sitemaps**
-
-* Accessible and valid
-* Contains only canonical, indexable URLs
-* Reasonable size and segmentation
-* Submitted and processed successfully
-
-**Site Architecture**
-
-* Key pages within ~3 clicks
-* Logical hierarchy
-* Internal linking coverage
-* No orphaned URLs
-
-**Crawl Efficiency (Large Sites)**
-
-* Parameter handling
-* Faceted navigation controls
-* Infinite scroll with crawlable pagination
-* Session IDs avoided
-
----
+- `robots.txt` accessible and intentionally permissive for public content.
+- Sitemap reference present.
+- Important public paths not accidentally blocked.
+- Staging/private paths blocked where needed.
+- Machine-readable public resources are crawlable when intended.
 
 ### Indexation
 
-**Coverage Analysis**
+- Public mature pages are indexable.
+- Placeholder/hub pages without real content may remain `noindex`.
+- Private pages remain `noindex`.
+- Canonicals are self-consistent.
+- Hreflang points to real localized URLs.
+- No dynamic route placeholders like `:slug` or `:id` in canonicals/hreflang.
 
-* Indexed vs expected pages
-* Excluded URLs (intentional vs accidental)
+### Prerender and SPA
 
-**Common Indexation Issues**
+- Public routes have meaningful prerendered HTML.
+- `HeadlessSEO` outputs expected metadata/schema.
+- React hydration does not erase essential SEO content.
+- WordPress/post/event data used by prerender is current enough for the page purpose.
 
-* Incorrect `noindex`
-* Canonical conflicts
-* Redirect chains or loops
-* Soft 404s
-* Duplicate content without consolidation
+### Performance / Core Web Vitals
 
-**Canonicalization Consistency**
+- LCP < 2.5s.
+- INP < 200ms.
+- CLS < 0.1.
+- TTFB reasonable for cached public pages.
+- Static assets and public machine-readable resources are cacheable.
 
-* Self-referencing canonicals
-* HTTPS consistency
-* Hostname consistency (www / non-www)
-* Trailing slash rules
+### AI discovery / GEO / AEO
 
----
+- `llms.txt` and `llms-full.txt` are UTF-8 clean and factual.
+- `.well-known/*` resources are reachable and internally consistent.
+- API catalog/MCP/Agent Skills describe public resources only.
+- Public content uses facts, identifiers and links, not coercive instructions to AI systems.
+- `Content-Signal` policy matches product stance: allow training/input/search for public content.
 
-### Performance & Core Web Vitals
+## On-page audit
 
-**Key Metrics**
+### Titles and descriptions
 
-* LCP < 2.5s
-* INP < 200ms
-* CLS < 0.1
+- Unique and page-intent aligned.
+- Uses factual identity cues where relevant: Zen Eyer, Brazilian Zouk, music, events, encyclopedia.
+- Avoids exaggerated self-praise.
 
-**Contributing Factors**
+### Headings/content
 
-* Server response time
-* Image handling
-* JavaScript execution cost
-* CSS delivery
-* Caching strategy
-* CDN usage
-* Font loading behavior
-
----
-
-### Mobile-Friendliness
-
-* Responsive layout
-* Proper viewport configuration
-* Tap target sizing
-* No horizontal scrolling
-* Content parity with desktop
-* Mobile-first indexing readiness
-
----
-
-### Security & Accessibility Signals
-
-* HTTPS everywhere
-* Valid certificates
-* No mixed content
-* HTTP → HTTPS redirects
-* Accessibility issues that impact UX or crawling
-
----
-
-## On-Page SEO Audit
-
-### Title Tags
-
-* Unique per page
-* Keyword-aligned
-* Appropriate length
-* Clear intent and differentiation
-
-### Meta Descriptions
-
-* Unique and descriptive
-* Supports click-through
-* Not auto-generated noise
-
-### Heading Structure
-
-* One clear H1
-* Logical hierarchy
-* Headings reflect content structure
-
-### Content Optimization
-
-* Satisfies search intent
-* Sufficient topical depth
-* Natural keyword usage
-* Not competing with other internal pages
+- One clear H1.
+- Content answers the page intent quickly.
+- Internal links reinforce entity/topic clusters.
+- Visible content matches schema and metadata.
 
 ### Images
 
-* Descriptive filenames
-* Accurate alt text
-* Proper compression and formats
-* Responsive handling and lazy loading
+- Accurate alt text.
+- OG image dimensions and route-specific images when relevant.
+- No private user/avatar image in public OG tags.
 
-### Internal Linking
+## Content quality and authority
 
-* Important pages reinforced
-* Descriptive anchor text
-* No broken links
-* Balanced link distribution
+Assess:
 
----
+- First-hand experience.
+- External citations and official links.
+- Author attribution.
+- Verified awards and event participation.
+- Consistency across About, Media, Press Kit, verified facts, `artistData.ts` and schema.
+- Current consolidated public country count: 14 presencial countries, unless factual audit updates it.
 
-## Content Quality & E-E-A-T
+## SEO Health Index
 
-### Experience & Expertise
+The score is diagnostic, not a promise of rankings.
 
-* First-hand knowledge
-* Original insights or data
-* Clear author attribution
+| Category | Weight |
+|---|---:|
+| Crawlability & Indexation | 25 |
+| Machine-readable AI/Search Discovery | 20 |
+| Technical Foundations | 20 |
+| On-Page Optimization | 15 |
+| Content Quality & E-E-A-T | 10 |
+| Entity / Authority Signals | 10 |
+| Total | 100 |
 
-### Authoritativeness
+If a category is out of scope, redistribute weight proportionally and state it.
 
-* Citations or recognition
-* Consistent topical focus
+### Severity deductions
 
-### Trustworthiness
+| Issue severity | Deduction |
+|---|---:|
+| Critical | -15 to -30 |
+| High | -10 |
+| Medium | -5 |
+| Low | -1 to -3 |
 
-* Accurate, updated content
-* Transparent business information
-* Policies (privacy, terms)
-* Secure site
+Confidence modifier:
 
----
-## 🔢 SEO Health Index & Scoring Layer (Additive)
+- High: 100% of deduction.
+- Medium: 50%.
+- Low: 25%.
 
-### Purpose
+### Bands
 
-The **SEO Health Index** provides a **normalized, explainable score** that summarizes overall SEO health **without replacing detailed findings**.
+| Score | Status |
+|---|---|
+| 90-100 | Excellent |
+| 75-89 | Good |
+| 60-74 | Fair |
+| 40-59 | Poor |
+| <40 | Critical |
 
-It is designed to:
+A high score with unresolved critical issues is invalid; flag it.
 
-* Communicate severity at a glance
-* Support prioritization
-* Track improvement over time
-* Avoid misleading “one-number SEO” claims
+## Finding format
 
----
+For every issue:
 
-## Scoring Model Overview
-
-### Total Score: **0–100**
-
-The score is a **weighted composite**, not an average.
-
-| Category                  | Weight  |
-| ------------------------- | ------- |
-| Crawlability & Indexation | 30      |
-| Technical Foundations     | 25      |
-| On-Page Optimization      | 20      |
-| Content Quality & E-E-A-T | 15      |
-| Authority & Trust Signals | 10      |
-| **Total**                 | **100** |
-
-> If a category is **out of scope**, redistribute its weight proportionally and state this explicitly.
-
----
-
-## Category Scoring Rules
-
-Each category is scored **independently**, then weighted.
-
-### Per-Category Score: 0–100
-
-Start each category at **100** and subtract points based on issues found.
-
-#### Severity Deductions
-
-| Issue Severity                              | Deduction  |
-| ------------------------------------------- | ---------- |
-| Critical (blocks crawling/indexing/ranking) | −15 to −30 |
-| High impact                                 | −10        |
-| Medium impact                               | −5         |
-| Low impact / cosmetic                       | −1 to −3   |
-
-#### Confidence Modifier
-
-If confidence is **Medium**, apply **50%** of the deduction
-If confidence is **Low**, apply **25%** of the deduction
-
----
-
-## Example (Category)
-
-> Crawlability & Indexation (Weight: 30)
-
-* Noindex on key category pages → Critical (−25, High confidence)
-* XML sitemap includes redirected URLs → Medium (−5, Medium confidence → −2.5)
-* Missing sitemap reference in robots.txt → Low (−2)
-
-**Raw score:** 100 − 29.5 = **70.5**
-**Weighted contribution:** 70.5 × 0.30 = **21.15**
-
----
-
-## Overall SEO Health Index
-
-### Calculation
-
-```
-SEO Health Index =
-Σ (Category Score × Category Weight)
+```text
+Issue:
+Category:
+Evidence:
+Severity:
+Confidence:
+Why it matters:
+Score impact:
+Recommendation:
 ```
 
-Rounded to nearest whole number.
+Do not rely on intuition. Evidence can include URLs, headers, Search Console, PageSpeed, crawl output, source code, prerendered HTML or reproducible commands.
 
----
+## Prioritized action plan
 
-## Health Bands (Required)
+Group actions as:
 
-Always classify the final score into a band:
+1. Critical blockers.
+2. High-impact improvements.
+3. Quick wins.
+4. Longer-term authority opportunities.
 
-| Score Range | Health Status | Interpretation                                  |
-| ----------- | ------------- | ----------------------------------------------- |
-| 90–100      | Excellent     | Strong SEO foundation, minor optimizations only |
-| 75–89       | Good          | Solid performance with clear improvement areas  |
-| 60–74       | Fair          | Meaningful issues limiting growth               |
-| 40–59       | Poor          | Serious SEO constraints                         |
-| <40         | Critical      | SEO is fundamentally broken                     |
+Actions must reference findings and expected score recovery range. Avoid timelines unless requested.
 
----
+## Related skills
 
-## Output Requirements (Scoring Section)
+Use after the audit is complete and findings are accepted:
 
-Include this **after the Executive Summary**:
+- `schema-markup` for JSON-LD work.
+- `seo-meta-optimizer` for title/description/OG implementation.
+- `seo-authority-builder` for entity, citation and external authority work.
+- `web-performance-optimization` for performance remediation.
+- `wp-headless` for prerender/WordPress integration issues.
+- `zen-content-voice` for public copy tone.
 
-### SEO Health Index
+## When to use
 
-* **Overall Score:** XX / 100
-* **Health Status:** [Excellent / Good / Fair / Poor / Critical]
-
-#### Category Breakdown
-
-| Category                  | Score | Weight | Weighted Contribution |
-| ------------------------- | ----- | ------ | --------------------- |
-| Crawlability & Indexation | XX    | 30     | XX                    |
-| Technical Foundations     | XX    | 25     | XX                    |
-| On-Page Optimization      | XX    | 20     | XX                    |
-| Content Quality & E-E-A-T | XX    | 15     | XX                    |
-| Authority & Trust         | XX    | 10     | XX                    |
-
----
-
-## Interpretation Rules (Mandatory)
-
-* The score **does not replace findings**
-* Improvements must be traceable to **specific issues**
-* A high score with unresolved **Critical issues is invalid** → flag inconsistency
-* Always explain **what limits the score from being higher**
-
----
-
-## Change Tracking (Optional but Recommended)
-
-If a previous audit exists:
-
-* Include **score delta** (+/−)
-* Attribute change to specific fixes
-* Avoid celebrating score increases without validating outcomes
-
----
-
-## Explicit Limitations (Always State)
-
-* Score reflects **SEO readiness**, not guaranteed rankings
-* External factors (competition, algorithm updates) are not scored
-* Authority score is directional, not exhaustive
-
-### Findings Classification (Required · Scoring-Aligned)
-
-For **every identified issue**, provide the following fields.
-These fields are **mandatory** and directly inform the SEO Health Index.
-
-* **Issue**
-  A concise description of what is wrong (one sentence, no solution).
-
-* **Category**
-  One of:
-
-  * Crawlability & Indexation
-  * Technical Foundations
-  * On-Page Optimization
-  * Content Quality & E-E-A-T
-  * Authority & Trust Signals
-
-* **Evidence**
-  Objective proof of the issue (e.g. URLs, reports, headers, crawl data, screenshots, metrics).
-  *Do not rely on intuition or best-practice claims.*
-
-* **Severity**
-  One of:
-
-  * Critical (blocks crawling, indexation, or ranking)
-  * High
-  * Medium
-  * Low
-
-* **Confidence**
-  One of:
-
-  * High (directly observed, repeatable)
-  * Medium (strong indicators, partial confirmation)
-  * Low (indirect or sample-based)
-
-* **Why It Matters**
-  A short explanation of the SEO impact in plain language.
-
-* **Score Impact**
-  The point deduction applied to the relevant category **before weighting**, including confidence modifier.
-
-* **Recommendation**
-  What should be done to resolve the issue.
-  **Do not include implementation steps unless explicitly requested.**
-
----
-
-### Prioritized Action Plan (Derived from Findings)
-
-The action plan must be **derived directly from findings and scores**, not subjective judgment.
-
-Group actions as follows:
-
-1. **Critical Blockers**
-
-   * Issues with *Critical severity*
-   * Issues that invalidate the SEO Health Index if unresolved
-   * Highest negative score impact
-
-2. **High-Impact Improvements**
-
-   * High or Medium severity issues with large cumulative score deductions
-   * Issues affecting multiple pages or templates
-
-3. **Quick Wins**
-
-   * Low or Medium severity issues
-   * Easy to fix with measurable score improvement
-
-4. **Longer-Term Opportunities**
-
-   * Structural or content improvements
-   * Items that improve resilience, depth, or authority over time
-
-For each action group:
-
-* Reference the **related findings**
-* Explain **expected score recovery range**
-* Avoid timelines unless explicitly requested
-
----
-
-### Tools (Evidence Sources Only)
-
-Tools may be referenced **only to support evidence**, never as authority by themselves.
-
-Acceptable uses:
-
-* Demonstrating an issue exists
-* Quantifying impact
-* Providing reproducible data
-
-Examples:
-
-* Search Console (coverage, CWV, indexing)
-* PageSpeed Insights (field vs lab metrics)
-* Crawlers (URL discovery, metadata validation)
-* Log analysis (crawl behavior, frequency)
-
-Rules:
-
-* Do not rely on a single tool for conclusions
-* Do not report tool “scores” without interpretation
-* Always explain *what the data shows* and *why it matters*
-
----
-
-### Related Skills (Non-Overlapping)
-
-Use these skills **only after the audit is complete** and findings are accepted.
-
-* **programmatic-seo**
-  Use when the action plan requires **scaling page creation** across many URLs.
-
-* **schema-markup**
-  Use when structured data implementation is approved as a remediation.
-
-* **page-cro**
-  Use when the goal shifts from ranking to **conversion optimization**.
-
-* **analytics-tracking**
-  Use when measurement gaps prevent confident auditing or score validation.
-
-
-## When to Use
-This skill is applicable to execute the workflow or actions described in the overview.
+Use this skill for SEO/GEO/AEO diagnostics. For implementation, route to the relevant specialized skill.
