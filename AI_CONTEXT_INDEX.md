@@ -26,6 +26,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **`API.md`**: Mapa curado das rotas REST mais relevantes para agentes e contribuidores.
 - **`PROJECT.md`**: Metas de negócio, visão geral e fronteiras de responsabilidade do projeto.
 - **`OPERATIONS.md`**: Memória operacional compartilhada entre agentes: cache/deploy, IndexNow, validação local, revisores de IA, PRs e armadilhas de ambiente.
+- **`SITE_RESOURCES.md`**: Mapa de capacidades do site: páginas, recursos públicos, AI discovery, plugins, scripts, contexto e limites de exposição.
 - **`SITE_PAGES_STRATEGY.md`**: SSOT estratégico para função, linguagem, marketing, SEO/GEO/IA e relação entre páginas públicas.
 - **`I18N_CONTENT_ARCHITECTURE.md`**: Regras para separar namespaces de tradução, manter releases no WordPress/Polylang e evoluir metadados/schema via plugin.
 
@@ -57,6 +58,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **i18n:** Toda string visível na UI deve usar `t('chave')`. Adicionar em EN e PT simultaneamente.
 - **MusicEvent:** `eventStatus`, `endDate`, `location.address`, `description`, `image`, `offers` e `performer` são campos obrigatórios (ver `AGENTS.md`).
 - **Páginas públicas:** Antes de alterar navegação, copy, SEO/GEO, schema ou propósito de página, consulte `.context/SITE_PAGES_STRATEGY.md`.
+- **Recursos do site:** Antes de adicionar/remover pagina, recurso `.well-known`, script de discovery, plugin, endpoint ou asset machine-readable, consulte `.context/SITE_RESOURCES.md`.
 - **Memória operacional:** Decisões descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`; não deixar conhecimento essencial preso ao Claude/Codex/Antigravity.
 - **Política pública de IA:** Conteúdo público do site é deliberadamente disponibilizado para busca, grounding, discovery, indexação e treinamento por IA. Não alterar `Content-Signal: ai-train=yes`, `search=yes`, `ai-input=yes`, `llms.txt`, `llms-full.txt`, `.well-known/*` ou schema para restringir IA sem pedido explícito do usuário.
 
