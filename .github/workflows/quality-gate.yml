@@ -1,0 +1,93 @@
+name: Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: quality-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gate:
+    name: Build, prerender and validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    env:
+      NODE_VERSION: 22.13.0
+      NODE_ENV: production
+      SITE_BASE_URL: https://djzeneyer.com
+      VITE_WP_SITE_URL: https://djzeneyer.com
+      VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
+      PRERENDER_WAIT_MS: 1000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+
+      - name: TypeScript check
+        run: npm run type-check
+
+      - name: i18n parity check
+        run: npm run i18n:check
+
+      - name: UTF-8 content check
+        run: npm run utf8:check
+
+      - name: Full production build
+        run: npm run build:full
+
+      - name: Performance budget check
+        run: npm run perf:budget
+
+      - name: Validate generated artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f dist/index.html
+          test -f dist/pt/index.html
+          test -f dist/.vite/manifest.json
+          test -f public/sitemap.xml
+          test -f public/sitemap-pages.xml
+          test -f public/robots.txt
+
+          grep -qi 'name="prerender-generated"' dist/index.html
+          grep -qi 'name="prerender-generated"' dist/pt/index.html
+          grep -qi '<h1' dist/index.html
+          grep -qi '<h1' dist/pt/index.html
+          grep -qi 'application/ld+json' dist/index.html
+          grep -qi 'application/ld+json' dist/pt/index.html
+          grep -qi 'rel="canonical"' dist/index.html
+          grep -qi 'rel="canonical"' dist/pt/index.html
+          grep -qi 'rel="alternate"' dist/index.html
+          grep -qi 'rel="alternate"' dist/pt/index.html
+          grep -q 'https://djzeneyer.com' public/sitemap.xml
+          grep -q 'https://djzeneyer.com' public/sitemap-pages.xml
+
+      - name: Upload dist artifact on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-quality-gate-dist
+          path: |
+            dist/
+            public/sitemap*.xml
+          if-no-files-found: ignore
+          retention-days: 3
