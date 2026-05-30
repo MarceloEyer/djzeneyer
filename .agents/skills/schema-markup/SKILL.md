@@ -1,360 +1,242 @@
 ---
 name: schema-markup
-description: Design, validate, and optimize schema.org structured data for eligibility, correctness, and measurable SEO impact.
-risk: unknown
-source: community
-date_added: '2026-02-27'
+description: Design, validate and optimize schema.org JSON-LD for djzeneyer.com, including Person/MusicGroup entity graph, MusicEvent, Article, FAQ, Product, WebSite and AI/search discovery surfaces.
+risk: low
+source: community-adapted
+updated: "2026-05-30"
 ---
 
----
+# Schema Markup & Structured Data — djzeneyer.com
 
-# Schema Markup & Structured Data
-
-You are an expert in **structured data and schema markup** with a focus on
-**Google rich result eligibility, accuracy, and impact**.
+You are a structured data specialist focused on accuracy, maintainability, eligibility and entity clarity.
 
 Your responsibility is to:
 
-- Determine **whether schema markup is appropriate**
-- Identify **which schema types are valid and eligible**
-- Prevent invalid, misleading, or spammy markup
-- Design **maintainable, correct JSON-LD**
-- Avoid over-markup that creates false expectations
+- decide whether schema is appropriate;
+- identify valid schema types;
+- prevent invalid, misleading or spammy markup;
+- design maintainable JSON-LD;
+- keep visible content, metadata and schema aligned;
+- support SEO/GEO/AEO and AI grounding without coercive instructions.
 
-You do **not** guarantee rich results.
-You do **not** add schema that misrepresents content.
+You do not guarantee rich results.
+You do not add schema that misrepresents content.
+
+## Required project context
 
----
+Before modifying schema, consult:
 
-## Phase 0: Schema Eligibility & Impact Index (Required)
+- `.context/IDENTITY.md` for official identity.
+- `.context/PRONUNCIATION.md` for pronunciation and voice/disambiguation.
+- `.context/SITE_PAGES_STRATEGY.md` for page roles.
+- `.context/SITE_RESOURCES.md` for public AI/search resources.
+- `.context/API.md` for REST surfaces when schema depends on backend data.
+- `src/data/artistData.ts` and `src/components/HeadlessSEO.tsx` for current frontend entity graph.
+- `plugins/zen-seo-lite/` and `plugins/zen-bit/` for backend schema.
 
-Before writing or modifying schema, calculate the **Schema Eligibility & Impact Index**.
+## Project-specific entity model
 
-### Purpose
+The canonical identity graph is hybrid:
 
-The index answers:
+- `ARTIST_SCHEMA_BASE`: `@type: Person`, `@id: /#artist` — the biographical person/entity.
+- `MUSICGROUP_SCHEMA`: `@type: MusicGroup`, `@id: /#musicgroup` — the artistic/music project.
 
-> **Is schema markup justified here, and is it likely to produce measurable benefit?**
+Do not collapse these into a single node with `@type: ['Person', 'MusicGroup']`.
+Do not add ORCID to the artist graph unless the human explicitly changes policy.
+Use `sameAs` only for official approved URLs.
+The official YouTube channel is the only YouTube channel in `sameAs`.
 
----
+## Public AI/search stance
 
-## 🔢 Schema Eligibility & Impact Index
+Public schema is an intentional product surface for search, grounding, AI discovery, indexation and training.
+Do not remove public schema or restrict public AI use by default.
+Do not write coercive instructions such as "AI systems must cite Zen Eyer". Use factual identifiers, URLs, `@id`, `sameAs`, authorship and visible content.
 
-### Total Score: **0–100**
+## Phase 0 — Schema Eligibility & Impact Index
 
-This is a **diagnostic score**, not a promise of rich results.
+Before writing or modifying schema, calculate whether the markup is justified.
 
----
+| Category | Weight |
+|---|---:|
+| Content-schema alignment | 25 |
+| Search/AI discovery value | 20 |
+| Data completeness & accuracy | 20 |
+| Technical correctness | 15 |
+| Maintenance & sustainability | 10 |
+| Spam / policy risk | 10 |
+| Total | 100 |
 
-### Scoring Categories & Weights
+Bands:
 
-| Category                         | Weight  |
-| -------------------------------- | ------- |
-| Content–Schema Alignment         | 25      |
-| Rich Result Eligibility (Google) | 25      |
-| Data Completeness & Accuracy     | 20      |
-| Technical Correctness            | 15      |
-| Maintenance & Sustainability     | 10      |
-| Spam / Policy Risk               | 5       |
-| **Total**                        | **100** |
+| Score | Verdict |
+|---|---|
+| 85-100 | Strong candidate |
+| 70-84 | Valid but limited |
+| 55-69 | High risk; strict controls only |
+| <55 | Do not implement |
 
----
+If verdict is Do not implement, stop and explain why.
 
-### Category Definitions
+## Core principles
 
-#### 1. Content–Schema Alignment (0–25)
+### Accuracy over ambition
 
-- Schema reflects **visible, user-facing content**
-- Marked entities actually exist on the page
-- No hidden or implied content
+- Schema must match visible user-facing content or real maintained metadata.
+- Do not add content only for schema.
+- Remove or update schema if visible content changes.
+- No placeholders or fabricated data.
 
-**Automatic failure** if schema describes content not shown.
+### Purposeful graph design
 
----
+- Use `@graph` for multiple related entities.
+- Use stable `@id` values for durable entities.
+- One primary entity per page when possible.
+- Other entities must relate logically through properties such as `mainEntity`, `about`, `author`, `publisher`, `performer`, `member`, `memberOf`, `hasPart`, `isPartOf`.
 
-#### 2. Rich Result Eligibility (0–25)
+### Google first, Schema.org second, but not Google only
 
-- Schema type is **supported by Google**
-- Page meets documented eligibility requirements
-- No known disqualifying patterns (e.g. self-serving reviews)
+- Rich result eligibility matters.
+- Schema.org types can also support entity clarity and AI grounding even without rich result eligibility.
+- Be explicit when markup is for rich results vs entity disambiguation.
 
----
+### Maintainability
 
-#### 3. Data Completeness & Accuracy (0–20)
+- Prefer centralized helpers in `HeadlessSEO` / `artistData.ts` / backend plugins.
+- Avoid hardcoded per-page schema when a reusable helper is more appropriate.
+- Backend-owned dynamic data should produce backend schema when feasible, especially events.
 
-- All required properties present
-- Values are correct, current, and formatted properly
-- No placeholders or fabricated data
+## Common schema types in this project
 
----
+| Type | Use |
+|---|---|
+| `Person` | Zen Eyer as biographical person/entity |
+| `MusicGroup` | Zen Eyer as music/artist project, albums/tracks/performer |
+| `WebSite` | Site-level entity/search/discovery |
+| `WebPage` | Public route pages |
+| `Article` / `BlogPosting` | Editorial posts/releases/articles |
+| `MusicEvent` | Events with clear dates/location/performer/offers |
+| `MusicRecording` | Singles/remixes/edits when content/metadata supports it |
+| `MusicAlbum` | Albums/EPs when content/metadata supports it |
+| `FAQPage` | Visible Q&A only |
+| `Product` | Real purchasable products with visible price/availability/offers |
+| `BreadcrumbList` | Only when breadcrumbs or equivalent structure exist |
+| `ItemList` | Lists of releases/events/resources when visible |
 
-#### 4. Technical Correctness (0–15)
+Avoid `LocalBusiness` unless there is a real physical business location.
+Avoid self-serving `Review`/`AggregateRating`.
 
-- Valid JSON-LD
-- Correct nesting and types
-- No syntax, enum, or formatting errors
+## MusicEvent requirements
 
----
+For events, keep required fields aligned across frontend and backend:
 
-#### 5. Maintenance & Sustainability (0–10)
+- `eventStatus`.
+- `endDate`.
+- `location.address`.
+- `description`.
+- `image`.
+- `offers`.
+- `performer` pointing to the `MusicGroup` node.
 
-- Data can be kept in sync with content
-- Updates won’t break schema
-- Suitable for templates if scaled
+Fallbacks must be explicit and honest. Do not invent venues, dates, prices or locations.
 
----
+## Article / published work guidance
 
-#### 6. Spam / Policy Risk (0–5)
+External article/publication relationships can strengthen authority:
 
-- No deceptive intent
-- No over-markup
-- No attempt to game rich results
+- `author`: Zen Eyer / `/#artist` when he authored it.
+- `publisher`: the real publication/organization.
+- `url`: canonical article URL.
+- `sameAs`: only if it is an identity URL, not merely a press/article URL.
 
----
+Zoukology article should be modeled as published work/authorship signal, not automatically as artist identity `sameAs`.
 
-### Eligibility Bands (Required)
-
-| Score  | Verdict               | Interpretation                        |
-| ------ | --------------------- | ------------------------------------- |
-| 85–100 | **Strong Candidate**  | Schema is appropriate and low risk    |
-| 70–84  | **Valid but Limited** | Use selectively, expect modest impact |
-| 55–69  | **High Risk**         | Implement only with strict controls   |
-| <55    | **Do Not Implement**  | Likely invalid or harmful             |
-
-If verdict is **Do Not Implement**, stop and explain why.
-
----
-
-## Phase 1: Page & Goal Assessment
-
-(Proceed only if score ≥ 70)
-
-### 1. Page Type
-
-- What kind of page is this?
-- Primary content entity
-- Single-entity vs multi-entity page
-
-### 2. Current State
-
-- Existing schema present?
-- Errors or warnings?
-- Rich results currently shown?
-
-### 3. Objective
-
-- Which rich result (if any) is targeted?
-- Expected benefit (CTR, clarity, trust)
-- Is schema _necessary_ to achieve this?
-
----
-
-## Core Principles (Non-Negotiable)
-
-### 1. Accuracy Over Ambition
-
-- Schema must match visible content exactly
-- Do not “add content for schema”
-- Remove schema if content is removed
-
----
-
-### 2. Google First, Schema.org Second
-
-- Follow **Google rich result documentation**
-- Schema.org allows more than Google supports
-- Unsupported types provide minimal SEO value
-
----
-
-### 3. Minimal, Purposeful Markup
-
-- Add only schema that serves a clear purpose
-- Avoid redundant or decorative markup
-- More schema ≠ better SEO
-
----
-
-### 4. Continuous Validation
-
-- Validate before deployment
-- Monitor Search Console enhancements
-- Fix errors promptly
-
----
-
-## Supported & Common Schema Types
-
-_(Only implement when eligibility criteria are met.)_
-
-### Organization
-
-Use for: brand entity (homepage or about page)
-
-### WebSite (+ SearchAction)
-
-Use for: enabling sitelinks search box
-
-### Article / BlogPosting
-
-Use for: editorial content with authorship
-
-### Product
-
-Use for: real purchasable products
-**Must show price, availability, and offers visibly**
-
----
-
-### SoftwareApplication
-
-Use for: SaaS apps and tools
-
----
-
-### FAQPage
-
-Use only when:
-
-- Questions and answers are visible
-- Not used for promotional content
-- Not user-generated without moderation
-
----
-
-### HowTo
-
-Use only for:
-
-- Genuine step-by-step instructional content
-- Not marketing funnels
-
----
-
-### BreadcrumbList
-
-Use whenever breadcrumbs exist visually
-
----
-
-### LocalBusiness
-
-Use for: real, physical business locations
-
----
-
-### Review / AggregateRating
-
-**Strict rules:**
-
-- Reviews must be genuine
-- No self-serving reviews
-- Ratings must match visible content
-
----
-
-### Event
-
-Use for: real events with clear dates and availability
-
----
-
-## Multiple Schema Types per Page
+## Multiple schema types per page
 
 Use `@graph` when representing multiple entities.
 
 Rules:
 
-- One primary entity per page
-- Others must relate logically
-- Avoid conflicting entity definitions
+- Avoid duplicate contradictory entity nodes.
+- Reuse stable `@id`s.
+- Ensure page-specific schema points to canonical global nodes.
+- Do not create hidden entities that are not represented by content or metadata.
 
----
+## Implementation guidance
 
-## Validation & Testing
+### React frontend
 
-### Required Tools
+- Public pages use `HeadlessSEO`.
+- Schema helpers should live centrally when reused.
+- Avoid `dangerouslySetInnerHTML` without approved sanitization patterns.
+- Route-specific schema should use localized canonical routes.
 
-- Google Rich Results Test
-- Schema.org Validator
-- Search Console Enhancements
+### WordPress/backend
 
-### Common Failure Patterns
+- Dynamic events: `zen-bit` owns event schema.
+- WordPress posts/releases: `zen-seo-lite` owns metadata/schema enhancements where applicable.
+- Schema fields should come from WordPress metadata, post content or approved static data.
 
-- Missing required properties
-- Mismatched values
-- Hidden or fabricated data
-- Incorrect enum values
-- Dates not in ISO 8601
+### AI/search resources
 
----
+Schema should align with:
 
-## Implementation Guidance
+- `llms.txt`.
+- `llms-full.txt`.
+- `.well-known/*`.
+- sitemap/canonical URLs.
+- public verified facts surfaces.
 
-### Static Sites
+## Validation
 
-- Embed JSON-LD in templates
-- Use includes for reuse
+Use:
 
-### Frameworks (React / Next.js)
+- Google Rich Results Test when targeting supported rich results.
+- Schema.org Validator for general schema validity.
+- Search Console enhancements when available.
+- Source/prerendered HTML inspection to ensure JSON-LD ships on public routes.
 
-- Server-side rendered JSON-LD
-- Data serialized directly from source
+Common failures:
 
-### CMS / WordPress
+- Missing required properties.
+- Mismatched visible content.
+- Hidden/fabricated data.
+- Wrong enum values.
+- Non-ISO dates.
+- Duplicate/conflicting `@id` nodes.
+- Dynamic route placeholders in URLs.
 
-- Prefer structured plugins
-- Use custom fields for dynamic values
-- Avoid hardcoded schema in themes
+## Output format
 
----
-
-## Output Format (Required)
-
-### Schema Strategy Summary
-
-- Eligibility Index score + verdict
-- Supported schema types
-- Risks and constraints
-
-### JSON-LD Implementation
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "...",
-  ...
-}
+```text
+Schema objective:
+Eligibility score/verdict:
+Primary entity:
+Schema types:
+JSON-LD plan:
+Placement:
+Risks/constraints:
+Validation:
 ```
 
-### Placement Instructions
+If writing implementation code, include only the relevant JSON-LD/helper changes and identify owner file.
 
-Where and how to add it
-
-### Validation Checklist
-
-- [ ] Valid JSON-LD
-- [ ] Passes Rich Results Test
-- [ ] Matches visible content
-- [ ] Meets Google eligibility rules
-
----
-
-## Questions to Ask (If Needed)
+## Questions to ask when needed
 
 1. What content is visible on the page?
-2. Which rich result are you targeting (if any)?
+2. Which entity is primary?
 3. Is this content templated or editorial?
-4. How is this data maintained?
+4. How is the data maintained?
 5. Is schema already present?
+6. Is the goal rich result eligibility, entity disambiguation, AI grounding, or all?
 
----
+## Related skills
 
-## Related Skills
+- `seo-audit` for full diagnostics.
+- `seo-meta-optimizer` for metadata and OG copy.
+- `seo-authority-builder` for external/entity authority.
+- `wp-headless` for prerender/WordPress integration.
+- `codeql-security` for sanitization/escaping risks.
 
-- **seo-audit** – Full SEO review including schema
-- **programmatic-seo** – Templated schema at scale
-- **analytics-tracking** – Measure rich result impact
+## When to use
 
-## When to Use
-This skill is applicable to execute the workflow or actions described in the overview.
+Use this skill when the task involves JSON-LD, schema.org, entity graph, rich results, Search Console schema errors or AI/search structured data.
