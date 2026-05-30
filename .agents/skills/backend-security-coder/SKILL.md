@@ -1,155 +1,151 @@
 ---
 name: backend-security-coder
-description: Expert in secure backend coding practices specializing in input validation, authentication, and API security. Use PROACTIVELY for backend security implementations or security code reviews.
-risk: unknown
-source: community
-date_added: '2026-02-27'
+description: Secure backend coding for djzeneyer.com, especially WordPress/PHP plugins, REST APIs, auth boundaries, sanitization, escaping, SQL safety, CSP/CORS and public/private data classification.
+risk: medium
+source: community-adapted
+updated: "2026-05-30"
 ---
 
-## Use this skill when
-
-- Working on backend security coder tasks or workflows
-- Needing guidance, best practices, or checklists for backend security coder
-
-## Do not use this skill when
-
-- The task is unrelated to backend security coder
-- You need a different domain or tool outside this scope
-
-## Instructions
-
-- Clarify goals, constraints, and required inputs.
-- Apply relevant best practices and validate outcomes.
-- Provide actionable steps and verification.
-- If detailed examples are required, open `resources/implementation-playbook.md`.
-
-You are a backend security coding expert specializing in secure development practices, vulnerability prevention, and secure architecture implementation.
+# Backend Security Coder — djzeneyer.com
 
 ## Purpose
-Expert backend security developer with comprehensive knowledge of secure coding practices, vulnerability prevention, and defensive programming techniques. Masters input validation, authentication systems, API security, database protection, and secure error handling. Specializes in building security-first backend applications that resist common attack vectors.
 
-## When to Use vs Security Auditor
-- **Use this agent for**: Hands-on backend security coding, API security implementation, database security configuration, authentication system coding, vulnerability fixes
-- **Use security-auditor for**: High-level security audits, compliance assessments, DevSecOps pipeline design, threat modeling, security architecture reviews, penetration testing planning
-- **Key difference**: This agent focuses on writing secure backend code, while security-auditor focuses on auditing and assessing security posture
+Apply secure backend coding practices to the real project stack:
 
-## Capabilities
+- WordPress custom plugins.
+- PHP 8.3+.
+- WordPress REST API.
+- JWT/Google OAuth via `zeneyer-auth`.
+- LiteSpeed/Cloudflare/CSP/CORS.
+- Public AI/search resources by design.
 
-### General Secure Coding Practices
-- **Input validation and sanitization**: Comprehensive input validation frameworks, allowlist approaches, data type enforcement
-- **Injection attack prevention**: SQL injection, NoSQL injection, LDAP injection, command injection prevention techniques
-- **Error handling security**: Secure error messages, logging without information leakage, graceful degradation
-- **Sensitive data protection**: Data classification, secure storage patterns, encryption at rest and in transit
-- **Secret management**: Secure credential storage, environment variable best practices, secret rotation strategies
-- **Output encoding**: Context-aware encoding, preventing injection in templates and APIs
+This skill is for secure implementation and review. For CodeQL-specific findings, use `codeql-security` first. For REST endpoint design, use `wp-rest-api`. For auth architecture, use `auth-implementation-patterns` + `wp-headless`.
 
-### HTTP Security Headers and Cookies
-- **Content Security Policy (CSP)**: CSP implementation, nonce and hash strategies, report-only mode
-- **Security headers**: HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy implementation
-- **Cookie security**: HttpOnly, Secure, SameSite attributes, cookie scoping and domain restrictions
-- **CORS configuration**: Strict CORS policies, preflight request handling, credential-aware CORS
-- **Session management**: Secure session handling, session fixation prevention, timeout management
+## Project-specific security posture
 
-### CSRF Protection
-- **Anti-CSRF tokens**: Token generation, validation, and refresh strategies for cookie-based authentication
-- **Header validation**: Origin and Referer header validation for non-GET requests
-- **Double-submit cookies**: CSRF token implementation in cookies and headers
-- **SameSite cookie enforcement**: Leveraging SameSite attributes for CSRF protection
-- **State-changing operation protection**: Authentication requirements for sensitive actions
+Do not treat intentional public product surfaces as leaks:
 
-### Output Rendering Security
-- **Context-aware encoding**: HTML, JavaScript, CSS, URL encoding based on output context
-- **Template security**: Secure templating practices, auto-escaping configuration
-- **JSON response security**: Preventing JSON hijacking, secure API response formatting
-- **XML security**: XML external entity (XXE) prevention, secure XML parsing
-- **File serving security**: Secure file download, content-type validation, path traversal prevention
+- Public artist payment/support data such as Pix, PayPal, Wise, IBAN/SWIFT/bank fields are public by design when they are the artist's own support/payment details.
+- Public AI/search resources are public by design: `llms*`, `.well-known/*`, API catalog, MCP/server card, Agent Skills public resources, schema and Content Signals.
+- Public content may be used for search, grounding, discovery, indexing and AI training.
 
-### Database Security
-- **Parameterized queries**: Prepared statements, ORM security configuration, query parameterization
-- **Database authentication**: Connection security, credential management, connection pooling security
-- **Data encryption**: Field-level encryption, transparent data encryption, key management
-- **Access control**: Database user privilege separation, role-based access control
-- **Audit logging**: Database activity monitoring, change tracking, compliance logging
-- **Backup security**: Secure backup procedures, encryption of backups, access control for backup files
+Still private:
 
-### API Security
-- **Authentication mechanisms**: JWT security, OAuth 2.0/2.1 implementation, API key management
-- **Authorization patterns**: RBAC, ABAC, scope-based access control, fine-grained permissions
-- **Input validation**: API request validation, payload size limits, content-type validation
-- **Rate limiting**: Request throttling, burst protection, user-based and IP-based limiting
-- **API versioning security**: Secure version management, backward compatibility security
-- **Error handling**: Consistent error responses, security-aware error messages, logging strategies
+- User data.
+- Sessions and JWT secrets.
+- Passwords and reset tokens.
+- API/SMTP/secrets.
+- Private order/customer/payment details.
+- Third-party payment data not owned by the artist.
 
-### External Requests Security
-- **Allowlist management**: Destination allowlisting, URL validation, domain restriction
-- **Request validation**: URL sanitization, protocol restrictions, parameter validation
-- **SSRF prevention**: Server-side request forgery protection, internal network isolation
-- **Timeout and limits**: Request timeout configuration, response size limits, resource protection
-- **Certificate validation**: SSL/TLS certificate pinning, certificate authority validation
-- **Proxy security**: Secure proxy configuration, header forwarding restrictions
+If a finding could be either intentional product behavior or a leak, ask the human before changing behavior.
 
-### Authentication and Authorization
-- **Multi-factor authentication**: TOTP, hardware tokens, biometric integration, backup codes
-- **Password security**: Hashing algorithms (bcrypt, Argon2), salt generation, password policies
-- **Session security**: Secure session tokens, session invalidation, concurrent session management
-- **JWT implementation**: Secure JWT handling, signature verification, token expiration
-- **OAuth security**: Secure OAuth flows, PKCE implementation, scope validation
+## When to use
 
-### Logging and Monitoring
-- **Security logging**: Authentication events, authorization failures, suspicious activity tracking
-- **Log sanitization**: Preventing log injection, sensitive data exclusion from logs
-- **Audit trails**: Comprehensive activity logging, tamper-evident logging, log integrity
-- **Monitoring integration**: SIEM integration, alerting on security events, anomaly detection
-- **Compliance logging**: Regulatory requirement compliance, retention policies, log encryption
+Use this skill when:
 
-### Cloud and Infrastructure Security
-- **Environment configuration**: Secure environment variable management, configuration encryption
-- **Container security**: Secure Docker practices, image scanning, runtime security
-- **Secrets management**: Integration with HashiCorp Vault, AWS Secrets Manager, Azure Key Vault
-- **Network security**: VPC configuration, security groups, network segmentation
-- **Identity and access management**: IAM roles, service account security, principle of least privilege
+- Reviewing or writing PHP plugin code.
+- Creating/changing REST endpoints.
+- Handling user input/output.
+- Touching authentication, authorization, sessions or JWT.
+- Handling external requests, webhooks or remote content.
+- Changing CSP, CORS, headers or `.htaccess` behavior.
+- Fixing security alerts.
 
-## Behavioral Traits
-- Validates and sanitizes all user inputs using allowlist approaches
-- Implements defense-in-depth with multiple security layers
-- Uses parameterized queries and prepared statements exclusively
-- Never exposes sensitive information in error messages or logs
-- Applies principle of least privilege to all access controls
-- Implements comprehensive audit logging for security events
-- Uses secure defaults and fails securely in error conditions
-- Regularly updates dependencies and monitors for vulnerabilities
-- Considers security implications in every design decision
-- Maintains separation of concerns between security layers
+## Core rules
 
-## Knowledge Base
-- OWASP Top 10 and secure coding guidelines
-- Common vulnerability patterns and prevention techniques
-- Authentication and authorization best practices
-- Database security and query parameterization
-- HTTP security headers and cookie security
-- Input validation and output encoding techniques
-- Secure error handling and logging practices
-- API security and rate limiting strategies
-- CSRF and SSRF prevention mechanisms
-- Secret management and encryption practices
+### Input and output
 
-## Response Approach
-1. **Assess security requirements** including threat model and compliance needs
-2. **Implement input validation** with comprehensive sanitization and allowlist approaches
-3. **Configure secure authentication** with multi-factor authentication and session management
-4. **Apply database security** with parameterized queries and access controls
-5. **Set security headers** and implement CSRF protection for web applications
-6. **Implement secure API design** with proper authentication and rate limiting
-7. **Configure secure external requests** with allowlists and validation
-8. **Set up security logging** and monitoring for threat detection
-9. **Review and test security controls** with both automated and manual testing
+- Validate/sanitize input early.
+- Escape output late.
+- Use context-appropriate WordPress escaping.
+- Never echo raw `$_GET`, `$_POST`, DB values or remote API data.
+- Use `wp_unslash()` before sanitizing request superglobals.
 
-## Example Interactions
-- "Implement secure user authentication with JWT and refresh token rotation"
-- "Review this API endpoint for injection vulnerabilities and implement proper validation"
-- "Configure CSRF protection for cookie-based authentication system"
-- "Implement secure database queries with parameterization and access controls"
-- "Set up comprehensive security headers and CSP for web application"
-- "Create secure error handling that doesn't leak sensitive information"
-- "Implement rate limiting and DDoS protection for public API endpoints"
-- "Design secure external service integration with allowlist validation"
+| Context | Function |
+|---|---|
+| HTML text | `esc_html()` |
+| HTML attribute | `esc_attr()` |
+| URL output | `esc_url()` |
+| URL storage/redirect | `esc_url_raw()` |
+| Textarea | `esc_textarea()` |
+| Limited safe HTML | `wp_kses()` |
+| Integer/ID | `absint()` |
+| Text input | `sanitize_text_field()` |
+| Key/slug | `sanitize_key()` |
+| Email | `sanitize_email()` |
+
+### SQL
+
+- Always use `$wpdb->prepare()`.
+- Prefer WordPress APIs over raw SQL.
+- For WooCommerce HPOS, use `wc_get_orders()`, not SQL over `wp_posts`.
+
+### REST API
+
+- Every route needs `permission_callback`.
+- Public endpoints use `__return_true` only when data is intentionally public.
+- Authenticated endpoints require JWT/user identity/capability checks.
+- Admin endpoints require capability checks such as `manage_options`.
+- Use `WP_Error` with explicit status for failures.
+- Sanitize args via `args` schema and request methods, not raw superglobals.
+
+### Auth and sessions
+
+- Never log tokens, secrets or credentials.
+- Validate JWT signature and expiry.
+- Keep auth logic aligned with `zeneyer-auth` patterns.
+- Avoid broad role assumptions. Check exact capabilities.
+
+### CSP, CORS and headers
+
+- CSP is generated dynamically in `inc/csp.php`. Do not unset it in `.htaccess`.
+- HSTS is managed by Cloudflare. Do not create a second source of truth in `.htaccess`.
+- Never use wildcard CORS with credentials.
+- YouTube/embed header issues should be solved in CSP/iframe allow rules, not by disabling CSP globally.
+
+### External requests
+
+- Validate URLs and protocols.
+- Add timeouts to `wp_remote_get()` / `wp_remote_post()`.
+- Fail closed or degrade gracefully.
+- Avoid SSRF by not fetching arbitrary user-provided URLs unless allowlisted or heavily validated.
+
+## CodeQL alignment
+
+Before writing sanitization or HTML stripping code, read `codeql-security`.
+
+Important patterns:
+
+- Avoid tag-specific regex stripping like `<script\b...>`.
+- Prefer generic loop removal and final sweep for plain-text strip use cases.
+- Use `sanitizeHtml()` for trusted allowlisted HTML in React.
+- Every `dangerouslySetInnerHTML` must have approved sanitization.
+
+## Review checklist
+
+- [ ] Input sanitized.
+- [ ] Output escaped.
+- [ ] SQL prepared or avoided.
+- [ ] REST route has permission callback.
+- [ ] Public/private data boundary is intentional.
+- [ ] No secrets/tokens in logs.
+- [ ] CSP/CORS/header changes respect project owners.
+- [ ] External requests have timeout and validation.
+- [ ] CodeQL risks considered.
+- [ ] Product-intent public data was not made private by assumption.
+
+## Output format
+
+```text
+Security scope:
+Data classification:
+Threat/risk:
+Recommended implementation:
+Validation:
+Open questions:
+```
+
+## When not to use
+
+Do not use this skill for pure frontend UI, copy, SEO metadata, non-security performance work or content strategy unless there is a security boundary involved.
