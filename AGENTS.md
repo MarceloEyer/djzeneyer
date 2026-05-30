@@ -95,6 +95,24 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - **`Header unset Content-Security-Policy` ou `Header always unset Content-Security-Policy` no `.htaccess`** — `mod_headers` roda após o PHP e remove a CSP dinâmica gerada por `inc/csp.php`, deixando o cliente sem proteção.
 - **`Strict-Transport-Security` no `.htaccess`** — HSTS é gerenciado pelo Cloudflare. Definir nos dois lugares cria duas fontes de verdade.
 
+### 7. Classificação de Links Externos (Knowledge Panel e sameAs)
+
+Antes de adicionar qualquer URL externo ao schema, ao `sameAs` ou a `artistData.ts`, classifique o tipo:
+
+| Tipo | `sameAs`? | Schema? | Exemplos |
+|---|---|---|---|
+| Perfil oficial na plataforma | ✅ Sim | Via `sameAs` | Spotify, YouTube canal, Wikidata Q136551855, MusicBrainz |
+| Artigo ESCRITO por Zen Eyer | ❌ Não | `author` no artigo | Artigo Zoukology |
+| Reportagem/artigo SOBRE Zen Eyer | ❌ Não | Nenhum | Entrevistas, press features |
+| Página de lineup de evento | ❌ Não | Nenhum | Site de festival listando o DJ |
+| Fan page / playlist de terceiro | ❌ Não | Nenhum | Ignorar |
+
+**Erro crítico:** adicionar URLs de imprensa, lineup ou artigos em `sameAs`. Isso polui a identidade da entidade e prejudica o Knowledge Panel.
+
+**Regra de produto:** o canal YouTube oficial é o único canal YouTube no `sameAs`. Um único perfil por plataforma.
+
+Para a lógica completa com exemplos e anti-padrões, consulte `.context/IDENTITY.md` seção "Classificação de Links Externos".
+
 ---
 
 ## 📂 Organização

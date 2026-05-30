@@ -100,3 +100,112 @@ Para que sistemas de IA (ChatGPT, Gemini, Claude, Perplexity) citem Zen Eyer cor
 - Criar perfil duplicado em qualquer plataforma.
 - Escrever bio como marketing: "o melhor DJ", "revolucionário", etc.
 - Adicionar URLs de artigos/press em `sameAs` — apenas identidade direta do artista.
+
+---
+
+## 🔗 Classificação de Links Externos: Knowledge Panel, sameAs e GEO
+
+Esta seção é crítica. Agentes frequentemente cometem o erro de tratar todos os links externos da mesma forma — isso prejudica o Knowledge Panel e polui o grafo de entidade.
+
+### Regra fundamental
+
+> `sameAs` significa "este URL É outra representação desta mesma entidade". Qualquer outro tipo de link externo tem valor diferente e deve ser tratado de outra forma.
+
+### Tipo 1 — Perfis de Identidade Oficial → `sameAs` ✅
+
+São os perfis do artista nas plataformas. Confirmam "este é Zen Eyer nesta plataforma".
+
+Candidatos aprovados:
+
+| Plataforma | Relação | Nota |
+|---|---|---|
+| Wikidata Q136551855 | `sameAs` | Âncora do Knowledge Panel |
+| Spotify artista | `sameAs` | Perfil oficial do artista |
+| YouTube canal oficial | `sameAs` | **Apenas um canal** — não adicionar secundários |
+| Apple Music artista | `sameAs` | Perfil oficial |
+| Instagram oficial | `sameAs` | Perfil verificado |
+| Facebook oficial | `sameAs` | Página oficial |
+| SoundCloud oficial | `sameAs` | Perfil oficial |
+| MusicBrainz artista | `sameAs` | ID estruturado para crawlers |
+| Discogs artista | `sameAs` | Quando catálogo verificado existir |
+
+Regras para `sameAs`:
+- Máximo um por plataforma — apenas o perfil primário oficial.
+- Verificar que o URL é um perfil de artista, não uma playlist, álbum ou página de conteúdo.
+- Verificar periodicamente se os URLs ainda funcionam (redirecionamentos ou URLs quebrados prejudicam o Knowledge Panel).
+- Nunca adicionar `sameAs` sem confirmar que o perfil é controlado por Zen Eyer.
+
+### Tipo 2 — Artigos ESCRITOS por Zen Eyer → `author` no schema do artigo ✍️
+
+Publicações onde Zen Eyer é o autor (ex: artigo publicado no Zoukology).
+
+Tratamento correto no schema:
+```json
+{
+  "@type": "Article",
+  "author": { "@id": "https://djzeneyer.com/#artist" },
+  "publisher": { "@type": "Organization", "name": "Zoukology" },
+  "url": "https://url-do-artigo"
+}
+```
+
+- **Não** entra no `sameAs` do artista — é authorship, não identidade.
+- Valor para GEO: associa o nome Zen Eyer à expertise em Brazilian Zouk perante LLMs e crawlers.
+- Valor para E-E-A-T: prova de Expertise como autor sobre o tema.
+- Para Knowledge Panel: o Google usa links de authorship como sinal de expertise tópica.
+
+### Tipo 3 — Reportagens e artigos SOBRE Zen Eyer → Citação externa (sem schema no artista) 📰
+
+Artigos, reportagens, entrevistas ou features escritos por outros sobre Zen Eyer.
+
+Tratamento correto:
+- **Não** entram no `sameAs`.
+- **Não** entram em nenhuma propriedade do schema do artista.
+- Se o artigo estiver em uma página do site, pode ter um `mentions` ou `about` no schema daquela página — mas isso é schema da página, não do artista.
+- Valor para GEO: são os sinais mais orgânicos que alimentam LLMs com associações "Zen Eyer = DJ de Brazilian Zouk, bicampeão". Cada menção em fonte externa é um "voto" que LLMs usam.
+- Valor para Knowledge Panel: Google triangula esses menções para confirmar os fatos que aparecem no painel.
+
+O que garantir nesses links:
+- Que o nome usado seja "Zen Eyer" (não "DJ Zen Eyer" como nome primário, e nunca "Zen Ayer").
+- Que as credenciais estejam corretas: "Zouk DJ Championship 2022 / I Campeonato Internacional de DJs".
+- Que haja link para o site quando possível (mas não forçar — links orgânicos têm mais valor).
+
+### Tipo 4 — Páginas de lineup de eventos → Citação de atividade (sem schema) 📅
+
+Páginas de festivais, escolas ou eventos onde Zen Eyer aparece listado como performer.
+
+Tratamento correto:
+- **Não** entram no `sameAs`.
+- **Não** entram no schema do artista.
+- Para o Knowledge Panel: o Google usa essas páginas para confirmar que a entidade tem atividade de performance real — fortalece o painel.
+- Para GEO: cada página de festival que menciona "Zen Eyer" + "Brazilian Zouk" + "DJ" é um sinal de frequência que alimenta modelos de linguagem.
+- Para E-E-A-T: prova de Experience real como performer.
+
+O que garantir:
+- Que o nome "Zen Eyer" seja usado (não apenas "DJ Zen Eyer" como nome primário).
+- Solicitar ao organizador que mantenha um link para o site quando possível.
+- Não confundir com páginas do próprio site que listam eventos passados — essas são conteúdo próprio, não citações externas.
+
+### Tabela resumo para decisão rápida
+
+| Tipo de link | `sameAs`? | Schema? | Valor GEO | Ação |
+|---|---|---|---|---|
+| Perfil oficial em plataforma | ✅ Sim | Via `sameAs` no grafo | Identidade | Verificar e adicionar |
+| Artigo escrito POR Zen Eyer | ❌ Não | `author` no artigo | Expertise/E-E-A-T | Schema no artigo |
+| Reportagem/artigo SOBRE Zen Eyer | ❌ Não | Nenhum | Citação GEO | Monitorar consistência |
+| Página de lineup de evento | ❌ Não | Nenhum | Atividade/E-E-A-T | Garantir nome correto |
+| Fan page / playlist de terceiro | ❌ Não | Nenhum | Desprezível | Ignorar no schema |
+| Plataforma de distribuição sem perfil | ❌ Não | Nenhum | Baixo | Não adicionar |
+
+### Anti-padrões que prejudicam o Knowledge Panel
+
+- Adicionar URLs de artigos de imprensa em `sameAs` — o Google não trata isso como identidade.
+- Adicionar múltiplos canais YouTube no `sameAs` — confunde qual é o canal oficial.
+- Usar o URL do artigo do Zoukology no `sameAs` do artista — é authorship, não identidade.
+- Adicionar URLs de playlists, álbuns ou tracks no `sameAs` do artista — são conteúdo, não identidade.
+- Deixar `sameAs` com URLs quebrados — checar periodicamente.
+- Não distinguir reportagens de perfis oficiais ao trabalhar em `artistData.ts` ou `HeadlessSEO`.
+
+### Fonte owner para sameAs
+
+A lista aprovada de `sameAs` vive em `src/data/artistData.ts`. Alterações devem ser feitas lá e refletidas nos schemas de `HeadlessSEO.tsx` e `plugins/zen-seo-lite/`.
