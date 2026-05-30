@@ -22,11 +22,10 @@ A precedência de informação segue esta ordem (do topo para a base):
 
 - **`IDENTITY.md`**: SSOT para Branding, Nomes, Alias e Pronúncia.
 - **`PRONUNCIATION.md`**: SSOT específico para pronúncia, voz, desambiguação fonética e limites de uso de erros como `Zen Ayer`.
-- **`ARCHITECTURE.md`**: Visão geral do sistema (React + WP Headless).
-- **`ENGINEERING.md`**: Padrões de código PHP, TSX, CI/CD, Build e safeUrl.
+- **`ARCHITECTURE.md`**: Visão geral do sistema (React + WordPress Headless + SSG + AI discovery).
+- **`API.md`**: Mapa curado das rotas REST mais relevantes para agentes e contribuidores.
+- **`PROJECT.md`**: Metas de negócio, visão geral e fronteiras de responsabilidade do projeto.
 - **`OPERATIONS.md`**: Memória operacional compartilhada entre agentes: cache/deploy, IndexNow, validação local, revisores de IA, PRs e armadilhas de ambiente.
-- **`API_ENDPOINTS.md`**: Referência de rotas REST.
-- **`PROJECT.md`**: Metas de negócio e visão geral do projeto.
 - **`SITE_PAGES_STRATEGY.md`**: SSOT estratégico para função, linguagem, marketing, SEO/GEO/IA e relação entre páginas públicas.
 - **`I18N_CONTENT_ARCHITECTURE.md`**: Regras para separar namespaces de tradução, manter releases no WordPress/Polylang e evoluir metadados/schema via plugin.
 
@@ -40,6 +39,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 
 - **`TASK_LIST.md`**: Backlog de tarefas que exigem intervenção humana.
 - **`MARKETING_OVERVIEW.md`**: Estratégia de SEO, Voz e Branding.
+- **Auditorias e handoffs**: Arquivos datados para decisões humanas, histórico e trilhas off-repo.
 
 ### 4. Memória e Histórico
 
@@ -53,11 +53,12 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **Não Invente:** Se a informação de branding não estiver em `.context/IDENTITY.md`, pergunte.
 - **SafeUrl:** Sempre use fallback explícito: `safeUrl(url, '/fallback.svg')` para imagens, `safeUrl(url, '/')` para links. Nunca `safeUrl(url) || fallback`.
 - **GamiPress:** Use `array_values()` antes de acessar `[0]` em arrays de tipos de pontos/ranks.
-- **Sincronia:** Sempre atualize o `LEARNINGS.md` após resolver um bug complexo ou arquitetural.
+- **Sincronia:** Atualize `LEARNINGS.md` quando resolver bug complexo, bug arquitetural ou decisão operacional que previna erro futuro.
 - **i18n:** Toda string visível na UI deve usar `t('chave')`. Adicionar em EN e PT simultaneamente.
 - **MusicEvent:** `eventStatus`, `endDate`, `location.address`, `description`, `image`, `offers` e `performer` são campos obrigatórios (ver `AGENTS.md`).
 - **Páginas públicas:** Antes de alterar navegação, copy, SEO/GEO, schema ou propósito de página, consulte `.context/SITE_PAGES_STRATEGY.md`.
 - **Memória operacional:** Decisões descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`; não deixar conhecimento essencial preso ao Claude/Codex/Antigravity.
+- **Política pública de IA:** Conteúdo público do site é deliberadamente disponibilizado para busca, grounding, discovery, indexação e treinamento por IA. Não alterar `Content-Signal: ai-train=yes`, `search=yes`, `ai-input=yes`, `llms.txt`, `llms-full.txt`, `.well-known/*` ou schema para restringir IA sem pedido explícito do usuário.
 
 ---
 
