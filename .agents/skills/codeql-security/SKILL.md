@@ -1,69 +1,63 @@
 ---
 name: codeql-security
-description: Padrões de segurança CodeQL e como corrigi-los no projeto djzeneyer. Leia este arquivo SEMPRE antes de escrever código de sanitização HTML, escaping de output PHP ou abrir alertas de segurança no GitHub.
+description: CodeQL security patterns for djzeneyer.com. Read before changing HTML sanitization, Markdown generation, React escaping, PHP output escaping, SQL, debug scripts or GitHub security alerts.
+risk: medium
+source: project
+updated: "2026-05-30"
 ---
 
-# 🛡️ Segurança CodeQL — djzeneyer
+# CodeQL Security — djzeneyer.com
 
-## ⚙️ Auditoria de Segurança GitHub — Comandos Completos
+## Scope
 
-**Execute estes 4 comandos para uma auditoria rápida e completa:**
+Use this skill for CodeQL/security alert triage and fixes in this repository, especially:
 
-### 1. CodeQL (Code Scanning)
+- TypeScript/React sanitization.
+- HTML-to-Markdown generation.
+- `dangerouslySetInnerHTML`.
+- PHP output escaping.
+- SQL injection.
+- Debug scripts.
+- Public/private data classification.
+
+This skill does not override product policy. Public artist/site/AI-search resources can be public by design. If CodeQL or a bot flags a product-intent public endpoint as a leak, ask before changing behavior.
+
+## GitHub security audit commands
+
+PowerShell examples:
+
 ```powershell
 gh api "/repos/MarceloEyer/djzeneyer/code-scanning/alerts?state=open&per_page=100" | ConvertFrom-Json | ForEach-Object { "$($_.number) [$($_.rule.id)] $($_.most_recent_instance.location.path):$($_.most_recent_instance.location.start_line) -- $($_.rule.description)" }
-```
 
-### 2. Dependabot (Vulnerabilidades em dependências)
-```powershell
-gh api "/repos/MarceloEyer/djzeneyer/dependabot/alerts?state=open&per_page=100" | ConvertFrom-Json | ForEach-Object { "$($_.number) [$($_.security_advisory.severity)] $($_.dependency.package.name) — $($_.security_advisory.summary)" }
-```
+gh api "/repos/MarceloEyer/djzeneyer/dependabot/alerts?state=open&per_page=100" | ConvertFrom-Json | ForEach-Object { "$($_.number) [$($_.security_advisory.severity)] $($_.dependency.package.name) - $($_.security_advisory.summary)" }
 
-### 3. Secret Scanning (Segredos expostos)
-```powershell
 gh api "/repos/MarceloEyer/djzeneyer/secret-scanning/alerts?state=open&per_page=100" | ConvertFrom-Json | ForEach-Object { "$($_.number) [$($_.secret_type_display_name)] $($_.state)" }
-```
 
-### 4. Actions Permissions (Configuração do runner)
-```powershell
 gh api "/repos/MarceloEyer/djzeneyer/actions/permissions" | ConvertFrom-Json | Format-List
 ```
 
-> **Resultado esperado (estado seguro):** CodeQL=0, Dependabot=0, Secret Scanning=0.
-> `allowed_actions=all` e `sha_pinning_required=false` são aceitáveis para este projeto.
+Expected target state: CodeQL=0 open actionable alerts, Dependabot=0 unresolved high/critical alerts, Secret Scanning=0 real leaked secrets.
 
----
+## PowerShell rule
 
-## 🐚 PowerShell — Regras Críticas
+`&&` is not valid in local Windows PowerShell. Use `;` or `$?` conditionals.
 
-- **`&&` NÃO é válido no PowerShell local.** Use `;` para encadear comandos:
-  ```powershell
-  # ❌ ERRADO
-  git add . && git commit -m "msg" && git push
-
-  # ✅ CORRETO
-  git add .; git commit -m "msg"; git push
-  ```
-- Para condicional real (só executa se anterior sucedeu), use:
-  ```powershell
-  if ($?) { git push }
-  ```
-
----
-
-## 📋 Regras CodeQL Conhecidas e Como Corrigi-las
-
-### 1. `js/incomplete-multi-character-sanitization`
-**Causa:** regex que substitui strings multi-caractere (como `<script`, `<!--`) pode ser bypassada com nesting.
-
-**❌ PADRÃO PROBLEMÁTICO:**
-```typescript
-result = result.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+```powershell
+git add .; git commit -m "msg"; git push
+if ($?) { git push }
 ```
 
-**✅ CORREÇÃO: loop atômico + sweep final**
-```typescript
-// Loop recursivo para cada padrão multi-char
+## Known CodeQL patterns
+
+### `js/incomplete-multi-character-sanitization`
+
+Problem: multi-character pattern replacement can be bypassed with nesting or split tokens.
+
+Avoid tag-specific or one-pass stripping for untrusted plain-text conversion.
+
+Prefer atomic loops and final sweep when converting HTML to plain text:
+
+```ts
 let previous: string;
 do {
   previous = result;
@@ -71,74 +65,67 @@ do {
   result = result.replace(/<[^>]*>/g, '');
 } while (result !== previous);
 
-// Sweep final absoluto
 result = result.replace(/[<>]/g, '');
 ```
 
----
+### `js/bad-tag-filter`
 
-### 2. `js/bad-tag-filter`
-**Causa:** regexes que filtram tags específicas como `<script\b...>` ou `<style\b...>` são consideradas bypassáveis pelo CodeQL porque o tag pode ser fragmentado ou ter atributos inesperados.
+Problem: filtering only `<script>` or `<style>` is considered bypassable.
 
-**❌ PADRÃO PROBLEMÁTICO (em qualquer loop ou replace):**
-```typescript
+Avoid:
+
+```ts
 result.replace(/<script\b[\s\S]*?<\/script\s*>/gi, '');
 result.replace(/<style\b[\s\S]*?<\/style\s*>/gi, '');
 ```
 
-**✅ CORREÇÃO: usar loop GENÉRICO em vez de específico por tag**
-```typescript
-// Remove todos os comentários HTML
-while (result.includes('<!--')) {
-  const next = result.replace(/<!--[\s\S]*?-->/g, '');
-  if (next === result) break;
-  result = next;
-}
-// Remove TODAS as tags genericamente (cobre script, style, qualquer outra)
+Prefer generic tag removal for plain-text extraction:
+
+```ts
 while (result.includes('<')) {
   const next = result.replace(/<[^>]*>/g, '');
   if (next === result) break;
   result = next;
 }
-// Sweep final absoluto — garante que nada escapa
 result = result.replace(/[<>]/g, '');
 ```
 
-> **Motivo:** `<[^>]*>` é tão eficaz quanto os loops específicos, sem ser flagrado pelo CodeQL.
-> O sweep final `replace(/[<>]/g, '')` remove qualquer `<` ou `>` remanescente.
+## React/TypeScript sanitization files
 
-**Arquivos afetados historicamente:**
-- `src/utils/text.ts` — função `stripHtml()`
-- `zen-zouk-plugin/src/utils/storage.ts` — função `exportJournal()`
-- `src/pages/FAQPage.tsx`
-- `zen-zouk-plugin/src/utils/storage.ts`
+| File | Function | Use |
+|---|---|---|
+| `src/utils/sanitize.ts` | `sanitizeHtml()` | Allowlisted HTML for `dangerouslySetInnerHTML` |
+| `src/utils/sanitize.ts` | `sanitizeTitleHtml()` | Minimal safe title HTML |
+| `src/utils/sanitize.ts` | `safeUrl()` | URLs for `href`/`src`; validates protocol |
+| `src/utils/text.ts` | `stripHtml()` | Plain-text extraction |
+| Markdown generation scripts | HTML to Markdown/plain text | Must avoid CodeQL-bypassable sanitizers |
 
----
+Rules:
 
-### 3. `php/reflected-xss` / escaping de output PHP
+- Every `dangerouslySetInnerHTML` must use approved sanitization.
+- Do not use regex-only HTML sanitization for rich HTML rendering.
+- For plain-text stripping, generic tag removal + final sweep is acceptable when output is text, not HTML.
+- `safeUrl(url)` returns `'#'`; use explicit fallback when needed.
 
-**Regra geral:** Todo output de variáveis em PHP deve usar funções de escaping do WordPress.
+## PHP output escaping
 
-| Contexto | Função correta |
-|----------|---------------|
-| HTML simples (texto) | `esc_html($var)` |
-| Atributo HTML | `esc_attr($var)` |
-| URL em `href` ou `src` | `esc_url($var)` |
-| URL em redirect/header | `esc_url_raw($var)` |
-| Textarea | `esc_textarea($var)` |
-| HTML com tags permitidas | `wp_kses($var, $allowed_html)` |
-| Integer/ID | `absint($var)` |
-| Sanitização de input | `sanitize_text_field()`, `sanitize_email()`, etc. |
+Every variable output in PHP must use context-appropriate escaping.
 
-**❌ PROBLEMÁTICO — echo de variáveis sem escaping:**
+| Context | Function |
+|---|---|
+| HTML text | `esc_html()` |
+| Attribute | `esc_attr()` |
+| URL output | `esc_url()` |
+| URL storage/redirect/header | `esc_url_raw()` |
+| Textarea | `esc_textarea()` |
+| Limited safe HTML | `wp_kses()` |
+| Integer/ID | `absint()` |
+| Input text | `sanitize_text_field()` |
+| Input key | `sanitize_key()` |
+
+Example:
+
 ```php
-echo '<p>' . $args['desc'] . '</p>';          // desc pode ter HTML arbitrário
-echo '<p>' . $_GET['msg'] . '</p>';            // XSS direto
-```
-
-**✅ CORRETO:**
-```php
-// Para desc que intencionalmente contém <a> e <strong>:
 $allowed_html = [
     'a'      => ['href' => [], 'target' => [], 'rel' => []],
     'strong' => [],
@@ -146,59 +133,51 @@ $allowed_html = [
     'code'   => [],
 ];
 echo '<p class="description">' . wp_kses($args['desc'], $allowed_html) . '</p>';
-
-// Para inteiros de $_GET (ex: contadores):
-echo absint($_GET['count']);
-
-// Para comparação (sem echo), sanitize antes:
-$error = sanitize_key($_GET['error'] ?? '');
-if ($error === 'db_error') { ... }
 ```
 
----
+## SQL injection
 
-### 4. `php/sql-injection`
+Always use `$wpdb->prepare()` or WordPress/WooCommerce APIs.
 
-**✅ Sempre use `$wpdb->prepare()`:**
 ```php
-// ❌ ERRADO
-$wpdb->query("SELECT * FROM $wpdb->options WHERE option_name = '$name'");
-
-// ✅ CORRETO
 $wpdb->query($wpdb->prepare(
-    "SELECT * FROM $wpdb->options WHERE option_name = %s",
+    "SELECT * FROM {$wpdb->options} WHERE option_name = %s",
     $name
 ));
 ```
 
----
+For WooCommerce HPOS, do not query `wp_posts` for orders; use `wc_get_orders()`.
 
-## 🗂️ Arquivos de Sanitização do Projeto
+## Debug scripts
 
-### TypeScript / React
+Debug scripts with direct DB access or unauthenticated privileged behavior should not be committed. Excluding them from CodeQL is not enough.
 
-| Arquivo | Função | Uso |
-|---------|--------|-----|
-| `src/utils/sanitize.ts` | `sanitizeHtml()` | HTML para `dangerouslySetInnerHTML` — permite tags seguras via DOMPurify-like allowlist |
-| `src/utils/sanitize.ts` | `sanitizeTitleHtml()` | Títulos com possível HTML mínimo |
-| `src/utils/sanitize.ts` | `safeUrl()` | URLs para `href`/`src` — valida protocolo |
-| `src/utils/text.ts` | `stripHtml()` | Remove TODO HTML, retorna texto puro |
-| `zen-zouk-plugin/src/utils/storage.ts` | `exportJournal()` | Sanitiza dados antes de export JSON |
+Examples to remove or keep out of Git:
 
-### PHP
+- `debug-*.php`.
+- `benchmark_*.php`.
+- ad-hoc admin bypass scripts.
 
-| Plugin | Mecanismo |
-|--------|-----------|
-| `zengame` | `esc_html()`, `esc_attr()`, `$wpdb->prepare()` |
-| `zen-seo-lite` | `esc_attr()`, `esc_textarea()`, `esc_url()`, `sanitize_text_field()` |
-| `zen-bit` | `esc_url()`, `esc_html()`, `wp_kses()` |
-| `zeneyer-auth` | `wp_kses()`, `absint()`, `sanitize_text_field()`, `wp_nonce_field()` |
+## Public/private classification
 
----
+Do not mark these as leaks by default:
 
-## 🔧 Configuração CodeQL (`.github/codeql/codeql-config.yml`)
+- Public artist payment/support fields owned by the artist.
+- Public AI/search resources: `llms*`, `.well-known/*`, API catalog, MCP/server card, Agent Skills public resources, schema, Content Signals.
 
-Diretórios **excluídos** do scan (para evitar ruído):
+Do flag:
+
+- Secrets, tokens, API keys, SMTP credentials.
+- User/customer/order/session data exposed publicly.
+- Password reset tokens.
+- Private third-party payment/user data.
+
+## CodeQL config notes
+
+`.github/codeql/codeql-config.yml` may exclude generated/vendor/build artifacts to reduce noise. Do not hide real first-party vulnerabilities by excluding active source code.
+
+Typical generated/noise paths:
+
 ```yaml
 paths-ignore:
   - '**/dist/**'
@@ -207,30 +186,15 @@ paths-ignore:
   - '**/node_modules/**'
   - '**/vendor/**'
   - '**/*.min.js'
-  - 'gamipress/**'
-  - 'scripts/**'
-  - 'en_old.json'
-  - 'pt_old.json'
-  - 'debug-*.php'       # scripts de debug devem ser excluídos OU deletados
-  - 'benchmark_*.php'
-  - '**/audit.md'
-  - '**/pr_comments*.json'
-  - '**/*.json.tmp'
 ```
 
-> **IMPORTANTE:** Scripts de debug (`debug-bit.php`, `debug-routes.php`) devem ser **deletados** do repositório, não apenas excluídos do scan. Scripts de debug com acesso direto ao banco de dados sem autenticação são uma vulnerabilidade real.
+## PR checklist
 
----
-
-## ✅ Checklist de Segurança para PRs
-
-Antes de criar um PR com código novo:
-
-- [ ] Todo `echo` PHP usa `esc_html()`, `esc_attr()`, `esc_url()` ou `wp_kses()`
-- [ ] Queries SQL usam `$wpdb->prepare()`
-- [ ] Formulários têm `wp_nonce_field()` e `check_admin_referer()`
-- [ ] Todo `dangerouslySetInnerHTML` em React usa `sanitizeHtml()` de `src/utils/sanitize.ts`
-- [ ] Funções de strip de HTML não usam regex específica de tag (`<script\b`, `<style\b`)
-- [ ] Loops de sanitização são atômicos (while + break quando não muda) + sweep final `replace(/[<>]/g, '')`
-- [ ] Scripts de debug não estão commitados em `main`
-- [ ] CodeQL alerts verificados com o comando `gh api` acima
+- [ ] PHP output escaped.
+- [ ] SQL prepared or avoided.
+- [ ] REST permissions explicit.
+- [ ] `dangerouslySetInnerHTML` sanitized.
+- [ ] HTML stripping avoids tag-specific bad filters.
+- [ ] No debug scripts committed.
+- [ ] Public/private boundary is intentional.
+- [ ] CodeQL/dependabot/secret alerts checked when security is in scope.
