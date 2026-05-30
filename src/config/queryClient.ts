@@ -46,6 +46,9 @@ const STALE_TIME = {
 
   /** GamiPress: 2 minutos (pontos/achievements atualizam rápido) */
   GAMIPRESS: 2 * 60 * 1000,
+
+  /** Tracks/Remixes: 24 horas — catálogo de músicas muda raramente */
+  TRACKS: 24 * 60 * 60 * 1000,
 };
 
 /**
