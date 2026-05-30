@@ -27,6 +27,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **`PROJECT.md`**: Metas de negócio, visão geral e fronteiras de responsabilidade do projeto.
 - **`OPERATIONS.md`**: Memória operacional compartilhada entre agentes: cache/deploy, IndexNow, validação local, revisores de IA, PRs e armadilhas de ambiente.
 - **`SITE_RESOURCES.md`**: Mapa de capacidades do site: páginas, recursos públicos, AI discovery, plugins, scripts, contexto e limites de exposição.
+- **`IMPLEMENTATION_STATUS.md`**: Mapa operacional de recursos recentes implementados e TODOs derivados de PRs recentes. Não é SSOT permanente; deve ser revisado e podado.
 - **`SITE_PAGES_STRATEGY.md`**: SSOT estratégico para função, linguagem, marketing, SEO/GEO/IA e relação entre páginas públicas.
 - **`I18N_CONTENT_ARCHITECTURE.md`**: Regras para separar namespaces de tradução, manter releases no WordPress/Polylang e evoluir metadados/schema via plugin.
 
@@ -59,6 +60,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **MusicEvent:** `eventStatus`, `endDate`, `location.address`, `description`, `image`, `offers` e `performer` são campos obrigatórios (ver `AGENTS.md`).
 - **Páginas públicas:** Antes de alterar navegação, copy, SEO/GEO, schema ou propósito de página, consulte `.context/SITE_PAGES_STRATEGY.md`.
 - **Recursos do site:** Antes de adicionar/remover pagina, recurso `.well-known`, script de discovery, plugin, endpoint ou asset machine-readable, consulte `.context/SITE_RESOURCES.md`.
+- **Status/TODO:** Para entender recursos recentes e pendências operacionais derivadas de PRs, consulte `.context/IMPLEMENTATION_STATUS.md`, mas valide sempre contra o código real.
 - **Memória operacional:** Decisões descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`; não deixar conhecimento essencial preso ao Claude/Codex/Antigravity.
 - **Política pública de IA:** Conteúdo público do site é deliberadamente disponibilizado para busca, grounding, discovery, indexação e treinamento por IA. Não alterar `Content-Signal: ai-train=yes`, `search=yes`, `ai-input=yes`, `llms.txt`, `llms-full.txt`, `.well-known/*` ou schema para restringir IA sem pedido explícito do usuário.
 
