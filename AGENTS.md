@@ -74,6 +74,7 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - **URL canônica em páginas:** Nunca hardcodar paths como `/about`. Usar `getLocalizedRoute('about', currentLang)`.
 - **Class components:** Não podem usar `useTranslation()` — usar `withTranslation()` HOC.
 - **Jules PRs duplicados:** Jules tende a criar PRs duplicados. Verificar antes de mergear.
+- **`social.YouTube`:** Em `src/data/artistData.ts`, o link social correto usa `YouTube` com Y e T maiusculos. Nao usar `social.youtube`.
 
 ---
 
