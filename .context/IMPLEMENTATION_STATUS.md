@@ -3,6 +3,8 @@
 Version: 1.0.0
 Last reviewed from PR history: 2026-05-23..2026-05-30
 
+> ⚠️ **Arquivo operacional e temporário.** Resume implementações recentes e TODOs derivados de PRs. Não é SSOT permanente — sempre validar contra o código real. Itens resolvidos devem ser removidos; regras permanentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`.
+
 ## Papel deste arquivo
 
 Este arquivo resume recursos implementados recentemente e pendencias operacionais. Ele existe para orientar agentes e humanos sobre o estado do produto sem transformar PRs antigos em fonte permanente de verdade.

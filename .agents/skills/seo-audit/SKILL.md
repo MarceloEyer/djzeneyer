@@ -99,6 +99,26 @@ Priority order:
 - API catalog/MCP/Agent Skills describe public resources only.
 - Public content uses facts, identifiers and links, not coercive instructions to AI systems.
 - `Content-Signal` policy matches product stance: allow training/input/search for public content.
+- RFC 8288 Link headers present on homepage for machine-readable resource discovery.
+- DNS-AID records are published and validated (SVCB type 64 with AD=true).
+- `SpeakableSpecification` present on About/FAQ pages where voice answers are valuable.
+- `VideoObject` schema present on pages with embedded YouTube videos.
+- Wikidata Q136551855 is linked from `sameAs` and contains accurate, sourced facts.
+- MusicBrainz profile is consistent with official identity.
+- FAQ schema answers real user questions in the first sentence without coercive framing.
+- Pronunciation file (`pronunciation.txt`) accessible and referenced from `llms.txt`.
+
+### GEO entity consistency audit
+
+Verify cross-platform consistency for AI grounding:
+
+- [ ] Artist name "Zen Eyer" (not "DJ Zen Eyer") as primary name on Spotify, Apple Music, YouTube channel.
+- [ ] Wikidata Q136551855: accurate birth date, nationality, championship facts with sources.
+- [ ] MusicBrainz: releases, aliases and ISRC when available.
+- [ ] Bandsintown (ID: `id_15619775`) and Songkick: events synced.
+- [ ] YouTube: channel name, description and about section use canonical identity.
+- [ ] `sameAs` in schema matches actual official platform URLs.
+- [ ] Championship naming consistent: "Zouk DJ Championship" / "I Campeonato Internacional de DJs" — not "Zouk Worlds".
 
 ## On-page audit
 

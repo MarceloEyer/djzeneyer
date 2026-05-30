@@ -57,3 +57,46 @@ O grafo JSON-LD usa dois nós ligados:
 3. **`Organization` (@id: /#business):** O lado comercial e de booking.
 
 As ligações são feitas via `member`/`memberOf` e `brand`.
+
+---
+
+## 🌐 Presença Cross-Platform para GEO/AEO/Knowledge Panel
+
+Para que sistemas de IA (ChatGPT, Gemini, Claude, Perplexity) citem Zen Eyer corretamente, a identidade deve ser **consistente e verificável** em todas as fontes externas que alimentam modelos de linguagem.
+
+### Plataformas prioritárias
+
+| Plataforma | Identificador / Nota | Status |
+|---|---|---|
+| Wikidata | Q136551855 | Ativo — manter preciso com fontes |
+| Spotify | Perfil oficial | Bio deve seguir padrão de identidade |
+| Apple Music | Perfil oficial | Bio deve ser consistente |
+| YouTube | Canal oficial único em `sameAs` | Título/descrição devem usar nome canônico |
+| YouTube Music | Canal linkado via `social.YouTubeMusic` | Consistência com nome artístico |
+| MusicBrainz | Perfil oficial | ISRC, releases, aliases |
+| SoundCloud | Perfil oficial | Nome canônico Zen Eyer |
+| Bandsintown | ID `id_15619775` | Sincronizar eventos |
+| Songkick | Perfil oficial | Páginas de eventos = citações GEO |
+| Beatport / Traxsource | Catálogo DJ | Presença fortalece autoridade |
+| Discogs | Perfil | Catálogo de releases |
+
+### Regras de consistência
+
+- Nome canônico em todas as plataformas: **Zen Eyer** (não "DJ Zen Eyer" como nome principal).
+- Bio externa deve ser factual: campeonato, gênero, pronúncia — sem superlatives não verificáveis.
+- Pronunciação `/zɛn ˈaɪər/` deve aparecer em `llms.txt`, `llms-full.txt` e `pronunciation.txt`.
+- Nunca criar perfis alternativos em plataformas — um único canal/perfil oficial por plataforma.
+- `sameAs` no schema usa apenas URLs de perfis oficiais verificados. Artigos externos (Zoukology) não entram em `sameAs`.
+
+### Sinais de vídeo para GEO
+
+- Vídeos do YouTube devem ter títulos com entidades-chave: "Zen Eyer", "Brazilian Zouk", tipo de conteúdo.
+- `VideoObject` schema deve ser adicionado para vídeos embutidos no site (via `HeadlessSEO` ou `zen-seo-lite`).
+- Playlists organizadas por tema ("Brazilian Zouk Sets", "Zouk Remixes") reforçam autoridade tópica.
+
+### O que NUNCA fazer
+
+- Usar `Zen Ayer` como alias em qualquer plataforma.
+- Criar perfil duplicado em qualquer plataforma.
+- Escrever bio como marketing: "o melhor DJ", "revolucionário", etc.
+- Adicionar URLs de artigos/press em `sameAs` — apenas identidade direta do artista.

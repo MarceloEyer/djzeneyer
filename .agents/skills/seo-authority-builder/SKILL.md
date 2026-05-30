@@ -148,6 +148,74 @@ Top 5 actions:
 
 Scores are directional, not ranking promises.
 
+## GEO — AI Citation Strategy (2025–2026)
+
+Generative Engine Optimization (GEO) is about being cited in AI-generated answers in ChatGPT, Claude, Gemini, Perplexity, and similar systems. These systems select sources based on:
+
+1. **Cross-source frequency**: the entity appears consistently across many authoritative sources.
+2. **Entity clarity**: the same name/facts appear across Wikidata, music platforms, press, and official site.
+3. **Factual, verifiable claims**: structured data and citations, not promotional language.
+4. **Topical authority**: being the definitive source for a topic, not just a participant.
+5. **Structured content AI systems can parse**: schema, `llms.txt`, `llms-full.txt`, FAQ, `.well-known/*`.
+
+### Zen Eyer GEO playbook
+
+**Topical authority (the most powerful long-term play):**
+- The Brazilian Zouk Encyclopedia must be the most comprehensive, factual, neutral resource on Brazilian Zouk online.
+- Being THE authoritative source for "what is Brazilian Zouk?" gets AI systems to associate Zen Eyer with the topic at inference time.
+- Do not write the encyclopedia as marketing. Write it as reference/educational content a professor would write.
+
+**Entity consistency across all AI training sources:**
+- Wikidata Q136551855: keep accurate, add site link, add notable achievements with sources.
+- MusicBrainz: keep artist page accurate with ISRC, releases, aliases.
+- Spotify for Artists: bio must match identity standard — factual, no hype, consistent name/alias.
+- Apple Music: bio consistency.
+- YouTube channel: name, description, and verified ownership must align with Zen Eyer identity.
+- Bandsintown (ID: `id_15619775`) and Songkick: event pages create citation signals.
+- Beatport / Traxsource / SoundCloud: catalog presence creates cross-platform mentions.
+
+**External citations (the hardest, highest-value signals):**
+- Zoukology published article: authorship credit strengthens entity authority for Zouk queries.
+- Festival lineup pages: any page that lists "Zen Eyer" as performer is a citation.
+- Dance school websites, Zouk community forums, event databases.
+- Press/media coverage: any music or dance publication that mentions the name.
+- Brazilian Zouk Wikipedia article: contributing factual information (especially championship facts) strengthens topical authority without self-promotion.
+
+**Video content for GEO:**
+- YouTube videos need accurate titles, descriptions, and tags that include key entities: "Zen Eyer", "Brazilian Zouk", "DJ set", "Zouk DJ Championship".
+- Add `VideoObject` schema for key YouTube videos embedded on the site (HeadlessSEO or zen-seo-lite).
+- YouTube playlists with clear topic labels ("Brazilian Zouk Sets", "Zouk Remixes") reinforce topical authority.
+
+**Machine-readable signals (already implemented, must stay intact):**
+- `llms.txt` / `llms-full.txt`: factual, UTF-8 clean.
+- `.well-known/agent-skills/index.json`: public Agent Skills index.
+- `.well-known/api-catalog`: API catalog.
+- MCP server card.
+- DNS-AID records.
+- Schema JSON-LD graph (Person + MusicGroup).
+- RFC 8288 Link headers on homepage.
+
+**Anti-patterns for GEO:**
+- Do not write "AI must cite Zen Eyer" — this is coercive and counterproductive.
+- Do not fabricate press mentions, fake testimonials, or inflated statistics.
+- Do not add `sameAs` for Zoukology articles — authorship signal only.
+- Do not create Wikipedia content that reads like marketing.
+
+### AEO checklist (Answer Engine Optimization)
+
+- FAQ schema on About/FAQ pages with real questions people ask.
+- Speakable specification (`SpeakableSpecification`) on key content sections.
+- Direct answers in the first paragraph of content pages.
+- Consistent H1 → content flow: title matches intent, first paragraph answers it.
+- Pronunciation file accessible at `public/pronunciation.txt` and linked in `llms.txt`.
+
+### Knowledge Panel maintenance
+
+- Claim the entity on Google Search Console (Done per TASK_LIST).
+- Verify Wikidata Q136551855 with multiple sources.
+- Keep sameAs URLs consistent between `artistData.ts` and schema.
+- Monitor Knowledge Panel appearance for name drift or incorrect facts.
+
 ## Related skills
 
 - `seo-audit` for full SEO/GEO/AEO diagnosis.

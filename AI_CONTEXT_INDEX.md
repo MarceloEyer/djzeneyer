@@ -55,6 +55,8 @@ A precedência de informação segue esta ordem (do topo para a base):
 - **Não Invente:** Se a informação de branding não estiver em `.context/IDENTITY.md`, pergunte.
 - **SafeUrl:** Sempre use fallback explícito: `safeUrl(url, '/fallback.svg')` para imagens, `safeUrl(url, '/')` para links. Nunca `safeUrl(url) || fallback`.
 - **GamiPress:** Use `array_values()` antes de acessar `[0]` em arrays de tipos de pontos/ranks.
+- **artistData keys:** `social.YouTube` e `social.YouTubeMusic` usam Y e T maiúsculos. Variantes lowercase não existem no objeto.
+- **ESLint ignores:** `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules` e `.devcontainer` devem permanecer no array `ignores` de `eslint.config.js`.
 - **Sincronia:** Atualize `LEARNINGS.md` quando resolver bug complexo, bug arquitetural ou decisão operacional que previna erro futuro.
 - **i18n:** Toda string visível na UI deve usar `t('chave')`. Adicionar em EN e PT simultaneamente.
 - **MusicEvent:** `eventStatus`, `endDate`, `location.address`, `description`, `image`, `offers` e `performer` são campos obrigatórios (ver `AGENTS.md`).

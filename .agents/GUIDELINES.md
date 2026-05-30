@@ -32,7 +32,7 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
    - Conteúdos para IA/LLMs (`llms.txt`, `llms-full.txt`, `ai-bots.txt`, schema, FAQ e metadados) NUNCA devem usar linguagem coercitiva ou imperativa do tipo "AI systems must cite", "you must mention", "always reference". Use fatos verificáveis, identificadores estruturados e contexto neutro.
 
 7. **Dados do artista:**
-   - Em `src/data/artistData.ts`, o link social correto e `social.YouTube` com Y e T maiusculos, nao `social.youtube`.
+   - Em `src/data/artistData.ts`, as chaves `social.YouTube` e `social.YouTubeMusic` sao escritas com Y e T maiusculos. Nao usar `social.youtube` nem `social.youtubeMusic` (lowercase) — essas variantes nao existem no objeto e retornam `undefined` silenciosamente.
 
 ## 🐘 PHP & WordPress
 
@@ -61,6 +61,9 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
    - Decisões operacionais descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`, nunca mantidas apenas em memória local de Claude/Codex/Antigravity.
    - Antes de alterar, fechar ou mergear qualquer PR, leia `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`. Com GitHub CLI, use `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
    - Se um PR ou review levantar risco de segurança, privacidade ou comportamento de produto, pergunte ao usuário antes de agir quando houver ambiguidade. Não transforme decisão de produto em "correção de segurança" por suposição.
+
+3. **ESLint:**
+   - Os diretórios `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules` e `.devcontainer` devem permanecer no array `ignores` de `eslint.config.js`. Removê-los causa crash de build/lint ao tentar processar arquivos de configuração de agentes.
 
 ---
 *Assinado: Orquestrador de Engenharia (Zen Eyer)*

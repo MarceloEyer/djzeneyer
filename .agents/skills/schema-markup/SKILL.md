@@ -121,9 +121,41 @@ If verdict is Do not implement, stop and explain why.
 | `Product` | Real purchasable products with visible price/availability/offers |
 | `BreadcrumbList` | Only when breadcrumbs or equivalent structure exist |
 | `ItemList` | Lists of releases/events/resources when visible |
+| `VideoObject` | YouTube/video embeds when video has title, description, thumbnail and upload date |
+| `SpeakableSpecification` | Content sections optimized for voice search / AEO |
 
 Avoid `LocalBusiness` unless there is a real physical business location.
 Avoid self-serving `Review`/`AggregateRating`.
+
+## VideoObject guidance
+
+Use `VideoObject` when a YouTube video is embedded on a public page and metadata is available:
+
+Required properties:
+- `name`: video title.
+- `description`: video description (can be truncated).
+- `thumbnailUrl`: YouTube thumbnail URL.
+- `uploadDate`: ISO date.
+- `contentUrl` or `embedUrl`: YouTube embed URL preferred.
+
+Optional but valuable:
+- `duration`: ISO 8601 duration (e.g., `PT3M45S`).
+- `author`: reference to `/#artist` or `/#musicgroup`.
+
+Owner: `HeadlessSEO.tsx` for inline embeds; `zen-seo-lite` for WordPress posts/releases with embedded video.
+
+## SpeakableSpecification guidance
+
+Add `SpeakableSpecification` to pages with content that answers direct questions, especially About and FAQ pages.
+
+```json
+{
+  "@type": "SpeakableSpecification",
+  "cssSelector": ["h1", "[data-speakable]"]
+}
+```
+
+Use real CSS selectors that exist in the rendered DOM. Do not add selectors for elements that do not exist.
 
 ## MusicEvent requirements
 

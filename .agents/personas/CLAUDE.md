@@ -146,7 +146,7 @@ Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser
 - ORCID nao entra no grafo do artista.
 - `sameAs` usa apenas URLs oficiais aprovadas.
 - O canal YouTube oficial e o unico canal de YouTube em `sameAs`.
-- Em `src/data/artistData.ts`, o link social correto e `social.YouTube` com Y e T maiusculos, nao `social.youtube`.
+- Em `src/data/artistData.ts`, as chaves `social.YouTube` e `social.YouTubeMusic` usam Y e T maiusculos. Nao usar `social.youtube` nem `social.youtubeMusic` — essas variantes lowercase nao existem no objeto.
 - `q4` e `q5` em FAQ so existem quando a chave do locale atual existe.
 - Se um PR duplica outro tema, a portagem valida vai para o branch canonico e o duplicado pode ser fechado.
 - PRs de dependencia precisam atualizar `package-lock.json` junto com `package.json`.

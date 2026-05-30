@@ -28,7 +28,7 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 | Build | ESLint 10.1.0, Prettier 3.8.1, Puppeteer 24.40.0, OXC como minificador padrao |
 | Backend | WordPress 6.9+, PHP 8.3+, WooCommerce 10.5+ com HPOS ativo, GamiPress |
 | Infra | Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions |
-| Node | 20+ |
+| Node | >=22.13.0 |
 
 ## Pontos que se repetem no projeto
 
@@ -39,6 +39,9 @@ Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de
 - `package-lock.json` acompanha `package.json` em mudancas de dependencia.
 - Deploy Vite preserva assets hashados antigos para evitar `ChunkLoadError` em abas abertas apos troca de build.
 - Review de bots e triagem, nao veredito final.
+- Em `src/data/artistData.ts`, `social.YouTube` e `social.YouTubeMusic` usam Y e T maiusculos. Nao usar lowercase.
+- `fetch-depth: 2` nos CI workflows. ESLint ignores: `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`.
+- Conteudo publico: `ai-train=yes`, `search=yes`, `ai-input=yes` — nao restringir sem pedido explicito.
 
 ## O que este arquivo nao faz
 
