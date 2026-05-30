@@ -1,88 +1,119 @@
 ---
 name: wp-phpstan
-description: "Use when configuring, running, or fixing PHPStan static analysis in WordPress projects (plugins/themes/sites): phpstan.neon setup, baselines, WordPress-specific typing, and handling third-party plugin classes."
+description: "Use when configuring, running, or fixing PHPStan/static analysis for djzeneyer.com WordPress plugins: phpstan.neon, baselines, stubs, WordPress-specific typing and third-party plugin classes."
 risk: safe
 source: "https://github.com/WordPress/agent-skills"
 date_added: "2026-03-05"
-compatibility: "Targets WordPress 6.9+ (PHP 7.2.24+). Requires Composer-based PHPStan."
+updated: "2026-05-30"
+compatibility: "Targets WordPress 6.9+ and PHP 8.3+ for this project. Requires Composer-based PHPStan."
 ---
 
-# WP PHPStan
+# WP PHPStan — djzeneyer.com
 
 ## When to use
 
-Use this skill when working on PHPStan in a WordPress codebase, for example:
+Use this skill when working on PHPStan/static analysis in the custom WordPress plugins, for example:
 
-- Setting up or updating `phpstan.neon` / `phpstan.neon.dist`
-- Generating or updating `phpstan-baseline.neon`
-- Fixing PHPStan errors via WordPress-friendly PHPDoc (REST requests, hooks, query results)
-- Handling third-party plugin/theme classes safely (stubs/autoload/targeted ignores)
-- **For djzeneyer.com:** Use this to ensure the custom plugins (`zen-bit`, `zengame`, `zeneyer-auth`, `zen-seo-lite`) are free of silent PHP bugs and adhere to strict typing.
+- Setting up or updating `phpstan.neon` / `phpstan.neon.dist`.
+- Generating or updating a baseline.
+- Fixing PHPStan errors via WordPress-friendly PHPDoc.
+- Typing REST requests, hooks, DB results, GamiPress, WooCommerce and plugin classes.
+- Handling third-party plugin/theme classes safely.
 
 ## Inputs required
 
-- `wp-project-triage` output (current plugins and structure)
-- Whether adding/updating Composer dev dependencies is allowed (stubs).
-- Whether changing the baseline is allowed for this task.
+- Current plugin structure, ideally from `wp-project-triage`.
+- Whether adding/updating Composer dev dependencies is allowed.
+- Whether changing a baseline is allowed.
+- Target plugins and analysis scope.
+
+## Current first-party plugin paths
+
+Keep analysis focused on first-party code:
+
+- `plugins/zen-bit/`.
+- `plugins/zengame/`.
+- `plugins/zeneyer-auth/`.
+- `plugins/zen-seo-lite/`.
+- `plugins/zen-mailer/` when present in the task.
+- `plugins/zen-plugins-overview/` when present in the task.
+
+Exclude generated and vendored code such as `vendor/`, `node_modules/`, `dist/`, `build/`.
 
 ## Procedure
 
-### 0) Discover PHPStan entrypoints (deterministic)
-1. Inspect PHPStan setup (config, baseline, scripts):
-   - Check for `phpstan.neon` or `phpstan.neon.dist` in the repo root or plugin directories.
-   - Check `composer.json` for `phpstan/phpstan` and `szepeviktor/phpstan-wordpress`.
+### 0) Discover setup
 
-### 1) Ensure WordPress core stubs are loaded
+Check for:
 
-`szepeviktor/phpstan-wordpress` or `php-stubs/wordpress-stubs` are effectively required. Without it, expect a high volume of errors about unknown WordPress core functions.
+- `phpstan.neon` or `phpstan.neon.dist`.
+- `composer.json` in root or plugin directories.
+- `phpstan/phpstan`.
+- `szepeviktor/phpstan-wordpress` or `php-stubs/wordpress-stubs`.
+- WooCommerce/GamiPress stubs if needed.
 
-- Confirm the package is installed in `composer.json`.
-- Ensure the PHPStan config references the stubs.
+### 1) Load WordPress stubs
 
-### 2) Ensure a sane `phpstan.neon` for WordPress projects
+WordPress stubs are effectively required. Without them, expect noise around core WP functions/classes.
 
-- Keep `paths` focused on first-party code:
-  - `plugins/zen-bit/`
-  - `plugins/zengame/`
-  - `plugins/zeneyer-auth/`
-  - `plugins/zen-seo-lite/`
-- Exclude generated and vendored code (`vendor/`, `node_modules/`, `dist/`).
-- Keep `ignoreErrors` entries narrow and documented.
+Confirm the package is installed and referenced.
 
-### 3) Fix errors with WordPress-specific typing (preferred)
+### 2) Keep config focused
 
-Prefer correcting types over ignoring errors. Common WP patterns that need help:
+- Start with first-party plugin paths.
+- Exclude vendor/generated files.
+- Keep `ignoreErrors` narrow, documented and reviewed.
+- Do not baseline new errors introduced by the current task.
 
-- **REST endpoints:** Type request parameters using `WP_REST_Request`.
-- **Hook callbacks:** Add accurate `@param` types for callback args in `add_action` / `add_filter`.
-- **Database results:** Use array shapes or object shapes for `$wpdb->get_results()` calls.
-- **GamiPress/WooCommerce:** Use appropriate stubs if available to type-check bridge logic.
+### 3) Prefer type fixes over ignores
 
-### 4) Handle third-party plugin/theme classes (only when needed)
+Common WP patterns needing PHPDoc:
 
-When integrating with plugins not present in the analysis environment (e.g., GamiPress, WooCommerce):
+- REST callbacks: `WP_REST_Request` and `WP_REST_Response`/`WP_Error` return possibilities.
+- Hook callbacks: accurate `@param` types for `add_action` / `add_filter`.
+- `$wpdb->get_results()`: array/object shapes.
+- `get_post_meta()`: scalar vs array vs empty string.
+- `get_option()`: default value and return type.
+- GamiPress arrays: associative arrays, not numeric indexes.
+- WooCommerce HPOS APIs: use WooCommerce types/stubs when available.
 
-- Prefer plugin-specific stubs: `php-stubs/woocommerce-stubs`.
-- If PHPStan still cannot resolve classes, add targeted `ignoreErrors` patterns for the vendor prefix.
+### 4) Third-party plugin classes
+
+When GamiPress/WooCommerce classes are absent from the analysis environment:
+
+- Prefer stubs when available.
+- Use targeted `ignoreErrors` only for vendor-specific symbols.
+- Do not hide first-party type errors behind broad ignores.
 
 ### 5) Baseline management
 
-- Generate a baseline once for legacy code, then reduce it over time.
-- Do not “baseline” newly introduced errors in the custom plugins.
+- Baseline legacy errors once if needed.
+- Reduce baseline over time.
+- Do not grow baseline in feature/security PRs unless explicitly justified.
+- Explain baseline changes in PR body.
 
 ## Verification
 
-- Run PHPStan: `vendor/bin/phpstan analyse` or `composer run phpstan`.
-- Confirm the baseline file (if used) is included and didn’t grow unexpectedly.
-- No "Class not found" errors for core WP functions or first-party plugins.
+```bash
+vendor/bin/phpstan analyse
+composer run phpstan
+```
 
-## Failure modes / debugging
+Confirm:
 
-- **“Class not found”:** Confirm autoloading/stubs, or add a narrow ignore pattern.
-- **Huge error counts:** Reduce `paths`, add `excludePaths`, start at level 0, then ratchet up.
-- **Inconsistent types around hooks:** Add explicit PHPDoc rather than runtime guards.
+- No unknown WordPress core functions/classes.
+- No unexpected baseline growth.
+- First-party plugin paths are included.
+- New code does not rely on broad ignores.
+
+## Failure modes
+
+- Huge error count: missing stubs or too-broad paths.
+- Class not found: autoload/stub issue.
+- False positives around hooks: add precise PHPDoc.
+- GamiPress/WooCommerce types missing: add stubs or narrow ignores.
+- Baseline hides a real newly introduced bug.
 
 ## Escalation
 
-- If a type depends on a third-party plugin API you can’t confirm, ask for the dependency version or source.
-- If fixing requires adding new Composer dependencies (stubs/extensions), confirm it with the user first.
+If a type depends on a third-party plugin API you cannot confirm, ask for version/source. If fixing requires adding Composer dependencies, confirm before changing dependency files.
