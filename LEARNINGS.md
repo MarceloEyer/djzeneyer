@@ -59,7 +59,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **News vs Releases:** O produto público agora se chama Releases. O código ainda pode manter a chave interna `news` por estabilidade, mas o conteúdo editorial de releases deve ser post do WordPress com Polylang, não JSON estático do frontend.
 - **Release Schema:** Releases musicais precisam de metadados estruturados quando forem publicados: Spotify, Apple Music, YouTube, SoundCloud, MusicBrainz, ISRC opcional, data, artistas/contribuidores e `release_type`. `zen-seo-lite` é o lugar preferido para esses campos e schemas.
 - **Booking vs Press Kit:** São fluxos diferentes. Press Kit é um asset (PDF), Booking é uma página de conversão.
-- **YouTube (branding):** A capitalização oficial é `YouTube` (Y e T maiúsculos). O ícone é `YouTubeIcon` em `src/components/icons/BrandIcons.tsx`. A chave em `artistData.ts` é `social.YouTube`.
+- **YouTube (branding):** A capitalização oficial é `YouTube` (Y e T maiúsculos). O ícone é `YouTubeIcon` em `src/components/icons/BrandIcons.tsx`. As chaves em `artistData.ts` são `social.YouTube` (canal principal) e `social.YouTubeMusic` (canal separado no YouTube Music). Nunca usar variantes lowercase `social.youtube` ou `social.youtubeMusic`.
 
 ## 🤖 Coordenação de Agentes
 

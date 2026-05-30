@@ -13,7 +13,7 @@
 |---|---|---|
 | Títulos mundiais | 2× Campeão Mundial — Zouk DJ Championship 2022 (Best DJ Performance + Best Remix) | Alto — credencial objetiva, não autoproclamada |
 | Conceito próprio | "Cremosidade" — filosofia sonora única, proprietária | Alto — diferencia de todos os outros DJs de Zouk |
-| Presença internacional | 15+ países, 4 continentes | Alto — prova social para organizadores europeus |
+| Presença internacional | 14 países presenciais, 4 continentes | Alto — prova social para organizadores europeus |
 | Autoridade digital | Wikidata Q136551855, MusicBrainz, ISNI, Google KGMID, Discogs, RA.co | Médio — base sólida, mas subaproveitada |
 | Streaming | Spotify, Apple Music, Deezer, Tidal, Amazon Music, SoundCloud, Bandcamp, Mixcloud, Last.fm | Médio — presença, mas baixo volume de lançamentos |
 | Infraestrutura | Site com gamificação, loja, newsletter, SEO headless, llms.txt, Schema.org completo | Alto — poucos DJs de nicho têm isso |
@@ -71,7 +71,7 @@ Zen Eyer não é "mais um DJ de Zouk". É o único que combina:
 - **Títulos mundiais verificáveis** (não autoproclamados)
 - **Um conceito filosófico próprio** (Cremosidade) documentado e proprietário
 - **Inteligência verificada** (Mensa) aplicada à curadoria e às transições
-- **Presença em 15+ países** com histórico documentado
+- **Presença em 14 países presenciais** com histórico documentado
 
 **Mensagem central:** *"Zen Eyer não toca músicas. Ele cria o estado emocional em que você dança."*
 
@@ -570,7 +570,7 @@ Aparições em podcasts geram backlinks de autoridade e conteúdo transcrito que
 | Festivais internacionais/ano | ~8 | 14 | 20 | Agenda |
 | Artigos de blog publicados | 0 | 5 | 15 | WordPress |
 | Aparições em podcasts | 0 | 3 | 8 | Manual |
-| Países com presença em festivais | 15+ | 18 | 22+ | Wikidata/Agenda |
+| Países com presença em festivais | 14 | 18 | 22+ | Wikidata/Agenda |
 | Wikipedia EN | ❌ Não existe | ✅ Publicado | ✅ Expandido | Wikipedia |
 | IMDb entry | ❌ Não existe | ✅ Criado | ✅ Verificado | IMDb |
 | Google Knowledge Panel reivindicado | ✅ Reivindicado | ✅ Foto oficial | ✅ Completo | Google |
