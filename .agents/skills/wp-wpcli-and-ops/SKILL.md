@@ -1,52 +1,63 @@
 ---
 name: wp-wpcli-and-ops
-description: "Use when working with WP-CLI (wp) for WordPress operations: safe search-replace, db export/import, plugin/theme/user/content management, cron, cache flushing, multisite, and scripting/automation with wp-cli.yml."
-risk: safe
+description: "Use when working with WP-CLI or WordPress operations for djzeneyer.com: safe search-replace, DB export/import, plugin/theme management, cron, cache/rewrite flushing, LiteSpeed/Cloudflare-aware ops and automation."
+risk: medium
 source: "https://github.com/WordPress/agent-skills"
 date_added: "2026-03-05"
-compatibility: "Targets WordPress 6.9+ (PHP 7.2.24+). Requires WP-CLI in the execution environment."
+updated: "2026-05-30"
+compatibility: "Targets WordPress 6.9+ and PHP 8.3+ for this project. Requires WP-CLI in the execution environment."
 ---
 
-# WP-CLI and Ops
+# WP-CLI and Ops — djzeneyer.com
 
 ## When to use
 
-Use this skill when the task involves WordPress operational work via WP-CLI, including:
+Use this skill when the task involves WordPress operational work via WP-CLI or SSH:
 
-- `wp search-replace` (URL changes, domain migrations, protocol switch)
-- DB export/import, resets, and inspections (`wp db *`)
-- Plugin/theme install/activate/update, language packs
-- Cron event listing/running
-- Cache/rewrite flushing
-- Building repeatable scripts (`wp-cli.yml`, shell scripts, CI jobs)
+- URL/domain/protocol search-replace.
+- DB export/import/checks.
+- Plugin/theme/user/content management.
+- Cron event listing/running.
+- Cache and rewrite flushing.
+- LiteSpeed/Cloudflare-aware operational steps.
+- Repeatable scripts or CI jobs.
+
+Do not use this skill to change product policy, SEO strategy, public AI resources or code architecture by itself.
 
 ## Inputs required
 
-- Where WP-CLI will run: local dev, staging, or **production** (Hostinger VPS for this project).
-- WordPress root path: `--path=/home/u790739895/domains/djzeneyer/public_html`
-- Whether commands should run network-wide (this project is single-site).
+- Environment: local, staging or production.
+- Exact WordPress root path.
+- Whether write operations are approved.
+- Whether a backup is required.
+- Whether the operation affects cache, redirects, Polylang, public AI/search resources or user data.
 
-## Infrastructure Context (djzeneyer.com)
+## Infrastructure context
 
-- **WP Root:** `/home/u790739895/domains/djzeneyer/public_html`
-- **Site URL:** `https://djzeneyer.com`
-- **Hosting:** Hostinger VPS (LiteSpeed)
-- **Access:** SSH with `SSH_PRIVATE_KEY` (GitHub Secrets)
+- WP root: `/home/u790739895/domains/djzeneyer/public_html`.
+- Site URL: `https://djzeneyer.com`.
+- Hosting: Hostinger VPS + LiteSpeed.
+- CDN/security layer: Cloudflare.
+- Project is single-site unless code/admin confirms otherwise.
 
-## Procedure
+## Production guardrails
 
-### 0) Guardrails: confirm environment and blast radius
+Assume production unless proven otherwise.
 
-WP-CLI commands can be destructive. Before running anything that writes:
+Before running any write/destructive operation:
 
-1. Confirm environment (dev/staging/prod) — **assume production unless told otherwise**
-2. Confirm `--path` is correct
-3. Make a backup for risky operations: `wp db export backup-$(date +%Y%m%d).sql`
+1. Confirm environment.
+2. Confirm `--path`.
+3. Confirm blast radius.
+4. Create backup for risky DB operations.
+5. Prefer dry-run where available.
+6. Avoid full cache purges during traffic unless necessary.
+7. Do not change public AI/search policy via ops commands.
 
-### 1) Common commands for this project
+## Common commands
 
 ```bash
-# Always target with explicit path
+# Always target explicit path
 wp --path=/home/u790739895/domains/djzeneyer/public_html <command>
 
 # Check WP status
@@ -56,14 +67,13 @@ wp core verify-checksums
 # Plugin management
 wp plugin list
 wp plugin activate zen-bit
-wp plugin deactivate zen-bit --uninstall
 
 # Cache management
 wp cache flush
-wp transient delete --all
-wp litespeed-purge all  # LiteSpeed Cache CLI (if available)
+wp transient delete --expired
+wp litespeed-purge all  # only if available and approved
 
-# Rewrite rules (after slug changes)
+# Rewrite rules after slug/rewrite changes
 wp rewrite flush --hard
 
 # Cron
@@ -74,45 +84,50 @@ wp cron event run <hook>
 wp db export /tmp/backup-$(date +%Y%m%d).sql
 wp db check
 
-# Search-replace (always dry-run first)
+# Search-replace: always dry-run first
 wp search-replace 'old-domain.com' 'djzeneyer.com' --dry-run --all-tables
 wp search-replace 'old-domain.com' 'djzeneyer.com' --all-tables
 ```
 
-### 2) Safe URL/domain migration (`search-replace`)
+Avoid examples that deactivate a plugin with `--uninstall` unless the user explicitly wants uninstall behavior.
 
-Follow this safe sequence:
+## Safe search-replace
 
-1. `wp db export` (backup)
-2. `wp search-replace --dry-run` (review impact)
-3. Run the real replace
-4. `wp rewrite flush --hard`
-5. `wp cache flush`
+1. `wp db export`.
+2. `wp search-replace --dry-run`.
+3. Review affected tables/counts.
+4. Run real command only if expected.
+5. `wp rewrite flush --hard` if URLs/slugs/routes changed.
+6. Clear relevant caches.
+7. Verify front-end, REST and canonical URLs.
 
-### 3) After slug changes (relevant for this project)
+Use `--precise` if serialized data safety matters.
 
-When WordPress page slugs are updated (like the EN/PT slug migration):
+## After slug/route changes
 
 ```bash
-# Flush rewrite rules after slug changes
 wp rewrite flush --hard --path=/home/u790739895/domains/djzeneyer/public_html
-
-# Clear all caches
 wp cache flush --path=/home/u790739895/domains/djzeneyer/public_html
-
-# Clear transients (ZenGame, ZenBIT caches)
-wp transient delete --all --path=/home/u790739895/domains/djzeneyer/public_html
-
-# Verify Polylang has correct language associations
+wp transient delete --expired --path=/home/u790739895/domains/djzeneyer/public_html
 wp post list --post_type=page --fields=ID,post_title,post_name --path=/home/u790739895/domains/djzeneyer/public_html
 ```
 
-### 4) Automation patterns (CI/CD)
+Also verify:
 
-For the GitHub Actions deploy pipeline:
+- `src/config/routes-slugs.json` if frontend routes changed.
+- sitemap/prerender output if public route behavior changed.
+- Polylang associations if translated slugs changed.
+
+## Cache notes
+
+- Do not add NOCACHE for `/wp-json/`, `/feed/` or `/api/` by default.
+- Public stable REST responses can be cached.
+- Prefer targeted purge when possible.
+- HSTS belongs to Cloudflare; CSP belongs to `inc/csp.php`.
+
+## CI/CD pattern
 
 ```yaml
-# .github/workflows/deploy.yml pattern
 - name: Flush WP Cache after deploy
   run: |
     ssh $SERVER "wp --path=$WP_ROOT rewrite flush --hard"
@@ -120,19 +135,26 @@ For the GitHub Actions deploy pipeline:
     ssh $SERVER "wp --path=$WP_ROOT transient delete --expired"
 ```
 
+Only use broad purges when the deployment actually changes routes/cache-sensitive public output.
+
 ## Verification
 
-- Confirm intended side effects: correct URLs updated, plugins in expected state, caches flushed
-- Run `wp core verify-checksums` to confirm core files are intact
-- Check `wp doctor check` (if available) for common issues
+- Intended side effects happened.
+- No unexpected plugin state changes.
+- Caches/rewrite rules behave as expected.
+- REST endpoints still respond.
+- Public AI/search resources remain reachable.
+- Private/authenticated data remains protected.
 
-## Failure modes / debugging
+## Failure modes
 
-- **"Error: This does not seem to be a WordPress installation."** → wrong `--path`
-- **Search-replace causes unexpected serialization issues** → use `--precise` flag for serialized data
-- **Commands fail via SSH** → check that WP-CLI is in `$PATH` on the server
+- Wrong `--path`.
+- Search-replace affects serialized data unexpectedly.
+- Commands fail because WP-CLI missing from `$PATH`.
+- Full cache flush hides a bug temporarily.
+- Rewrite flush not run after slug/CPT changes.
+- Polylang associations broken after slug operations.
 
 ## Escalation
 
-- If you cannot confirm environment safety, do not run write operations.
-- If the WP-CLI command affects Polylang language settings, verify in the WordPress admin after running.
+If you cannot confirm environment safety, do not run write operations. If operation affects Polylang, auth, payment/support info, AI/search public resources or production DB, ask first.
