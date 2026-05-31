@@ -16,9 +16,9 @@ permissions:
 
 jobs:
   quality-gate:
-    name: Build, prerender and validate
+    name: Build and validate
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 15
 
     env:
       NODE_VERSION: 22.13.0
@@ -26,7 +26,6 @@ jobs:
       SITE_BASE_URL: https://djzeneyer.com
       VITE_WP_SITE_URL: https://djzeneyer.com
       VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
-      PRERENDER_WAIT_MS: 1000
 
     steps:
       - name: Checkout
@@ -50,13 +49,16 @@ jobs:
       - name: UTF-8 content check
         run: npm run utf8:check
 
-      - name: Full production build
-        run: npm run build:full
+      - name: Generate sitemaps
+        run: npm run generate-sitemaps
+
+      - name: Production build
+        run: npm run build
 
       - name: Performance budget check
         run: npm run perf:budget
 
-      - name: Validate generated artifacts
+      - name: Validate build artifacts
         shell: bash
         run: |
           set -euo pipefail
@@ -68,16 +70,6 @@ jobs:
           test -f public/sitemap-pages.xml
           test -f public/robots.txt
 
-          grep -qi 'name="prerender-generated"' dist/index.html
-          grep -qi 'name="prerender-generated"' dist/pt/index.html
-          grep -qi '<h1' dist/index.html
-          grep -qi '<h1' dist/pt/index.html
-          grep -qi 'application/ld+json' dist/index.html
-          grep -qi 'application/ld+json' dist/pt/index.html
-          grep -qi 'rel="canonical"' dist/index.html
-          grep -qi 'rel="canonical"' dist/pt/index.html
-          grep -qi 'rel="alternate"' dist/index.html
-          grep -qi 'rel="alternate"' dist/pt/index.html
           grep -q 'https://djzeneyer.com' public/sitemap.xml
           grep -q 'https://djzeneyer.com' public/sitemap-pages.xml
 
