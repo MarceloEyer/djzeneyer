@@ -1,15 +1,15 @@
 # API.md - Curated API map
 
 > Short map for AI agents and contributors.
-> The exhaustive route inventory lives in `docs/api-endpoints.md`.
 > If there is any conflict, the real code and `register_rest_route()` win first.
 
 Base REST: `https://djzeneyer.com/wp-json`
 
 ## Scope
 
-Only the project-owned namespaces and the theme routes that AI agents need most often are listed here.
-Theme REST routes live in `inc/api.php` and `inc/ai-llm.php`.
+Only the project-owned namespaces and the theme routes that AI agents need most often are listed here. Theme REST routes live in `inc/api.php` and `inc/ai-llm.php`.
+
+This is a curated map, not an exhaustive generated inventory. Verify anything stale against `register_rest_route()` in code before changing consumers.
 
 ## Project namespaces
 
@@ -90,10 +90,11 @@ Consumption model:
 
 - `theme-config` and `/stats` were removed from this summary because they are not registered in the current code.
 - `GET /ai-context` was added because it exists in `inc/ai-llm.php`.
+- The stale pointer to `docs/api-endpoints.md` was removed because this repo currently uses `.context/API.md` as the maintained curated API map.
 
 ## Consumption rules
 
 1. Prefer backend filtering.
 2. Avoid over-fetch when a route supports fields or filters.
-3. `docs/api-endpoints.md` is the exhaustive inventory.
-4. Use `register_rest_route()` in code to verify anything that looks stale.
+3. Use `register_rest_route()` in code to verify anything that looks stale.
+4. Do not expose private/authenticated user data through public AI/search surfaces unless that is an explicit product requirement.

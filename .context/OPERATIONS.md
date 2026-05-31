@@ -1,6 +1,6 @@
 # Operational Memory & Agent Coordination
 
-Version: 1.0.0
+Version: 1.1.0
 
 Este arquivo consolida decisões operacionais que antes estavam apenas em memórias locais de agentes. Ele deve ser tratado como contexto versionado para Claude, Codex, Jules, Gemini, Copilot e qualquer outro agente trabalhando no repositório.
 
@@ -60,6 +60,13 @@ gh pr view <number> --json body,comments,reviews,reviewThreads,reviewRequests,me
 - O Google Identity Services pode emitir warning de `Cross-Origin-Opener-Policy` no console.
 - O fluxo atual funciona via FedCM.
 - Se houver warning isolado, não assumir quebra de login. Validar o POST de auth e o comportamento real antes de alterar headers.
+
+## Contexto de Agentes
+
+- O repositório já possui `.agents/personas/CLAUDE.md` como contexto local completo para Claude Code.
+- Não criar outro `CLAUDE.md` na raiz como fonte paralela enquanto a arquitetura de contexto vigente usar `.agents/personas/`.
+- Conteúdo útil para todos os agentes deve ser promovido para `AGENTS.md`, `.agents/GUIDELINES.md`, `.context/OPERATIONS.md` ou `LEARNINGS.md`, conforme a natureza da regra.
+- Arquivos de persona podem resumir e direcionar uso local, mas não devem redefinir hierarquia, stack ou regras globais em conflito com `AI_CONTEXT_INDEX.md`.
 
 ## Fonte de Verdade
 

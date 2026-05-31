@@ -1,94 +1,157 @@
 ---
 name: clean-code
-description: "Applies principles from Robert C. Martin's 'Clean Code'. Use this skill when writing, reviewing, or refactoring code to ensure high quality, readability, and maintainability. Covers naming, functio..."
+description: Practical clean code and refactoring guidance for djzeneyer.com. Use for code review/refactor quality while respecting project architecture, tests, i18n, SEO/AI surfaces and public/private data boundaries.
 risk: safe
-source: "ClawForge (https://github.com/jackjin1997/ClawForge)"
-date_added: "2026-02-27"
+source: community-adapted
+updated: "2026-05-30"
 ---
 
-# Clean Code Skill
+# Clean Code — djzeneyer.com
 
-This skill embodies the principles of "Clean Code" by Robert C. Martin (Uncle Bob). Use it to transform "code that works" into "code that is clean."
+## Purpose
 
-## 🧠 Core Philosophy
-> "Code is clean if it can be read, and enhanced by a developer other than its original author." — Grady Booch
+Improve readability, maintainability and correctness without breaking project-specific architecture or product decisions.
 
-## When to Use
+Clean code in this repo means code that is:
+
+- easy to read and modify;
+- aligned with `AI_CONTEXT_INDEX.md`, `.agents/GUIDELINES.md` and `.context/*`;
+- safe for WordPress/PHP and React/TypeScript boundaries;
+- compatible with i18n, SEO, prerender and public AI/search resources;
+- conservative around public/private data boundaries.
+
+## When to use
+
 Use this skill when:
-- **Writing new code**: To ensure high quality from the start.
-- **Reviewing Pull Requests**: To provide constructive, principle-based feedback.
-- **Refactoring legacy code**: To identify and remove code smells.
-- **Improving team standards**: To align on industry-standard best practices.
 
-## 1. Meaningful Names
-- **Use Intention-Revealing Names**: `elapsedTimeInDays` instead of `d`.
-- **Avoid Disinformation**: Don't use `accountList` if it's actually a `Map`.
-- **Make Meaningful Distinctions**: Avoid `ProductData` vs `ProductInfo`.
-- **Use Pronounceable/Searchable Names**: Avoid `genymdhms`.
-- **Class Names**: Use nouns (`Customer`, `WikiPage`). Avoid `Manager`, `Data`.
-- **Method Names**: Use verbs (`postPayment`, `deletePage`).
+- Reviewing PRs.
+- Refactoring legacy code.
+- Splitting large components/functions.
+- Removing duplication.
+- Improving naming and module boundaries.
+- Turning ad-hoc fixes into maintainable patterns.
 
-## 2. Functions
-- **Small!**: Functions should be shorter than you think.
-- **Do One Thing**: A function should do only one thing, and do it well.
-- **One Level of Abstraction**: Don't mix high-level business logic with low-level details (like regex).
-- **Descriptive Names**: `isPasswordValid` is better than `check`.
-- **Arguments**: 0 is ideal, 1-2 is okay, 3+ requires a very strong justification.
-- **No Side Effects**: Functions shouldn't secretly change global state.
+Do not use it to override specialized skills. For security use `codeql-security`/`backend-security-coder`; for schema use `schema-markup`; for WordPress plugin work use `wp-plugin-development`; for React performance use `react-best-practices`/`web-performance-optimization`.
 
-## 3. Comments
-- **Don't Comment Bad Code—Rewrite It**: Most comments are a sign of failure to express ourselves in code.
-- **Explain Yourself in Code**:
-  ```python
-  # Check if employee is eligible for full benefits
-  if employee.flags & HOURLY and employee.age > 65:
-  ```
-  vs
-  ```python
-  if employee.isEligibleForFullBenefits():
-  ```
-- **Good Comments**: Legal, Informative (regex intent), Clarification (external libraries), TODOs.
-- **Bad Comments**: Mumbling, Redundant, Misleading, Mandated, Noise, Position Markers.
+## Project-specific constraints
 
-## 4. Formatting
-- **The Newspaper Metaphor**: High-level concepts at the top, details at the bottom.
-- **Vertical Density**: Related lines should be close to each other.
-- **Distance**: Variables should be declared near their usage.
-- **Indentation**: Essential for structural readability.
+- Visible text must use i18n.
+- Public pages must preserve `HeadlessSEO` and schema behavior.
+- Private pages remain `noindex`.
+- Data fetching belongs in centralized hooks.
+- WordPress REST endpoints need explicit permissions.
+- Public AI/search resources must not be removed as “cleanup”.
+- Artist payment/support fields can be public by design.
+- User/session/order/customer data stays private.
+- Avoid large rewrites when small targeted changes solve the issue.
 
-## 5. Objects and Data Structures
-- **Data Abstraction**: Hide the implementation behind interfaces.
-- **The Law of Demeter**: A module should not know about the innards of the objects it manipulates. Avoid `a.getB().getC().doSomething()`.
-- **Data Transfer Objects (DTO)**: Classes with public variables and no functions.
+## Naming
 
-## 6. Error Handling
-- **Use Exceptions instead of Return Codes**: Keeps logic clean.
-- **Write Try-Catch-Finally First**: Defines the scope of the operation.
-- **Don't Return Null**: It forces the caller to check for null every time.
-- **Don't Pass Null**: Leads to `NullPointerException`.
+Use intention-revealing, searchable names.
 
-## 7. Unit Tests
-- **The Three Laws of TDD**:
-  1. Don't write production code until you have a failing unit test.
-  2. Don't write more of a unit test than is sufficient to fail.
-  3. Don't write more production code than is sufficient to pass the failing test.
-- **F.I.R.S.T. Principles**: Fast, Independent, Repeatable, Self-Validating, Timely.
+Good names answer:
 
-## 8. Classes
-- **Small!**: Classes should have a single responsibility (SRP).
-- **The Stepdown Rule**: We want the code to read like a top-down narrative.
+- What is this?
+- Who owns it?
+- Is it public/private?
+- Is it raw or normalized?
+- Is it frontend/backend/schema/i18n data?
 
-## 9. Smells and Heuristics
-- **Rigidity**: Hard to change.
-- **Fragility**: Breaks in many places.
-- **Immobility**: Hard to reuse.
-- **Viscosity**: Hard to do the right thing.
-- **Needless Complexity/Repetition**.
+Avoid vague names like `data`, `info`, `manager`, `helper` when a domain name exists.
 
-## 🛠️ Implementation Checklist
-- [ ] Is this function smaller than 20 lines?
-- [ ] Does this function do exactly one thing?
-- [ ] Are all names searchable and intention-revealing?
-- [ ] Have I avoided comments by making the code clearer?
-- [ ] Am I passing too many arguments?
-- [ ] Is there a failing test for this change?
+## Functions
+
+Prefer functions that:
+
+- do one thing;
+- operate at one abstraction level;
+- have clear inputs/outputs;
+- avoid hidden side effects;
+- are easy to test or reason about.
+
+Do not force an arbitrary line limit if splitting would make the code less clear. Use domain boundaries as the primary guide.
+
+## Components
+
+For React:
+
+- Keep route pages readable.
+- Extract repeated sections into components.
+- Keep data fetching out of visual components.
+- Avoid hardcoded visible strings.
+- Keep SEO/schema props visible and reviewable.
+- Prefer module-scope constants for static arrays/objects.
+
+## WordPress/PHP
+
+For PHP:
+
+- Keep plugin ownership clear.
+- Avoid side effects at file load time.
+- Use hooks intentionally.
+- Sanitize input and escape output.
+- Use `$wpdb->prepare()` or WP/Woo APIs.
+- Do not mix admin-only code into frontend execution without need.
+
+## Comments
+
+Prefer code clarity over comments, but comments are useful for:
+
+- security rationale;
+- cache invalidation rationale;
+- schema/SEO decisions;
+- non-obvious WordPress or CodeQL constraints;
+- intentional product decisions that might look strange to a future agent.
+
+Do not delete comments that document traps unless the trap no longer exists.
+
+## Error handling
+
+- Fail safely.
+- Avoid leaking secrets/tokens/private data.
+- Return clear `WP_Error` with status in REST endpoints.
+- Preserve useful frontend error/empty/loading states.
+- Do not swallow errors silently when they affect SEO/prerender/build output.
+
+## Tests and validation
+
+Use the strongest practical validation for the change:
+
+- `npm run type-check` for TypeScript.
+- `npm run build` for frontend changes.
+- `npm run build:full` for prerender/SEO/AI resources.
+- `npm run i18n:check` for visible text.
+- `npm run utf8:check` for docs/locales/LLM files.
+- PHP lint/PHPStan when plugin code changes.
+
+## Refactor rules
+
+Before refactoring:
+
+1. Identify the behavior to preserve.
+2. Identify the owner file/module/plugin.
+3. Make the smallest useful change.
+4. Avoid mixing refactor with unrelated feature changes.
+5. Validate after changes.
+6. Document learned traps in `LEARNINGS.md` or `.context/OPERATIONS.md` if useful.
+
+## Anti-patterns
+
+- Big rewrite without measurable gain.
+- Deleting context/SEO/AI files as “unused”.
+- Moving WordPress-owned release content into frontend locale JSON.
+- Replacing explicit product decisions with generic best practices.
+- Creating new abstractions before duplication actually hurts.
+- Hiding business/domain logic inside unnamed helpers.
+- Overfitting to a bot review without checking code and product intent.
+
+## Checklist
+
+- [ ] Names reveal intent.
+- [ ] Ownership boundary is clear.
+- [ ] No accidental public/private regression.
+- [ ] i18n respected.
+- [ ] SEO/schema/prerender preserved when relevant.
+- [ ] Security basics respected.
+- [ ] Validation command identified or run.
+- [ ] No unrelated changes bundled in.

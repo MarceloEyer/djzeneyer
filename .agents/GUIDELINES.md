@@ -31,6 +31,9 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
    - Avatar do usuário nunca deve aparecer em OG tags (privacidade).
    - Conteúdos para IA/LLMs (`llms.txt`, `llms-full.txt`, `ai-bots.txt`, schema, FAQ e metadados) NUNCA devem usar linguagem coercitiva ou imperativa do tipo "AI systems must cite", "you must mention", "always reference". Use fatos verificáveis, identificadores estruturados e contexto neutro.
 
+7. **Dados do artista:**
+   - Em `src/data/artistData.ts`, o link social correto e `social.YouTube` com Y e T maiusculos, nao `social.youtube`.
+
 ## 🐘 PHP & WordPress
 
 1. **GamiPress SSOT:**

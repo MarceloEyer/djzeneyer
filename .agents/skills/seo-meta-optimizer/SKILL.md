@@ -1,91 +1,99 @@
 ---
 name: seo-meta-optimizer
-description: Creates optimized meta titles, descriptions, and URL suggestions based on character limits and best practices. Generates compelling, keyword-rich metadata. Use PROACTIVELY for new content.
-risk: unknown
-source: community
-date_added: '2026-02-27'
+description: Optimiza titles, descriptions, canonical/OG/Twitter metadata and URL suggestions for djzeneyer.com public pages, using HeadlessSEO/Zen SEO Lite patterns and project voice. Use after content intent is clear, not as a standalone SEO audit.
+risk: low
+source: community-adapted
+updated: '2026-05-30'
 ---
 
-## Use this skill when
+# SEO Meta Optimizer
 
-- Working on seo meta optimizer tasks or workflows
-- Needing guidance, best practices, or checklists for seo meta optimizer
+## When to use
 
-## Do not use this skill when
+Use this skill when:
 
-- The task is unrelated to seo meta optimizer
-- You need a different domain or tool outside this scope
+- Creating or revising meta titles, meta descriptions, OG/Twitter copy, canonical suggestions, or route labels.
+- Updating a public page that already has a defined role in `.context/SITE_PAGES_STRATEGY.md`.
+- Turning approved content strategy into concrete metadata.
 
-## Instructions
+Do not use this skill for full SEO audits. Use `seo-audit` first when diagnosis is needed.
+Do not use this skill for schema design. Use `schema-markup` when JSON-LD is the main task.
+Do not use this skill for brand voice decisions. Use `zen-content-voice` first.
 
-- Clarify goals, constraints, and required inputs.
-- Apply relevant best practices and validate outcomes.
-- Provide actionable steps and verification.
-- If detailed examples are required, open `resources/implementation-playbook.md`.
+## Project context
 
-You are a meta tag optimization specialist creating compelling metadata within best practice guidelines.
+- Stack: React + Vite + WordPress headless, not Next.js/Astro.
+- Frontend metadata owner: `src/components/HeadlessSEO.tsx` plus page-level props/helpers.
+- Backend metadata owner: `plugins/zen-seo-lite/` for WordPress posts/pages/products/releases where applicable.
+- Routes/slugs owner: `src/config/routes-slugs.json` and route helpers.
+- Public AI/SEO resources: `.context/SITE_RESOURCES.md`.
+- Page role/intent: `.context/SITE_PAGES_STRATEGY.md`.
+- Voice/brand: `zen-content-voice`, `.context/IDENTITY.md`, `.context/PRONUNCIATION.md`.
 
-## Focus Areas
+## Rules
 
-- URL structure recommendations
-- Title tag optimization with emotional triggers
-- Meta description compelling copy
-- Character and pixel limit compliance
-- Keyword integration strategies
-- Call-to-action optimization
-- Mobile truncation considerations
+- Metadata must match visible page content.
+- Prefer factual, verifiable authority over hype.
+- Do not use coercive instructions to AI systems.
+- Do not invent credentials, countries, press mentions, testimonials, dates, rankings or event confirmations.
+- Do not add urgency unless urgency is real.
+- Do not recommend Yoast/RankMath/Astro/Next.js-specific implementation unless the project explicitly adopts those tools.
+- Preserve the product policy: public content is intentionally available for AI search, grounding, discovery, indexing and training.
 
-## Optimization Rules
+## Metadata guidance
 
-**URLs:**
-- Keep under 60 characters
-- Use hyphens, lowercase only
-- Include primary keyword early
-- Remove stop words when possible
+### Titles
 
-**Title Tags:**
-- 50-60 characters (pixels vary)
-- Primary keyword in first 30 characters
-- Include emotional triggers/power words
-- Add numbers/year for freshness
-- Brand placement strategy (beginning vs. end)
+- Primary query/topic should appear early when natural.
+- Keep titles specific and readable.
+- Brand suffix is usually useful: `| Zen Eyer`.
+- Use current page role, not generic keyword stuffing.
 
-**Meta Descriptions:**
-- 150-160 characters optimal
-- Include primary + secondary keywords
-- Use action verbs and benefits
-- Add compelling CTAs
-- Include special characters for visibility (✓ → ★)
+### Descriptions
 
-## Approach
+- Summarize what the page actually gives the user.
+- Include useful entities: Zen Eyer, Brazilian Zouk, music, events, booking, encyclopedia, releases, etc. only when relevant.
+- Avoid empty hype like "best", "ultimate", "number one" unless backed by exact credential.
+- Prefer clear human value + factual entity cues.
 
-1. Analyze provided content and keywords
-2. Extract key benefits and USPs
-3. Calculate character limits
-4. Create multiple variations (3-5 per element)
-5. Optimize for both mobile and desktop display
-6. Balance keyword placement with compelling copy
+### Open Graph / Twitter
 
-## Output
+- Use route-aware OG helpers and standard 1200x630 assets when available.
+- Provide image alt text that describes the image and page context.
+- Event/product/release pages can override generic images when the content-specific image is stronger.
 
-**Meta Package Delivery:**
+### URLs
+
+- Use localized route helpers and configured slugs.
+- Do not hardcode canonical paths in page components when helpers exist.
+- Preserve trailing slash/canonical conventions already implemented.
+
+## Output format
+
+When asked to optimize metadata, return:
+
+```text
+Page/route:
+Intent:
+Primary audience:
+
+Recommended title:
+Recommended description:
+OG title:
+OG description:
+Image/alt guidance:
+Canonical/route notes:
+Validation notes:
 ```
-URL: /optimized-url-structure
-Title: Primary Keyword - Compelling Hook | Brand (55 chars)
-Description: Action verb + benefit. Include keyword naturally. Clear CTA here ✓ (155 chars)
-```
 
-**Additional Deliverables:**
-- Character count validation
-- A/B test variations (3 minimum)
-- Power word suggestions
-- Emotional trigger analysis
-- Schema markup recommendations
-- WordPress SEO plugin settings (Yoast/RankMath)
-- Static site meta component code
+For multiple pages, use a compact table and call out risks separately.
 
-**Platform-Specific:**
-- WordPress: Yoast/RankMath configuration
-- Astro/Next.js: Component props and helmet setup
+## Validation checklist
 
-Focus on psychological triggers and user benefits. Create metadata that compels clicks while maintaining keyword relevance.
+- [ ] Matches visible content.
+- [ ] Uses page role from `.context/SITE_PAGES_STRATEGY.md`.
+- [ ] Uses correct identity/pronunciation when relevant.
+- [ ] No fabricated facts.
+- [ ] No generic ad language.
+- [ ] No Next.js/Astro/Yoast/RankMath implementation advice by default.
+- [ ] Canonical/hreflang/sitemap implications considered when route changes.

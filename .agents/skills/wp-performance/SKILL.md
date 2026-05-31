@@ -1,128 +1,158 @@
 ---
 name: wp-performance
-description: "Use when a WordPress site/page/endpoint is slow (TTFB, admin, REST, WP-Cron), when you need profiling recommendations (WP-CLI profile/doctor, Query Monitor), or when optimizing DB queries, autoloaded options, object caching, cron tasks, or remote HTTP calls."
+description: "Use when a WordPress/plugin/REST endpoint is slow or cache-heavy in djzeneyer.com: TTFB, admin, REST, WP-Cron, DB queries, autoloaded options, transients, APCu, LiteSpeed, Cloudflare and remote HTTP calls."
 risk: safe
 source: "https://github.com/WordPress/agent-skills"
 date_added: "2026-03-05"
-compatibility: "Targets WordPress 6.9+ (PHP 7.2.24+). Some workflows require WP-CLI."
+updated: "2026-05-30"
+compatibility: "Targets WordPress 6.9+ and PHP 8.3+ for this project. Some workflows require WP-CLI."
 ---
 
-# WP Performance (backend-only)
+# WP Performance — djzeneyer.com
 
 ## When to use
 
 Use this skill when:
 
-- A WordPress site/page/endpoint is slow (frontend TTFB, admin, REST, WP-Cron)
-- You need a profiling plan and tooling recommendations
-- You're optimizing DB queries, autoloaded options, object caching, cron tasks, or remote HTTP calls
+- A WordPress page, REST endpoint, admin screen or cron task is slow.
+- You need a profiling plan or performance review.
+- You are optimizing DB queries, autoloaded options, object cache/transients/APCu, cron tasks or remote HTTP calls.
+- A change could affect LiteSpeed/Cloudflare cache behavior.
 
-**For djzeneyer.com:** Low-traffic site on Hostinger VPS (LiteSpeed). Priority is cache persistence and CPU economy, not raw throughput.
+For frontend/bundle/Core Web Vitals, use `web-performance-optimization` too.
+
+## Project performance strategy
+
+The site is low-update and cache-friendly. Priority is:
+
+- cache persistence;
+- CPU economy;
+- stable prerender/static public routes;
+- small route-scoped payloads;
+- avoiding routine expensive live REST fetches;
+- preserving public AI/search resources.
+
+Do not add `NOCACHE` for `/wp-json/`, `/feed/` or `/api/` by default. Public stable REST can be cached.
+
+## Infrastructure context
+
+- Server: Hostinger VPS + LiteSpeed.
+- Cache: LiteSpeed Cache plugin + Cloudflare + OPcache.
+- Redis: not assumed available.
+- APCu: optional L1 only where code supports fallback.
+- PHP: 8.3+ production context.
+- Strategy: long-lived transients and cache headers for stable public data.
 
 ## Inputs required
 
-- Environment and safety: dev/staging/prod, any restrictions.
-- The performance symptom and scope: which URL/REST route/admin screen; when it happens (always vs sporadic; logged-in vs logged-out).
-
-## Infrastructure Context (djzeneyer.com)
-
-- **Server:** Hostinger VPS, LiteSpeed
-- **Cache:** LiteSpeed Cache plugin + OPcache active. Redis inaccessible.
-- **PHP:** 8.3.30 (LiteSpeed), `memory_limit: 1536M`
-- **DB:** MariaDB 11.8.3
-- **Strategy:** Long-lived transients (24h+) to minimize DB pressure
+- Environment: local/staging/prod.
+- Target URL/REST route/admin screen.
+- Symptom and reproducibility.
+- Logged-in vs logged-out.
+- Whether write operations/cache flushes are allowed.
 
 ## Procedure
 
-### 0) Guardrails: measure first
+### 0) Measure first
 
-1. Confirm whether you may run write operations (plugin installs, config changes, cache flush).
-2. Pick a reproducible target (URL or REST route) and capture a baseline with `curl`:
-   ```bash
-   curl -o /dev/null -s -w "TTFB: %{time_starttransfer}s\n" https://djzeneyer.com/wp-json/zen-bit/v2/events
-   ```
+Pick a reproducible target:
 
-### 1) Fast wins: run diagnostics before deep profiling
+```bash
+curl -o /dev/null -s -w "TTFB: %{time_starttransfer}s\nTotal: %{time_total}s\n" https://djzeneyer.com/wp-json/zen-bit/v2/events
+curl -I https://djzeneyer.com/wp-json/zen-bit/v2/events
+```
 
-Common production foot-guns to check:
-- **Autoload bloat:** large values stored as autoloaded options slow every WP bootstrap
-- **Plugin count:** too many plugins with `plugins_loaded` hooks add overhead
-- `WP_DEBUG` or `SAVEQUERIES` left on in production
-- Missing persistent object cache (OPcache ≠ object cache)
+Do not optimize blindly.
 
-### 2) Fix by category
+### 1) Fast diagnostics
 
-Choose the **dominant bottleneck**:
+Check:
 
-#### DB queries — N+1 patterns
+- Autoload bloat.
+- Plugin hooks running on every request.
+- `WP_DEBUG` or `SAVEQUERIES` left on.
+- Expensive remote HTTP calls without cache.
+- N+1 queries around posts/users/thumbnails/meta.
+- Transient keys without versioning.
+- Cache headers missing on public stable endpoints.
+- Full cache flushes masking targeted purge opportunities.
+
+### 2) DB queries and cache priming
+
+Avoid N+1 patterns:
 
 ```php
-// ❌ N+1 — 50 SELECT queries for 50 users
-foreach ($user_ids as $id) {
-    $user = get_user_by('id', $id); // SELECT per iteration
-}
-
-// ✅ Batch — 1 SELECT for all users
 $users = get_users(['include' => $user_ids]);
 $users_by_id = array_column($users, null, 'ID');
 ```
 
-#### Object cache / transients
+For posts/thumbnails/meta, prefer cache priming helpers where applicable, such as `_prime_post_caches()` and `update_meta_cache()`.
 
-Pattern used in this project (ZenGame, Zen BIT):
+### 3) Transients/APCu
+
+Use versioned keys:
+
 ```php
-$cache_key = 'zen_data_v9_' . $scope; // Include version for safe invalidation
-
+$cache_key = 'zen_data_v9_' . $scope;
 $data = get_transient($cache_key);
 if ($data === false) {
     $data = expensive_db_or_api_call();
-    set_transient($cache_key, $data, DAY_IN_SECONDS); // 24h+ for low-traffic site
+    set_transient($cache_key, $data, DAY_IN_SECONDS);
 }
-
-// Invalidate on relevant events
-add_action('gamipress_award_points_to_user', function($user_id) use ($cache_key) {
-    delete_transient('zen_data_v9_' . $user_id);
-});
 ```
 
-#### Remote HTTP calls
+APCu can be used as optional L1 only if there is fallback to transients or computation when unavailable.
+
+### 4) Remote HTTP
 
 ```php
-// Always add timeout + cache remote API responses
 $response = wp_remote_get($url, ['timeout' => 10]);
 if (is_wp_error($response)) {
-    return []; // Fail gracefully
+    return [];
 }
 ```
 
-#### Autoloaded options
+Rules:
+
+- Always set timeout.
+- Cache stable remote responses.
+- Validate/allowlist user-controlled URLs to avoid SSRF.
+- Fail gracefully.
+
+### 5) Autoloaded options
+
+Large data should not autoload:
 
 ```php
-// Store large data as NON-autoloaded option
-add_option('zen_large_data', $value, '', 'no'); // 'no' = don't autoload
-update_option('zen_large_data', $value, false);  // false = don't autoload
+add_option('zen_large_data', $value, '', 'no');
+update_option('zen_large_data', $value, false);
 ```
 
-### 3) LiteSpeed Cache specific (djzeneyer.com)
+### 6) LiteSpeed/Cloudflare
 
-- LiteSpeed Cache handles full-page caching — don't add additional page caches
-- Use `do_action('litespeed_purge_post', $post_id)` to purge specific pages
-- REST API responses can be cached with `Cache-Control: public, max-age=3600` headers
-- Avoid `nocache_headers()` on public endpoints unless content is truly dynamic
+- LiteSpeed handles full-page caching; do not add another page cache layer.
+- Use targeted purge when possible.
+- Public stable REST endpoints can use `Cache-Control: public, max-age=...`.
+- Avoid `nocache_headers()` unless content is truly dynamic/private.
+- HSTS belongs to Cloudflare; CSP belongs to `inc/csp.php`.
 
 ## Verification
 
-- Re-run the same `curl` measurement and compare TTFB before/after
-- Confirm cache is being hit: check for `X-Cache: HIT` header in LiteSpeed responses
-- No new PHP errors in debug log
+- Re-run the same `curl` measurement.
+- Confirm expected cache headers.
+- Check no PHP errors in debug log.
+- Confirm private/authenticated endpoints are not cached publicly.
+- Confirm public AI/search resources remain reachable.
 
-## Failure modes / debugging
+## Failure modes
 
-- **"No change" after code changes:** caches masked results, or OPcache is stale (may need `opcache_reset()`)
-- **Transient not expiring:** TTL set to 0 (never expires) instead of intended value
-- **`SAVEQUERIES`/Query Monitor causes overhead:** don't run in production unless explicitly approved
+- Caches mask code changes.
+- OPcache stale after deploy.
+- Transient TTL set to 0 accidentally.
+- Cache key missing version.
+- Query Monitor/SAVEQUERIES causes overhead in production.
+- Public stable endpoint made private/no-cache by a false security assumption.
 
 ## Escalation
 
-- If this is production and you don't have explicit approval, do not install plugins, enable `SAVEQUERIES`, or flush all caches during traffic.
-- Reference: https://make.wordpress.org/core/2025/11/18/wordpress-6-9-frontend-performance-field-guide/
+If this is production and approval is not explicit, do not install plugins, enable `SAVEQUERIES`, flush all caches during traffic or change server config.

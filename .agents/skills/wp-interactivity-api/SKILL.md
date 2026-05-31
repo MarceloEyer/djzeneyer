@@ -1,81 +1,112 @@
 ---
 name: wp-interactivity-api
-description: "Use when the user mentions Interactivity API, @wordpress/interactivity, data-wp-* directives, or reactive behaviors in WordPress blocks/templates."
-risk: safe
+description: "Use only when the task explicitly involves WordPress Interactivity API, @wordpress/interactivity, data-wp-* directives, block/template reactivity, or admin/plugin UI that must run inside WordPress rather than the React SPA."
+risk: low
 source: "https://github.com/WordPress/agent-skills"
 date_added: "2026-03-05"
-compatibility: "Targets WordPress 6.9+ (PHP 7.2.24+)."
+updated: "2026-05-30"
+compatibility: "Targets WordPress 6.9+ and PHP 8.3+ for this project."
 ---
 
-# WP Interactivity API
+# WP Interactivity API — djzeneyer.com
+
+## Status in this project
+
+This is a rare/conditional skill. The main public frontend is a React SPA, not WordPress block interactivity. Do not introduce the WordPress Interactivity API just because a UI needs state.
+
+Use this skill only when the interaction must live inside WordPress-rendered markup, a plugin admin screen, a block/template surface, or another context where the React SPA is not the owner.
 
 ## When to use
 
 Use this skill when the task involves:
-- Adding or modifying reactive behaviors in WordPress blocks (e.g., a "Load More" button, live filters, or interactive gamification elements).
-- Using `@wordpress/interactivity` or `data-wp-interactive` directives.
-- Building reactive components that need to run *inside* the WordPress context (admin or frontend) while maintaining performance.
-- **For djzeneyer.com:** Use this for interactive GamiPress elements or custom dashboards within the WordPress admin that require React-like reactivity without a full SPA context.
+
+- `@wordpress/interactivity`.
+- `data-wp-interactive` or other `data-wp-*` directives.
+- Reactive behavior inside WordPress blocks/templates.
+- Plugin/admin UI that should not become part of the React SPA.
+- Interactive GamiPress/admin elements rendered by WordPress/PHP.
+
+Do not use it for normal React pages/components. Use `react-patterns` or `react-best-practices` instead.
 
 ## Inputs required
 
-- Repo root + which plugin/theme surface is affected.
-- User intent for the interaction (e.g., "update score live", "toggle visibility").
+- Plugin/theme surface affected.
+- Whether markup is server-rendered by PHP/blocks.
+- Interaction goal.
+- Whether a build step already exists.
+- Privacy/security boundary of the state being rendered.
 
 ## Procedure
 
-### 1) Detect Interactivity API usage
+### 1) Detect existing usage
+
 Search for:
-- `data-wp-interactive`
-- `@wordpress/interactivity`
-- `viewScriptModule` in `block.json`
 
-### 2) Identify the store(s)
-Locate store definitions (actions, state, callbacks). In this project, if we add interactivity, we'll keep stores in a predictable place (e.g., `assets/js/interactivity/`).
+- `data-wp-interactive`.
+- `@wordpress/interactivity`.
+- `viewScriptModule` in `block.json`.
+- `wp_interactivity_state`.
+- `wp_interactivity_data_wp_context`.
 
-### 3) Server-Side Rendering (Best Practice)
-Always pre-render HTML in PHP to avoid layout shifts (CLS).
+### 2) Confirm ownership
 
-**Initialize state in PHP:**
+Ask:
+
+- Is this inside WordPress/PHP/admin/block land?
+- Would the React SPA be a better owner?
+- Does this require server-rendered initial HTML to avoid CLS?
+- Is any state private/user-specific?
+
+### 3) Server-render first
+
+Prefer server-rendered HTML and PHP-initialized state to avoid layout shifts.
+
 ```php
-wp_interactivity_state( 'zenGame', array(
-  'points'    => 150,
-  'rank'      => 'Silver',
-  'isUpdated' => true,
-));
+wp_interactivity_state('zenGame', [
+    'points' => 150,
+    'rank'   => 'Silver',
+]);
 ```
 
-**Initialize context in PHP:**
 ```php
-<?php $context = array( 'isOpen' => false ); ?>
-<div <?php echo wp_interactivity_data_wp_context( $context ); ?>>
-  ...
+$context = ['isOpen' => false];
+?>
+<div <?php echo wp_interactivity_data_wp_context($context); ?>>
+    ...
 </div>
+<?php
 ```
 
-### 4) Implement Directives Safely
+Escape output and protect private user data as usual.
+
+### 4) Implement directives safely
+
 - Use `data-wp-on--click`, `data-wp-bind--*`, `data-wp-text`, etc.
-- **WordPress 6.9:** Avoid `data-wp-ignore` (deprecated).
-- Use `---` for unique directive IDs if multiple plugins touch the same element.
+- Avoid deprecated directives for the target WP version.
+- Keep store names unique, e.g. `zenGame`, `zenAdmin`, `zenBit`.
+- Avoid mixing multiple plugin stores on the same element without clear ownership.
 
-### 5) Build/Tooling
-The plugins in this project don't currently use `@wordpress/scripts` for bundling. If we add Interactivity API usage, we may need to introduce a build step or enqueue modules via `wp_enqueue_script_module()`.
+### 5) Build/tooling
 
-## Verification Checklist
+The project plugins do not generally rely on `@wordpress/scripts` for bundling. If adding Interactivity API usage requires a build step, confirm the tradeoff before introducing new tooling.
 
-- [ ] Directives are present in the server-rendered HTML.
-- [ ] No layout shift (CLS) during hydration.
-- [ ] State updates correctly on interaction (smoke test).
-- [ ] No JavaScript errors in the browser console.
-- [ ] `wp_interactivity_process_directives()` is called if using custom markup outside blocks.
+## Verification
 
-## Failure Modes / Debugging
+- Directives are present in server-rendered HTML.
+- No layout shift during hydration.
+- State updates correctly.
+- No browser console errors.
+- Private data is not printed into public HTML.
+- `wp_interactivity_process_directives()` is used if needed for custom markup outside blocks.
 
-- **Directives don't fire:** Check if `data-wp-interactive` is on a parent element and matches the store name.
-- **Hydration mismatch:** PHP state doesn't match the JS initial state.
-- **Script module error:** Ensure the browser supports `<script type="module">` or a polyfill is present.
+## Failure modes
+
+- Directives do not fire because `data-wp-interactive` parent is missing/wrong.
+- Hydration mismatch between PHP and JS initial state.
+- Script module enqueue/build missing.
+- React SPA and WP Interactivity both try to own the same UI.
+- Private user state leaked into public cached HTML.
 
 ## Escalation
 
-- Official Documentation: https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/
-- Consult `wp-plugin-development` for how to enqueue the necessary scripts.
+Consult the official WordPress Interactivity API docs and `wp-plugin-development` before adding new build tooling or plugin architecture.

@@ -1,154 +1,114 @@
 ---
 name: react-best-practices
-description: "React performance optimization guidelines (client-side). Este projeto usa Vite 8 + React Router 7 — regras server-side (Server Components, App Router, SSR) são INAPLICÁVEIS. Usar para: memoização, bundle size, re-renders, client-side data fetching."
-risk: unknown
-source: community
-date_added: "2026-02-27"
+description: React performance and client-side best practices for djzeneyer.com. This project uses Vite 8 + React Router 7, not Next.js/SSR/Server Components. Use for memoization, bundle size, re-renders and client-side data fetching.
+risk: low
+source: community-adapted
+updated: "2026-05-30"
 ---
 
-> ⚠️ **ESCOPO DESTE PROJETO — Vite 8 + React Router 7, NÃO Next.js**
+# React Best Practices — djzeneyer.com
 
-## Regras inaplicáveis neste projeto (ignorar completamente)
+## Scope
 
-As seguintes regras são exclusivas de Next.js/Server Components e **não se aplicam**:
+Use this skill for React performance and client-side behavior in the current app:
 
-| Regra | Motivo para ignorar |
+- React 19.
+- Vite 8.
+- React Router 7.
+- React Query v5.
+- Public routes prerendered with Puppeteer, then hydrated.
+
+This project is not Next.js, not SSR, not App Router and not React Server Components. Server-side rules from Next/Vercel guides are not applicable unless the architecture changes.
+
+## Do not apply here
+
+| Pattern | Why not |
 |---|---|
-| `server-cache-react` | React.cache() é Server Components only |
-| `server-cache-lru` | Cross-request caching é SSR only |
-| `server-serialization` | Não há passagem de dados servidor→cliente em SPA |
-| `server-parallel-fetching` | Server Components não existem |
-| `server-after-nonblocking` | after() é Next.js only |
-| `async-suspense-boundaries` | ⚠️ **PERIGOSO aqui** — Suspense para data fetching requer SSR; useSuspenseQuery sem SSR causa tela branca no prerender Puppeteer deste projeto |
-| `bundle-dynamic-imports` | Usar `React.lazy()` + `Suspense` em vez de `next/dynamic` |
+| `React.cache()` | Server Components/per-request only |
+| LRU cross-request React cache | SSR/server-only |
+| App Router / Server Components | Not this architecture |
+| `next/dynamic` | Use `React.lazy()` + `Suspense` |
+| Streaming Suspense data fetching | Can break prerender/Puppeteer if applied blindly |
+| `getStaticProps` / ISR | Next.js only |
 
-## Regras válidas e aplicáveis (usar)
+## Valid categories
 
-Todas as outras categorias se aplicam normalmente:
-- **Eliminating Waterfalls** (`async-defer-await`, `async-parallel`, `async-api-routes`) ✅
-- **Bundle Size** (`bundle-barrel-imports`, `bundle-defer-third-party`, `bundle-conditional`, `bundle-preload`) ✅
-- **Client-Side Data Fetching** (`client-swr-dedup`, `client-event-listeners`) ✅ — neste projeto usar React Query v5
-- **Re-render Optimization** (todos os `rerender-*`) ✅
-- **Rendering Performance** (todos os `rendering-*`) ✅
-- **JavaScript Performance** (todos os `js-*`) ✅
-- **Advanced Patterns** (`advanced-event-handler-refs`, `advanced-use-latest`) ✅
+| Area | Project approach |
+|---|---|
+| Eliminating waterfalls | Start independent promises early; use backend/prerender where appropriate |
+| Bundle size | Direct imports, lazy routes/components, defer third-party code |
+| Client-side data | React Query v5 in centralized hooks |
+| Re-renders | stable providers, memoization when measured/useful |
+| Rendering | content visibility, static JSX/arrays, SVG precision where relevant |
+| JavaScript perf | Map/Set lookups, early exits, combined iterations when useful |
 
-# Vercel React Best Practices
+## Client-side data fetching
 
-Comprehensive performance optimization guide for React and Next.js applications, maintained by Vercel. Contains 45 rules across 8 categories, prioritized by impact to guide automated refactoring and code generation.
+Rules:
 
-## When to Apply
+- Do not `fetch()` directly inside components.
+- Use hooks in `src/hooks/`.
+- Query keys follow `src/config/queryClient.ts`.
+- Treat prerendered route data as initial cache data, not a global store.
+- Do not use Suspense data fetching unless explicitly validated with `build:full` and prerender.
 
-Reference these guidelines when:
-- Writing new React components or Next.js pages
-- Implementing data fetching (client or server-side)
-- Reviewing code for performance issues
-- Refactoring existing React/Next.js code
-- Optimizing bundle size or load times
+## Bundle size
 
-## Rule Categories by Priority
+High-value patterns:
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | Eliminating Waterfalls | CRITICAL | `async-` |
-| 2 | Bundle Size Optimization | CRITICAL | `bundle-` |
-| 3 | Server-Side Performance | HIGH | `server-` |
-| 4 | Client-Side Data Fetching | MEDIUM-HIGH | `client-` |
-| 5 | Re-render Optimization | MEDIUM | `rerender-` |
-| 6 | Rendering Performance | MEDIUM | `rendering-` |
-| 7 | JavaScript Performance | LOW-MEDIUM | `js-` |
-| 8 | Advanced Patterns | LOW | `advanced-` |
+- Route-level `React.lazy()` for heavy routes.
+- Lazy-load optional media/embed-heavy components.
+- Avoid barrel imports when they pull too much.
+- Defer third-party code unless critical.
+- Keep icons/components tree-shakeable.
 
-## Quick Reference
+## Re-render optimization
 
-### 1. Eliminating Waterfalls (CRITICAL)
+Use when there is a signal, not by default.
 
-- `async-defer-await` - Move await into branches where actually used
-- `async-parallel` - Use Promise.all() for independent operations
-- `async-dependencies` - Use better-all for partial dependencies
-- `async-api-routes` - Start promises early, await late in API routes
-- `async-suspense-boundaries` - Use Suspense to stream content
+- Memoize provider values.
+- Move static arrays/objects to module scope.
+- Use primitive dependencies in effects.
+- Use functional setState for stable callbacks.
+- Use `startTransition` for non-urgent UI updates when applicable.
+- Avoid subscribing to state only used inside callbacks.
 
-### 2. Bundle Size Optimization (CRITICAL)
+## Rendering performance
 
-- `bundle-barrel-imports` - Import directly, avoid barrel files
-- `bundle-dynamic-imports` - Use next/dynamic for heavy components
-- `bundle-defer-third-party` - Load analytics/logging after hydration
-- `bundle-conditional` - Load modules only when feature is activated
-- `bundle-preload` - Preload on hover/focus for perceived speed
+- Keep expensive below-the-fold sections lazy or static when possible.
+- Avoid layout shifts in prerendered routes.
+- Use dimensions/aspect-ratio for images/media.
+- Animate wrappers instead of heavy SVG internals when needed.
+- Respect route SEO and visible content during hydration.
 
-### 3. Server-Side Performance (HIGH)
+## Project guardrails
 
-- `server-cache-react` - Use React.cache() for per-request deduplication
-- `server-cache-lru` - Use LRU cache for cross-request caching
-- `server-serialization` - Minimize data passed to client components
-- `server-parallel-fetching` - Restructure components to parallelize fetches
-- `server-after-nonblocking` - Use after() for non-blocking operations
+- Public pages must keep meaningful prerendered HTML.
+- Public pages should keep `HeadlessSEO` and schema behavior.
+- Private pages remain `noindex`.
+- Visible text uses i18n.
+- Public AI/search resources must not be removed as “performance cleanup”.
 
-### 4. Client-Side Data Fetching (MEDIUM-HIGH)
+## Output format
 
-- `client-swr-dedup` - Use SWR for automatic request deduplication
-- `client-event-listeners` - Deduplicate global event listeners
-
-### 5. Re-render Optimization (MEDIUM)
-
-- `rerender-defer-reads` - Don't subscribe to state only used in callbacks
-- `rerender-memo` - Extract expensive work into memoized components
-- `rerender-dependencies` - Use primitive dependencies in effects
-- `rerender-derived-state` - Subscribe to derived booleans, not raw values
-- `rerender-functional-setstate` - Use functional setState for stable callbacks
-- `rerender-lazy-state-init` - Pass function to useState for expensive values
-- `rerender-transitions` - Use startTransition for non-urgent updates
-
-### 6. Rendering Performance (MEDIUM)
-
-- `rendering-animate-svg-wrapper` - Animate div wrapper, not SVG element
-- `rendering-content-visibility` - Use content-visibility for long lists
-- `rendering-hoist-jsx` - Extract static JSX outside components
-- `rendering-svg-precision` - Reduce SVG coordinate precision
-- `rendering-hydration-no-flicker` - Use inline script for client-only data
-- `rendering-activity` - Use Activity component for show/hide
-- `rendering-conditional-render` - Use ternary, not && for conditionals
-
-### 7. JavaScript Performance (LOW-MEDIUM)
-
-- `js-batch-dom-css` - Group CSS changes via classes or cssText
-- `js-index-maps` - Build Map for repeated lookups
-- `js-cache-property-access` - Cache object properties in loops
-- `js-cache-function-results` - Cache function results in module-level Map
-- `js-cache-storage` - Cache localStorage/sessionStorage reads
-- `js-combine-iterations` - Combine multiple filter/map into one loop
-- `js-length-check-first` - Check array length before expensive comparison
-- `js-early-exit` - Return early from functions
-- `js-hoist-regexp` - Hoist RegExp creation outside loops
-- `js-min-max-loop` - Use loop for min/max instead of sort
-- `js-set-map-lookups` - Use Set/Map for O(1) lookups
-- `js-tosorted-immutable` - Use toSorted() for immutability
-
-### 8. Advanced Patterns (LOW)
-
-- `advanced-event-handler-refs` - Store event handlers in refs
-- `advanced-use-latest` - useLatest for stable callback refs
-
-## How to Use
-
-Read individual rule files for detailed explanations and code examples:
-
-```
-rules/async-parallel.md
-rules/bundle-barrel-imports.md
-rules/_sections.md
+```text
+React performance scope:
+Evidence/signal:
+Likely bottleneck:
+Recommended change:
+Validation:
+Risks:
 ```
 
-Each rule file contains:
-- Brief explanation of why it matters
-- Incorrect code example with explanation
-- Correct code example with explanation
-- Additional context and references
+## Validation
 
-## Full Compiled Document
+Use the strongest practical command:
 
-For the complete guide with all rules expanded: `AGENTS.md`
+- `npm run type-check`.
+- `npm run build`.
+- `npm run build:full` for prerender/SEO/AI-sensitive routes.
+- `npm run perf:budget` for performance-budget changes.
 
-## When to Use
-This skill is applicable to execute the workflow or actions described in the overview.
+## When to use
+
+Use this skill for React performance and client-side data/rendering behavior. For component architecture use `react-patterns`; for web/CWV broader performance use `web-performance-optimization`.

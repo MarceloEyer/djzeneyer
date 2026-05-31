@@ -1,275 +1,154 @@
 ---
 name: tailwind-patterns
-description: "Tailwind CSS v4 principles. CSS-first configuration, container queries, modern patterns, design token architecture."
-risk: unknown
-source: community
-date_added: "2026-02-27"
+description: Tailwind CSS v4 patterns for djzeneyer.com: CSS-first theme, responsive layouts, design tokens, reusable components and performance-safe class usage.
+risk: low
+source: community-adapted
+updated: "2026-05-30"
 ---
 
-# Tailwind CSS Patterns (v4 - 2025)
+# Tailwind CSS Patterns — djzeneyer.com
 
-> Modern utility-first CSS with CSS-native configuration.
+## Scope
 
-## When to Use
+Use this skill when configuring or refactoring Tailwind CSS v4, design tokens, responsive layouts, reusable UI components or component-level styling.
 
-Use this skill when configuring Tailwind v4, using CSS-first theme and design tokens, or implementing container queries and modern Tailwind patterns.
+Project context:
 
----
+- React 19 + Vite 8.
+- Tailwind 4.
+- Public routes are prerendered.
+- UI should support a polished artist/brand site without sacrificing readability, accessibility or performance.
 
-## 1. Tailwind v4 Architecture
+Do not use this skill to redefine brand voice, content strategy, routing, SEO or schema.
 
-### What Changed from v3
+## Tailwind v4 architecture
 
-| v3 (Legacy) | v4 (Current) |
-|-------------|--------------|
-| `tailwind.config.js` | CSS-based `@theme` directive |
-| PostCSS plugin | Oxide engine (10x faster) |
-| JIT mode | Native, always-on |
-| Plugin system | CSS-native features |
-| `@apply` directive | Still works, discouraged |
+Tailwind v4 is CSS-first. Prefer CSS variables and `@theme` where the project already uses that approach.
 
-### v4 Core Concepts
+| v3 legacy | v4 pattern |
+|---|---|
+| `tailwind.config.js` as default source | CSS-based `@theme` where adopted |
+| JIT discussion | Native/always-on behavior |
+| Heavy `@apply` usage | Prefer components and utilities |
+| Dynamic class strings | Prefer static classes or safe maps |
 
-| Concept | Description |
-|---------|-------------|
-| **CSS-first** | Configuration in CSS, not JavaScript |
-| **Oxide Engine** | Rust-based compiler, much faster |
-| **Native Nesting** | CSS nesting without PostCSS |
-| **CSS Variables** | All tokens exposed as `--*` vars |
+## Project styling principles
 
----
+- Mobile-first.
+- Accessible contrast and tap targets.
+- Clear hierarchy over visual noise.
+- Reusable components over repeated long class strings.
+- Avoid arbitrary values when a token or standard scale works.
+- Avoid class generation via unbounded template strings.
+- Avoid gradient-heavy headline patterns if current design rules reject them.
 
-## 2. CSS-Based Configuration
+## Responsive design
 
-### Theme Definition
+| Prefix | Use |
+|---|---|
+| none | mobile base |
+| `sm:` | large phone/small tablet |
+| `md:` | tablet |
+| `lg:` | laptop |
+| `xl:` | desktop |
+| `2xl:` | large desktop |
 
-```
+Rules:
+
+- Write mobile styles first.
+- Add larger overrides progressively.
+- Use container queries for reusable components when parent width matters more than viewport width.
+
+## Layout patterns
+
+Prefer:
+
+- Flexible grids using `auto-fit/minmax`.
+- Asymmetric/Bento layouts where it improves storytelling.
+- Section spacing that breathes on mobile.
+- Clear cards/sections with consistent padding.
+
+Avoid:
+
+- Symmetric three-column grids everywhere.
+- Huge visual sections with little content.
+- Repeated class blobs that should become components.
+
+## Design tokens
+
+Use semantic tokens when defining project-specific styles:
+
+```css
 @theme {
-  /* Colors - use semantic names */
-  --color-primary: oklch(0.7 0.15 250);
-  --color-surface: oklch(0.98 0 0);
-  --color-surface-dark: oklch(0.15 0 0);
-
-  /* Spacing scale */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 2rem;
-
-  /* Typography */
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --color-primary: ...;
+  --color-surface: ...;
+  --spacing-section: ...;
 }
 ```
 
-### When to Extend vs Override
+Token layers:
 
-| Action | Use When |
-|--------|----------|
-| **Extend** | Adding new values alongside defaults |
-| **Override** | Replacing default scale entirely |
-| **Semantic tokens** | Project-specific naming (primary, surface) |
+| Layer | Purpose |
+|---|---|
+| Primitive | raw values |
+| Semantic | purpose-based names |
+| Component | local component variables |
 
----
+## Typography
 
-## 3. Container Queries (v4 Native)
+- Use readable line length.
+- Body text should prioritize readability over display style.
+- Headings should communicate hierarchy, not just decoration.
+- Preserve i18n expansion: English and Portuguese text lengths differ.
 
-### Breakpoint vs Container
+## Animation and transitions
 
-| Type | Responds To |
-|------|-------------|
-| **Breakpoint** (`md:`) | Viewport width |
-| **Container** (`@container`) | Parent element width |
+- Keep motion subtle and purposeful.
+- Avoid animations that hurt Core Web Vitals or accessibility.
+- Framer Motion objects should not be inline when reused; extract variants to module scope.
+- Respect reduced motion when appropriate.
 
-### Container Query Usage
+## Component extraction
 
-| Pattern | Classes |
-|---------|---------|
-| Define container | `@container` on parent |
-| Container breakpoint | `@sm:`, `@md:`, `@lg:` on children |
-| Named containers | `@container/card` for specificity |
+Extract a component when:
 
-### When to Use
+- The same class combination repeats 3+ times.
+- Variant logic becomes hard to read.
+- The element represents a reusable design system concept.
+- Accessibility needs repeated structure.
 
-| Scenario | Use |
-|----------|-----|
-| Page-level layouts | Viewport breakpoints |
-| Component-level responsive | Container queries |
-| Reusable components | Container queries (context-independent) |
+Prefer React components for dynamic UI. Use CSS utilities for simple static layout.
 
----
+## Performance rules
 
-## 4. Responsive Design
+- Use static class names when possible.
+- Avoid unbounded dynamic classes such as `` `bg-${color}-500` ``.
+- Keep large icon/animation/visual components lazy if not critical.
+- Do not add heavy UI libraries for one-off layout problems.
+- Validate relevant changes with `npm run build` or stronger command.
 
-### Breakpoint System
+## Anti-patterns
 
-| Prefix | Min Width | Target |
-|--------|-----------|--------|
-| (none) | 0px | Mobile-first base |
-| `sm:` | 640px | Large phone / small tablet |
-| `md:` | 768px | Tablet |
-| `lg:` | 1024px | Laptop |
-| `xl:` | 1280px | Desktop |
-| `2xl:` | 1536px | Large desktop |
+| Do not | Prefer |
+|---|---|
+| Arbitrary values everywhere | design scale/token |
+| `!important` | fix specificity/layout |
+| Inline `style` for normal styling | utilities/components |
+| Long duplicated class lists | extract component |
+| Heavy `@apply` | component extraction |
+| Unbounded dynamic classes | static maps |
+| Visual-only headings | semantic heading hierarchy |
 
-### Mobile-First Principle
+## Output format
 
-1. Write mobile styles first (no prefix)
-2. Add larger screen overrides with prefixes
-3. Example: `w-full md:w-1/2 lg:w-1/3`
+```text
+UI scope:
+Current issue:
+Tailwind/component recommendation:
+Accessibility/performance notes:
+Validation:
+```
 
----
+## When to use
 
-## 5. Dark Mode
-
-### Configuration Strategies
-
-| Method | Behavior | Use When |
-|--------|----------|----------|
-| `class` | `.dark` class toggles | Manual theme switcher |
-| `media` | Follows system preference | No user control |
-| `selector` | Custom selector (v4) | Complex theming |
-
-### Dark Mode Pattern
-
-| Element | Light | Dark |
-|---------|-------|------|
-| Background | `bg-white` | `dark:bg-zinc-900` |
-| Text | `text-zinc-900` | `dark:text-zinc-100` |
-| Borders | `border-zinc-200` | `dark:border-zinc-700` |
-
----
-
-## 6. Modern Layout Patterns
-
-### Flexbox Patterns
-
-| Pattern | Classes |
-|---------|---------|
-| Center (both axes) | `flex items-center justify-center` |
-| Vertical stack | `flex flex-col gap-4` |
-| Horizontal row | `flex gap-4` |
-| Space between | `flex justify-between items-center` |
-| Wrap grid | `flex flex-wrap gap-4` |
-
-### Grid Patterns
-
-| Pattern | Classes |
-|---------|---------|
-| Auto-fit responsive | `grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]` |
-| Asymmetric (Bento) | `grid grid-cols-3 grid-rows-2` with spans |
-| Sidebar layout | `grid grid-cols-[auto_1fr]` |
-
-> **Note:** Prefer asymmetric/Bento layouts over symmetric 3-column grids.
-
----
-
-## 7. Modern Color System
-
-### OKLCH vs RGB/HSL
-
-| Format | Advantage |
-|--------|-----------|
-| **OKLCH** | Perceptually uniform, better for design |
-| **HSL** | Intuitive hue/saturation |
-| **RGB** | Legacy compatibility |
-
-### Color Token Architecture
-
-| Layer | Example | Purpose |
-|-------|---------|---------|
-| **Primitive** | `--blue-500` | Raw color values |
-| **Semantic** | `--color-primary` | Purpose-based naming |
-| **Component** | `--button-bg` | Component-specific |
-
----
-
-## 8. Typography System
-
-### Font Stack Pattern
-
-| Type | Recommended |
-|------|-------------|
-| Sans | `'Inter', 'SF Pro', system-ui, sans-serif` |
-| Mono | `'JetBrains Mono', 'Fira Code', monospace` |
-| Display | `'Outfit', 'Poppins', sans-serif` |
-
-### Type Scale
-
-| Class | Size | Use |
-|-------|------|-----|
-| `text-xs` | 0.75rem | Labels, captions |
-| `text-sm` | 0.875rem | Secondary text |
-| `text-base` | 1rem | Body text |
-| `text-lg` | 1.125rem | Lead text |
-| `text-xl`+ | 1.25rem+ | Headings |
-
----
-
-## 9. Animation & Transitions
-
-### Built-in Animations
-
-| Class | Effect |
-|-------|--------|
-| `animate-spin` | Continuous rotation |
-| `animate-ping` | Attention pulse |
-| `animate-pulse` | Subtle opacity pulse |
-| `animate-bounce` | Bouncing effect |
-
-### Transition Patterns
-
-| Pattern | Classes |
-|---------|---------|
-| All properties | `transition-all duration-200` |
-| Specific | `transition-colors duration-150` |
-| With easing | `ease-out` or `ease-in-out` |
-| Hover effect | `hover:scale-105 transition-transform` |
-
----
-
-## 10. Component Extraction
-
-### When to Extract
-
-| Signal | Action |
-|--------|--------|
-| Same class combo 3+ times | Extract component |
-| Complex state variants | Extract component |
-| Design system element | Extract + document |
-
-### Extraction Methods
-
-| Method | Use When |
-|--------|----------|
-| **React/Vue component** | Dynamic, JS needed |
-| **@apply in CSS** | Static, no JS needed |
-| **Design tokens** | Reusable values |
-
----
-
-## 11. Anti-Patterns
-
-| Don't | Do |
-|-------|-----|
-| Arbitrary values everywhere | Use design system scale |
-| `!important` | Fix specificity properly |
-| Inline `style=` | Use utilities |
-| Duplicate long class lists | Extract component |
-| Mix v3 config with v4 | Migrate fully to CSS-first |
-| Use `@apply` heavily | Prefer components |
-
----
-
-## 12. Performance Principles
-
-| Principle | Implementation |
-|-----------|----------------|
-| **Purge unused** | Automatic in v4 |
-| **Avoid dynamism** | No template string classes |
-| **Use Oxide** | Default in v4, 10x faster |
-| **Cache builds** | CI/CD caching |
-
----
-
-> **Remember:** Tailwind v4 is CSS-first. Embrace CSS variables, container queries, and native features. The config file is now optional.
+Use this skill for Tailwind v4/UI implementation details. For content voice use `zen-content-voice`; for React composition use `react-patterns`; for performance audits use `web-performance-optimization`.
