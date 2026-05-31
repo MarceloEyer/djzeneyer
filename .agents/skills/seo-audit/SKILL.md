@@ -116,12 +116,12 @@ Verify cross-platform consistency for AI grounding:
 - [ ] Wikidata Q136551855: accurate birth date (1985-08-20), nationality, championship facts with sources.
 - [ ] MusicBrainz: releases, aliases ("DJ Zen Eyer") and ISRC when available. Wikidata Q136551855 link present.
 - [ ] Bandsintown (ID: `id_15619775`): events synced, bio uses canonical name, website links to djzeneyer.com.
-- [ ] Songkick: profile uses canonical name, website links to djzeneyer.com, URL added to `sameAs` in `artistData.ts`.
+- [ ] Songkick: profile uses canonical name, website links to djzeneyer.com, URL added to `sameAs` in `src/data/artistData.ts`.
 - [ ] YouTube: channel name, description and about section use canonical identity and link to djzeneyer.com.
 - [ ] YouTube Music: separate channel — name and bio consistent with YouTube main channel.
 - [ ] `sameAs` in schema matches actual official platform URLs (no articles, lineups or playlists).
 - [ ] Championship naming consistent: "Zouk DJ Championship 2022" / "I Campeonato Internacional de DJs" — not "Zouk Worlds".
-- [ ] Country count: 14 presencial countries — verify consistency across About, Media, press kit, artistData.ts.
+- [ ] Country count: 14 presencial countries — verify consistency across About, Media, press kit, `src/data/artistData.ts`.
 - [ ] Zoukology article: published with return link to djzeneyer.com. Schema on article uses `author: {/@id: /#artist}`.
 - [ ] Pronunciation file accessible at `public/pronunciation.txt` and referenced from `llms.txt`.
 
@@ -154,7 +154,7 @@ Assess:
 - External citations and official links.
 - Author attribution.
 - Verified awards and event participation.
-- Consistency across About, Media, Press Kit, verified facts, `artistData.ts` and schema.
+- Consistency across About, Media, Press Kit, verified facts, `src/data/artistData.ts` and schema.
 - Current consolidated public country count: 14 presencial countries, unless factual audit updates it.
 
 ## SEO Health Index

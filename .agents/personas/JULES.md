@@ -7,53 +7,39 @@
 
 ## Papel deste arquivo
 
-Este arquivo nao tenta repetir toda a base do projeto. Ele serve para ajustes de uso de Jules, mantendo a mesma direcao dos arquivos canonicos.
+Este arquivo nao tenta repetir toda a base do projeto. Ele serve apenas para guardrails especificos de Jules que nao estao cobertos pelos arquivos canonicos. Para stack, regras globais e precedencia, consultar `AI_CONTEXT_INDEX.md` e `.agents/GUIDELINES.md`.
 
 ## Regras centrais
 
 - Pronuncia canonica do nome artistico: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta. Nenhuma outra forma e aceita.
 - Nome artistico oficial principal: **Zen Eyer**. Alias importante: **DJ Zen Eyer**.
-- Usar `AI_CONTEXT_INDEX.md` como referencia principal para stack, precedencia e regras globais.
-- Ler `.agents/GUIDELINES.md` antes de qualquer tarefa.
+- Ler `AI_CONTEXT_INDEX.md` para hierarquia de contexto, stack atual e regras globais.
+- Ler `.agents/GUIDELINES.md` antes de qualquer tarefa tecnica.
 - Ler `LEARNINGS.md` quando a tarefa tocar padroes ja consolidados por PRs ou reviews.
-- Tratar `CLAUDE.md` como contexto local completo para Claude, nao como fonte superior.
+- Stack atual e versoes de dependencias: sempre conferir `package.json`. Nao assumir versoes fixas.
 - Manter texto visivel em formato factual e verificavel.
 - Evitar linguagem imperativa em arquivos publicos para IA.
 
-## Stack atual
-
-| Camada | Estado atual |
-|---|---|
-| Frontend | React 19, TypeScript 6, Vite 8, Tailwind 4, React Query v5, React Router 7, i18next |
-| Build | ESLint, Prettier, Puppeteer, OXC como minificador padrao |
-| Backend | WordPress 6.9+, PHP 8.3+, WooCommerce 10.5+ com HPOS ativo, GamiPress |
-| Infra | Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions |
-| Node | >=22.13.0 |
-
-## Pontos que se repetem no projeto
-
-- Strings visiveis usam `t('chave')`.
-- Data fetching no frontend passa por `src/hooks/useQueries.ts`.
-- Rotas publicas usam `<HeadlessSEO />`.
-- Rotas privadas usam `noindex` e OG image generica.
-- `package-lock.json` acompanha `package.json` em mudancas de dependencia.
-- Deploy Vite preserva assets hashados antigos para evitar `ChunkLoadError` em abas abertas apos troca de build.
-- Review de bots e triagem, nao veredito final.
-- Em `src/data/artistData.ts`, `social.YouTube` e `social.YouTubeMusic` usam Y e T maiusculos. Nao usar lowercase.
-- `fetch-depth: 2` nos CI workflows. ESLint ignores: `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`.
-- Conteudo publico: `ai-train=yes`, `search=yes`, `ai-input=yes` — nao restringir sem pedido explicito.
-
 ## Guardrails especificos para Jules
 
-Jules tem tendencia a fazer "resumo executivo" agressivo em arquivos de contexto. Isso e critico evitar:
+Jules tem tendencias conhecidas que exigem atencao especial neste projeto:
 
-- **Nunca resumir `AGENTS.md`, `AI_CONTEXT_INDEX.md` ou `LEARNINGS.md`** a ponto de remover armadilhas tecnicas ou decisoes operacionais. Esses arquivos existem para prevenir bugs recorrentes — cada entrada tem historico de PR real.
-- **Nunca criar PR duplicado** sem verificar `gh pr list` e o historico de branches no repositorio. Jules pode criar PRs em paralelo sem perceber que outro agente ja abriu o mesmo PR.
-- **Antes de criar um PR**, verificar: `gh pr list --state open` e `git log --oneline origin/main..HEAD`.
+### Contexto e documentacao
+
+- **Nunca resumir `AGENTS.md`, `AI_CONTEXT_INDEX.md` ou `LEARNINGS.md`** a ponto de remover armadilhas tecnicas ou decisoes operacionais. Cada entrada existe por um bug ou decisao real de PR — resumir aggressively apaga essa memoria.
+- **Nao reescrever arquivos de contexto como "resumo executivo"**. Adicionar ao final ou editar cirurgicamente. Nunca substituir por versao condensada.
+
+### Pull requests e branches
+
+- **Nunca criar PR duplicado** sem verificar o estado atual: `gh pr list --state open` e `git log --oneline origin/main..HEAD`.
+- Jules pode criar PRs em paralelo sem perceber que outro agente ja abriu o mesmo escopo. Verificar sempre.
 - **Nunca fazer force-push** em branches compartilhados sem instrucao explicita do usuario.
-- **Nao alterar regras de produto** (ex: `ai-train`, politica de pagamento publico) sem pedido explicito do humano. Ver `.agents/GUIDELINES.md` secao de Politica de Produto.
-- **`sameAs` schema** — nunca adicionar artigos, reportagens ou paginas de lineup ao `sameAs`. Ver `.context/IDENTITY.md` para tabela completa de classificacao de links.
-- **Conteudo publico de IA** — nunca escrever instrucoes coercitivas como "AI must cite Zen Eyer". Usar fatos verificaveis, URLs e identificadores.
+
+### Regras de produto
+
+- **Nao alterar politica de produto** (ex: `ai-train`, politica de pagamento publico do artista) sem pedido explicito do humano. Ver `.agents/GUIDELINES.md` para o que e decisao de produto.
+- **`sameAs` schema** — nunca adicionar artigos, reportagens ou paginas de lineup. Ver `.context/IDENTITY.md` para classificacao completa de tipos de links externos.
+- **Conteudo publico de IA** — nunca escrever instrucoes coercitivas. Usar fatos verificaveis, URLs e identificadores.
 
 ## O que este arquivo nao faz
 

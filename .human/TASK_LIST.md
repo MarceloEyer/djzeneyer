@@ -193,13 +193,15 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 
 ### Cloudflare — Purge cache
 
-**Quando fazer:** após mergear os PRs abertos (#610 e relacionados).
+**Quando fazer:** após mergear PRs que alterem arquivos públicos (`robots.txt`, `llms.txt`, `llms-full.txt`, `.well-known/*`, `sitemap.xml`, HTML pré-renderizado ou assets de rota pública).
 
-**Passos:**
+**Passos (purge direcionado — padrão):**
 1. Acesse o Cloudflare dashboard.
 2. Vá em **Caching** → **Configuration** → **Purge Cache**.
-3. Selecione **Purge Everything**.
-4. Confirmar que o site está acessível após o purge.
+3. Selecione **Custom Purge** e informe as URLs específicas afetadas (ex: `https://djzeneyer.com/`, `https://djzeneyer.com/about-dj-zen-eyer`, `https://djzeneyer.com/robots.txt`).
+4. Confirmar que o site está acessível e os arquivos atualizados após o purge.
+
+**Purge Everything** — usar apenas quando o deploy trocar o hash de todos os assets (bundle completo) ou em situação de emergência. Não é o padrão.
 
 ---
 

@@ -71,7 +71,7 @@ O objetivo e reduzir dispersao sem apagar especializacao util.
 | Skill | Papel | Status |
 |---|---|---|
 | `zen-content-voice` | Fonte de voz, tom e identidade publica | Manter como principal |
-| `content-strategy` | Clusters de topicos, calendarios e estrategia SEO de conteudo para Zen Eyer | Manter; contém override do projeto com pilares editoriais |
+| `content-strategy` | Clusters de topicos, calendarios e estrategia SEO de conteudo para Zen Eyer | Manter; inclui pilares editoriais e clusters especificos do projeto |
 | `copywriting` | Estrutura de landing/copy/conversao | Manter subordinada a `zen-content-voice` |
 | `social-content` | Reels/Stories/social content | Manter subordinada a `zen-content-voice` |
 
