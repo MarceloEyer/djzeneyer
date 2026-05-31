@@ -40,9 +40,13 @@ Expected target state: CodeQL=0 open actionable alerts, Dependabot=0 unresolved 
 
 ## PowerShell rule
 
-`&&` is not valid in local Windows PowerShell. Use `;` or `$?` conditionals.
+`&&` is available only in **PowerShell 7+**. In Windows PowerShell 5.1, use `;` or `$?` conditionals instead.
 
 ```powershell
+# PowerShell 7+ only
+git add . && git commit -m "msg" && git push
+
+# PowerShell 5.1 compatible
 git add .; git commit -m "msg"; git push
 if ($?) { git push }
 ```

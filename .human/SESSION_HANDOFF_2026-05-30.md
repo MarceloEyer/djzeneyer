@@ -35,7 +35,7 @@ Foram lidos todos os arquivos críticos da hierarquia:
 - `AI_CONTEXT_INDEX.md`, `AGENTS.md`, `LEARNINGS.md`
 - `.agents/GUIDELINES.md`, `.agents/personas/CLAUDE.md`, `.agents/personas/GEMINI.md`
 - `.agents/skills/README.md` e todas as skills principais
-- `.context/IDENTITY.md`, `PROJECT.md`, `ARCHITECTURE.md`, `SITE_RESOURCES.md`, `OPERATIONS.md`, `IMPLEMENTATION_STATUS.md`
+- `.context/IDENTITY.md`, `.context/PROJECT.md`, `.context/ARCHITECTURE.md`, `.context/SITE_RESOURCES.md`, `.context/OPERATIONS.md`, `.context/IMPLEMENTATION_STATUS.md`
 - `.human/MARKETING_OVERVIEW.md`, `TASK_LIST.md`
 
 **Por quê:** Não é possível fazer melhorias sólidas sem entender o estado completo do sistema. Agentes que editam sem ler primeiro tendem a introduzir contradições ou remover conteúdo crítico.

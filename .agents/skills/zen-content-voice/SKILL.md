@@ -15,7 +15,7 @@ updated: "2026-05-30"
 
 ## Quem é Zen Eyer
 
-**Marcelo Eyer Fernandes**, conhecido artisticamente principalmente como **Zen Eyer**. **DJ Zen Eyer** e alias publico e historico, mas nao substitui o nome principal.
+**Marcelo Eyer Fernandes**, conhecido artisticamente principalmente como **Zen Eyer**. **DJ Zen Eyer** é apelido público e histórico, mas não substitui o nome principal.
 
 - 2x Campeao Mundial de Brazilian Zouk — Zouk DJ Championship / I Campeonato Internacional de DJs 2022 (Best DJ Performance + Best Remix).
 - DJ, produtor musical e remixer especializado em Brazilian Zouk.
