@@ -25,7 +25,11 @@ function emit(level: LogLevel, code: string, message: string, context?: Record<s
   }
 
   const entry: LogEntry = { level, code, message, context, timestamp: new Date().toISOString() };
-  console[level](JSON.stringify(entry));
+  try {
+    console[level](JSON.stringify(entry));
+  } catch {
+    console[level](JSON.stringify({ level, code, message, timestamp: entry.timestamp }));
+  }
 }
 
 export const logger = {

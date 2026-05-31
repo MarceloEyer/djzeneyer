@@ -17,9 +17,11 @@ export const useAddToCartMutation = () =>
         credentials: 'include',
         body: JSON.stringify({ id: productId, quantity }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Failed to add item to cart');
-      return data;
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { message?: string }).message || 'Failed to add item to cart');
+      }
+      return res.json();
     },
     onSuccess: () => {
       invalidateQueries.cart();
@@ -36,9 +38,14 @@ export const useUpdateProfileMutation = (token?: string) =>
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(profileData),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Update failed');
-      return data;
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { message?: string }).message || 'Update failed');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidateQueries.user();
     },
   });
 
@@ -52,9 +59,14 @@ export const useUpdateNewsletterMutation = (token?: string) =>
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ enabled }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Update failed');
-      return data;
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { message?: string }).message || 'Update failed');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidateQueries.user();
     },
   });
 

@@ -169,14 +169,14 @@ export const useZenGameUserData = (token?: string) => useGamipressQuery(undefine
 
 export const useProfileQuery = (token?: string, options: { enabled?: boolean } = {}) =>
   useQuery<UserProfile | null>({
-    queryKey: ['user', 'profile', !!token],
+    queryKey: QUERY_KEYS.user.profile(),
     queryFn: async (): Promise<UserProfile | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
       const res = await fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error('Failed to fetch profile');
       const json = await res.json();
-      if (!json.success) return null;
+      if (!json.success) throw new Error(json.message || 'Profile fetch returned success=false');
       const parsed = UserProfileSchema.safeParse(json.data);
       if (!parsed.success) {
         logger.error('PROFILE_SCHEMA_MISMATCH', 'User profile schema validation failed', {
@@ -214,7 +214,7 @@ export const useUserOrdersQuery = (
 
 export const useNewsletterStatusQuery = (token?: string, options: { enabled?: boolean } = {}) =>
   useQuery<boolean | null>({
-    queryKey: ['user', 'newsletter', !!token],
+    queryKey: QUERY_KEYS.user.newsletter(),
     queryFn: async (): Promise<boolean | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/newsletter');

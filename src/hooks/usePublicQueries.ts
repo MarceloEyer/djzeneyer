@@ -466,7 +466,7 @@ export function extractZenBitEventId(routeParam: string): string {
   if (!routeParam.includes('-')) return routeParam;
   const last = routeParam.split('-').pop() ?? routeParam;
   if (/^\d+$/.test(last)) return last;
-  return last;
+  return routeParam;
 }
 
 export const useEventById = (
@@ -513,7 +513,7 @@ export const useEventById = (
 
 export const useShopPageQuery = (lang?: string) =>
   useQuery<ShopPageViewModel>({
-    queryKey: ['shop_page', lang],
+    queryKey: QUERY_KEYS.shop.page(lang),
     queryFn: async (): Promise<ShopPageViewModel> => {
       const apiUrl = buildApiUrl('djzeneyer/v1/shop/page', { lang: lang || 'en' });
       const res = await fetch(apiUrl);
@@ -562,7 +562,7 @@ export const useZenGameLeaderboard = (limit = 10) => useLeaderboardQuery(limit);
 
 export const useTrackBySlug = (slug?: string) =>
   useQuery({
-    queryKey: ['tracks', 'detail', slug],
+    queryKey: QUERY_KEYS.tracks.detail(slug ?? ''),
     queryFn: async (): Promise<MusicTrack | null> => {
       if (!slug) return null;
       const apiUrl = buildApiUrl('wp/v2/remixes', {
