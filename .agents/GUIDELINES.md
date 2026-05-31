@@ -2,6 +2,39 @@
 
 Este arquivo contém as regras técnicas inegociáveis para todos os agentes de IA e colaboradores humanos. O descumprimento destas regras é considerado um BUG de alta prioridade.
 
+## 🧠 Princípios de Engenharia
+
+Valem para código, documentação e arquitetura de agentes. Nenhuma exceção sem justificativa explícita.
+
+### KISS — Keep It Simple, Stupid
+- Prefira a solução mais simples que resolve o problema real agora. Complexidade precisa ser justificada, não presumida.
+- Se `if/else` resolve, não crie um padrão de projeto. Se um componente resolve, não crie um sistema de plugins.
+- Pergunte antes de refatorar: "a complexidade adicionada resolve um problema que já existe?"
+
+### DRY — Don't Repeat Yourself
+- Cada fato, regra ou lógica tem **uma única representação** canônica no sistema. Referências apontam para essa fonte; não copiam.
+- Fatos de identidade (país, títulos, datas, links oficiais): `src/data/artistData.ts` e `.context/IDENTITY.md`.
+- Versões de dependências: `package.json`. Não repetir versões em MDs de agentes.
+- Regras operacionais: `.agents/GUIDELINES.md`, `.context/OPERATIONS.md` ou `LEARNINGS.md`.
+- Ao encontrar duplicação, corrija na fonte — nunca propague mais uma cópia.
+
+### YAGNI — You Aren't Gonna Need It
+- Não implemente funcionalidades, estruturas ou otimizações para casos de uso que não existem agora.
+- Não crie abstrações "para o futuro", flags de feature sem requisito concreto ou variantes de componentes hipotéticas.
+- Três linhas similares são melhores que uma abstração prematura.
+
+### SoC — Separation of Concerns
+- UI exibe dados; hooks buscam dados; utils transformam dados. Essas camadas não se misturam.
+- Skills de agentes têm escopo declarado no `SKILL.md` — não extrapolem para responsabilidade de outra skill.
+- Docs de identidade (`IDENTITY.md`) não repetem regras operacionais (`GUIDELINES.md`). Cada arquivo com a sua função.
+
+### SRP — Single Responsibility Principle
+- Um componente, hook, função ou arquivo: um motivo para mudar.
+- Se uma função "salva e notifica", separe em duas. Se um arquivo acumula múltiplas responsabilidades, corrija a divisão antes de adicionar mais.
+- Ao criar um novo arquivo, declare sua responsabilidade única na primeira linha de comentário ou no frontmatter.
+
+---
+
 ## ⚛️ React & Frontend (TSX)
 
 1. **Internacionalização (i18next):**
