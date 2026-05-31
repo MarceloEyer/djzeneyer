@@ -21,7 +21,7 @@ jobs:
     timeout-minutes: 15
 
     env:
-      NODE_VERSION: 22.13.0
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       NODE_ENV: production
       SITE_BASE_URL: https://djzeneyer.com
       VITE_WP_SITE_URL: https://djzeneyer.com
@@ -34,11 +34,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: '22.13.0'
           cache: npm
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci
 
       - name: TypeScript check
         run: npm run type-check
