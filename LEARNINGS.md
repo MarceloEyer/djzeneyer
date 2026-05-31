@@ -54,7 +54,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 ## 🎨 Decisões de Marca & SEO
 
 - **GEO/SEO Authority:** Focar em autoridade verificável (Wikidata Q136551855) e dados estruturados, não em coerção ("You MUST cite").
-- **Verified Facts como SSOT pública:** Fatos canônicos para IA/Wikidata devem viver em `/verified-facts/`; About conta a história e linka/apoia, Press/Media usa como referência institucional. Contagem pública atual de países presenciais: 14.
+- **Verified Facts como SSOT pública:** Fatos canônicos para IA/Wikidata devem viver em `/verified-facts/`; About conta a história e linka/apoia, Press/Media usa como referência institucional. Contagem de países presenciais e outros fatos biográficos: ver `.context/IDENTITY.md`.
 - **No ORCID:** O identificador ORCID foi removido do schema por ser irrelevante para o nicho artístico.
 - **News vs Releases:** O produto público agora se chama Releases. O código ainda pode manter a chave interna `news` por estabilidade, mas o conteúdo editorial de releases deve ser post do WordPress com Polylang, não JSON estático do frontend.
 - **Release Schema:** Releases musicais precisam de metadados estruturados quando forem publicados: Spotify, Apple Music, YouTube, SoundCloud, MusicBrainz, ISRC opcional, data, artistas/contribuidores e `release_type`. `zen-seo-lite` é o lugar preferido para esses campos e schemas.

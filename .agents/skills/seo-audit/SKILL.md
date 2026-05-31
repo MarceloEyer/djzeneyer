@@ -110,19 +110,13 @@ Priority order:
 
 ### GEO entity consistency audit
 
-Verify cross-platform consistency for AI grounding:
+Verify cross-platform consistency for AI grounding. Platform list, IDs, and current facts are in `.context/IDENTITY.md` (SSOT).
 
-- [ ] Artist name "Zen Eyer" (not "DJ Zen Eyer") as primary name on Spotify, Apple Music, YouTube channel.
-- [ ] Wikidata Q136551855: accurate birth date (1985-08-20), nationality, championship facts with sources.
-- [ ] MusicBrainz: releases, aliases ("DJ Zen Eyer") and ISRC when available. Wikidata Q136551855 link present.
-- [ ] Bandsintown (ID: `id_15619775`): events synced, bio uses canonical name, website links to djzeneyer.com.
-- [ ] Songkick: profile uses canonical name, website links to djzeneyer.com, URL added to `sameAs` in `src/data/artistData.ts`.
-- [ ] YouTube: channel name, description and about section use canonical identity and link to djzeneyer.com.
-- [ ] YouTube Music: separate channel — name and bio consistent with YouTube main channel.
-- [ ] `sameAs` in schema matches actual official platform URLs (no articles, lineups or playlists).
-- [ ] Championship naming consistent: "Zouk DJ Championship 2022" / "I Campeonato Internacional de DJs" — not "Zouk Worlds".
-- [ ] Country count: 14 presencial countries — verify consistency across About, Media, press kit, `src/data/artistData.ts`.
-- [ ] Zoukology article: published with return link to djzeneyer.com. Schema on article uses `author: {/@id: /#artist}`.
+- [ ] Canonical name "Zen Eyer" (not "DJ Zen Eyer") used as primary on all platforms.
+- [ ] `sameAs` contains only official identity profile URLs — no articles, lineups, or playlists. See `.context/IDENTITY.md` for approved URLs.
+- [ ] Wikidata Q136551855 facts have sources. Championship naming: "Zouk DJ Championship 2022" / "I Campeonato Internacional de DJs".
+- [ ] Country count and biography facts consistent across site and platforms — canonical value in `.context/IDENTITY.md`.
+- [ ] Zoukology article: return link to djzeneyer.com present. Schema uses `author: {/@id: /#artist}`.
 - [ ] Pronunciation file accessible at `public/pronunciation.txt` and referenced from `llms.txt`.
 
 ## On-page audit

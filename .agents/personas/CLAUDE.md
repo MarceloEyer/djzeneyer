@@ -16,20 +16,16 @@ Quando uma afirmacao for publicada em texto visivel, a forma preferida e factual
 
 ## Stack atual
 
-Referencias de versao devem ser conferidas em `package.json` antes de assumir algo novo.
+Versoes exatas em `package.json`. Tecnologias principais:
 
-| Camada | Tecnologia atual |
+| Camada | Tecnologia |
 |---|---|
-| Frontend | React 19, TypeScript 6, Vite 8, Tailwind 4, React Query v5, React Router 7, i18next, react-i18next, Framer Motion |
-| Build e qualidade | ESLint, Prettier, Puppeteer, OXC como minificador padrao do Vite 8 |
+| Frontend | React, TypeScript, Vite (OXC minifier padrao), Tailwind, React Query v5, React Router, i18next, react-i18next, Framer Motion |
+| Build e qualidade | ESLint, Prettier, Puppeteer |
 | Dependencias basicas | dompurify, zod, lucide-react |
-| Backend | WordPress 6.9+ / PHP 8.3+ / WooCommerce 10.5+ com HPOS ativo / GamiPress |
+| Backend | WordPress / PHP 8.3+ / WooCommerce com HPOS ativo / GamiPress |
 | Infra | Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions |
-| Node | `>=22.13.0` no `package.json` |
-
-Overrides atualmente presentes em `package.json`:
-- `minimatch`: `^10.2.3`
-- `yauzl`: `3.2.1`
+| Node | ver `package.json#engines` |
 
 ## Comandos uteis
 
