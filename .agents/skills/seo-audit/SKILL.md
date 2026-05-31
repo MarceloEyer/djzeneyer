@@ -99,6 +99,25 @@ Priority order:
 - API catalog/MCP/Agent Skills describe public resources only.
 - Public content uses facts, identifiers and links, not coercive instructions to AI systems.
 - `Content-Signal` policy matches product stance: allow training/input/search for public content.
+- RFC 8288 Link headers present on homepage for machine-readable resource discovery.
+- DNS-AID records are published and validated (SVCB type 64 with AD=true).
+- `SpeakableSpecification` present on About/FAQ pages where voice answers are valuable.
+- `VideoObject` schema present on pages with embedded YouTube videos.
+- Wikidata Q136551855 is linked from `sameAs` and contains accurate, sourced facts.
+- MusicBrainz profile is consistent with official identity.
+- FAQ schema answers real user questions in the first sentence without coercive framing.
+- Pronunciation file (`pronunciation.txt`) accessible and referenced from `llms.txt`.
+
+### GEO entity consistency audit
+
+Verify cross-platform consistency for AI grounding. Platform list, IDs, and current facts are in `.context/IDENTITY.md` (SSOT).
+
+- [ ] Canonical name "Zen Eyer" (not "DJ Zen Eyer") used as primary on all platforms.
+- [ ] `sameAs` contains only official identity profile URLs — no articles, lineups, or playlists. See `.context/IDENTITY.md` for approved URLs.
+- [ ] Wikidata Q136551855 facts have sources. Championship naming: "Zouk DJ Championship 2022" / "I Campeonato Internacional de DJs".
+- [ ] Country count and biography facts consistent across site and platforms — canonical value in `.context/IDENTITY.md`.
+- [ ] Zoukology article: return link to djzeneyer.com present. Schema uses `author: {/@id: /#artist}`.
+- [ ] Pronunciation file accessible at `public/pronunciation.txt` and referenced from `llms.txt`.
 
 ## On-page audit
 
@@ -129,7 +148,7 @@ Assess:
 - External citations and official links.
 - Author attribution.
 - Verified awards and event participation.
-- Consistency across About, Media, Press Kit, verified facts, `artistData.ts` and schema.
+- Consistency across About, Media, Press Kit, verified facts, `src/data/artistData.ts` and schema.
 - Current consolidated public country count: 14 presencial countries, unless factual audit updates it.
 
 ## SEO Health Index

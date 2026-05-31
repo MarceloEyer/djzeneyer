@@ -54,7 +54,7 @@ O objetivo e reduzir dispersao sem apagar especializacao util.
 | `react-patterns` | Conceitos gerais de composicao React | Secundaria; nao usar para SSR/Server Components |
 | `typescript-pro` | Tipagem TypeScript avancada | Manter, usar quando a tarefa for de tipos/contratos |
 | `tailwind-patterns` | Tailwind v4 e design tokens | Manter |
-| `web-performance-optimization` | Performance web do site real | Manter; adaptada para Vite/SSG |
+| `web-quality-skills` | Performance web do site real | Manter; adaptada para Vite/SSG |
 | `clean-code` | Refatoracao e revisao geral | Manter como checklist geral |
 
 ### SEO / GEO / AEO / schema / AI discovery
@@ -71,6 +71,7 @@ O objetivo e reduzir dispersao sem apagar especializacao util.
 | Skill | Papel | Status |
 |---|---|---|
 | `zen-content-voice` | Fonte de voz, tom e identidade publica | Manter como principal |
+| `content-strategy` | Clusters de topicos, calendarios e estrategia SEO de conteudo para Zen Eyer | Manter; inclui pilares editoriais e clusters especificos do projeto |
 | `copywriting` | Estrutura de landing/copy/conversao | Manter subordinada a `zen-content-voice` |
 | `social-content` | Reels/Stories/social content | Manter subordinada a `zen-content-voice` |
 

@@ -74,7 +74,7 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - **URL canônica em páginas:** Nunca hardcodar paths como `/about`. Usar `getLocalizedRoute('about', currentLang)`.
 - **Class components:** Não podem usar `useTranslation()` — usar `withTranslation()` HOC.
 - **Jules PRs duplicados:** Jules tende a criar PRs duplicados. Verificar antes de mergear.
-- **`social.YouTube`:** Em `src/data/artistData.ts`, o link social correto usa `YouTube` com Y e T maiusculos. Nao usar `social.youtube`.
+- **`social.YouTube` / `social.YouTubeMusic`:** Em `src/data/artistData.ts`, ambas as chaves usam Y e T maiusculos. Nao usar `social.youtube` nem `social.youtubeMusic` — essas variantes em lowercase nao existem no objeto e causam silently undefined.
 
 ---
 
@@ -94,6 +94,24 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - **Adicionar regras NOCACHE para `/wp-json/`, `/feed/`, `/api/`** — o frontend é SSG (pré-renderizado em build time). Cachear essas rotas é CORRETO. Adicionar NOCACHE quebraria a estratégia de performance do site.
 - **`Header unset Content-Security-Policy` ou `Header always unset Content-Security-Policy` no `.htaccess`** — `mod_headers` roda após o PHP e remove a CSP dinâmica gerada por `inc/csp.php`, deixando o cliente sem proteção.
 - **`Strict-Transport-Security` no `.htaccess`** — HSTS é gerenciado pelo Cloudflare. Definir nos dois lugares cria duas fontes de verdade.
+
+### 7. Classificação de Links Externos (Knowledge Panel e sameAs)
+
+Antes de adicionar qualquer URL externo ao schema, ao `sameAs` ou a `artistData.ts`, classifique o tipo:
+
+| Tipo | `sameAs`? | Schema? | Exemplos |
+|---|---|---|---|
+| Perfil oficial na plataforma | ✅ Sim | Via `sameAs` | Spotify, YouTube canal, Wikidata Q136551855, MusicBrainz |
+| Artigo ESCRITO por Zen Eyer | ❌ Não | `author` no artigo | Artigo Zoukology |
+| Reportagem/artigo SOBRE Zen Eyer | ❌ Não | Nenhum | Entrevistas, press features |
+| Página de lineup de evento | ❌ Não | Nenhum | Site de festival listando o DJ |
+| Fan page / playlist de terceiro | ❌ Não | Nenhum | Ignorar |
+
+**Erro crítico:** adicionar URLs de imprensa, lineup ou artigos em `sameAs`. Isso polui a identidade da entidade e prejudica o Knowledge Panel.
+
+**Regra de produto:** o canal YouTube oficial é o único canal YouTube no `sameAs`. Um único perfil por plataforma.
+
+Para a lógica completa com exemplos e anti-padrões, consulte `.context/IDENTITY.md` seção "Classificação de Links Externos".
 
 ---
 

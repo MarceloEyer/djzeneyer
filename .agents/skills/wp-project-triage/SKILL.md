@@ -36,7 +36,7 @@ Do not use it for simple copy-only tasks.
 node .agents/skills/wp-project-triage/scripts/detect_wp_project.mjs
 ```
 
-2. Confirm the report includes:
+1. Confirm the report includes:
 
 - `project.kind`.
 - `signals`.
@@ -44,7 +44,7 @@ node .agents/skills/wp-project-triage/scripts/detect_wp_project.mjs
 - WordPress/theme/plugin hints.
 - Node/PHP/composer/npm hints.
 
-3. For this repo, verify expected structure:
+1. For this repo, verify expected structure:
 
 ```text
 src/                       React SPA
@@ -62,7 +62,7 @@ public/                    root-public assets and AI/search resources
 .human/                    human backlog/audits/handoffs
 ```
 
-4. If structure changed, update the relevant context owner:
+1. If structure changed, update the relevant context owner:
 
 - `AI_CONTEXT_INDEX.md` if hierarchy/map changed.
 - `.context/ARCHITECTURE.md` if boundaries changed.

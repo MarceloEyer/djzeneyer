@@ -15,7 +15,7 @@ A oportunidade é rara porque Zen Eyer já tem ativos que muitos artistas famoso
 | Ativo real | Por que é poderoso | Como vira fama |
 |---|---|---|
 | 🏆 2× Campeão Mundial de Brazilian Zouk | Prova objetiva de excelência | Autoridade imediata em mídia, booking e SEO |
-| 🌍 Presença em 15+ países | Prova social internacional | Confiança para festivais e imprensa |
+| 🌍 14 países presenciais | Prova social internacional | Confiança para festivais e imprensa |
 | 🧠 Mensa International | Gancho incomum para entrevistas | Diferenciação fora da bolha do Zouk |
 | 🧈 Cremosidade | Conceito proprietário e memorável | Meme cultural, assinatura artística e comunidade |
 | 🏰 Ecossistema próprio | Site, SEO, loja, newsletter e Zen Tribe | Captura demanda em vez de depender de algoritmo |

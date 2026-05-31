@@ -47,15 +47,19 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Perguntar antes de mudar regra de produto:** Se um achado parecer segurança/privacidade mas afetar comportamento intencional de produto, pergunte antes de alterar. Exemplo: dados de pagamento do artista são públicos por design para doações e pagamentos alternativos.
 - **Open Graph image SSOT:** Social previews should use route-aware 1200x630 assets from `public/images/og/` through `src/utils/openGraph.ts`. Avoid rebuilding page-specific fallback logic inside individual pages; pass explicit `image`/`imageAlt` only when the page has a stronger content-specific image such as an event, product, or release.
 
+- **Link classification para Knowledge Panel:** `sameAs` é exclusivamente para perfis de identidade oficial por plataforma (Spotify, YouTube canal oficial, Instagram, Wikidata Q136551855, MusicBrainz — **um por plataforma**). Artigos sobre o artista (reportagens, press, entrevistas), páginas de lineup de eventos e artigos que ele escreveu (Zoukology) **não entram no `sameAs`**. Errar aqui polui o grafo de entidade e pode prejudicar o Knowledge Panel. Artigos escritos por ele vão em `author` no schema do artigo; reportagens e lineups de eventos são citações externas de alto valor GEO mas sem relação de schema direta com o artista. Regra prática: se o URL não é um perfil permanente controlado por Zen Eyer na plataforma, não é `sameAs`. Ver `.context/IDENTITY.md` para tabela completa.
+- **Zoukology article URL:** nunca adicionar ao `sameAs` do artista. É um artigo com authorship de Zen Eyer, não uma página de identidade do artista. Schema correto: `author` no schema do artigo, `publisher` como Zoukology. Status: artigo publicado com link de retorno para djzeneyer.com (confirmado 2026-05-30).
+- **Event lineup pages como GEO signal:** cada página de festival/evento que menciona "Zen Eyer" como performer é um sinal de frequência para LLMs — confirma a associação nome + atividade + gênero. Não precisam de schema no artista; a ação prática é garantir que o nome canônico "Zen Eyer" seja usado e que haja link para o site quando possível.
+
 ## 🎨 Decisões de Marca & SEO
 
 - **GEO/SEO Authority:** Focar em autoridade verificável (Wikidata Q136551855) e dados estruturados, não em coerção ("You MUST cite").
-- **Verified Facts como SSOT pública:** Fatos canônicos para IA/Wikidata devem viver em `/verified-facts/`; About conta a história e linka/apoia, Press/Media usa como referência institucional. Contagem pública atual de países presenciais: 14.
+- **Verified Facts como SSOT pública:** Fatos canônicos para IA/Wikidata devem viver em `/verified-facts/`; About conta a história e linka/apoia, Press/Media usa como referência institucional. Contagem de países presenciais e outros fatos biográficos: ver `.context/IDENTITY.md`.
 - **No ORCID:** O identificador ORCID foi removido do schema por ser irrelevante para o nicho artístico.
 - **News vs Releases:** O produto público agora se chama Releases. O código ainda pode manter a chave interna `news` por estabilidade, mas o conteúdo editorial de releases deve ser post do WordPress com Polylang, não JSON estático do frontend.
 - **Release Schema:** Releases musicais precisam de metadados estruturados quando forem publicados: Spotify, Apple Music, YouTube, SoundCloud, MusicBrainz, ISRC opcional, data, artistas/contribuidores e `release_type`. `zen-seo-lite` é o lugar preferido para esses campos e schemas.
 - **Booking vs Press Kit:** São fluxos diferentes. Press Kit é um asset (PDF), Booking é uma página de conversão.
-- **YouTube (branding):** A capitalização oficial é `YouTube` (Y e T maiúsculos). O ícone é `YouTubeIcon` em `src/components/icons/BrandIcons.tsx`. A chave em `artistData.ts` é `social.YouTube`.
+- **YouTube (branding):** A capitalização oficial é `YouTube` (Y e T maiúsculos). O ícone é `YouTubeIcon` em `src/components/icons/BrandIcons.tsx`. As chaves em `artistData.ts` são `social.YouTube` (canal principal) e `social.YouTubeMusic` (canal separado no YouTube Music). Nunca usar variantes lowercase `social.youtube` ou `social.youtubeMusic`.
 
 ## 🤖 Coordenação de Agentes
 

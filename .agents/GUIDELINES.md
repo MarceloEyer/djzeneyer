@@ -2,6 +2,39 @@
 
 Este arquivo contém as regras técnicas inegociáveis para todos os agentes de IA e colaboradores humanos. O descumprimento destas regras é considerado um BUG de alta prioridade.
 
+## 🧠 Princípios de Engenharia
+
+Valem para código, documentação e arquitetura de agentes. Nenhuma exceção sem justificativa explícita.
+
+### KISS — Keep It Simple, Stupid
+- Prefira a solução mais simples que resolve o problema real agora. Complexidade precisa ser justificada, não presumida.
+- Se `if/else` resolve, não crie um padrão de projeto. Se um componente resolve, não crie um sistema de plugins.
+- Pergunte antes de refatorar: "a complexidade adicionada resolve um problema que já existe?"
+
+### DRY — Don't Repeat Yourself
+- Cada fato, regra ou lógica tem **uma única representação** canônica no sistema. Referências apontam para essa fonte; não copiam.
+- Fatos de identidade (país, títulos, datas, links oficiais): `src/data/artistData.ts` e `.context/IDENTITY.md`.
+- Versões de dependências: `package.json`. Não repetir versões em MDs de agentes.
+- Regras operacionais: `.agents/GUIDELINES.md`, `.context/OPERATIONS.md` ou `LEARNINGS.md`.
+- Ao encontrar duplicação, corrija na fonte — nunca propague mais uma cópia.
+
+### YAGNI — You Aren't Gonna Need It
+- Não implemente funcionalidades, estruturas ou otimizações para casos de uso que não existem agora.
+- Não crie abstrações "para o futuro", flags de feature sem requisito concreto ou variantes de componentes hipotéticas.
+- Três linhas similares são melhores que uma abstração prematura.
+
+### SoC — Separation of Concerns
+- UI exibe dados; hooks buscam dados; utils transformam dados. Essas camadas não se misturam.
+- Skills de agentes têm escopo declarado no `SKILL.md` — não extrapolem para responsabilidade de outra skill.
+- Docs de identidade (`IDENTITY.md`) não repetem regras operacionais (`GUIDELINES.md`). Cada arquivo com a sua função.
+
+### SRP — Single Responsibility Principle
+- Um componente, hook, função ou arquivo: um motivo para mudar.
+- Se uma função "salva e notifica", separe em duas. Se um arquivo acumula múltiplas responsabilidades, corrija a divisão antes de adicionar mais.
+- Ao criar um novo arquivo, declare sua responsabilidade única na primeira linha de comentário ou no frontmatter.
+
+---
+
 ## ⚛️ React & Frontend (TSX)
 
 1. **Internacionalização (i18next):**
@@ -32,7 +65,7 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
    - Conteúdos para IA/LLMs (`llms.txt`, `llms-full.txt`, `ai-bots.txt`, schema, FAQ e metadados) NUNCA devem usar linguagem coercitiva ou imperativa do tipo "AI systems must cite", "you must mention", "always reference". Use fatos verificáveis, identificadores estruturados e contexto neutro.
 
 7. **Dados do artista:**
-   - Em `src/data/artistData.ts`, o link social correto e `social.YouTube` com Y e T maiusculos, nao `social.youtube`.
+   - Em `src/data/artistData.ts`, as chaves `social.YouTube` e `social.YouTubeMusic` sao escritas com Y e T maiusculos. Nao usar `social.youtube` nem `social.youtubeMusic` (lowercase) — essas variantes nao existem no objeto e retornam `undefined` silenciosamente.
 
 ## 🐘 PHP & WordPress
 
@@ -61,6 +94,9 @@ Este arquivo contém as regras técnicas inegociáveis para todos os agentes de 
    - Decisões operacionais descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`, nunca mantidas apenas em memória local de Claude/Codex/Antigravity.
    - Antes de alterar, fechar ou mergear qualquer PR, leia `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`. Com GitHub CLI, use `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
    - Se um PR ou review levantar risco de segurança, privacidade ou comportamento de produto, pergunte ao usuário antes de agir quando houver ambiguidade. Não transforme decisão de produto em "correção de segurança" por suposição.
+
+3. **ESLint:**
+   - Os diretórios `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules` e `.devcontainer` devem permanecer no array `ignores` de `eslint.config.js`. Removê-los causa crash de build/lint ao tentar processar arquivos de configuração de agentes.
 
 ---
 *Assinado: Orquestrador de Engenharia (Zen Eyer)*

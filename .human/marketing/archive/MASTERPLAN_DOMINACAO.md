@@ -1,3 +1,7 @@
+> **ARQUIVO HISTÓRICO — SUPERSEDIDO**
+> Este documento foi consolidado em PLANO_MARKETING.md (v2.1). Mantido apenas para referência histórica.
+> Decisões divergentes neste arquivo (ex: migrar para DistroKid) foram revisadas e substituídas. Consultar `.human/marketing/PLANO_MARKETING.md` para o plano vigente.
+
 <div align="center">
   <h1>👑 MASTERPLAN DE DOMINAÇÃO GLOBAL: DJ ZEN EYER 👑</h1>
   <p><em>O Playbook Científico e Algorítmico para Chegar ao Topo do Zouk Brasileiro e Além</em></p>

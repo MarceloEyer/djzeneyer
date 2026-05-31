@@ -1,7 +1,9 @@
 # Implementation Status & TODO Map
 
 Version: 1.0.0
-Last reviewed from PR history: 2026-05-23..2026-05-30
+Last reviewed from PR history: 2026-05-23 a 2026-05-30
+
+> ⚠️ **Arquivo operacional e temporário.** Resume implementações recentes e TODOs derivados de PRs. Não é SSOT permanente — sempre validar contra o código real. Itens resolvidos devem ser removidos; regras permanentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`.
 
 ## Papel deste arquivo
 
@@ -82,7 +84,7 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 - Dados estruturados Person/MusicGroup foram alinhados entre React e Zen SEO Lite.
 - MusicEvent performer passou a apontar para o node MusicGroup.
 - Campeonato foi normalizado como Zouk DJ Championship / I Campeonato Internacional de DJs, evitando confusao com Zouk Worlds.
-- Contagem publica consolidada atual: 14 paises presenciais, salvo revisao factual futura.
+- Contagem de paises presenciais: ver `.context/IDENTITY.md` (SSOT).
 - Zoukology article foi preparado como published work externo, com relacao `Zen Eyer -> author of -> article -> published by Zoukology`, sem entrar em `sameAs`.
 
 ### Contexto de agentes e documentacao
@@ -94,6 +96,22 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 - `djzeneyer-context` e `dream-project` foram corrigidas para a arquitetura atual.
 - `.context/SITE_RESOURCES.md` foi criado como mapa de capacidades do site.
 - `.agents/skills/README.md` foi criado para governanca de skills.
+
+### Revisao e melhoria do PR #610 — 2026-05-30
+
+- `social.YouTubeMusic` (capital Y, T) adicionado a GUIDELINES, AGENTS, CLAUDE persona, GEMINI persona e AI_CONTEXT_INDEX — antes estava apenas em LEARNINGS.md.
+- ESLint ignores documentados em GUIDELINES e AI_CONTEXT_INDEX (`.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer`).
+- Node version do GEMINI.md corrigido (`20+` → `>=22.13.0`).
+- Banner de arquivo temporario adicionado ao topo de IMPLEMENTATION_STATUS.md.
+- 5 threads de review do PR #610 (Gemini + Codex) resolvidos.
+- `seo-authority-builder` ganhou playbook GEO 2025-2026 completo: como LLMs selecionam fontes, topical authority, cross-platform consistency, video strategy, Wikipedia/Wikidata, AEO checklist, Knowledge Panel maintenance.
+- `seo-audit` ganhou GEO entity consistency checklist cross-platform e checklist de recursos de AI discovery modernos.
+- `schema-markup` ganhou `VideoObject` e `SpeakableSpecification` como tipos documentados com guidance.
+- `.context/IDENTITY.md` ganhou secao de presenca cross-platform (tabela de 10 plataformas) e secao de classificacao de links externos para Knowledge Panel.
+- Classificacao de links documentada em AGENTS, LEARNINGS e seo-authority-builder: `sameAs` = perfis de identidade oficial apenas; artigos sobre o artista, reportagens e lineups de eventos NAO entram em `sameAs`; artigos escritos por ele usam `author` no schema do artigo.
+- `TASK_LIST.md` atualizado com acoes GEO/AEO: Spotify bio, Apple Music, YouTube channel, Wikidata, VideoObject schema, Wikipedia, festival pages.
+- `MARKETING_OVERVIEW.md` atualizado com resumo estrategico GEO e caminhos prioritarios.
+- `.human/SESSION_HANDOFF_2026-05-30.md` criado com documentacao completa de cada mudanca e seu racionocinio.
 
 ## Pendencias / TODOs recomendados
 
