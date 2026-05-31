@@ -161,7 +161,8 @@ class Zen_SEO_Sitemap
             foreach ($posts as $post) {
                 $trans = \pll_get_post_translations($post->ID);
                 if (\is_array($trans)) {
-                    $all_ids = \array_merge($all_ids, \array_values($trans));
+                    // ⚡ Bolt: Replace O(N^2) array_merge with faster array_push spreading to avoid memory reallocation overhead
+                    \array_push($all_ids, ...\array_values($trans));
                 }
             }
             $all_ids = \array_unique($all_ids);
