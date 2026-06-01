@@ -36,12 +36,26 @@ try {
       }
     });
     const encyclopediaRoute = data.routes.find(r => r.key === 'encyclopedia');
-    const encyclopediaTerms = JSON.parse(readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf8')).terms;
-    if (encyclopediaRoute && Array.isArray(encyclopediaTerms)) {
-      for (const term of encyclopediaTerms) {
-        routesList.push(`/${encyclopediaRoute.en}/${term}`);
-        routesList.push(`/pt/${encyclopediaRoute.pt}/${term}`);
+    let encyclopediaTerms = [];
+    try {
+      const parsed = JSON.parse(readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf8'));
+      if (parsed && Array.isArray(parsed.terms)) {
+        encyclopediaTerms = parsed.terms;
+      } else {
+        console.warn(`⚠️ Encyclopedia: propriedade 'terms' ausente ou inválida em encyclopedia-term-slugs.json`);
       }
+    } catch (e) {
+      console.warn(`⚠️ Encyclopedia: falha ao ler encyclopedia-term-slugs.json: ${e.message}`);
+    }
+    if (encyclopediaRoute && encyclopediaTerms.length > 0) {
+      let added = 0;
+      for (const term of encyclopediaTerms) {
+        const enRoute = `/${encyclopediaRoute.en}/${term}`;
+        const ptRoute = `/pt/${encyclopediaRoute.pt}/${term}`;
+        if (!routesList.includes(enRoute)) { routesList.push(enRoute); added++; }
+        if (!routesList.includes(ptRoute)) { routesList.push(ptRoute); added++; }
+      }
+      console.log(`📚 Encyclopedia: ${added} rotas adicionadas ao prerender.`);
     }
     console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
   } else {

@@ -169,9 +169,24 @@ async function generateSitemaps() {
     }
 
     const encyclopediaRoute = routesData.routes.find(route => route.key === 'encyclopedia');
-    const encyclopediaTerms = JSON.parse(fs.readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf-8')).terms;
-    if (encyclopediaRoute && Array.isArray(encyclopediaTerms)) {
+    let encyclopediaTerms = [];
+    try {
+      const parsed = JSON.parse(fs.readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf-8'));
+      if (parsed && Array.isArray(parsed.terms)) {
+        encyclopediaTerms = parsed.terms;
+      } else {
+        console.warn(`⚠️ Encyclopedia: propriedade 'terms' ausente ou inválida em ${ENCYCLOPEDIA_TERMS_PATH}`);
+      }
+    } catch (e) {
+      console.warn(`⚠️ Encyclopedia: falha ao ler ${ENCYCLOPEDIA_TERMS_PATH}: ${e.message}`);
+    }
+    if (encyclopediaRoute && encyclopediaTerms.length > 0) {
+      console.log(`📚 Encyclopedia: ${encyclopediaTerms.length} termos carregados.`);
       for (const term of encyclopediaTerms) {
+        if (typeof term !== 'string' || !term.trim()) {
+          console.warn(`⚠️ Encyclopedia: termo inválido ignorado: ${JSON.stringify(term)}`);
+          continue;
+        }
         const enUrl = getSitemapUrl('en', `${encyclopediaRoute.en}/${term}`);
         const ptUrl = getSitemapUrl('pt', `${encyclopediaRoute.pt}/${term}`);
         pagesXml += buildUrlEntry(enUrl, date, '0.7', ptUrl, DEFAULT_IMAGE, true);

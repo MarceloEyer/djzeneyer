@@ -28,7 +28,7 @@ const EncyclopediaHubPage: React.FC = () => {
   const [query, setQuery] = useState('');
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const prefersReducedMotion = useReducedMotion();
-  const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', currentLang)}`;
+  const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', currentLang)}/`;
 
   const visibleTerms = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -263,25 +263,26 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const prefersReducedMotion = useReducedMotion();
   const hubPath = getLocalizedRoute('encyclopedia', currentLang);
+  const hubUrl = `${ARTIST.site.baseUrl}${hubPath}/`;
   const termSlug = toEncyclopediaTermSlug(term.key);
-  const pagePath = `${hubPath}/${termSlug}`;
+  const pagePath = `${hubPath}/${termSlug}/`;
   const pageUrl = `${ARTIST.site.baseUrl}${pagePath}`;
   const termName = t(`terms.${term.key}.term`, { ns: 'encyclopedia' });
   const shortAnswer = t(`terms.${term.key}.short`, { ns: 'encyclopedia' });
   const body = t(`terms.${term.key}.body`, { ns: 'encyclopedia' });
   const question = t('detail.question', { ns: 'encyclopedia', term: termName });
   const completeAnswer = `${shortAnswer} ${body}`;
-  const enUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', 'en')}/${termSlug}`;
-  const ptUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', 'pt')}/${termSlug}`;
+  const enUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', 'en')}/${termSlug}/`;
+  const ptUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', 'pt')}/${termSlug}/`;
 
   const schema = useMemo(() => ({
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'DefinedTermSet',
-        '@id': `${ARTIST.site.baseUrl}${hubPath}#defined-term-set`,
+        '@id': `${hubUrl}#defined-term-set`,
         name: t('seo.title', { ns: 'encyclopedia' }),
-        url: `${ARTIST.site.baseUrl}${hubPath}`,
+        url: hubUrl,
       },
       {
         '@type': 'DefinedTerm',
@@ -289,7 +290,7 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
         name: termName,
         description: shortAnswer,
         url: pageUrl,
-        inDefinedTermSet: { '@id': `${ARTIST.site.baseUrl}${hubPath}#defined-term-set` },
+        inDefinedTermSet: { '@id': `${hubUrl}#defined-term-set` },
       },
       {
         '@type': 'FAQPage',
@@ -313,13 +314,13 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
           '@type': 'BreadcrumbList',
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'Home', item: ARTIST.site.baseUrl },
-            { '@type': 'ListItem', position: 2, name: t('nav_label', { ns: 'encyclopedia' }), item: `${ARTIST.site.baseUrl}${hubPath}` },
+            { '@type': 'ListItem', position: 2, name: t('nav_label', { ns: 'encyclopedia' }), item: hubUrl },
             { '@type': 'ListItem', position: 3, name: termName, item: pageUrl },
           ],
         },
       },
     ],
-  }), [completeAnswer, hubPath, pageUrl, question, shortAnswer, t, termName]);
+  }), [completeAnswer, hubUrl, pageUrl, question, shortAnswer, t, termName]);
 
   return (
     <>
@@ -333,7 +334,6 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
           { lang: 'x-default', url: enUrl },
         ]}
         schema={schema}
-        leadAnswer={shortAnswer}
       />
 
       <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
@@ -412,11 +412,11 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
 
 const EncyclopediaPage: React.FC = () => {
   const { term: termSlug } = useParams<{ term?: string }>();
-  const { pathname } = useLocation();
+  const { i18n } = useTranslation();
   const term = findEncyclopediaTermBySlug(termSlug);
 
   if (termSlug && !term) {
-    return <Navigate to={getLocalizedRoute('encyclopedia', pathname.startsWith('/pt/') ? 'pt' : 'en')} replace />;
+    return <Navigate to={getLocalizedRoute('encyclopedia', normalizeLanguage(i18n.language))} replace />;
   }
 
   return term ? <EncyclopediaTermPage term={term} /> : <EncyclopediaHubPage />;
