@@ -408,7 +408,7 @@ export const useZenSeoSettings = () =>
       const response = await res.json();
       return response.success ? response.data : {};
     },
-    staleTime: 24 * 60 * 60 * 1000,
+    staleTime: STALE_TIME.POSTS,
   });
 
 export const useEventsQuery = (
@@ -525,7 +525,7 @@ export const useEventById = (
       }
     },
     enabled: !!eventId,
-    staleTime: 24 * 60 * 60 * 1000,
+    staleTime: STALE_TIME.POSTS,
     ...options,
   });
 };
