@@ -1,5 +1,6 @@
 export type PublishedWork = {
   type: 'Article' | 'Essay';
+  translationKey: string;
   title: string;
   description: string;
   source: string;
@@ -10,6 +11,7 @@ export type PublishedWork = {
 
 export const PUBLISHED_WORKS: PublishedWork[] = [
   {
+    translationKey: 'art_of_staying',
     title: 'The Art of Staying',
     description:
       'sometimes, when nothing impressive seems to be happening — everything is happening.',

@@ -43,10 +43,14 @@ const MediaPage: React.FC = () => {
 
   const clippingData = useMemo(
     () => [
-      ...PUBLISHED_WORKS,
+      ...PUBLISHED_WORKS.map((work) => ({
+        ...work,
+        title: t(`published_works.${work.translationKey}.title`),
+        description: t(`published_works.${work.translationKey}.description`),
+      })),
       ...((artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[]),
     ],
-    [artist.mediaClipping]
+    [artist.mediaClipping, t]
   );
 
   const mediaGroups = useMemo(() => [

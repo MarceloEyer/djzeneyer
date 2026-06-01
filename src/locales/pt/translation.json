@@ -1150,6 +1150,12 @@
       "h1": "Colaborações com Artistas"
     }
   },
+  "published_works": {
+    "art_of_staying": {
+      "title": "The Art of Staying",
+      "description": "às vezes, quando nada impressionante parece estar acontecendo — tudo está acontecendo."
+    }
+  },
   "og": {
     "image_alt": {
       "default": "Zen Eyer numa performance de DJ de Zouk Brasileiro",
