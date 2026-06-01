@@ -4,7 +4,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS, MUSICGROUP_SCHEMA } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS, MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { useBranding } from '../contexts/BrandingContext';
 import { getAlternateLinks, getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';

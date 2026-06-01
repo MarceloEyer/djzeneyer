@@ -10,7 +10,8 @@ import { Link, generatePath } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { useTrackInteraction } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-import { ARTIST, MUSICGROUP_SCHEMA, DISCOGRAPHY } from '../data/artistData';
+import { ARTIST } from '../data/artistData';
+import { MUSICGROUP_SCHEMA, DISCOGRAPHY } from '../data/artist.schema';
 import { safeUrl } from '../utils/sanitize';
 
 // --- SVG Icons for music platforms ---

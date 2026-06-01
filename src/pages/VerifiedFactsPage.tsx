@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST, ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artistData';
+import { ARTIST } from '../data/artistData';
+import { ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const COUNTRIES = [

@@ -1,4 +1,5 @@
-import { ARTIST, DISCOGRAPHY } from '../data/artistData';
+import { ARTIST } from '../data/artistData';
+import { DISCOGRAPHY } from '../data/artist.schema';
 import type { Language } from '../config/routes';
 
 export const OG_IMAGE_WIDTH = 1200;
