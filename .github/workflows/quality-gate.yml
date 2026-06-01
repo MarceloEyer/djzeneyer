@@ -22,7 +22,6 @@ jobs:
 
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-      NODE_ENV: production
       SITE_BASE_URL: https://djzeneyer.com
       VITE_WP_SITE_URL: https://djzeneyer.com
       VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
@@ -39,8 +38,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        env:
-          NODE_ENV: development
 
       - name: TypeScript check
         run: npm run type-check
@@ -56,6 +53,8 @@ jobs:
 
       - name: Production build
         run: npm run build
+        env:
+          NODE_ENV: production
 
       - name: Performance budget check
         run: npm run perf:budget
