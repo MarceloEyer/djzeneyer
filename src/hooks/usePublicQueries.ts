@@ -183,17 +183,27 @@ declare global {
   }
 }
 
+const getPrerenderPayload = (): Window['__PRERENDER_DATA__'] | undefined =>
+  typeof window === 'undefined' ? undefined : window.__PRERENDER_DATA__;
+
 const getPrerenderData = <T>(
   lang: string | undefined,
   field: keyof NonNullable<Window['__PRERENDER_DATA__']>
 ): T | null => {
-  const data = window.__PRERENDER_DATA__;
+  const data = getPrerenderPayload();
   if (!data || !data[field]) return null;
   const bucket = data[field];
   if (Array.isArray(bucket)) return bucket as T;
   const keyedBucket = bucket as Record<string, T>;
   if (lang?.toLowerCase().startsWith('pt')) return (keyedBucket.pt || keyedBucket.en || null) as T;
   return (keyedBucket.en || keyedBucket.pt || null) as T;
+};
+
+const getPrerenderUpdatedAt = (): number | undefined => {
+  const fetchedAt = getPrerenderPayload()?.fetchedAt;
+  if (!fetchedAt) return undefined;
+  const timestamp = Date.parse(fetchedAt);
+  return Number.isFinite(timestamp) ? timestamp : undefined;
 };
 
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
@@ -221,13 +231,34 @@ const withProcessedEvents = (events: ZenBitEventListItem[], lang?: string): ZenB
     .filter((event): event is ZenBitEventListItem => event !== null);
 };
 
+const getPrerenderEventsForParams = ({
+  mode,
+  days,
+  date,
+  limit = 10,
+  lang,
+  upcomingOnly,
+}: FetchEventsParams = {}): ZenBitEventListItem[] | undefined => {
+  const payload = getPrerenderPayload();
+  const prerenderEvents = getPrerenderEvents(lang);
+  const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
+  const requestedDays = date === undefined ? (days ?? 365) : undefined;
+  const canUsePrerenderEvents =
+    requestedMode === payload?.eventsMode &&
+    date === undefined &&
+    requestedDays === payload?.eventsDays &&
+    payload?.eventsLimit !== undefined &&
+    limit <= payload.eventsLimit;
+
+  if (!canUsePrerenderEvents || !prerenderEvents || prerenderEvents.length === 0) return undefined;
+  return withProcessedEvents(prerenderEvents.slice(0, limit), lang);
+};
+
 // ----------------------------------------------------------------------------
 // FETCH FUNCTIONS (exportadas para prefetch/SSG)
 // ----------------------------------------------------------------------------
 
 export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
-  const prerenderMenu = getPrerenderMenu(lang);
-  if (prerenderMenu && prerenderMenu.length > 0) return prerenderMenu;
   const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch menu');
@@ -251,23 +282,6 @@ export const fetchEventsFn = async ({
   lang,
   upcomingOnly,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
-  const prerenderEvents = getPrerenderEvents(lang);
-  const prerenderEventsLimit = window.__PRERENDER_DATA__?.eventsLimit;
-  const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
-  const requestedDays = date === undefined ? (days ?? 365) : undefined;
-  const prerenderEventsMode = window.__PRERENDER_DATA__?.eventsMode;
-  const prerenderEventsDays = window.__PRERENDER_DATA__?.eventsDays;
-  const canUsePrerenderEvents =
-    requestedMode === prerenderEventsMode &&
-    date === undefined &&
-    requestedDays === prerenderEventsDays &&
-    prerenderEventsLimit !== undefined &&
-    limit <= prerenderEventsLimit;
-
-  if (canUsePrerenderEvents && prerenderEvents && prerenderEvents.length > 0) {
-    return withProcessedEvents(prerenderEvents.slice(0, limit), lang);
-  }
-
   try {
     const params: Record<string, string> = {};
     if (limit) params.limit = String(limit);
@@ -281,7 +295,7 @@ export const fetchEventsFn = async ({
     const res = await fetch(apiUrl);
     if (!res.ok) {
       logger.error('EVENTS_API_ERROR', `Events API responded with ${res.status}`, { status: res.status });
-      return [];
+      throw new Error(`Events API responded with ${res.status}`);
     }
     const rawData = await res.json();
 
@@ -295,21 +309,17 @@ export const fetchEventsFn = async ({
     return withProcessedEvents(events, lang);
   } catch (err) {
     logger.error('EVENTS_FETCH_FAILED', 'Failed to fetch events', { error: String(err) });
-    return [];
+    throw err;
   }
 };
 
 export const fetchNewsFn = async (lang?: string, filters: NewsFilters = {}): Promise<WPPost[]> => {
-  const hasFilters = Boolean(filters.category || filters.tag || filters.search);
-  const prerenderNews = getPrerenderNews(lang);
-  if (!hasFilters && prerenderNews && prerenderNews.length > 0) return prerenderNews;
-
   const apiUrl = buildApiUrl('wp/v2/posts', {
     per_page: '10',
     ...(lang ? { lang } : {}),
     ...(filters.category ? { categories: filters.category } : {}),
     ...(filters.tag ? { tags: filters.tag } : {}),
-    ...(filters.search ? { search: filters.search } : {}),
+    ...(filters.search ? { search } : {}),
     _fields: 'id,date,slug,title,excerpt,categories,tags,featured_image_src,featured_image_src_full,author_name',
   });
   const res = await fetch(apiUrl);
@@ -378,6 +388,8 @@ export const useMenuQuery = (lang: string) =>
   useQuery({
     queryKey: QUERY_KEYS.menu.list(lang),
     queryFn: () => fetchMenuFn(lang),
+    initialData: () => getPrerenderMenu(lang) ?? undefined,
+    initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.MENU,
     retry: 1,
   });
@@ -409,6 +421,8 @@ export const useEventsQuery = (
   return useQuery({
     queryKey: QUERY_KEYS.events.list(normalizedParams),
     queryFn: () => fetchEventsFn(normalizedParams),
+    initialData: () => getPrerenderEventsForParams(normalizedParams),
+    initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
     ...options,
@@ -420,9 +434,12 @@ export const useNewsQuery = (
   options: { enabled?: boolean; filters?: NewsFilters } = {}
 ) => {
   const filters = options.filters || {};
+  const hasFilters = Boolean(filters.category || filters.tag || filters.search);
   return useQuery({
     queryKey: QUERY_KEYS.posts.list(lang, filters),
     queryFn: () => fetchNewsFn(lang, filters),
+    initialData: () => (hasFilters ? undefined : getPrerenderNews(lang) ?? undefined),
+    initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.POSTS,
     enabled: options.enabled,
   });
