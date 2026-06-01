@@ -54,6 +54,20 @@ gh pr view <number> --json body,comments,reviews,reviewThreads,reviewRequests,me
 - Jules pode gerar PRs bons, mas tende a duplicar PRs; verificar duplicidade antes de mergear.
 - Gemini pode resumir agressivamente arquivos de contexto e apagar detalhes técnicos. Revisar com cuidado qualquer mudança em `AGENTS.md`, `AI_CONTEXT_INDEX.md`, `LEARNINGS.md`, `.agents/` e `.context/`.
 - Se um achado parecer segurança/privacidade, mas puder ser comportamento intencional de produto, pergunte ao usuário antes de agir.
+- **Anti-padrão crítico de revisão por IA:** Nunca aceitar uma sugestão de bot que altere a semântica de uma função pura ou de contrato de API sem primeiro rodar os testes existentes. Bots otimizam para aparência de correção, não para contrato real. Se o projeto tem testes: `npm test` é o árbitro, não o parecer do bot.
+
+## Arquivos de Tradução
+
+- `src/locales/en/translation.json` e `src/locales/pt/translation.json` devem manter **paridade de chaves** (mesmo conjunto de chaves em ambos os idiomas). O teste `src/__tests__/i18n/translation-parity.test.ts` verifica isso no CI.
+- Ao adicionar qualquer chave de tradução: adicionar em EN e PT no **mesmo commit**. Strings sem tradução exibem a chave bruta para o usuário — bug silencioso em produção.
+- Os arquivos têm ~1.170 linhas atualmente. Ao atingir 1.500 linhas, considerar split por namespace via i18next (`nav`, `events`, `account`, `music`, `media`, etc.). Requer mudança no config de i18n e nos `useTranslation()` das páginas afetadas.
+
+## Arquivos Grandes — Política
+
+- `src/data/artistData.ts` (~1.091 linhas): candidato a split em módulos de domínio (`artist.identity`, `artist.festivals`, `artist.schema`). Alta prioridade quando próxima contribuição mexer em seção específica.
+- `src/components/HeadlessSEO.tsx` (~654 linhas): aceitar como está — é coeso. Dividir criaria acoplamento entre partes do schema.
+- `scripts/prerender.js` (~814 linhas): aceitar por enquanto — script crítico, alto risco de regressão em split.
+- Páginas React (400–580 linhas): aceitáveis para páginas com múltiplas seções. Extrair componentes `const X = () => ...` dentro da página quando uma seção for reutilizável.
 
 ## Google Sign-In e COOP
 
