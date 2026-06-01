@@ -104,7 +104,7 @@ const HomePage: React.FC = () => {
   const { artist } = useBranding();
 
   const currentLang = normalizeLanguage(i18n.language);
-  const currentPath = i18n.language === 'pt' ? '/pt' : '/';
+  const currentPath = currentLang === 'pt' ? '/pt' : '/';
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
@@ -184,7 +184,8 @@ const HomePage: React.FC = () => {
         keywords={t('home.seo.keywords')}
         leadAnswer={t('home.seo.lead_answer')}
         preload={[
-          { href: '/images/hero-background.webp', as: 'image' }
+          { href: '/images/hero-background-mobile.webp', as: 'image', media: '(max-width: 768px)' },
+          { href: '/images/hero-background.webp', as: 'image', media: '(min-width: 769px)' }
         ]}
       />
 
