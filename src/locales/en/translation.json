@@ -17,7 +17,11 @@
     "my_account": "My Account",
     "join_the_tribe": "Join the Tribe",
     "privacy": "Privacy Policy",
-    "terms": "Terms of Use"
+    "terms": "Terms of Use",
+    "close_menu": "Close Menu",
+    "open_menu": "Open Menu",
+    "main_navigation": "Main Navigation",
+    "mobile_navigation": "Mobile Menu"
   },
   "dashboard": {
     "loading": "Syncing with the Zen Universe...",
@@ -178,7 +182,8 @@
     "achievement": "Achievement",
     "startJourney": "Start your journey to unlock achievements!",
     "earnMoreXP": "Earn More XP",
-    "unlock_at": "Unlock at level {{level}}"
+    "unlock_at": "Unlock at level {{level}}",
+    "view_all_stats": "View All Stats"
   },
   "_meta": {
     "version": "2.1.0",
@@ -399,7 +404,9 @@
     },
     "seo": {
       "keywords": "DJ Zen Eyer, Brazilian Zouk DJ, World Champion DJ, Zouk Music Producer, Zen Tribe",
-      "lead_answer": "DJ Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance."
+      "lead_answer": "DJ Zen Eyer is the two-time world champion of Brazilian Zouk, known for his 'creamy' style and focus on the deep connection between music and dance.",
+      "title": "Zen Eyer | Two-Time World Brazilian Zouk Champion",
+      "description": "Zen Eyer, two-time world champion focused on Brazilian Zouk."
     },
     "shows": {
       "title": "Upcoming Events",
@@ -442,7 +449,9 @@
     "tags": "Tags",
     "search_label": "Search releases and notes",
     "search_placeholder": "Search releases and notes...",
-    "no_posts_for_filter": "No posts found for this filter yet."
+    "no_posts_for_filter": "No posts found for this filter yet.",
+    "share": "Share",
+    "trending": "Trending"
   },
   "encyclopedia": {
     "nav_label": "Encyclopedia"
@@ -844,7 +853,14 @@
       "no_orders": "Nenhum pedido encontrado",
       "no_orders_desc": "You have not placed any orders in our shop yet.",
       "order_number": "Pedido #{{id}}",
-      "title": "My Order History"
+      "title": "My Order History",
+      "status": {
+        "completed": "Completed",
+        "processing": "Processing",
+        "failed": "Failed",
+        "pending": "Pending",
+        "cancelled": "Cancelled"
+      }
     }
   },
   "not_found": {

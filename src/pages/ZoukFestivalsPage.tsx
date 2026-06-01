@@ -8,6 +8,7 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 import { safeUrl } from '../utils/sanitize';
 import { getDateTimeFormatter } from '../utils/date';
+import { categorizeFestivals } from '../utils/festivals';
 import type { Festival } from '../types';
 
 const HERO_VARIANTS = {
@@ -55,21 +56,7 @@ const ZoukFestivalsPage: React.FC = () => {
   const { upcoming, past } = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-
-    const upcomingFestivals = [...ARTIST.festivals]
-      .filter((f) => f.date && new Date(f.date) >= today)
-      .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime());
-
-    const pastFestivals = [...ARTIST.festivals]
-      .filter((f) => !f.date || new Date(f.date) < today)
-      .sort((a, b) => {
-        if (!a.date && !b.date) return 0;
-        if (!a.date) return 1;
-        if (!b.date) return -1;
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      });
-
-    return { upcoming: upcomingFestivals, past: pastFestivals };
+    return categorizeFestivals(ARTIST.festivals, today);
   }, []);
 
   const formatYear = useCallback((date: string | undefined): string => {
