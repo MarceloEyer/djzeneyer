@@ -30,6 +30,9 @@ class WP_Auth_Integration
 
         // Allow JWT auth for allowed endpoints that require authentication.
         add_filter('rest_authentication_errors', [__CLASS__, 'handle_rest_auth_errors'], 10);
+
+        // Skip nonce check for valid JWT requests (prevents 403 when cookie session is active).
+        add_filter('rest_nonce_check', [__CLASS__, 'skip_nonce_check_for_jwt'], 10);
     }
 
     /**
@@ -129,23 +132,75 @@ class WP_Auth_Integration
     }
 
     /**
+     * Skip nonce check for valid JWT requests.
+     *
+     * Prevents 403 errors when a user has an active cookie session and sends a JWT.
+     * WordPress validates the cookie nonce first; without this, stale/absent nonces
+     * block otherwise valid JWT requests.
+     *
+     * @param bool|\WP_Error $result
+     * @return bool|\WP_Error
+     */
+    public static function skip_nonce_check_for_jwt($result)
+    {
+        if ($result === true) {
+            return $result;
+        }
+
+        if (!self::is_allowed_rest_route()) {
+            return $result;
+        }
+
+        $token = self::get_token_from_request();
+        if (!$token) {
+            return $result;
+        }
+
+        $decoded = JWT_Manager::validate_token($token);
+        if (!is_wp_error($decoded) && isset($decoded->data->user_id)) {
+            return true;
+        }
+
+        return $result;
+    }
+
+    /**
      * Check whether the current request targets a JWT-enabled REST namespace.
+     *
+     * Uses wp_parse_url to extract the path (prevents auth bypass via query-string
+     * injection), rest_get_url_prefix() for dynamic REST prefix support, and handles
+     * the ?rest_route= fallback for sites without pretty permalinks.
      *
      * @return bool
      */
     private static function is_allowed_rest_route()
     {
-        // Security: Limit JWT scope to specific namespaces to prevent core escalation.
         $allowed_namespaces = apply_filters('zeneyer_auth_jwt_allowed_namespaces', [
             'zeneyer-auth/v1',
             'wc/v3',       // WooCommerce Headless
             'mailpoet/v1', // MailPoet Headless
         ]);
 
-        $current_route = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $route = '';
+
+        // Handle ?rest_route= fallback (sites without pretty permalinks).
+        if (isset($_GET['rest_route']) && is_string($_GET['rest_route'])) {
+            $route = ltrim(wp_unslash($_GET['rest_route']), '/');
+        } else {
+            $path = (string) wp_parse_url($request_uri, PHP_URL_PATH);
+            $prefix = function_exists('rest_get_url_prefix') ? trim(rest_get_url_prefix(), '/') : 'wp-json';
+            $marker = '/' . $prefix . '/';
+            $pos = strpos($path, $marker);
+            if ($pos !== false) {
+                $route = ltrim(substr($path, $pos + strlen($marker)), '/');
+            }
+        }
 
         foreach ($allowed_namespaces as $ns) {
-            if (strpos($current_route, '/wp-json/' . $ns) !== false) {
+            $ns = trim((string) $ns, '/');
+            // Full-segment match: namespace must be exact or be the first path segment.
+            if ($route === $ns || strpos($route, $ns . '/') === 0) {
                 return true;
             }
         }
