@@ -124,19 +124,18 @@ export const useCartQuery = () =>
 
 export const useGamipressQuery = (userId?: number, token?: string) =>
   useQuery({
-    // Usa boolean do token na queryKey — evita colocar JWT longo no cache
-    queryKey: [...QUERY_KEYS.user.gamipress(userId || 0), !!token],
+    queryKey: QUERY_KEYS.user.gamipress(userId || 0),
     queryFn: async (): Promise<ZenGameUserData | null> => {
       const apiUrl = buildApiUrl('zengame/v1/me');
       const headers: HeadersInit = getAuthHeaders(token);
       const res = await fetch(apiUrl, { headers });
 
+      const text = await res.text();
       let data: unknown;
       try {
-        data = await res.json();
+        data = JSON.parse(text);
       } catch (e) {
-        const bodyPreview = await res.text().catch(() => '');
-        const hint = bodyPreview.slice(0, 120).replace(/\s+/g, ' ');
+        const hint = text.slice(0, 120).replace(/\s+/g, ' ');
         throw new Error(
           `[GamiPress] Resposta não é JSON válido (HTTP ${res.status}). Verifique WP_DEBUG no wp-config.php. Preview: ${hint}`,
           { cause: e }
@@ -169,14 +168,14 @@ export const useZenGameUserData = (token?: string) => useGamipressQuery(undefine
 
 export const useProfileQuery = (token?: string, options: { enabled?: boolean } = {}) =>
   useQuery<UserProfile | null>({
-    queryKey: QUERY_KEYS.user.profile(),
+    queryKey: [...QUERY_KEYS.user.profile(), !!token],
     queryFn: async (): Promise<UserProfile | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
       const res = await fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error('Failed to fetch profile');
       const json = await res.json();
-      if (!json.success) throw new Error(json.message || 'Profile fetch returned success=false');
+      if (!json.success) return null;
       const parsed = UserProfileSchema.safeParse(json.data);
       if (!parsed.success) {
         logger.error('PROFILE_SCHEMA_MISMATCH', 'User profile schema validation failed', {
@@ -221,7 +220,7 @@ export const useNewsletterStatusQuery = (token?: string, options: { enabled?: bo
       const res = await fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error('Failed to fetch newsletter status');
       const data = await res.json();
-      return data.success ? (data.subscribed as boolean) : false;
+      return data?.success ? (data.subscribed as boolean) : false;
     },
     enabled: Boolean(token) && (options.enabled ?? true),
     staleTime: STALE_TIME.USER_PROFILE,
