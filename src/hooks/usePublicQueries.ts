@@ -464,9 +464,7 @@ export const useNewsBySlug = (slug?: string, lang?: string) =>
 export function extractZenBitEventId(routeParam: string): string {
   if (!routeParam) return routeParam;
   if (!routeParam.includes('-')) return routeParam;
-  const last = routeParam.split('-').pop() ?? routeParam;
-  if (/^\d+$/.test(last)) return last;
-  return routeParam;
+  return routeParam.split('-').pop() ?? routeParam;
 }
 
 export const useEventById = (
