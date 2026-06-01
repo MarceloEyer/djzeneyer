@@ -319,7 +319,7 @@ export const fetchNewsFn = async (lang?: string, filters: NewsFilters = {}): Pro
     ...(lang ? { lang } : {}),
     ...(filters.category ? { categories: filters.category } : {}),
     ...(filters.tag ? { tags: filters.tag } : {}),
-    ...(filters.search ? { search } : {}),
+    ...(filters.search ? { search: filters.search } : {}),
     _fields: 'id,date,slug,title,excerpt,categories,tags,featured_image_src,featured_image_src_full,author_name',
   });
   const res = await fetch(apiUrl);
