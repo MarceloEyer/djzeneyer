@@ -19,7 +19,9 @@
     "close_menu": "Fechar Menu",
     "open_menu": "Abrir Menu",
     "main_navigation": "Navegação Principal",
-    "mobile_navigation": "Menu Mobile"
+    "mobile_navigation": "Menu Mobile",
+    "privacy": "Política de Privacidade",
+    "terms": "Termos de Uso"
   },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
@@ -346,7 +348,8 @@
     "micro_champion": "2× Campeão Mundial",
     "micro_island": "Zouk DJ Championship (2022)",
     "micro_years_label": "anos de pista",
-    "whatsapp_message": "Olá Zen! Vi seu link na bio."
+    "whatsapp_message": "Olá Zen! Vi seu link na bio.",
+    "subtitle": "2× Campeão Mundial de Zouk Brasileiro"
   },
   "events_add_google": "Adicionar à Agenda",
   "social": {
@@ -503,7 +506,13 @@
       "single": "Single"
     },
     "discography_schema_name": "Discografia Zen Eyer",
-    "discography_schema_desc": "Lançamentos oficiais do Zen Eyer, incluindo singles, remixes e músicas para dançar Zouk Brasileiro."
+    "discography_schema_desc": "Lançamentos oficiais do Zen Eyer, incluindo singles, remixes e músicas para dançar Zouk Brasileiro.",
+    "dj_tool_kit": "Kit do DJ",
+    "dj_tool_kit_desc": "Acesse downloads de alta qualidade, edições e ferramentas exclusivas para DJs.",
+    "dj_tool_kit_cta": "Acessar Downloads",
+    "collections_title": "Coleção Musical",
+    "collections_desc": "Tracks exclusivas, mixes e playlists curadas por DJ Zen Eyer",
+    "listen_now_on": "Ouça agora em"
   },
   "press": {
     "page_title": "Press Kit",
@@ -1172,5 +1181,8 @@
       "product": "{{name}} por Zen Eyer",
       "zenlink": "Links oficiais de Zen Eyer para música, booking e apoio"
     }
-  }
+  },
+  "events_search_results": "Resultados para",
+  "events_venue": "Local",
+  "quiz_you_are": "Você é..."
 }
