@@ -208,9 +208,22 @@
             "en": "zouk-encyclopedia",
             "pt": "enciclopedia-zouk",
             "aliases": {
-                "en": ["zouk-terms", "zouk-wiki"],
-                "pt": ["termos-zouk", "wiki-zouk"]
+                "en": [
+                    "zouk-terms",
+                    "zouk-wiki"
+                ],
+                "pt": [
+                    "termos-zouk",
+                    "wiki-zouk"
+                ]
             }
+        },
+        {
+            "key": "encyclopedia-detail",
+            "en": "zouk-encyclopedia/:term",
+            "pt": "enciclopedia-zouk/:term",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "verified-facts",

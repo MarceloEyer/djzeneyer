@@ -24,6 +24,7 @@ console.log(`📡 Internal API Endpoint: ${INTERNAL_API_EVENTS}`);
 // 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
 let routesList = [];
 const ROUTES_DATA_PATH = join(__dirname, '..', 'src', 'config', 'routes-slugs.json');
+const ENCYCLOPEDIA_TERMS_PATH = join(__dirname, '..', 'src', 'config', 'encyclopedia-term-slugs.json');
 try {
   if (existsSync(ROUTES_DATA_PATH)) {
     const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
@@ -34,6 +35,28 @@ try {
         routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
       }
     });
+    const encyclopediaRoute = data.routes.find(r => r.key === 'encyclopedia');
+    let encyclopediaTerms = [];
+    try {
+      const parsed = JSON.parse(readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf8'));
+      if (parsed && Array.isArray(parsed.terms)) {
+        encyclopediaTerms = parsed.terms;
+      } else {
+        console.warn(`⚠️ Encyclopedia: propriedade 'terms' ausente ou inválida em encyclopedia-term-slugs.json`);
+      }
+    } catch (e) {
+      console.warn(`⚠️ Encyclopedia: falha ao ler encyclopedia-term-slugs.json: ${e.message}`);
+    }
+    if (encyclopediaRoute && encyclopediaTerms.length > 0) {
+      let added = 0;
+      for (const term of encyclopediaTerms) {
+        const enRoute = `/${encyclopediaRoute.en}/${term}`;
+        const ptRoute = `/pt/${encyclopediaRoute.pt}/${term}`;
+        if (!routesList.includes(enRoute)) { routesList.push(enRoute); added++; }
+        if (!routesList.includes(ptRoute)) { routesList.push(ptRoute); added++; }
+      }
+      console.log(`📚 Encyclopedia: ${added} rotas adicionadas ao prerender.`);
+    }
     console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
   } else {
     throw new Error('SSOT routes-slugs.json não encontrado em src/config/');

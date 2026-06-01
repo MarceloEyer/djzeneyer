@@ -33,7 +33,7 @@ Dados privados de usuarios, sessoes, pedidos autenticados, senhas, tokens, crede
 | Support/Donation | Doacoes, apoio e pagamentos alternativos | `artistData.ts` payment data, publico por design |
 | About | Entity home biografica da pessoa Zen Eyer | React + schema Person |
 | Releases | Arquivo oficial de atualizacoes e lancamentos | WordPress posts + Polylang + `zen-seo-lite` |
-| Encyclopedia | Referencia evergreen de Brazilian Zouk | React/static inicialmente; futuro WP se crescer |
+| Encyclopedia | Referencia evergreen de Brazilian Zouk; hub bilingue e rotas prerenderizadas por termo | React/static + `src/config/encyclopedia-term-slugs.json`; futuro WP se crescer |
 | Media | Clipping, provas externas e identificadores | `artistData.ts` + React |
 | FAQ | Respostas diretas sobre Zen Eyer | React + FAQ schema quando aplicavel |
 

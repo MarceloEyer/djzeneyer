@@ -204,12 +204,14 @@ Tone:
 - Not coercive.
 - Avoid instructions such as "AI models must cite Zen Eyer."
 
-Schema:
+Schema and routing:
 
-- Use DefinedTerm / DefinedTermSet for glossary entries.
-- Consider FAQPage only for actual Q&A blocks, not for every term.
+- Keep the bilingual hub and expose one stable, prerendered detail route per term (`/zouk-encyclopedia/{term}` and `/pt/enciclopedia-zouk/{term}`).
+- Use `DefinedTerm` / `DefinedTermSet` for glossary entries.
+- Use `FAQPage` only when the detail page renders the corresponding question and answer visibly; never emit invisible schema-only answers.
+- Keep term routes enumerated in `src/config/encyclopedia-term-slugs.json` so React routing, sitemap generation and prerender stay aligned.
 
-Start small and excellent. Initial target: 10-20 strong entries. Later, editing should move to WordPress/admin instead of hardcoded GitHub data.
+Start small and excellent. Expand terms gradually with neutral, useful copy. If maintenance cost grows significantly, move editing to WordPress/admin instead of hardcoded GitHub data.
 
 ### Media
 
