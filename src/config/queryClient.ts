@@ -46,6 +46,9 @@ const STALE_TIME = {
 
   /** GamiPress: 2 minutos (pontos/achievements atualizam rápido) */
   GAMIPRESS: 2 * 60 * 1000,
+
+  /** Tracks/Remixes: 24 horas — catálogo de músicas muda raramente */
+  TRACKS: 24 * 60 * 60 * 1000,
 };
 
 /**
@@ -159,6 +162,18 @@ export const QUERY_KEYS = {
     orders: (userId?: number, limit?: number) => ['user', 'orders', userId, limit] as const,
     gamipress: (userId: number) => ['user', 'gamipress', userId] as const,
     leaderboard: (limit?: number) => ['user', 'leaderboard', limit] as const,
+    newsletter: () => ['user', 'newsletter'] as const,
+  },
+
+  /** Tracks/Remixes */
+  tracks: {
+    all: ['tracks'] as const,
+    detail: (slug: string) => ['tracks', 'detail', slug] as const,
+  },
+
+  /** Shop */
+  shop: {
+    page: (lang?: string) => ['shop', 'page', lang] as const,
   },
 } as const;
 
