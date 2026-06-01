@@ -1,24 +1,6 @@
-/**
- * Routes Configuration - Centralized Route Management
- * * PRINCÍPIOS:
- * - DRY (Don't Repeat Yourself): Uma única definição para todas as rotas
- * - KISS (Keep It Simple): Configuração declarativa e fácil de entender
- * - Escalável: Adicionar novos idiomas é trivial
- * * ATUALIZAÇÃO v2.0:
- * - Adicionada rota de News (Notícias)
- * - Adicionada rota de Videos
- * * ATUALIZAÇÃO v3.0:
- * - Sincronizado com todas as páginas do WordPress
- * - Adicionadas rotas: Cart, Checkout, Return Policy, Support Artist, Tickets
- * - Slugs limpos e otimizados para SEO (sem sufixos -2)
- * * ATUALIZAÇÃO v4.0:
- * - Slugs definitivos aprovados pelo usuário (março 2026)
- * - About: about-dj-zen-eyer / sobre-dj-zen-eyer
- * - Music: zouk-music / musica-zouk
- * - Support: support-dj-zen-eyer / apoie-dj-zen-eyer
- * - Booking: work-with-me / trabalhe-comigo
- * - ZenLink: zenlink / links-zen
- */
+// Centralized bilingual route configuration.
+// To add a route: (1) lazy-import the page below, (2) add a RouteConfig entry
+// in ROUTES with EN and PT paths, (3) update routes-slugs.json.
 
 import { ComponentType, createElement } from 'react';
 import { lazyWithRetry } from '../utils/lazyWithRetry';

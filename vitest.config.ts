@@ -11,7 +11,13 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: ['src/hooks/**', 'src/lib/**'],
+      include: [
+        'src/hooks/**',
+        'src/lib/**',
+        'src/utils/seo.ts',
+        'src/utils/openGraph.ts',
+        'src/components/HeadlessSEO.tsx',
+      ],
       exclude: ['src/test/**', 'src/**/__tests__/**'],
       thresholds: {
         lines: 70,
