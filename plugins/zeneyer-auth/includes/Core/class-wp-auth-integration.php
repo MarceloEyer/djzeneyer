@@ -25,14 +25,11 @@ class WP_Auth_Integration
      */
     public static function init()
     {
-        // Register JWT authentication for ALL WordPress REST API endpoints
+        // Register JWT authentication for allowed WordPress REST API endpoints.
         add_filter('determine_current_user', [__CLASS__, 'determine_current_user_via_jwt'], 20);
 
-        // Allow JWT auth for specific endpoints that require authentication
+        // Allow JWT auth for allowed endpoints that require authentication.
         add_filter('rest_authentication_errors', [__CLASS__, 'handle_rest_auth_errors'], 10);
-
-        // 🛡️ Skip nonce check if JWT is valid (Prevents 403 on stale/missing cookie nonces)
-        add_filter('rest_nonce_check', [__CLASS__, 'skip_nonce_check_for_jwt'], 10);
     }
 
     /**
@@ -51,29 +48,9 @@ class WP_Auth_Integration
             return $user_id;
         }
 
-        // Only apply to REST API requests
-        if (!defined('REST_REQUEST') || !REST_REQUEST) {
-            return $user_id;
-        }
-
-        // 🛡️ Security: Limit JWT scope to specific namespaces to prevent core escalation
-        $allowed_namespaces = apply_filters('zeneyer_auth_jwt_allowed_namespaces', [
-            'zeneyer-auth/v1',
-            'wc/v3',       // WooCommerce Headless
-            'mailpoet/v1', // MailPoet Headless
-        ]);
-
-        $current_route = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-        $is_allowed = false;
-
-        foreach ($allowed_namespaces as $ns) {
-            if (strpos($current_route, '/wp-json/' . $ns) !== false) {
-                $is_allowed = true;
-                break;
-            }
-        }
-
-        if (!$is_allowed) {
+        // Do not rely on REST_REQUEST here: determine_current_user can be called
+        // before WordPress defines that constant. Route scoping below is the real gate.
+        if (!self::is_allowed_rest_route()) {
             return $user_id;
         }
 
@@ -112,8 +89,8 @@ class WP_Auth_Integration
     /**
      * Handle REST API authentication errors
      *
-     * This prevents WordPress from returning 401 errors for endpoints
-     * that are accessed with valid JWT tokens
+     * This prevents WordPress from returning 401 errors for allowed endpoints
+     * that are accessed with valid JWT tokens.
      *
      * @param WP_Error|null|bool $errors Authentication errors
      * @return WP_Error|null|bool
@@ -122,6 +99,10 @@ class WP_Auth_Integration
     {
         // If no errors, continue
         if (!is_wp_error($errors)) {
+            return $errors;
+        }
+
+        if (!self::is_allowed_rest_route()) {
             return $errors;
         }
 
@@ -148,31 +129,28 @@ class WP_Auth_Integration
     }
 
     /**
-     * Skip REST nonce check for JWT requests
+     * Check whether the current request targets a JWT-enabled REST namespace.
      *
-     * WordPress requires a nonce for cookie-authenticated REST requests.
-     * Since we use JWT (stateless), we bypass this check if a valid token is present.
-     *
-     * @param bool|WP_Error $result
-     * @return bool|WP_Error
+     * @return bool
      */
-    public static function skip_nonce_check_for_jwt($result)
+    private static function is_allowed_rest_route()
     {
-        if ($result === true) {
-            return $result;
+        // Security: Limit JWT scope to specific namespaces to prevent core escalation.
+        $allowed_namespaces = apply_filters('zeneyer_auth_jwt_allowed_namespaces', [
+            'zeneyer-auth/v1',
+            'wc/v3',       // WooCommerce Headless
+            'mailpoet/v1', // MailPoet Headless
+        ]);
+
+        $current_route = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+
+        foreach ($allowed_namespaces as $ns) {
+            if (strpos($current_route, '/wp-json/' . $ns) !== false) {
+                return true;
+            }
         }
 
-        $token = self::get_token_from_request();
-        if (!$token) {
-            return $result;
-        }
-
-        $decoded = JWT_Manager::validate_token($token);
-        if (!is_wp_error($decoded) && isset($decoded->data->user_id)) {
-            return true;
-        }
-
-        return $result;
+        return false;
     }
 
     /**
