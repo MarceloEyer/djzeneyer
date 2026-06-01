@@ -39,7 +39,7 @@ const MediaPage: React.FC = () => {
   const featuredVideoTitle = t('media_page.featured_video_title');
   const featuredVideoDescription = t('media_page.featured_video_desc');
   const currentPath = getLocalizedRoute('media', currentLang);
-  const currentUrl = `${artist.site.baseUrl || ARTIST.site.baseUrl}/${currentPath.replace(/^\//, '')}`;
+  const currentUrl = `${artist.site.baseUrl || ARTIST.site.baseUrl}/${currentPath.replace(/^\//, '')}/`;
 
   const clippingData = useMemo(
     () => [
