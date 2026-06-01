@@ -199,11 +199,11 @@ const getPrerenderData = <T>(
   return (keyedBucket.en || keyedBucket.pt || null) as T;
 };
 
-const getPrerenderUpdatedAt = (): number | undefined => {
+const getPrerenderUpdatedAt = (): number => {
   const fetchedAt = getPrerenderPayload()?.fetchedAt;
-  if (!fetchedAt) return undefined;
+  if (!fetchedAt) return 0;
   const timestamp = Date.parse(fetchedAt);
-  return Number.isFinite(timestamp) ? timestamp : undefined;
+  return Number.isFinite(timestamp) ? timestamp : 0;
 };
 
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
@@ -263,7 +263,8 @@ export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch menu');
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  if (!Array.isArray(data)) throw new Error('Menu API returned unexpected format');
+  return data;
 };
 
 export const fetchArtistProfileFn = async (): Promise<ArtistProfile> => {
@@ -299,11 +300,13 @@ export const fetchEventsFn = async ({
     }
     const rawData = await res.json();
 
-    let events: ZenBitEventListItem[] = [];
+    let events: ZenBitEventListItem[];
     if (Array.isArray(rawData)) {
       events = z.array(ZenBitEventListItemSchema).parse(rawData);
     } else if (rawData && typeof rawData === 'object' && 'events' in rawData) {
       events = EventsApiResponseSchema.parse(rawData).events;
+    } else {
+      throw new Error('Events API returned unexpected format');
     }
 
     return withProcessedEvents(events, lang);
@@ -325,7 +328,8 @@ export const fetchNewsFn = async (lang?: string, filters: NewsFilters = {}): Pro
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch news posts');
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  if (!Array.isArray(data)) throw new Error('News API returned unexpected format');
+  return data;
 };
 
 const fetchWpTermsFn = async (taxonomy: 'categories' | 'tags', lang?: string): Promise<WPTerm[]> => {
@@ -388,7 +392,7 @@ export const useMenuQuery = (lang: string) =>
   useQuery({
     queryKey: QUERY_KEYS.menu.list(lang),
     queryFn: () => fetchMenuFn(lang),
-    initialData: () => getPrerenderMenu(lang) ?? undefined,
+    initialData: () => { const d = getPrerenderMenu(lang); return d !== null && d.length > 0 ? d : undefined; },
     initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.MENU,
     retry: 1,
@@ -438,7 +442,7 @@ export const useNewsQuery = (
   return useQuery({
     queryKey: QUERY_KEYS.posts.list(lang, filters),
     queryFn: () => fetchNewsFn(lang, filters),
-    initialData: () => (hasFilters ? undefined : getPrerenderNews(lang) ?? undefined),
+    initialData: () => { if (hasFilters) return undefined; const d = getPrerenderNews(lang); return d !== null && d.length > 0 ? d : undefined; },
     initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.POSTS,
     enabled: options.enabled,
