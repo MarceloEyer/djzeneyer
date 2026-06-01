@@ -24,6 +24,7 @@ console.log(`📡 Internal API Endpoint: ${INTERNAL_API_EVENTS}`);
 // 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
 let routesList = [];
 const ROUTES_DATA_PATH = join(__dirname, '..', 'src', 'config', 'routes-slugs.json');
+const ENCYCLOPEDIA_TERMS_PATH = join(__dirname, '..', 'src', 'config', 'encyclopedia-term-slugs.json');
 try {
   if (existsSync(ROUTES_DATA_PATH)) {
     const data = JSON.parse(readFileSync(ROUTES_DATA_PATH, 'utf8'));
@@ -34,6 +35,14 @@ try {
         routesList.push(r.pt === '' ? '/pt' : `/pt/${r.pt}`);
       }
     });
+    const encyclopediaRoute = data.routes.find(r => r.key === 'encyclopedia');
+    const encyclopediaTerms = JSON.parse(readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf8')).terms;
+    if (encyclopediaRoute && Array.isArray(encyclopediaTerms)) {
+      for (const term of encyclopediaTerms) {
+        routesList.push(`/${encyclopediaRoute.en}/${term}`);
+        routesList.push(`/pt/${encyclopediaRoute.pt}/${term}`);
+      }
+    }
     console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
   } else {
     throw new Error('SSOT routes-slugs.json não encontrado em src/config/');

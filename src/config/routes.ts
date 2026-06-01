@@ -312,6 +312,11 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: EncyclopediaPage,
     paths: { en: slug('encyclopedia', 'en'), pt: slug('encyclopedia', 'pt') },
   },
+  {
+    key: 'encyclopedia-detail',
+    component: EncyclopediaPage,
+    paths: { en: slug('encyclopedia-detail', 'en'), pt: slug('encyclopedia-detail', 'pt') },
+  },
 
   // Verified Facts
   {
@@ -453,6 +458,7 @@ ROUTES_CONFIG.forEach(route => {
   if (route.key === 'events') detailKey = 'events-detail';
   else if (route.key === 'news') detailKey = 'news-detail';
   else if (route.key === 'shop') detailKey = 'product-detail';
+  else if (route.key === 'encyclopedia') detailKey = 'encyclopedia-detail';
 
   const enPaths = Array.isArray(route.paths.en) ? route.paths.en : [route.paths.en];
   const ptPaths = Array.isArray(route.paths.pt) ? route.paths.pt : [route.paths.pt];

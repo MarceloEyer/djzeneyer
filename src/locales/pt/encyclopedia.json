@@ -123,6 +123,21 @@
       "short": "Cabecada e uma familia de tecnicas de movimento de cabeca no Zouk Brasileiro que deve ser conduzida, seguida e treinada com seguranca e controle.",
       "body": "Movimento de cabeca e um dos elementos visuais mais reconheciveis do Zouk Brasileiro, mas depende de postura, preparacao, eixo, conexao e consentimento. No baile, tecnica segura importa mais do que amplitude dramatica."
     },
+    "cambre": {
+      "term": "Cambré",
+      "short": "Cambré é um movimento controlado do Zouk Brasileiro em que a pessoa cria uma linha corporal inclinada ou arqueada enquanto mantém equilíbrio assistido e conexão.",
+      "body": "Um cambré seguro depende de preparação, consciência compartilhada, apoio estável e amplitude compatível com o corpo da pessoa. Não é uma flexão forçada das costas: a forma deve surgir de técnica, comunicação e controle."
+    },
+    "boneca": {
+      "term": "Boneca",
+      "short": "Boneca é um padrão de movimento do Zouk Brasileiro que usa mudanças de direção conduzidas e organização da parte superior do corpo para criar um efeito visual fluido, semelhante ao de uma boneca.",
+      "body": "O movimento deve ser conduzido com preparação clara e dançado com controle ativo, não com força passiva. A execução exata pode variar conforme a linhagem de ensino, por isso a mecânica deve ser aprendida progressivamente com uma pessoa instrutora qualificada."
+    },
+    "chicote": {
+      "term": "Chicote",
+      "short": "Chicote é um padrão dinâmico do Zouk Brasileiro que cria um efeito visual semelhante a um movimento de chicote por meio de mudanças de direção preparadas e conectadas.",
+      "body": "Apesar do nome, o movimento nunca deve ser abrupto nem imposto ao pescoço. A execução segura exige instrução progressiva, impulso controlado, comunicação clara e respeito à amplitude de movimento de quem dança."
+    },
     "bodyWave": {
       "term": "Onda Corporal",
       "short": "A onda corporal e um movimento fluido pelo tronco que pode expressar ritmo, melodia ou tempo elastico no Zouk Brasileiro.",
@@ -297,5 +312,10 @@
       "q": "Como ele difere do Zouk Caribenho, da Lambada e da Kizomba?",
       "a": "Zouk Caribenho é um gênero musical, Lambada é uma dança e fenômeno musical brasileiro anterior, e Kizomba é uma dança angolana. Zouk Brasileiro é uma dança a dois brasileira com raízes na Lambada, fraseado mais lento e elástico, ondas corporais, técnica de movimentos de cabeça e um vocabulário musical moderno mais amplo."
     }
+  },
+  "detail": {
+    "question": "O que é {{term}} no Zouk Brasileiro?",
+    "back_to_encyclopedia": "Voltar para a Enciclopédia de Zouk Brasileiro",
+    "related_terms": "Termos relacionados da enciclopédia"
   }
 }

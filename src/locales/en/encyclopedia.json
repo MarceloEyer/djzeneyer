@@ -92,6 +92,21 @@
       "short": "Cabecada is a family of Brazilian Zouk head movement techniques that must be led, followed, and trained with safety and control.",
       "body": "Head movement is one of the most recognizable visual elements in Brazilian Zouk, but it depends on posture, preparation, axis, connection, and consent. On a social floor, safe technique matters more than dramatic range."
     },
+    "cambre": {
+      "term": "Cambré",
+      "short": "Cambré is a controlled Brazilian Zouk movement in which the dancer creates an inclined or arched body line while maintaining supported balance and connection.",
+      "body": "A safe cambré depends on preparation, shared awareness, stable support, and a range of motion that respects the dancer’s body. It is not a forced backbend: the shape should emerge from technique, communication, and control."
+    },
+    "boneca": {
+      "term": "Boneca",
+      "short": "Boneca is a Brazilian Zouk movement pattern that uses guided changes of direction and upper-body organization to create a fluid, doll-like visual effect.",
+      "body": "The movement should be led with clear preparation and danced with active control rather than passive force. Its exact execution can vary by teaching lineage, so dancers should learn the mechanics progressively with a qualified instructor."
+    },
+    "chicote": {
+      "term": "Chicote",
+      "short": "Chicote is a dynamic Brazilian Zouk movement pattern that creates a whip-like visual effect through prepared, connected changes of direction.",
+      "body": "Despite the name, the movement should never be abrupt or imposed on the neck. Safe execution requires progressive instruction, controlled momentum, clear communication, and respect for the follower’s range of motion."
+    },
     "bodyWave": {
       "term": "Body Wave",
       "short": "A body wave is a fluid movement through the torso that can express rhythm, melody, or elastic timing in Brazilian Zouk.",
@@ -297,5 +312,10 @@
       "short": "Zouk Love is a romantic, slower subgenre of Caribbean Zouk music, historically influential to Brazilian Zouk dancers.",
       "body": "While Caribbean Zouk is the musical origin of the 'Zouk' name in the dance, Zouk Love specifically provided the slower, melodic pacing that allowed Brazilian dancers to adapt their Lambada movements into what became Brazilian Zouk."
     }
+  },
+  "detail": {
+    "question": "What is {{term}} in Brazilian Zouk?",
+    "back_to_encyclopedia": "Back to the Brazilian Zouk Encyclopedia",
+    "related_terms": "Related encyclopedia terms"
   }
 }

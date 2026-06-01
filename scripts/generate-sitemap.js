@@ -19,6 +19,7 @@ const REST_BASE_URL = normalizeBaseUrl(
 );
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const ROUTES_DATA_PATH = path.resolve(__dirname, '../src/config/routes-slugs.json');
+const ENCYCLOPEDIA_TERMS_PATH = path.resolve(__dirname, '../src/config/encyclopedia-term-slugs.json');
 
 console.log('🗺️  Sitemap Generator v8.0 - EVENTS SUPPORT\n');
 
@@ -165,6 +166,18 @@ async function generateSitemaps() {
       // PT entry: x-default still points to EN (canonical language)
       pagesXml += buildUrlEntry(ptUrl, date, priority, enUrl, DEFAULT_IMAGE, false);
       pageCount += 2;
+    }
+
+    const encyclopediaRoute = routesData.routes.find(route => route.key === 'encyclopedia');
+    const encyclopediaTerms = JSON.parse(fs.readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf-8')).terms;
+    if (encyclopediaRoute && Array.isArray(encyclopediaTerms)) {
+      for (const term of encyclopediaTerms) {
+        const enUrl = getSitemapUrl('en', `${encyclopediaRoute.en}/${term}`);
+        const ptUrl = getSitemapUrl('pt', `${encyclopediaRoute.pt}/${term}`);
+        pagesXml += buildUrlEntry(enUrl, date, '0.7', ptUrl, DEFAULT_IMAGE, true);
+        pagesXml += buildUrlEntry(ptUrl, date, '0.7', enUrl, DEFAULT_IMAGE, false);
+        pageCount += 2;
+      }
     }
     pagesXml += '\n</urlset>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), pagesXml);

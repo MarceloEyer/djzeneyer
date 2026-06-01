@@ -43,6 +43,8 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 - Enciclopedia de Zouk Brasileiro foi expandida e fortalecida para AEO/Knowledge Panel.
 - H1/title/copy da Enciclopedia foram ajustados para termos como Brazilian Zouk Encyclopedia & History.
 - `llms-full.txt` passou a expor conteudo mais completo da Enciclopedia.
+- Enciclopedia passou a expor rotas individuais bilingues e prerenderizadas para cada termo, com `DefinedTerm`, pergunta/resposta visivel, `FAQPage`, canonical, hreflang, breadcrumbs e inclusao no sitemap.
+- Catalogo inicial de movimentos foi ampliado com Cambré, Boneca e Chicote; slugs publicos enumerados em `src/config/encyclopedia-term-slugs.json` mantem React, sitemap e prerender sincronizados.
 - Crawl noise do Search Console foi mitigado com redirects canonicos, 410 para probes/placeholder e robots/noindex apropriados.
 - Hreflang/canonical em rotas dinamicas foram corrigidos para evitar URLs com `:id`/`:slug`.
 - Open Graph foi padronizado com helpers route-aware e imagens 1200x630.

@@ -1,12 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { BookOpen, ChevronRight, ExternalLink, Search, Sparkles } from 'lucide-react';
+import { ArrowLeft, BookOpen, ChevronRight, ExternalLink, Search, Sparkles } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
-import { ZOUK_ENCYCLOPEDIA, type EncyclopediaCategory } from '../data/zoukEncyclopedia';
+import {
+  findEncyclopediaTermBySlug,
+  toEncyclopediaTermSlug,
+  ZOUK_ENCYCLOPEDIA,
+  type EncyclopediaCategory,
+  type EncyclopediaTerm,
+} from '../data/zoukEncyclopedia';
 import { safeUrl } from '../utils/sanitize';
 
 const HERO_VARIANTS = {
@@ -16,7 +23,7 @@ const HERO_VARIANTS = {
 
 const CATEGORY_ORDER: EncyclopediaCategory[] = ['fundamentals', 'history', 'styles', 'music', 'eventFormats', 'culture'];
 
-const EncyclopediaPage: React.FC = () => {
+const EncyclopediaHubPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'encyclopedia']);
   const [query, setQuery] = useState('');
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
@@ -173,7 +180,12 @@ const EncyclopediaPage: React.FC = () => {
                               <Sparkles size={20} />
                             </div>
                             <h3 className="font-display text-2xl font-black text-white">
-                              {t(`terms.${item.key}.term`, { ns: 'encyclopedia' })}
+                              <Link
+                                to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(item.key)}`}
+                                className="transition-colors hover:text-primary"
+                              >
+                                {t(`terms.${item.key}.term`, { ns: 'encyclopedia' })}
+                              </Link>
                             </h3>
                           </div>
                           <span className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white/45">
@@ -191,14 +203,14 @@ const EncyclopediaPage: React.FC = () => {
                         {item.relatedTerms && item.relatedTerms.length > 0 && (
                           <div className="mt-5 flex flex-wrap gap-2">
                             {item.relatedTerms.map((related) => (
-                              <a
+                              <Link
                                 key={related}
-                                href={`#${related}`}
+                                to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(related)}`}
                                 className="inline-flex items-center gap-1 rounded-lg bg-white/5 px-2.5 py-1.5 text-xs font-bold text-primary/75 transition-colors hover:bg-primary/10 hover:text-primary"
                               >
                                 <ChevronRight size={12} />
                                 {t(`terms.${related}.term`, { ns: 'encyclopedia' })}
-                              </a>
+                              </Link>
                             ))}
                           </div>
                         )}
@@ -239,6 +251,175 @@ const EncyclopediaPage: React.FC = () => {
       </div>
     </>
   );
+};
+
+
+interface EncyclopediaTermPageProps {
+  term: EncyclopediaTerm;
+}
+
+const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => {
+  const { t, i18n } = useTranslation(['translation', 'encyclopedia']);
+  const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
+  const prefersReducedMotion = useReducedMotion();
+  const hubPath = getLocalizedRoute('encyclopedia', currentLang);
+  const termSlug = toEncyclopediaTermSlug(term.key);
+  const pagePath = `${hubPath}/${termSlug}`;
+  const pageUrl = `${ARTIST.site.baseUrl}${pagePath}`;
+  const termName = t(`terms.${term.key}.term`, { ns: 'encyclopedia' });
+  const shortAnswer = t(`terms.${term.key}.short`, { ns: 'encyclopedia' });
+  const body = t(`terms.${term.key}.body`, { ns: 'encyclopedia' });
+  const question = t('detail.question', { ns: 'encyclopedia', term: termName });
+  const completeAnswer = `${shortAnswer} ${body}`;
+  const enUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', 'en')}/${termSlug}`;
+  const ptUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', 'pt')}/${termSlug}`;
+
+  const schema = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'DefinedTermSet',
+        '@id': `${ARTIST.site.baseUrl}${hubPath}#defined-term-set`,
+        name: t('seo.title', { ns: 'encyclopedia' }),
+        url: `${ARTIST.site.baseUrl}${hubPath}`,
+      },
+      {
+        '@type': 'DefinedTerm',
+        '@id': `${pageUrl}#defined-term`,
+        name: termName,
+        description: shortAnswer,
+        url: pageUrl,
+        inDefinedTermSet: { '@id': `${ARTIST.site.baseUrl}${hubPath}#defined-term-set` },
+      },
+      {
+        '@type': 'FAQPage',
+        '@id': `${pageUrl}#faq`,
+        mainEntity: [{
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: { '@type': 'Answer', text: completeAnswer },
+        }],
+      },
+      {
+        '@type': 'WebPage',
+        '@id': `${pageUrl}#webpage`,
+        url: pageUrl,
+        name: `${termName} | ${t('seo.title', { ns: 'encyclopedia' })}`,
+        description: shortAnswer,
+        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+        mainEntity: { '@id': `${pageUrl}#defined-term` },
+        about: { '@id': `${pageUrl}#defined-term` },
+        breadcrumb: {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: ARTIST.site.baseUrl },
+            { '@type': 'ListItem', position: 2, name: t('nav_label', { ns: 'encyclopedia' }), item: `${ARTIST.site.baseUrl}${hubPath}` },
+            { '@type': 'ListItem', position: 3, name: termName, item: pageUrl },
+          ],
+        },
+      },
+    ],
+  }), [completeAnswer, hubPath, pageUrl, question, shortAnswer, t, termName]);
+
+  return (
+    <>
+      <HeadlessSEO
+        title={`${termName} | ${t('seo.title', { ns: 'encyclopedia' })} | ${ARTIST.identity.stageName}`}
+        description={shortAnswer}
+        url={pageUrl}
+        hrefLang={[
+          { lang: 'en', url: enUrl },
+          { lang: 'pt-BR', url: ptUrl },
+          { lang: 'x-default', url: enUrl },
+        ]}
+        schema={schema}
+        leadAnswer={shortAnswer}
+      />
+
+      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
+        <div className="container mx-auto max-w-4xl">
+          <Breadcrumb
+            items={[
+              { label: t('nav_label', { ns: 'encyclopedia' }), path: hubPath },
+              { label: termName },
+            ]}
+            className="mb-10"
+          />
+
+          <motion.article
+            variants={HERO_VARIANTS}
+            initial={prefersReducedMotion ? false : 'hidden'}
+            animate={prefersReducedMotion ? undefined : 'visible'}
+            className="rounded-3xl border border-white/10 bg-surface/35 p-6 md:p-10"
+          >
+            <Link to={hubPath} className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-primary/80">
+              <ArrowLeft size={16} />
+              {t('detail.back_to_encyclopedia', { ns: 'encyclopedia' })}
+            </Link>
+
+            <span className="mb-4 block w-fit rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-primary">
+              {t(`categories.${term.category}`, { ns: 'encyclopedia' })}
+            </span>
+            <h1 className="mb-8 font-display text-4xl font-black tracking-tight md:text-6xl">{termName}</h1>
+
+            <section aria-labelledby="term-question">
+              <h2 id="term-question" className="mb-4 font-display text-2xl font-black text-white md:text-3xl">{question}</h2>
+              <p className="mb-5 text-lg font-semibold leading-relaxed text-white/85" data-speakable>{shortAnswer}</p>
+              <p className="text-base leading-relaxed text-white/65 md:text-lg">{body}</p>
+            </section>
+
+            {term.relatedTerms && term.relatedTerms.length > 0 && (
+              <section className="mt-10 border-t border-white/10 pt-6" aria-labelledby="related-terms">
+                <h2 id="related-terms" className="mb-4 text-sm font-black uppercase tracking-widest text-white/60">
+                  {t('detail.related_terms', { ns: 'encyclopedia' })}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {term.relatedTerms.map((related) => (
+                    <Link
+                      key={related}
+                      to={`${hubPath}/${toEncyclopediaTermSlug(related)}`}
+                      className="inline-flex items-center gap-1 rounded-lg bg-white/5 px-3 py-2 text-sm font-bold text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                    >
+                      <ChevronRight size={14} />
+                      {t(`terms.${related}.term`, { ns: 'encyclopedia' })}
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {term.sources && term.sources.length > 0 && (
+              <section className="mt-8 border-t border-white/10 pt-6" aria-labelledby="term-sources">
+                <h2 id="term-sources" className="mb-4 text-sm font-black uppercase tracking-widest text-white/60">
+                  {t('sources_label', { ns: 'encyclopedia' })}
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {term.sources.map((source) => (
+                    <a key={source.url} href={safeUrl(source.url, '/')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary">
+                      {source.labelKey ? t(`sources.${source.labelKey}`, { ns: 'encyclopedia' }) : source.label}
+                      <ExternalLink size={14} />
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
+          </motion.article>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const EncyclopediaPage: React.FC = () => {
+  const { term: termSlug } = useParams<{ term?: string }>();
+  const { pathname } = useLocation();
+  const term = findEncyclopediaTermBySlug(termSlug);
+
+  if (termSlug && !term) {
+    return <Navigate to={getLocalizedRoute('encyclopedia', pathname.startsWith('/pt/') ? 'pt' : 'en')} replace />;
+  }
+
+  return term ? <EncyclopediaTermPage term={term} /> : <EncyclopediaHubPage />;
 };
 
 export default React.memo(EncyclopediaPage);
