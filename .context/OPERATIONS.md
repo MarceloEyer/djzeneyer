@@ -68,6 +68,19 @@ gh pr view <number> --json body,comments,reviews,reviewThreads,reviewRequests,me
 - Conteúdo útil para todos os agentes deve ser promovido para `AGENTS.md`, `.agents/GUIDELINES.md`, `.context/OPERATIONS.md` ou `LEARNINGS.md`, conforme a natureza da regra.
 - Arquivos de persona podem resumir e direcionar uso local, mas não devem redefinir hierarquia, stack ou regras globais em conflito com `AI_CONTEXT_INDEX.md`.
 
+## Separação Frontend / Backend
+
+**Backend**: WordPress + WooCommerce em `https://djzeneyer.com/wp-json/` (REST API). Dados dinâmicos (pedidos, membros, WooCommerce, GamiPress) vivem aqui. Nunca mockar dados de backend no frontend — usar os hooks de `src/hooks/useQueries.ts`.
+
+**Frontend**: React SPA (Vite). `src/data/artistData.ts` é dados **estáticos do frontend** — SSOT para identidade do artista, festivais, discografia, links sociais. Esses dados não vêm do WordPress e são mantidos diretamente no TypeScript.
+
+### Regras para `ARTIST.festivals[]`
+
+- `upcoming` é campo **opcional** e pode ficar stale. **Não é fonte de verdade** para categorização.
+- Categorização correta deriva de comparação de `f.date` com a data atual em runtime: `new Date(f.date) >= today`.
+- Ordenação correta: **upcoming → crescente** (mais próximo primeiro); **past → decrescente** (mais recente primeiro).
+- Ao adicionar evento passado: atualizar `date`, omitir `upcoming` ou setar `upcoming: false`. `ZoukFestivalsPage` categoriza automaticamente pela data.
+
 ## Fonte de Verdade
 
 - Este arquivo não substitui o código real, `AI_CONTEXT_INDEX.md`, `.agents/GUIDELINES.md`, `.context/IDENTITY.md` ou `LEARNINGS.md`.
