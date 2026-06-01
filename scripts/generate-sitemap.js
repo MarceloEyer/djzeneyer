@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Sitemap Generator v8.0 - EVENTS SUPPORT
- * Gera sitemaps baseado em arquivo JSON estático
+ * Sitemap Generator v8.1 - EVENTS + POSTS SUPPORT
+ * Gera sitemaps baseado em arquivo JSON estático e conteúdo público do WordPress
  */
 
 import fs from 'fs';
@@ -21,7 +21,7 @@ const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const ROUTES_DATA_PATH = path.resolve(__dirname, '../src/config/routes-slugs.json');
 const ENCYCLOPEDIA_TERMS_PATH = path.resolve(__dirname, '../src/config/encyclopedia-term-slugs.json');
 
-console.log('🗺️  Sitemap Generator v8.0 - EVENTS SUPPORT\n');
+console.log('🗺️  Sitemap Generator v8.1 - EVENTS + POSTS SUPPORT\n');
 
 const DEFAULT_IMAGE = `${BASE_URL}/images/zen-eyer-og-image.png`;
 
@@ -114,14 +114,37 @@ async function fetchEvents() {
   console.log(`✅ Events loaded via ${source}: ${raw.length} items`);
 
   // Mapeia para o formato que o gerador espera
-  return raw.map(ev => {
-    const venue = ev.venue || {};
-    return {
-      event_id: String(ev.id || ev.event_id || ''),
-      image: ev.artist?.image_url || ev.artist?.thumb_url || ev.image || DEFAULT_IMAGE,
-      canonical_path: ev.canonical_path
-    };
-  });
+  return raw.map(ev => ({
+    event_id: String(ev.id || ev.event_id || ''),
+    image: ev.artist?.image_url || ev.artist?.thumb_url || ev.image || DEFAULT_IMAGE,
+    canonical_path: ev.canonical_path
+  }));
+}
+
+async function fetchPosts() {
+  const fields = 'id,date,modified,slug,link,featured_image_src,featured_image_src_full';
+  const result = { en: [], pt: [] };
+
+  await Promise.all(['en', 'pt'].map(async (lang) => {
+    try {
+      const postsUrl = `${REST_BASE_URL}/wp/v2/posts?per_page=100&lang=${lang}&_fields=${encodeURIComponent(fields)}`;
+      console.log(`📡 Fetching posts (${lang}) from ${postsUrl}...`);
+      const res = await fetch(postsUrl, { headers: { Accept: 'application/json' } });
+
+      if (!res.ok) {
+        console.warn(`⚠️ Posts (${lang}): API respondeu ${res.status}.`);
+        return;
+      }
+
+      const data = await res.json();
+      result[lang] = Array.isArray(data) ? data.filter(post => post?.slug) : [];
+      console.log(`✅ Posts (${lang}): ${result[lang].length} items`);
+    } catch (error) {
+      console.warn(`⚠️ Posts (${lang}): falha ao buscar — ${error.message}`);
+    }
+  }));
+
+  return result;
 }
 
 async function generateSitemaps() {
@@ -258,7 +281,51 @@ async function generateSitemaps() {
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-events.xml'), eventsXml);
     console.log(`✅ sitemap-events.xml created (${eventCount} URLs)`);
 
-    // 3. Index Sitemap
+    // 3. Posts Sitemap
+    const posts = await fetchPosts();
+    const newsRoute = routesData.routes.find(r => r.key === 'news');
+    if (!newsRoute?.en || !newsRoute?.pt) {
+      throw new Error('routes-slugs.json precisa conter a rota "news" com slugs EN/PT antes de gerar o sitemap de posts.');
+    }
+
+    const postsByLang = {
+      en: new Map(posts.en.map(post => [post.slug, post])),
+      pt: new Map(posts.pt.map(post => [post.slug, post])),
+    };
+    const postSlugs = [...new Set([...postsByLang.en.keys(), ...postsByLang.pt.keys()])];
+
+    let postCount = 0;
+    let postsXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
+
+    for (const slug of postSlugs) {
+      const enPost = postsByLang.en.get(slug);
+      const ptPost = postsByLang.pt.get(slug);
+      const canonicalPost = enPost || ptPost;
+      if (!canonicalPost) continue;
+
+      const lastmod = canonicalPost.modified || canonicalPost.date || date;
+      const image = canonicalPost.featured_image_src_full || canonicalPost.featured_image_src || DEFAULT_IMAGE;
+      const enUrl = getSitemapUrl('en', `${newsRoute.en}/${slug}`);
+      const ptUrl = getSitemapUrl('pt', `${newsRoute.pt}/${slug}`);
+
+      if (enPost) {
+        postsXml += buildUrlEntry(enUrl, lastmod, '0.7', ptUrl, image, true);
+        postCount++;
+      }
+      if (ptPost) {
+        postsXml += buildUrlEntry(ptUrl, lastmod, '0.7', enUrl, image, false);
+        postCount++;
+      }
+    }
+
+    postsXml += '\n</urlset>';
+    fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-posts.xml'), postsXml);
+    console.log(`✅ sitemap-posts.xml created (${postCount} URLs)`);
+
+    // 4. Index Sitemap
     let sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">`;
 
@@ -266,13 +333,15 @@ async function generateSitemaps() {
 
     sitemapIndex += buildSitemapIndexEntry(`${BASE_URL}/sitemap-events.xml`, date);
 
+    sitemapIndex += buildSitemapIndexEntry(`${BASE_URL}/sitemap-posts.xml`, date);
+
     sitemapIndex += '\n</sitemapindex>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap.xml'), sitemapIndex);
     console.log('✅ sitemap.xml index created');
 
     console.log('\n════════════════════════════════════════');
     console.log('✅ Sitemap generation complete!');
-    console.log(`📄 Total: ${pageCount + eventCount} URLs`);
+    console.log(`📄 Total: ${pageCount + eventCount + postCount} URLs`);
     console.log(`📍 Location: ${PUBLIC_DIR}`);
     console.log('════════════════════════════════════════\n');
 
