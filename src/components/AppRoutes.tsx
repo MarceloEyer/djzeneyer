@@ -10,6 +10,8 @@ import {
   getLocalizedPaths,
 } from '../config/routes';
 
+const STANDALONE_ROUTE_KEYS = new Set(['zenlink']);
+
 const wrapRouteElement = (Component: ComponentType) => (
   <ErrorBoundary>
     <Component />
@@ -19,7 +21,7 @@ const wrapRouteElement = (Component: ComponentType) => (
 // Função auxiliar robusta para gerar rotas do React Router v6
 const generateRoutes = (lang: Language): RouteObject[] => {
   return ROUTES_CONFIG.flatMap((route) => {
-    if (route.standalone) return [];
+    if (STANDALONE_ROUTE_KEYS.has(route.key)) return [];
 
     // 1. Acessa diretamente a propriedade do idioma (en ou pt)
     const rawPath = route.paths[lang];
@@ -59,7 +61,7 @@ const generateStandaloneRoutes = (): RouteObject[] => {
   const seen = new Set<string>();
 
   return ROUTES_CONFIG.flatMap((route) => {
-    if (!route.standalone) return [];
+    if (!STANDALONE_ROUTE_KEYS.has(route.key)) return [];
 
     const Component = route.component;
 
