@@ -31,7 +31,21 @@ interface GoogleCredentialResponse {
   select_by?: string;
 }
 
+
+const OVERLAY_INITIAL = { opacity: 0 };
+const OVERLAY_ANIMATE = { opacity: 1 };
+const OVERLAY_EXIT = { opacity: 0 };
+
+const MODAL_INITIAL = { opacity: 0, scale: 0.95, y: 20 };
+const MODAL_ANIMATE = { opacity: 1, scale: 1, y: 0 };
+const MODAL_EXIT = { opacity: 0, scale: 0.95, y: 20 };
+const MODAL_TRANSITION = { type: 'spring', duration: 0.5, bounce: 0.3 };
+
+const ERROR_INITIAL = { opacity: 0, height: 0 };
+const ERROR_ANIMATE = { opacity: 1, height: 'auto' };
+
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
+
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { login, register, googleLogin, googleClientId } = useUser();
@@ -170,17 +184,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         onClick={handleOverlayClick}
       >
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={OVERLAY_INITIAL}
+          animate={OVERLAY_ANIMATE}
+          exit={OVERLAY_EXIT}
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
+          initial={MODAL_INITIAL}
+          animate={MODAL_ANIMATE}
+          exit={MODAL_EXIT}
+          transition={MODAL_TRANSITION}
           className="relative w-full max-w-md"
           onClick={(e) => e.stopPropagation()}
         >
@@ -207,8 +221,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
             <div className="px-8 pb-8">
               {error && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  initial={ERROR_INITIAL}
+                  animate={ERROR_ANIMATE}
                   className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm flex items-start gap-3"
                 >
                   <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
