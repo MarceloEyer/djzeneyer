@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, X } from 'lucide-react';
 
-// ⚡ Bolt: Extract element creation outside component to prevent multiple instantiations per render
 const TOAST_INITIAL = { opacity: 0, y: 50, scale: 0.9 };
 const TOAST_ANIMATE = { opacity: 1, y: 0, scale: 1 };
 const TOAST_EXIT = { opacity: 0, y: 20, scale: 0.95 };

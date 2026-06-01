@@ -12,13 +12,11 @@ const toPercent = (value: number): number => {
   return value > 0 && value <= 1 ? value * 100 : value;
 };
 
-// ⚡ Bolt: Extract element creation outside component to prevent multiple instantiations per render
 const GLOW_INITIAL = { left: '-100%' };
 const GLOW_ANIMATE = { left: '200%' };
 const GLOW_TRANSITION = { repeat: Infinity, duration: 2.5, ease: 'linear', repeatDelay: 1 };
 const WIDTH_INITIAL = { width: 0 };
 const WIDTH_TRANSITION = { type: 'spring', stiffness: 70, damping: 20 };
-
 
 const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
   progress,

@@ -31,7 +31,6 @@ interface GoogleCredentialResponse {
   select_by?: string;
 }
 
-
 const OVERLAY_INITIAL = { opacity: 0 };
 const OVERLAY_ANIMATE = { opacity: 1 };
 const OVERLAY_EXIT = { opacity: 0 };
