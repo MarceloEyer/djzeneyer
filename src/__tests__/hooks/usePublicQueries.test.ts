@@ -36,14 +36,14 @@ describe('fetchMenuFn', () => {
     await expect(fetchMenuFn('en')).rejects.toThrow('Failed to fetch menu');
   });
 
-  it('returns prerender data without fetching when available', async () => {
+  it('always fetches from API even when prerender data is available', async () => {
     const fetchSpy = vi.spyOn(global, 'fetch');
     Object.assign(window, {
       __PRERENDER_DATA__: { menu: { en: mockMenu }, eventsLimit: 10, eventsMode: 'upcoming', eventsDays: 365 },
     });
     const result = await fetchMenuFn('en');
     expect(result).toEqual(mockMenu);
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(fetchSpy).toHaveBeenCalled();
     // restore
     Object.assign(window, { __PRERENDER_DATA__: undefined });
     fetchSpy.mockRestore();
@@ -76,22 +76,20 @@ describe('fetchEventsFn', () => {
     expect(typeof result[0]._processed?.day).toBe('number');
   });
 
-  it('returns [] when API responds with non-ok status', async () => {
+  it('throws when API responds with non-ok status', async () => {
     server.use(
       http.get(`${REST_BASE}/zen-bit/v2/events`, () =>
         HttpResponse.json({ message: 'Error' }, { status: 500 })
       )
     );
-    const result = await fetchEventsFn({ lang: 'en' });
-    expect(result).toEqual([]);
+    await expect(fetchEventsFn({ lang: 'en' })).rejects.toThrow();
   });
 
-  it('returns [] on network failure', async () => {
+  it('throws on network failure', async () => {
     server.use(
       http.get(`${REST_BASE}/zen-bit/v2/events`, () => HttpResponse.error())
     );
-    const result = await fetchEventsFn({ lang: 'en' });
-    expect(result).toEqual([]);
+    await expect(fetchEventsFn({ lang: 'en' })).rejects.toThrow();
   });
 
   it('respects the limit parameter', async () => {
