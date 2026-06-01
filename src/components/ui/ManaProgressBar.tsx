@@ -12,6 +12,14 @@ const toPercent = (value: number): number => {
   return value > 0 && value <= 1 ? value * 100 : value;
 };
 
+// ⚡ Bolt: Extract element creation outside component to prevent multiple instantiations per render
+const GLOW_INITIAL = { left: '-100%' };
+const GLOW_ANIMATE = { left: '200%' };
+const GLOW_TRANSITION = { repeat: Infinity, duration: 2.5, ease: 'linear', repeatDelay: 1 };
+const WIDTH_INITIAL = { width: 0 };
+const WIDTH_TRANSITION = { type: 'spring', stiffness: 70, damping: 20 };
+
+
 const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
   progress,
   label,
@@ -47,9 +55,9 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
         <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-white/10 to-transparent" />
 
         <motion.div
-          initial={{ width: 0 }}
+          initial={WIDTH_INITIAL}
           animate={{ width: `${clampedProgress}%` }}
-          transition={{ type: 'spring', stiffness: 70, damping: 20 }}
+          transition={WIDTH_TRANSITION}
           className="relative h-full overflow-hidden rounded-full bg-primary transition-all duration-700 group-hover:brightness-125"
           style={{
             boxShadow: 'inset 0 0 8px rgba(255,255,255,0.4), 0 0 15px rgba(var(--color-primary),0.5)',
@@ -60,9 +68,9 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
 
           {clampedProgress > 0 && (
             <motion.div
-              initial={{ left: '-100%' }}
-              animate={{ left: '200%' }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: 'linear', repeatDelay: 1 }}
+              initial={GLOW_INITIAL}
+              animate={GLOW_ANIMATE}
+              transition={GLOW_TRANSITION}
               className="absolute top-0 bottom-0 z-20 w-32 skew-x-[-25deg] bg-gradient-to-r from-transparent via-white/30 to-transparent blur-md"
             />
           )}
