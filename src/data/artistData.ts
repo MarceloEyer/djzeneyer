@@ -124,7 +124,7 @@ export const ARTIST = {
       country: 'Poland',
       flag: '🇵🇱',
       url: 'https://www.facebook.com/zoukatowice/',
-      date: '2024-11-20',
+      date: '2026-03-20',
     },
     {
       name: 'IZC Brazil',
@@ -132,14 +132,6 @@ export const ARTIST = {
       flag: '🇧🇷',
       url: 'https://www.instagram.com/izcbrazil/',
       date: '2024-01-20',
-    },
-    {
-      name: 'Polish Zouk Festival - Katowice',
-      country: 'Poland',
-      flag: '🇵🇱',
-      url: 'https://www.polishzoukfestival.pl/',
-      upcoming: true,
-      date: '2025-11-20',
     },
   ] as Festival[],
 

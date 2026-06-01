@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ExternalLink, Globe, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -53,26 +53,33 @@ const ZoukFestivalsPage: React.FC = () => {
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('zouk-festivals', currentLang)}`;
 
   const { upcoming, past } = useMemo(() => {
-    const sorted = [...ARTIST.festivals].sort((a, b) => {
-      if (!a.date && !b.date) return 0;
-      if (!a.date) return 1;
-      if (!b.date) return -1;
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    });
-    return {
-      upcoming: sorted.filter((f) => f.upcoming),
-      past: sorted.filter((f) => !f.upcoming),
-    };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const upcomingFestivals = [...ARTIST.festivals]
+      .filter((f) => f.date && new Date(f.date) >= today)
+      .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime());
+
+    const pastFestivals = [...ARTIST.festivals]
+      .filter((f) => !f.date || new Date(f.date) < today)
+      .sort((a, b) => {
+        if (!a.date && !b.date) return 0;
+        if (!a.date) return 1;
+        if (!b.date) return -1;
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+
+    return { upcoming: upcomingFestivals, past: pastFestivals };
   }, []);
 
-  const formatYear = (date: string | undefined): string => {
+  const formatYear = useCallback((date: string | undefined): string => {
     if (!date) return '';
     try {
       return getDateTimeFormatter(i18n.language, { year: 'numeric' }).format(new Date(date));
     } catch {
       return '';
     }
-  };
+  }, [i18n.language]);
 
   const opensInNewTab = t('common.opens_in_new_tab');
 
