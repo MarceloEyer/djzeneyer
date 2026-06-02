@@ -73,7 +73,10 @@ const ReleaseDetailPage: React.FC = () => {
   const { t, i18n } = useTranslation();
   const lang = normalizeLanguage(i18n.language);
 
-  const release = useMemo(() => DISCOGRAPHY.find((r) => r.id === id), [id]);
+  const release = useMemo(
+    () => DISCOGRAPHY.find((r) => r.id === id || r.newsSlugs?.en === id || r.newsSlugs?.pt === id),
+    [id],
+  );
 
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('release-detail', lang).replace(':id', id ?? '')}`;
   const musicHubRoute = getLocalizedRoute('music', lang);

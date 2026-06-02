@@ -9,7 +9,7 @@ For deep operational details, see `.context/OPERATIONS.md`.
 |---|---|---|
 | `ci-tests.yml` | PR and push to `main` | Installs deps, runs unit/integration tests and lint |
 | `contract-tests.yml` | PR and push to `main` | Validates integration and API contract assumptions |
-| `quality-gate.yml` | PR, push to `main`, and **daily at 05:00 UTC** | Full quality check (see below) |
+| `quality-gate.yml` | PR and push to `main` | Full quality check (see below) |
 | `lighthouse-ci.yml` | PR and push to `main` | Lighthouse performance and accessibility checks |
 | `deploy-frontend.yml` | Push to `main` | Builds React app and deploys to VPS via rsync |
 | `deploy-backend.yml` | Push to `main` | Deploys WordPress theme, plugins, and backend assets to VPS |
@@ -28,10 +28,9 @@ The `quality-gate.yml` workflow is the main quality check. It runs:
 
 If it fails, a `dist/` artifact is uploaded for debugging.
 
-## Daily run
+## Daily deploy
 
-The quality gate also runs on a daily cron (`0 5 * * *`, 05:00 UTC) even without code changes.
-This keeps the site validated and fresh for search bots and AI crawlers every day.
+`deploy-frontend.yml` runs every day at 04:00 UTC via cron. This triggers a full prerender and deploy, which refreshes event data, sitemaps, and all pre-rendered pages automatically. The quality gate runs only on code changes (push/PR) — it does not run daily, since the daily deploy already handles freshness.
 
 ## Developer workflow
 

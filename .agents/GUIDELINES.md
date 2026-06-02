@@ -92,6 +92,7 @@ Valem para código, documentação e arquitetura de agentes. Nenhuma exceção s
    - `fetch-depth` nos workflows deve ser `2`.
    - NUNCA use `--no-security-blocking` no Composer sem uma justificativa crítica documentada em `LEARNINGS.md`.
    - Decisões operacionais descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`, nunca mantidas apenas em memória local de Claude/Codex/Antigravity.
+   - **PRs de documentação exigem leitura completa:** Nunca mergear PR que modifique `docs/`, `.human/`, `.agents/`, `.context/`, `LEARNINGS.md` ou `AGENTS.md` sem ler cada arquivo alterado e verificar que o conteúdo é factualmente correto, não contradiz regras existentes e não promove padrões banidos. Documentação errada guia todos os agentes futuros — é risco igual ou maior que código errado.
    - Antes de alterar, fechar ou mergear qualquer PR, leia `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`. Com GitHub CLI, use `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
    - Se um PR ou review levantar risco de segurança, privacidade ou comportamento de produto, pergunte ao usuário antes de agir quando houver ambiguidade. Não transforme decisão de produto em "correção de segurança" por suposição.
 

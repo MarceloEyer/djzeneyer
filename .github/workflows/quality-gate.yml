@@ -6,8 +6,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  schedule:
-    - cron: '0 5 * * *' # daily at 05:00 UTC — keeps the site validated and fresh for bots and AI crawlers
 
 concurrency:
   group: quality-gate-${{ github.ref }}
@@ -30,10 +28,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: npm

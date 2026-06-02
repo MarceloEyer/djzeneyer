@@ -1,19 +1,17 @@
+import { useTranslation } from 'react-i18next';
 import type { Track } from '../../types/music';
 import { tracks } from '../../data/tracks';
 
-/**
- * Music catalog page — lists all DJ Zen Eyer tracks with DJ-friendly metadata.
- * Wire this to your router at e.g. /music or /catalog.
- */
 export function MusicCatalogPage() {
+  const { t } = useTranslation();
   const sorted = [...tracks].sort((a, b) => a.title.localeCompare(b.title));
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
       <header className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Music catalog</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t('music_catalog_title')}</h1>
         <p className="mt-2 text-sm text-zinc-300">
-          Curated list of DJ Zen Eyer tracks, edits, and releases with DJ-friendly metadata.
+          {t('music_catalog_description')}
         </p>
       </header>
 
