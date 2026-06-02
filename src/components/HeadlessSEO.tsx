@@ -10,6 +10,7 @@ import { getAlternateLinks, getLocalizedRoute, normalizeLanguage } from '../conf
 import { safeUrl } from '../utils/sanitize';
 import { ensureTrailingSlash } from '../utils/seo';
 import { stripHtml } from '../utils/text';
+import { logger } from '../lib/logger';
 import {
   DEFAULT_OG_IMAGE,
   OG_IMAGE_HEIGHT,
@@ -190,7 +191,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
         }
       });
     } catch (err) {
-      console.error('Error generating alternate links:', err);
+      logger.error('HREFLANG_GENERATION_FAILED', 'Error generating alternate links', { error: String(err) });
     }
 
     return links;
@@ -293,12 +294,11 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       for (let i = 0; i < pathSegments.length; i++) {
         const segment = pathSegments[i];
         const path = `/${pathSegments.slice(0, i + 1).join('/')}`;
-        const isLast = i === pathSegments.length - 1;
         itemListElement.push({
           '@type': 'ListItem',
           position: i + 1,
           item: {
-            '@id': `${siteUrlClean}${path}${isLast ? '' : '/'}`,
+            '@id': `${siteUrlClean}${path}/`,
             name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
           },
         });
