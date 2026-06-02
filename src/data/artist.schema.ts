@@ -8,34 +8,34 @@ import { ARTIST } from './artistData';
 export const DISAMBIGUATING_DESCRIPTION =
   'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used stage-name variant; Zen Ayer is a common misspelling, not an official artist name.';
 
-// Schema.org sameAs list (consolidated for Knowledge Graph)
-export const ARTIST_SCHEMA_SAME_AS = [
-  'https://www.wikidata.org/wiki/Q136551855',
-  'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
-  'https://www.discogs.com/artist/16872046',
-  'https://isni.org/isni/0000000528931015',
-  'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-  'https://music.apple.com/us/artist/1439280950',
-  'https://www.youtube.com/@djzeneyer',
-  'https://www.instagram.com/djzeneyer/',
-  'https://www.facebook.com/djzeneyer/',
-  'https://www.linkedin.com/in/eyermarcelo',
-  'https://soundcloud.com/djzeneyer',
-  'https://www.deezer.com/artist/52900762',
-  'https://tidal.com/artist/10492592',
-  'https://djzeneyer.bandcamp.com',
-  'https://music.amazon.com/artists/B07JKCDCG8',
-  'https://www.mixcloud.com/djzeneyer',
-  'https://www.last.fm/music/Zen+Eyer',
-  'https://www.songkick.com/artists/8815204-zen-eyer',
-  'https://www.bandsintown.com/a/15619775-zen-eyer',
-  'https://ra.co/dj/djzeneyer',
-  'https://bsky.app/profile/djzeneyer.bsky.social',
-  'https://www.threads.net/@djzeneyer',
-  'https://www.shazam.com/artist/1439280950',
-  'https://www.patreon.com/djzeneyer',
-  'https://medium.com/@djzeneyer',
+// Schema.org sameAs — derived from ARTIST (single source of truth).
+// To add/change a platform URL, edit artistData.ts only.
+const { identifiers, social } = ARTIST;
+
+const SAME_AS_AUTHORITY = [
+  identifiers.wikidataUrl,
+  identifiers.musicbrainzUrl,
+  identifiers.discogsUrl,
+  `https://isni.org/isni/${identifiers.isni}`,
+  identifiers.residentAdvisorUrl,
 ] as const;
+
+// Platforms in ARTIST.social whose URLs belong in sameAs
+const SAME_AS_SOCIAL_KEYS = [
+  'spotify', 'appleMusic', 'youtube', 'YouTubeMusic',
+  'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
+  'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
+  'bandcamp', 'amazonMusic', 'mixcloud', 'lastfm', 'songkick',
+  'bandsintown', 'shazam', 'patreon', 'medium', 'genius',
+  'audiomack', 'boomplay', 'napster', 'qobuz',
+] as const;
+
+export const ARTIST_SCHEMA_SAME_AS: string[] = [
+  ...SAME_AS_AUTHORITY,
+  ...SAME_AS_SOCIAL_KEYS
+    .map((key) => (social as Record<string, { url?: string }>)[key]?.url)
+    .filter((url): url is string => Boolean(url)),
+];
 
 export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',

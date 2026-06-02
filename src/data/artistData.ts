@@ -191,7 +191,7 @@ export const ARTIST = {
     audiomack: { url: 'https://audiomack.com/djzeneyer' },
     boomplay: { url: 'https://www.boomplay.com/artists/35157982' },
     napster: { url: 'https://us.napster.com/artist/art.626690096' },
-    qobuz: { url: 'https://www.qobuz.com/artist/7501129' },
+    qobuz: { url: 'https://play.qobuz.com/artist/4083033' },
     patreon: { url: 'https://www.patreon.com/djzeneyer' },
     medium: { url: 'https://medium.com/@djzeneyer' },
     reddit: { url: 'https://www.reddit.com/user/djzeneyer' },
