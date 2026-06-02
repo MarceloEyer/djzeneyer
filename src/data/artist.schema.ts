@@ -35,6 +35,13 @@ export const ARTIST_SCHEMA_SAME_AS = [
   'https://www.shazam.com/artist/1439280950',
   'https://www.patreon.com/djzeneyer',
   'https://medium.com/@djzeneyer',
+  'https://www.tiktok.com/@djzeneyer',
+  'https://x.com/djzeneyer',
+  'https://genius.com/artists/Zen-eyer',
+  'https://audiomack.com/djzeneyer',
+  'https://www.boomplay.com/artists/35157982',
+  'https://us.napster.com/artist/art.626690096',
+  'https://play.qobuz.com/artist/4083033',
 ] as const;
 
 export const ARTIST_SCHEMA_BASE = {
