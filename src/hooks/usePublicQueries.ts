@@ -199,11 +199,11 @@ const getPrerenderData = <T>(
   return (keyedBucket.en || keyedBucket.pt || null) as T;
 };
 
-const getPrerenderUpdatedAt = (): number | undefined => {
+const getPrerenderUpdatedAt = (): number => {
   const fetchedAt = getPrerenderPayload()?.fetchedAt;
-  if (!fetchedAt) return undefined;
+  if (!fetchedAt) return 0;
   const timestamp = Date.parse(fetchedAt);
-  return Number.isFinite(timestamp) ? timestamp : undefined;
+  return Number.isFinite(timestamp) ? timestamp : 0;
 };
 
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
@@ -388,7 +388,7 @@ export const useMenuQuery = (lang: string) =>
   useQuery({
     queryKey: QUERY_KEYS.menu.list(lang),
     queryFn: () => fetchMenuFn(lang),
-    initialData: () => getPrerenderMenu(lang) ?? undefined,
+    initialData: () => { const d = getPrerenderMenu(lang); return d && d.length > 0 ? d : undefined; },
     initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.MENU,
     retry: 1,
@@ -438,7 +438,7 @@ export const useNewsQuery = (
   return useQuery({
     queryKey: QUERY_KEYS.posts.list(lang, filters),
     queryFn: () => fetchNewsFn(lang, filters),
-    initialData: () => (hasFilters ? undefined : getPrerenderNews(lang) ?? undefined),
+    initialData: () => { if (hasFilters) return undefined; const d = getPrerenderNews(lang); return d && d.length > 0 ? d : undefined; },
     initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.POSTS,
     enabled: options.enabled,
