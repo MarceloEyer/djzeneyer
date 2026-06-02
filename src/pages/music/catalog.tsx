@@ -1,19 +1,21 @@
+import { useTranslation } from 'react-i18next';
 import type { Track } from '../../types/music';
 import { tracks } from '../../data/tracks';
+import { HeadlessSEO } from '../../components/HeadlessSEO';
+import { safeUrl } from '../../utils/sanitize';
 
-/**
- * Music catalog page — lists all DJ Zen Eyer tracks with DJ-friendly metadata.
- * Wire this to your router at e.g. /music or /catalog.
- */
 export function MusicCatalogPage() {
+  const { t } = useTranslation();
   const sorted = [...tracks].sort((a, b) => a.title.localeCompare(b.title));
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-12">
+      <HeadlessSEO title={t('music_catalog_title')} description={t('music_catalog_description')} />
+
       <header className="mb-8">
-        <h1 className="text-3xl font-semibold tracking-tight">Music catalog</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t('music_catalog_title')}</h1>
         <p className="mt-2 text-sm text-zinc-300">
-          Curated list of DJ Zen Eyer tracks, edits, and releases with DJ-friendly metadata.
+          {t('music_catalog_description')}
         </p>
       </header>
 
@@ -28,8 +30,8 @@ export function MusicCatalogPage() {
                 <h2 className="text-lg font-medium">{track.title}</h2>
                 <p className="text-xs text-zinc-400">
                   {track.primaryArtist}
-                  {track.bpm != null ? ` • ${track.bpm} BPM` : ''}
-                  {track.energy != null ? ` • ${track.energy} energy` : ''}
+                  {track.bpm != null ? ` • ${track.bpm} ${t('track.bpm')}` : ''}
+                  {track.energy != null ? ` • ${track.energy} ${t('track.energy')}` : ''}
                   {track.key != null ? ` • ${track.key}` : ''}
                 </p>
                 {track.moodTags.length > 0 && (
@@ -43,7 +45,7 @@ export function MusicCatalogPage() {
                 {track.links.map((link) => (
                   <a
                     key={`${track.id}-${link.platform}`}
-                    href={link.url}
+                    href={safeUrl(link.url, '#')}
                     target="_blank"
                     rel="noreferrer"
                     className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs text-emerald-300 hover:bg-emerald-500/20 transition-colors"

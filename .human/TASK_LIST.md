@@ -11,6 +11,10 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 - [x] **Google Knowledge Panel:** Entidade reivindicada via Google Search Console.
 - [x] **Zoukology article:** Publicado com link de retorno para djzeneyer.com.
 - [x] **14 países presenciais:** Contagem confirmada como correta para todos os documentos.
+- [x] **Wikidata Q136551855:** Dados completados — website oficial (P856), championship claim com referência, MusicBrainz ID, nationalidade, data de nascimento e gênero verificados.
+- [x] **MusicBrainz:** Perfil de artista criado/verificado com nome, sort name, releases, aliases (DJ Zen Eyer), links para Wikidata e djzeneyer.com. URL/ID adicionado ao `src/data/artistData.ts` e ao `sameAs`.
+- [x] **Bandsintown:** Eventos sincronizados, nome canônico "Zen Eyer" e website `djzeneyer.com` conferidos (manager ID: `id_15619775`).
+- [x] **Songkick:** Perfil verificado — nome, website e histórico de eventos conferidos. URL do perfil presente em `src/data/artistData.ts`.
 
 ---
 
@@ -83,71 +87,6 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 
 ---
 
-### Wikidata Q136551855 — Adicionar fontes e completar dados
-
-**Por quê:** Wikidata é a âncora do Knowledge Panel do Google. Fatos sem referência podem ser removidos por editores. Com fontes verificáveis, os fatos ficam estáveis e o painel fica mais robusto.
-
-**Passos:**
-1. Acesse `https://www.wikidata.org/wiki/Q136551855` logado com sua conta Wikimedia.
-2. **Championship claim:** verificar se o item "vencedor do Zouk DJ Championship 2022" existe e tem uma referência (URL para site oficial do campeonato ou artigo de imprensa que comprove).
-3. **Website oficial:** adicionar propriedade P856 (official website) com valor `https://djzeneyer.com` se não existir.
-4. **MusicBrainz ID:** adicionar propriedade P434 com o ID do MusicBrainz quando tiver o perfil criado/verificado.
-5. **Nationality:** verificar se "Brazilian" / "Brasileiro" está correto.
-6. **Date of birth:** `1985-08-20` — verificar se está presente.
-7. **Genre:** verificar se "Brazilian Zouk" está listado como gênero musical.
-8. **Description:** verificar que a descrição curta é factual (ex: "Brazilian Zouk DJ and music producer").
-9. Não adicionar afirmações sem fonte verificável.
-
----
-
-### MusicBrainz — Criar ou completar perfil de artista
-
-**Por quê:** MusicBrainz é um banco de dados estruturado usado por serviços de descoberta musical, crawlers acadêmicos e referências cruzadas de identidade. Usado como `sameAs` no schema.
-
-**Passos:**
-1. Acesse `musicbrainz.org` e crie conta se não tiver.
-2. Pesquise "Zen Eyer" — se já existir um rascunho ou entrada incompleta, claim/edite.
-3. Se não existir, crie um novo **Artist** com:
-   - **Name:** Zen Eyer
-   - **Sort name:** Eyer, Zen
-   - **Type:** Person
-   - **Gender:** Male
-   - **Area:** Brazil
-   - **Begin date:** 1985-08-20
-   - **Aliases:** DJ Zen Eyer (search hint)
-4. Adicionar **releases** conhecidos (EPs, singles, remixes) com ISRC quando disponível.
-5. Adicionar link para Wikidata Q136551855 (propriedade "Wikidata").
-6. Adicionar link para `djzeneyer.com` como site oficial.
-7. Após criar/verificar, pegar a **URL do perfil** (ex: `https://musicbrainz.org/artist/[UUID]`) e adicionar a `src/data/artistData.ts` na chave `social.MusicBrainz` (ou similar) e no array `sameAs`.
-
----
-
-### Bandsintown — Verificar sync de eventos
-
-**Por quê:** Páginas de eventos no Bandsintown são indexadas e aparecem em buscas por "Zen Eyer shows" e "Brazilian Zouk DJ events". São citações de atividade para o Knowledge Panel.
-
-**Passos:**
-1. Acesse `manager.bandsintown.com` (ID: `id_15619775`).
-2. Verificar que os próximos eventos estão sincronizados e aparecem corretamente.
-3. Verificar que a **bio do artista** no Bandsintown usa nome canônico "Zen Eyer".
-4. Verificar que o **website** linkado é `https://djzeneyer.com`.
-5. Para cada evento listado: confirmar que o nome do artista na lineup é "Zen Eyer" (não "DJ Zen Eyer").
-
----
-
-### Songkick — Verificar perfil de artista
-
-**Por quê:** Songkick tem perfil oficial. Páginas de histórico de concertos e eventos futuros são citações de atividade valiosas para GEO e Knowledge Panel.
-
-**Passos:**
-1. Acesse o perfil no Songkick e faça login com a conta artista (se houver).
-2. Verificar que o **nome** está como "Zen Eyer".
-3. Verificar que o **website** linkado é `https://djzeneyer.com`.
-4. Verificar que eventos históricos importantes estão registrados.
-5. Pegar a **URL do perfil** (ex: `https://www.songkick.com/artists/[ID]-zen-eyer`) e verificar se já está em `src/data/artistData.ts` — se não estiver, adicionar ao `sameAs`.
-6. Para eventos futuros confirmados: adicionar manualmente no Songkick caso não sincronize automaticamente do Bandsintown.
-
----
 
 ## 🟡 Média Prioridade — GEO e Autoridade
 

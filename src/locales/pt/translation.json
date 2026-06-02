@@ -455,6 +455,12 @@
       "cta": "BAIXAR PRESS KIT"
     }
   },
+  "music_catalog_title": "Catálogo Musical",
+  "music_catalog_description": "Faixas, edits e lançamentos do Zen Eyer com metadados para DJs.",
+  "track": {
+    "bpm": "BPM",
+    "energy": "energia"
+  },
   "music_page_title": "Hub de Música",
   "music_page_meta_desc": "Ouça as últimas mixagens e produções do Zen Eyer",
   "music": {

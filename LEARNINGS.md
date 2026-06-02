@@ -65,6 +65,17 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Booking vs Press Kit:** São fluxos diferentes. Press Kit é um asset (PDF), Booking é uma página de conversão.
 - **YouTube (branding):** A capitalização oficial é `YouTube` (Y e T maiúsculos). O ícone é `YouTubeIcon` em `src/components/icons/BrandIcons.tsx`. As chaves em `artistData.ts` são `social.YouTube` (canal principal) e `social.YouTubeMusic` (canal separado no YouTube Music). Nunca usar variantes lowercase `social.youtube` ou `social.youtubeMusic`.
 
+## ⚠️ Revisão Obrigatória de PRs de Documentação
+
+- **Documentação não é inofensiva:** Arquivos em `docs/`, `.human/`, `.agents/`, `.context/` e `LEARNINGS.md` guiam o comportamento de todos os agentes futuros. Aprovar documentação errada é tão perigoso quanto aprovar código errado — talvez mais, porque os erros são mais difíceis de detectar.
+- **Nunca mergear PR de documentação sem leitura completa:** Antes de aprovar qualquer PR que adicione ou modifique arquivos de documentação, leia CADA arquivo alterado e verifique:
+  1. O conteúdo está factualmente correto e alinhado com o projeto real?
+  2. Não contradiz nenhuma regra em `LEARNINGS.md`, `.agents/GUIDELINES.md` ou `.context/`?
+  3. Não promove padrões banidos (ex: `sameAs` errado, strings hardcoded sem i18n, acesso direto a APIs sem hooks)?
+  4. A documentação reflete a realidade do código, não uma idealização?
+- **Documentação gerada por IA sem verificação humana é risco alto:** Relatórios de auditoria externos e PRs gerados automaticamente tendem a conter afirmações falsas sobre o que "está faltando" no projeto. Sempre cross-referenciar com o código real antes de aceitar como verdade.
+- **Regra prática:** Se você não leu e não pode confirmar que cada frase é correta, não mergeia. Pergunte ao humano.
+
 ## 🤖 Coordenação de Agentes
 
 - **Handoff:** Ao trocar de agente, o anterior deve resumir o estado atual aqui ou no PR.
