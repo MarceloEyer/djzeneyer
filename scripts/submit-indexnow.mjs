@@ -82,19 +82,22 @@ function parseLocsFromFile(filePath) {
 // Read pages sitemap (static routes in both EN + PT)
 const pagesFile  = path.resolve(__dirname, '../public/sitemap-pages.xml');
 const eventsFile = path.resolve(__dirname, '../public/sitemap-events.xml');
+const postsFile  = path.resolve(__dirname, '../public/sitemap-posts.xml');
 
 const pageUrls  = parseLocsFromFile(pagesFile);
 const eventUrls = parseLocsFromFile(eventsFile);
+const postUrls  = parseLocsFromFile(postsFile);
 
 // Always include the sitemap index itself
 const extraUrls = [
   `${BASE}/sitemap.xml`,
   `${BASE}/sitemap-pages.xml`,
   `${BASE}/sitemap-events.xml`,
+  `${BASE}/sitemap-posts.xml`,
 ];
 
 // Deduplicate
-const allUrls = [...new Set([...pageUrls, ...eventUrls, ...extraUrls])];
+const allUrls = [...new Set([...pageUrls, ...eventUrls, ...postUrls, ...extraUrls])];
 
 if (allUrls.length === 0) {
   console.warn('⚠️  No URLs found to submit — sitemap files might be missing.');

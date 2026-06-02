@@ -1,22 +1,30 @@
+import { ComponentType, Suspense } from 'react';
 import { useRoutes, RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import ErrorBoundary from './common/ErrorBoundary';
-import { lazyWithRetry } from '../utils/lazyWithRetry';
-
-const ZenLinkPage = lazyWithRetry(
-  () => import('../pages/ZenLinkPage').then(m => ({ default: m.ZenLinkPage })),
-  'route:zenlink-standalone'
-);
-// CORREÇÃO: Apontando para o local correto onde você definiu suas rotas
 import {
   ROUTES_CONFIG,
   NOT_FOUND_COMPONENT,
-  Language
+  Language,
+  buildFullPath,
+  getLocalizedPaths,
 } from '../config/routes';
+
+const STANDALONE_ROUTE_KEYS = new Set(['zenlink']);
+
+const wrapRouteElement = (Component: ComponentType) => (
+  <ErrorBoundary>
+    <Suspense fallback={null}>
+      <Component />
+    </Suspense>
+  </ErrorBoundary>
+);
 
 // Função auxiliar robusta para gerar rotas do React Router v6
 const generateRoutes = (lang: Language): RouteObject[] => {
   return ROUTES_CONFIG.flatMap((route) => {
+    if (STANDALONE_ROUTE_KEYS.has(route.key)) return [];
+
     // 1. Acessa diretamente a propriedade do idioma (en ou pt)
     const rawPath = route.paths[lang];
 
@@ -30,11 +38,7 @@ const generateRoutes = (lang: Language): RouteObject[] => {
       if (route.isIndex || path === '') {
         return {
           index: true,
-          element: (
-            <ErrorBoundary>
-              <Component />
-            </ErrorBoundary>
-          ),
+          element: wrapRouteElement(Component),
         };
       }
 
@@ -42,23 +46,38 @@ const generateRoutes = (lang: Language): RouteObject[] => {
       // Nota: Não colocamos '/' antes, pois é relativo ao pai (/pt)
       return {
         path: path,
-        element: (
-          <ErrorBoundary>
-            <Component />
-          </ErrorBoundary>
-        ),
+        element: wrapRouteElement(Component),
         // Suporte para rotas com * (wildcard) como na Loja
         children: route.hasWildcard ? [
           {
             path: '*',
-            element: (
-              <ErrorBoundary>
-                <Component />
-              </ErrorBoundary>
-            )
+            element: wrapRouteElement(Component),
           }
         ] : undefined
       };
+    });
+  });
+};
+
+const generateStandaloneRoutes = (): RouteObject[] => {
+  const seen = new Set<string>();
+
+  return ROUTES_CONFIG.flatMap((route) => {
+    if (!STANDALONE_ROUTE_KEYS.has(route.key)) return [];
+
+    const Component = route.component;
+
+    return (['en', 'pt'] as Language[]).flatMap((lang) => {
+      return getLocalizedPaths(route, lang).flatMap((path) => {
+        const fullPath = buildFullPath(path, lang);
+        if (seen.has(fullPath)) return [];
+        seen.add(fullPath);
+
+        return [{
+          path: fullPath,
+          element: wrapRouteElement(Component),
+        }];
+      });
     });
   });
 };
@@ -68,6 +87,9 @@ const NotFound = NOT_FOUND_COMPONENT;
 // ⚡ Bolt: Extracted static routes configuration outside the component to prevent O(N) object
 // reallocation and nested JSX re-instantiation on every render of AppRoutes.
 const STATIC_ROUTES: RouteObject[] = [
+  // 🔗 Standalone routes — sem Navbar/Footer para máxima conversão em link-in-bio
+  ...generateStandaloneRoutes(),
+
   // 🇧🇷 Rotas em Português (Raiz /pt)
   // Movido para cima para garantir prioridade na detecção
   {
@@ -89,16 +111,6 @@ const STATIC_ROUTES: RouteObject[] = [
       </ErrorBoundary>
     ),
     children: generateRoutes('en'),
-  },
-
-  // 🔗 ZenLink — página independente (sem Navbar/Footer)
-  {
-    path: '/zenlink',
-    element: (
-      <ErrorBoundary>
-        <ZenLinkPage />
-      </ErrorBoundary>
-    ),
   },
 
   // 🚫 404 Catch-all
