@@ -7,6 +7,7 @@ import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/r
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
+import { extractRegions, filterEventsByRegion, groupEventsByMonth } from '../utils/events';
 import { ARTIST } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
@@ -201,31 +202,9 @@ const EventListContent = ({ lang }: { lang: string }) => {
     }
   }, [error]);
 
-  // Extrai regiões únicas (Estados)
-  const regions = useMemo(() => {
-    const r = new Set<string>();
-    events.forEach((e: ZenBitEventListItem) => {
-      if (e.location?.region) r.add(e.location.region);
-    });
-    return Array.from(r).sort();
-  }, [events]);
-
-  const filteredEvents = useMemo(() => {
-    if (selectedRegion === 'all') return events;
-    return events.filter((e: ZenBitEventListItem) => e.location?.region === selectedRegion);
-  }, [events, selectedRegion]);
-
-  const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
-    const groups: Record<string, ZenBitEventListItem[]> = {};
-    filteredEvents.forEach((e: ZenBitEventListItem) => {
-      if (!e.starts_at || e.starts_at.length < 7) return;
-      // ⚡ Bolt: Replaced expensive `new Date()` allocation with O(1) string slice for ISO 8601 strings
-      const key = e.starts_at.substring(0, 7);
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(e);
-    });
-    return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [filteredEvents]);
+  const regions = useMemo(() => extractRegions(events), [events]);
+  const filteredEvents = useMemo(() => filterEventsByRegion(events, selectedRegion), [events, selectedRegion]);
+  const groupedEvents = useMemo(() => groupEventsByMonth(filteredEvents), [filteredEvents]);
 
 
   const share = (e: ZenBitEventListItem) => {
