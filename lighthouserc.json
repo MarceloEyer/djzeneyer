@@ -2,7 +2,7 @@
   "ci": {
     "collect": {
       "url": [
-        "https://djzeneyer.com/",
+        "https://djzeneyer.com",
         "https://djzeneyer.com/pt/eventos-zouk/",
         "https://djzeneyer.com/releases"
       ],
