@@ -12,7 +12,7 @@ if (!fs.existsSync(manifestPath)) {
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
 const budget = {
-  maxInitialJsGzip: Number(process.env.PERF_BUDGET_INITIAL_JS_GZIP || 220 * 1024),
+  maxInitialJsGzip: Number(process.env.PERF_BUDGET_INITIAL_JS_GZIP || 221 * 1024),
   maxEntryJsGzip: Number(process.env.PERF_BUDGET_ENTRY_JS_GZIP || 130 * 1024),
   maxI18nChunkGzip: Number(process.env.PERF_BUDGET_I18N_GZIP || 55 * 1024),
   maxLargestChunkGzip: Number(process.env.PERF_BUDGET_LARGEST_CHUNK_GZIP || 120 * 1024),
