@@ -6,8 +6,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  schedule:
-    - cron: '0 5 * * *' # daily at 05:00 UTC — keeps the site validated and fresh for bots and AI crawlers
 
 concurrency:
   group: quality-gate-${{ github.ref }}
