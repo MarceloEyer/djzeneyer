@@ -4,13 +4,13 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ARTIST_SCHEMA_BASE, ARTIST_SCHEMA_SAME_AS, MUSICGROUP_SCHEMA } from '../data/artist.schema';
+import { ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { useBranding } from '../contexts/BrandingContext';
 import { getAlternateLinks, getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl } from '../utils/sanitize';
 import { ensureTrailingSlash } from '../utils/seo';
-import { stripHtml } from '../utils/text';
 import { logger } from '../lib/logger';
+import { buildDynamicGraph } from '../seo/buildDynamicGraph';
 import {
   DEFAULT_OG_IMAGE,
   OG_IMAGE_HEIGHT,
@@ -277,210 +277,20 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
     };
   }
 
-  // 4. Advanced Schema Logic (Breadcrumbs, FAQ, Events)
-  // ⚡ Bolt: Wrapped dynamic graph generation (Breadcrumbs, FAQs, Events schema) in useMemo.
-  // This prevents costly array mappings (split, filter, map) and string manipulations on every render,
-  // particularly for the complex MusicEvent mapping logic which includes Date instantiations.
+  // 4. Advanced Schema Logic (Breadcrumbs, FAQ, Events, Video)
   const dynamicGraph = React.useMemo(() => {
     if (schema) return null;
-
-    const graph: Record<string, unknown>[] = [];
-    const siteUrlClean = baseUrl.replace(/\/$/, '');
-
-    // 4.1 BreadcrumbList (Single-pass logic)
-    const pathSegments = location.pathname.split('/').filter(Boolean);
-    if (pathSegments.length > 0) {
-      const itemListElement: Record<string, unknown>[] = [];
-      for (let i = 0; i < pathSegments.length; i++) {
-        const segment = pathSegments[i];
-        const path = `/${pathSegments.slice(0, i + 1).join('/')}`;
-        itemListElement.push({
-          '@type': 'ListItem',
-          position: i + 1,
-          item: {
-            '@id': `${siteUrlClean}${path}/`,
-            name: segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
-          },
-        });
-      }
-      graph.push({
-        '@type': 'BreadcrumbList',
-        '@id': `${finalUrl}#breadcrumb`,
-        itemListElement
-      });
-    }
-
-    // 4.2 FAQPage Schema (Optimized reduction)
-    if (faqs && faqs.length > 0) {
-      const mainEntity: Record<string, unknown>[] = [];
-      for (const faq of faqs) {
-        mainEntity.push({
-          '@type': 'Question',
-          name: faq.q,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: faq.a,
-          },
-        });
-      }
-      graph.push({
-        '@type': 'FAQPage',
-        mainEntity
-      });
-    }
-
-    // 4.3 Event Schema (Single-pass MusicEvent mapping)
-    if (events && events.length > 0) {
-      const now = Date.now();
-      const threeHoursMs = 3 * 60 * 60 * 1000;
-      const musicEvents: Record<string, unknown>[] = [];
-
-      for (const event of events) {
-        const startDate = (event.starts_at as string) || (event.event_date as string) || (event.start_date as string);
-        if (!startDate) continue;
-
-        const eventTitle = (typeof event.title === 'object' ? event.title.rendered : event.title) || event.name || 'Zouk Event';
-        const canonicalUrl = (event.canonical_url as string) || (event.url as string) || undefined;
-        const endDateRaw = (event.ends_at as string) || (event.end_date as string);
-
-        const parsedStartDate = Date.parse(startDate);
-        const endDate = endDateRaw || (!isNaN(parsedStartDate)
-          ? new Date(parsedStartDate + threeHoursMs).toISOString()
-          : undefined);
-
-        const isPast = !isNaN(parsedStartDate) ? parsedStartDate < now : false;
-        const locName = event.location?.venue || event.event_location || 'TBA';
-
-        // Optimized Offers Generation
-        let eventOffers: Record<string, unknown> | Record<string, unknown>[];
-        const baseOffer = {
-          '@type': 'Offer',
-          price: '0',
-          priceCurrency: 'USD',
-          validFrom: startDate,
-          availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
-        };
-
-        if (Array.isArray(event.tickets) && event.tickets.length > 0) {
-          const tickets: Record<string, unknown>[] = [];
-          for (const ticketUrl of event.tickets) {
-            if (typeof ticketUrl === 'string') {
-              tickets.push({ ...baseOffer, url: ticketUrl });
-            }
-          }
-          eventOffers = tickets;
-        } else if (Array.isArray(event.offers) && event.offers.length > 0) {
-          const offers: Record<string, unknown>[] = [];
-          for (const offer of event.offers) {
-            const u = (offer as { url?: string })?.url;
-            if (u) {
-              offers.push({ ...baseOffer, url: u });
-            }
-          }
-          eventOffers = offers;
-        } else {
-          eventOffers = {
-            ...baseOffer,
-            url: (event.event_ticket as string) || canonicalUrl || finalUrl,
-            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
-          };
-        }
-
-        // Fallback for empty processed offers
-        if (Array.isArray(eventOffers) && eventOffers.length === 0) {
-          eventOffers = {
-            ...baseOffer,
-            url: canonicalUrl || finalUrl,
-            availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
-          };
-        }
-
-        // Campos de localização — omitir sub-campos vazios para não enganar o Google
-        const eventCity = event.location?.city || '';
-        const eventCountry = event.location?.country || '';
-        const isOnline = locName.toLowerCase().includes('online');
-        const addressObj: Record<string, string> = { '@type': 'PostalAddress' };
-        if (eventCity) addressObj['addressLocality'] = eventCity;
-        if (eventCountry) addressObj['addressCountry'] = eventCountry;
-
-        const eventDescription = stripHtml(
-          event.description || (event.desc as string | undefined) || ''
-        ).substring(0, 300) ||
-          `Live Brazilian Zouk DJ set by ${artist.identity.stageName} at ${locName}.`;
-
-        musicEvents.push({
-          '@type': 'MusicEvent',
-          name: eventTitle,
-          ...(canonicalUrl ? { url: canonicalUrl } : {}),
-          startDate,
-          endDate,
-          // eventStatus obrigatório em TODOS os eventos — passado ou futuro.
-          // Eventos passados que aconteceram normalmente recebem EventScheduled.
-          // Só alterar para EventCancelled/EventPostponed quando a API retornar esse dado.
-          eventStatus: 'https://schema.org/EventScheduled',
-          eventAttendanceMode: isOnline
-            ? 'https://schema.org/OnlineEventAttendanceMode'
-            : 'https://schema.org/OfflineEventAttendanceMode',
-          location: {
-            '@type': 'Place',
-            name: locName,
-            address: addressObj,
-          },
-          image: (event.image as string | undefined) || finalImage,
-          description: eventDescription,
-          performer: {
-            '@id': `${baseUrl}/#musicgroup`,
-            '@type': 'MusicGroup',
-            name: artist.identity.stageName,
-            sameAs: ARTIST_SCHEMA_SAME_AS
-          },
-          offers: eventOffers,
-          organizer: {
-            '@id': `${baseUrl}/#artist`,
-            '@type': 'Person',
-            name: artist.identity.stageName,
-            url: artist.site.baseUrl,
-          },
-        });
-      }
-
-      if (musicEvents.length > 1) {
-        graph.push({
-          '@type': 'EventSeries',
-          name: `${artist.identity.stageName} World Tour`,
-          url: finalUrl,
-          description: `Official tour dates and upcoming performances for ${artist.identity.stageName}.`,
-          performer: {
-            '@id': `${baseUrl}/#musicgroup`,
-            '@type': 'MusicGroup',
-            name: artist.identity.stageName,
-            url: artist.site.baseUrl,
-            sameAs: ARTIST_SCHEMA_SAME_AS
-          },
-          subEvent: musicEvents
-        });
-      } else if (musicEvents.length === 1) {
-        graph.push(musicEvents[0]);
-      }
-    }
-
-    // 4.4 VideoObject Schema
-    if (video) {
-      const safeThumbnail = safeUrl(video.thumbnailUrl, '/images/zen-eyer-og-image.png');
-      graph.push({
-        '@type': 'VideoObject',
-        '@id': `${finalUrl}#video`,
-        name: video.name,
-        description: video.description,
-        thumbnailUrl: ensureAbsoluteUrl(safeThumbnail, baseUrl),
-        uploadDate: video.uploadDate,
-        ...(video.embedUrl ? { embedUrl: safeUrl(video.embedUrl, '/') } : {}),
-        ...(video.contentUrl ? { contentUrl: safeUrl(video.contentUrl, '/') } : {}),
-        ...(video.duration ? { duration: video.duration } : {}),
-      });
-    }
-
-    return graph;
+    return buildDynamicGraph({
+      baseUrl,
+      pathname: location.pathname,
+      finalUrl,
+      faqs,
+      events,
+      artistIdentity: artist.identity,
+      artistSite: artist.site,
+      finalImage,
+      video,
+    });
   }, [schema, baseUrl, location.pathname, finalUrl, faqs, events, artist, finalImage, video]);
 
   if (!schema) {

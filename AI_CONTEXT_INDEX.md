@@ -14,6 +14,28 @@ A precedência de informação segue esta ordem (do topo para a base):
 6. **`LEARNINGS.md`** (Memória operacional e anti-erros)
 7. **`.human/TASK_LIST.md`** (Backlog e solicitações humanas)
 
+```mermaid
+graph TD
+    CODE["📦 Código Real\n(src/, plugins/, inc/)"]
+    IDX["🗺️ AI_CONTEXT_INDEX.md\n(este arquivo)"]
+    GL["⚖️ .agents/GUIDELINES.md\n(leis técnicas)"]
+    ID["🎭 .context/IDENTITY.md\n(marca e branding)"]
+    CTX["📚 .context/*.md\n(domínio técnico)"]
+    LRN["🧠 LEARNINGS.md\n(anti-erros)"]
+    HUM["🙋 .human/TASK_LIST.md\n(backlog humano)"]
+    PERSONAS["🤖 .agents/personas/\n(Claude, Gemini, Jules)"]
+    SKILLS["🔧 .agents/skills/\n(procedimentos especializados)"]
+
+    CODE -->|"vence tudo"| IDX
+    IDX --> GL
+    GL --> ID
+    ID --> CTX
+    CTX --> LRN
+    LRN --> HUM
+    IDX -.->|"carregadas sob demanda"| PERSONAS
+    IDX -.->|"carregadas sob demanda"| SKILLS
+```
+
 ---
 
 ## 📂 Diretórios de Contexto
@@ -41,7 +63,7 @@ A precedência de informação segue esta ordem (do topo para a base):
 
 - **`TASK_LIST.md`**: Backlog de tarefas que exigem intervenção humana.
 - **`MARKETING_OVERVIEW.md`**: Estratégia de SEO, Voz e Branding.
-- **Auditorias e handoffs**: Arquivos datados para decisões humanas, histórico e trilhas off-repo.
+- **Auditorias e handoffs**: Arquivos datados para decisões humanas, histórico e trilhas off-repo. Handoffs e audits antigos (superseded) ficam em `.human/archive/`.
 
 ### 4. Memória e Histórico
 

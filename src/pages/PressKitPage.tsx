@@ -283,8 +283,8 @@ const PressKitPage: React.FC = () => {
                     />
                     <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
                     <div className="absolute bottom-6 left-6 right-6">
-                      <span className="text-xs font-bold uppercase tracking-widest text-primary">World Champion 2022</span>
-                      <h3 className="text-2xl font-bold">DJ & Producer</h3>
+                      <span className="text-xs font-bold uppercase tracking-widest text-primary">{t('presskit.bio.photo_label', { year: ARTIST.titles.year })}</span>
+                      <h3 className="text-2xl font-bold">{t('presskit.bio.role')}</h3>
                     </div>
                   </motion.div>
                 </div>
@@ -355,10 +355,10 @@ const PressKitPage: React.FC = () => {
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 px-4 text-center">
                 <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
-                  Line-ups <span className="text-primary">Internacionais</span>
+                  {t('presskit.lineups.title')}
                 </h2>
                 <p className="mx-auto max-w-2xl text-xl text-white/50">
-                  Alguns dos palcos onde o Brazilian Zouk encontrou flow sem pressa.
+                  {t('presskit.lineups.subtitle')}
                 </p>
               </div>
 
@@ -409,7 +409,7 @@ const PressKitPage: React.FC = () => {
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-10 sm:mb-16 text-center">
                 <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
-                  Galeria de <span className="text-primary">Imprensa</span>
+                  {t('presskit.gallery.title')}
                 </h2>
                 <p className="text-xl text-white/50">{t('presskit.gallery.subtitle')}</p>
               </div>
@@ -506,8 +506,8 @@ const PressKitPage: React.FC = () => {
                         <Globe className="text-primary" size={24} />
                       </div>
                       <div>
-                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">Booking</div>
-                        <div className="text-white/60">Worldwide</div>
+                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">{t('presskit.contact.booking_label')}</div>
+                        <div className="text-white/60">{t('presskit.contact.availability_value')}</div>
                       </div>
                     </div>
                   </div>

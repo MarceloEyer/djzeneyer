@@ -1,7 +1,7 @@
 # Implementation Status & TODO Map
 
-Version: 1.0.0
-Last reviewed from PR history: 2026-05-23 a 2026-05-30
+Version: 1.1.0
+Last reviewed: 2026-06-02
 
 > ⚠️ **Arquivo operacional e temporário.** Resume implementações recentes e TODOs derivados de PRs. Não é SSOT permanente — sempre validar contra o código real. Itens resolvidos devem ser removidos; regras permanentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`.
 
@@ -116,13 +116,6 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 - `.human/SESSION_HANDOFF_2026-05-30.md` criado com documentacao completa de cada mudanca e seu racionocinio.
 
 ## Pendencias / TODOs recomendados
-
-### P0 — antes de mergear PRs abertos relevantes
-
-- Corrigir #611 antes de merge: remover `noindex` se a pagina de festivais ja tiver conteudo real suficiente; revisar logica `upcoming` para nao classificar eventos passados como futuros.
-- Corrigir #612 antes de merge: sincronizar `package-lock.json`, garantir `npm ci`, Vitest/MSW e Contract Tests verdes.
-- Corrigir #613 antes de merge: investigar falha em `npm run build:full` no Quality Gate; so ativar gate quando passar de forma confiavel.
-- Revisar #608 com atencao a schema: published work deve fortalecer autoria externa, mas nao virar `sameAs`.
 
 ### P1 — saneamento documental e contexto
 

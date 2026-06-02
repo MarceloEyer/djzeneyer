@@ -34,6 +34,10 @@ Dados privados de usuarios, sessoes, pedidos autenticados, senhas, tokens, crede
 | About | Entity home biografica da pessoa Zen Eyer | React + schema Person |
 | Releases | Arquivo oficial de atualizacoes e lancamentos | WordPress posts + Polylang + `zen-seo-lite` |
 | Encyclopedia | Referencia evergreen de Brazilian Zouk; hub bilingue e rotas prerenderizadas por termo | React/static + `src/config/encyclopedia-term-slugs.json`; futuro WP se crescer |
+| Zouk Festivals | Hub de festivais mundiais onde Zen Eyer performou/vai performar; authority signal GEO | React + `src/data/` + `categorizeFestivals` util; prerendered |
+| Zouk History | Hub de autoridade sobre historia do Zouk Brasileiro; `noindex` ate maturar conteudo | React/static |
+| Zouk Musicality | Hub de autoridade sobre musicalidade no Zouk; `noindex` ate maturar conteudo | React/static |
+| Artist Collaborations | Hub de colaboracoes artisticas de Zen Eyer; `noindex` ate maturar conteudo | React/static |
 | Media | Clipping, provas externas e identificadores | `artistData.ts` + React |
 | FAQ | Respostas diretas sobre Zen Eyer | React + FAQ schema quando aplicavel |
 
