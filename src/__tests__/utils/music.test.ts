@@ -130,7 +130,7 @@ describe('buildDiscographyListItems', () => {
       opts,
     );
     const node = items[0].item as Record<string, unknown>;
-    expect((node.sameAs as string[]).includes('https://music.apple.com/track/123')).toBe(true);
+    expect(node.sameAs as string[]).toContain('https://music.apple.com/track/123');
   });
 
   it('single: pulls duration from tracks[0]', () => {

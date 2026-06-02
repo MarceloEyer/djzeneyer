@@ -123,16 +123,18 @@ describe('HomePage — render', () => {
     renderPage();
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
-    expect(hrefs.some((h) => h.includes('wikidata.org'))).toBe(true);
-    expect(hrefs.some((h) => h.includes('musicbrainz.org'))).toBe(true);
-    expect(hrefs.some((h) => h.includes('spotify.com'))).toBe(true);
+    const hostname = (href: string) => { try { return new URL(href).hostname; } catch { return ''; } };
+    expect(hrefs.some((h) => hostname(h).endsWith('wikidata.org'))).toBe(true);
+    expect(hrefs.some((h) => hostname(h).endsWith('musicbrainz.org'))).toBe(true);
+    expect(hrefs.some((h) => hostname(h).endsWith('spotify.com'))).toBe(true);
   });
 
   it('renders SoundCloud listen link', () => {
     renderPage();
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
-    expect(hrefs.some((h) => h.includes('soundcloud.com'))).toBe(true);
+    const hostname = (href: string) => { try { return new URL(href).hostname; } catch { return ''; } };
+    expect(hrefs.some((h) => hostname(h).endsWith('soundcloud.com'))).toBe(true);
   });
 
   it('renders stats section with champion value', () => {
