@@ -90,11 +90,35 @@ function djz_get_gamipress_rank_tiers(): array
     }
 
     $tiers = [];
-    update_meta_cache('post', wp_list_pluck($ranks, 'ID'));
+    $rank_ids = wp_list_pluck($ranks, 'ID');
+
+    // ⚡ Bolt: Bulk fetch metadata to avoid N+1 query loop for gamipress points setup
+    global $wpdb;
+    $meta_map = [];
+    if (!empty($rank_ids)) {
+        $placeholders = implode(',', array_fill(0, count($rank_ids), '%d'));
+        // Fetch specific meta keys for all ranks in a single query
+        $query = $wpdb->prepare(
+            "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ('_gamipress_points_required', '_gamipress_points') AND post_id IN ($placeholders)",
+            ...$rank_ids
+        );
+        $results = $wpdb->get_results($query);
+        if ($results) {
+            foreach ($results as $row) {
+                $meta_map[$row->post_id][$row->meta_key] = $row->meta_value;
+            }
+        }
+    }
+
     foreach ($ranks as $rank) {
-        $min_points = (int) get_post_meta($rank->ID, '_gamipress_points_required', true);
+        $min_points = isset($meta_map[$rank->ID]['_gamipress_points_required'])
+            ? (int) $meta_map[$rank->ID]['_gamipress_points_required']
+            : 0;
+
         if ($min_points <= 0) {
-            $min_points = (int) get_post_meta($rank->ID, '_gamipress_points', true);
+            $min_points = isset($meta_map[$rank->ID]['_gamipress_points'])
+                ? (int) $meta_map[$rank->ID]['_gamipress_points']
+                : 0;
         }
 
         $tiers[] = [
