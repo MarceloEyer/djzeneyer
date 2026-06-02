@@ -512,7 +512,22 @@
     "dj_tool_kit_cta": "Acessar Downloads",
     "collections_title": "Coleção Musical",
     "collections_desc": "Tracks exclusivas, mixes e playlists curadas por DJ Zen Eyer",
-    "listen_now_on": "Ouça agora em"
+    "listen_now_on": "Ouça agora em",
+    "release_detail": {
+      "back": "Voltar à Música",
+      "listen_on": "Ouvir em",
+      "credits": "Créditos",
+      "role_remixer": "Remixer",
+      "role_performer": "Artista",
+      "role_producer": "Produtor",
+      "original_artist": "Artista original",
+      "collaborator": "Colaborador",
+      "type_label": "Tipo",
+      "date_label": "Lançado em",
+      "duration_label": "Duração",
+      "not_found": "Lançamento não encontrado.",
+      "not_found_back": "Voltar ao Hub de Música"
+    }
   },
   "press": {
     "page_title": "Press Kit",

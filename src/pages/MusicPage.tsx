@@ -81,16 +81,16 @@ const MusicPage: React.FC = () => {
   };
 
   const releaseCards = useMemo(() => {
-    const newsDetailRoute = getLocalizedRoute('news-detail', currentLang);
-    return buildReleaseCards(DISCOGRAPHY, currentLang, (slug) =>
-      generatePath(newsDetailRoute, { slug }),
+    const releaseDetailRoute = getLocalizedRoute('release-detail', currentLang);
+    return buildReleaseCards(DISCOGRAPHY, currentLang, (releaseId) =>
+      generatePath(releaseDetailRoute, { id: releaseId }),
     );
   }, [currentLang]);
 
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
     const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
-    const newsDetailRoute = getLocalizedRoute('news-detail', currentLang);
+    const newsDetailRoute = getLocalizedRoute('release-detail', currentLang);
     const artistSocialUrls = new Set<string>(
       Object.values(ARTIST.social)
         .map((s) => s?.url)
@@ -99,7 +99,7 @@ const MusicPage: React.FC = () => {
 
     const releaseListItems = buildDiscographyListItems(DISCOGRAPHY, {
       baseUrl,
-      getNewsDetailPath: (slug) => generatePath(newsDetailRoute, { slug }),
+      getNewsDetailPath: (id) => generatePath(newsDetailRoute, { id }),
       lang: currentLang,
       artistSocialUrls,
     });
