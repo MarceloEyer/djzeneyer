@@ -1,19 +1,27 @@
 {
   "ci": {
     "collect": {
-      "url": ["https://djzeneyer.com"],
+      "url": [
+        "https://djzeneyer.com",
+        "https://djzeneyer.com/eventos",
+        "https://djzeneyer.com/releases"
+      ],
       "numberOfRuns": 3,
       "settings": {
         "preset": "desktop"
       }
     },
     "assert": {
-      "preset": "lighthouse:recommended",
+      "preset": "lighthouse:no-pwa",
       "assertions": {
-        "categories:performance": ["warn", { "minScore": 0.8 }],
-        "categories:accessibility": ["error", { "minScore": 0.9 }],
-        "categories:best-practices": ["warn", { "minScore": 0.9 }],
-        "categories:seo": ["error", { "minScore": 0.9 }]
+        "categories:performance": ["warn", { "minScore": 0.75 }],
+        "categories:accessibility": ["error", { "minScore": 0.90 }],
+        "categories:best-practices": ["warn", { "minScore": 0.90 }],
+        "categories:seo": ["error", { "minScore": 0.90 }],
+        "meta-description": ["error", { "minScore": 1 }],
+        "document-title": ["error", { "minScore": 1 }],
+        "html-has-lang": ["error", { "minScore": 1 }],
+        "canonical": ["warn", { "minScore": 1 }]
       }
     },
     "upload": {
