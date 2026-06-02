@@ -26,20 +26,13 @@ const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'se
 // ============================================================================
 
 const SKELETON_ITEMS = [1, 2, 3];
-const SKELETON_LIST_ITEMS = [1, 2, 3, 4, 5, 6];
 
 const EventSkeleton = () => (
-  <div className="space-y-6 min-h-[800px]">
-    {/* Placeholder matches filter bar height to prevent CLS on load */}
-    <div className="flex flex-wrap justify-center gap-2 mb-12 min-h-[44px]">
-      {SKELETON_ITEMS.map(i => (
-        <div key={i} className="h-[44px] w-24 bg-white/5 rounded-full animate-pulse" />
-      ))}
-    </div>
-    {SKELETON_LIST_ITEMS.map(i => (
-      <div key={i} className="h-[76px] bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
-        <div className="w-10 h-10 bg-white/5 rounded-full shrink-0" />
-        <div className="flex-1 space-y-2">
+  <div className="space-y-6">
+    {SKELETON_ITEMS.map(i => (
+      <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
+        <div className="w-12 h-12 bg-white/5 rounded-full" />
+        <div className="flex-1 space-y-3">
           <div className="h-4 bg-white/5 rounded w-1/4" />
           <div className="h-3 bg-white/5 rounded w-1/2" />
         </div>
@@ -71,21 +64,9 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   // causing window.location.origin to resolve to http://localhost:5173 and producing
   // a localhost canonical URL — a fatal SEO error.
   const origin = ARTIST.site.baseUrl;
-  const { data: event, isLoading, isError } = useEventById(id, lang as Language);
+  const { data: event } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
 
-  if (isLoading) return <EventDetailSkeleton />;
-  if (isError) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-white/70">
-      <p className="text-lg">{t('error.loading_event', 'Erro ao carregar o evento.')}</p>
-      <button
-        className="px-4 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm"
-        onClick={() => window.location.reload()}
-      >
-        {t('error.try_again', 'Tentar novamente')}
-      </button>
-    </div>
-  );
   if (!event) return <NotFoundPage />;
 
   const eventDate = new Date(event.starts_at);
@@ -109,7 +90,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
       <HeadlessSEO
         title={event.title}
         description={cleanDescription.substring(0, 160)}
-        url={eventDetailUrl}
+        url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
         imageAlt={t('og.image_alt.events_detail', { eventTitle: event.title, artist: ARTIST.identity.stageName })}
         type="event"
@@ -138,7 +119,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
             {event.image ? (
-              <img src={safeUrl(event.image)} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" sizes="(max-width: 1024px) 100vw, 42vw" />
+              <img src={event.image} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" />
             ) : (
               <div className="w-full h-full bg-surface flex items-center justify-center text-white/10">
                 <Music size={80} />
@@ -181,7 +162,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
             <div className="space-y-4">
               <AddCalendarMenu event={event} variant="primary" eventUrl={eventDetailUrl} />
 
-              <button onClick={share} aria-label={t('share_event', { title: event.title })} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
+              <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
                 <Share2 size={18} /> {t('share')}
               </button>
             </div>
@@ -244,7 +225,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
-        <p className="text-white/60">{t('events_no_results')}</p>
+        <p className="text-white/40">{t('events_no_results')}</p>
       </div>
     );
   }
@@ -264,7 +245,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           <button
             onClick={() => setSelectedRegion('all')}
-            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/60 border-white/20 hover:border-white/40'}`}
+            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
           >
             {t('common.all')}
           </button>
@@ -272,7 +253,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/60 border-white/20 hover:border-white/40'}`}
+              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
             >
               {region}
             </button>
@@ -282,7 +263,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
       {filteredEvents.length === 0 ? (
         <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5">
-          <p className="text-white/60">{t('events_no_results_filter')}</p>
+          <p className="text-white/40">{t('events_no_results_filter')}</p>
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
@@ -324,7 +305,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                         <button
                           onClick={() => share(e)}
                           className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all"
-                          aria-label={t('share_event', { title: e.title })}
+                          aria-label={t('share')}
                         >
                           <Share2 size={16} />
                         </button>
@@ -378,11 +359,9 @@ const EventsPage: React.FC = () => {
           </h1>
         </header>
 
-        <div className="min-h-[800px]">
-          <React.Suspense fallback={<EventSkeleton />}>
-            <EventListContent lang={lang} />
-          </React.Suspense>
-        </div>
+        <React.Suspense fallback={<EventSkeleton />}>
+          <EventListContent lang={lang} />
+        </React.Suspense>
 
         <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-white/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
           <Music className="absolute -right-8 -bottom-8 text-white/5 w-48 h-48 rotate-12 z-10" />
