@@ -264,6 +264,9 @@ final class REST_Handler
             return;
         }
 
+        // ⚡ Bolt: Prime meta caches for all posts at once to prevent N+1 queries on _thumbnail_id
+        \update_meta_cache('post', $post_ids);
+
         $attachment_ids = [];
         foreach ($post_ids as $id) {
             $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
