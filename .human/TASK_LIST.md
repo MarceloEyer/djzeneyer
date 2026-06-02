@@ -191,6 +191,7 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 
 ## ⚙️ Configurações Externas Pontuais
 
+- **WordPress / Polylang menu PT:** Em **Aparência → Menus**, selecionar o menu português e alterar o item customizado "Trabalhe Comigo" de `/work-with-me/` para `/pt/trabalhe-comigo/`. Depois salvar o menu e validar `GET /wp-json/djzeneyer/v1/menu?lang=pt`. O backend localiza links via `routes-slugs.json`, mas o cadastro no WordPress também deve refletir a URL canônica.
 - **LiteSpeed Plugin:** Revisar regras de exclusão de cache se o login via JWT apresentar instabilidade.
 - **MailPoet:** Validar se os novos inscritos via `/subscribe` estão entrando na lista correta.
 - **Estratégia completa:** Consultar [ZEN_EYER_ZOUK_AUTHORITY_ACTION_PLAN.md](ZEN_EYER_ZOUK_AUTHORITY_ACTION_PLAN.md) para ações de longo prazo.

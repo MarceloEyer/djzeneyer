@@ -74,7 +74,7 @@ const Footer: React.FC = () => {
 
           {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
-            <Link to={routes.home} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label="Voltar para Home">
+            <Link to={routes.home} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label={`DJ Zen Eyer - ${t('footer_home')}`}>
               <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
                 <Music size={20} className="text-primary" />
               </div>
@@ -177,7 +177,7 @@ const Footer: React.FC = () => {
             <Link to={routes.terms} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
           </div>
 
-          <div className="mt-4 text-xs opacity-50 flex justify-center gap-4">
+          <div className="mt-4 text-xs opacity-80 flex justify-center gap-4">
             <a href={safeUrl(ARTIST.identifiers.wikidataUrl, '/')} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Wikidata
             </a>

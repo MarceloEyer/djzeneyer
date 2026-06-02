@@ -9,6 +9,7 @@ import { Breadcrumb } from '../components/Breadcrumb';
 import { ARTIST } from '../data/artistData';
 import { DISCOGRAPHY } from '../data/artist.schema';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { getDateTimeFormatter } from '../utils/date';
 import NotFoundPage from './NotFoundPage';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -155,19 +156,19 @@ const ReleaseDetailPage: React.FC = () => {
     };
   }, [release, pageUrl, musicHubRoute, t]);
 
+  const contributorList = useMemo(() => {
+    if (!release?.contributor) return [];
+    const arr = Array.isArray(release.contributor) ? release.contributor : [release.contributor];
+    return arr as Record<string, unknown>[];
+  }, [release]);
+
   if (!release) return <NotFoundPage />;
 
   const displayPlatforms = PLATFORMS.filter((p) => !!release[p.key as keyof typeof release]);
   const releaseTypeLabel = t(`music.release_type.${release.type}`);
   const dateDisplay = release.releaseDate
-    ? new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate))
+    ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate))
     : release.releaseYear ?? '';
-
-  const contributorList = useMemo(() => {
-    if (!release.contributor) return [];
-    const arr = Array.isArray(release.contributor) ? release.contributor : [release.contributor];
-    return arr as Record<string, unknown>[];
-  }, [release.contributor]);
 
   return (
     <>

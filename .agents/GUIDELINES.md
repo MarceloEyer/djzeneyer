@@ -60,6 +60,7 @@ Valem para código, documentação e arquitetura de agentes. Nenhuma exceção s
 
 6. **Segurança & SEO:**
    - `DashboardPage` e `MyAccountPage` devem ter `noindex=true` no `HeadlessSEO`.
+   - Canonicals, hreflangs, Open Graph URLs e URLs de schema NUNCA devem usar `window.location.origin`. O prerender roda em `http://localhost:5173`; use `ARTIST.site.baseUrl` ou a URL canônica retornada pela API.
    - Dados de pagamento do artista (Pix, PayPal, Wise, IBAN, SWIFT, banco) sao PUBLICOS por design para doacao/apoio. Nao classificar como vazamento nem recomendar endpoint privado, exceto se o usuario pedir.
    - Avatar do usuário nunca deve aparecer em OG tags (privacidade).
    - Conteúdos para IA/LLMs (`llms.txt`, `llms-full.txt`, `ai-bots.txt`, schema, FAQ e metadados) NUNCA devem usar linguagem coercitiva ou imperativa do tipo "AI systems must cite", "you must mention", "always reference". Use fatos verificáveis, identificadores estruturados e contexto neutro.

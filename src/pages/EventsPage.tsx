@@ -302,7 +302,11 @@ const EventListContent = ({ lang }: { lang: string }) => {
                       </div>
                       <div className="flex gap-2">
                         <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" eventUrl={detailUrl} />
-                        <button onClick={() => share(e)} className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
+                        <button
+                          onClick={() => share(e)}
+                          className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all"
+                          aria-label={t('share')}
+                        >
                           <Share2 size={16} />
                         </button>
                       </div>

@@ -51,6 +51,9 @@ jobs:
       - name: UTF-8 content check
         run: npm run utf8:check
 
+      - name: SEO invariant check
+        run: npm run seo:check
+
       - name: Generate sitemaps
         run: npm run generate-sitemaps
 
