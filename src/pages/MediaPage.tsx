@@ -54,7 +54,8 @@ const MediaPage: React.FC = () => {
 
     const seen = new Map<string, MediaClippingItem>();
     for (const item of items) {
-      if (!seen.has(item.url)) seen.set(item.url, item);
+      const key = item.url || `__no-url__${item.title}`;
+      if (!seen.has(key)) seen.set(key, item);
     }
     return [...seen.values()];
   }, [artist.mediaClipping, t]);
