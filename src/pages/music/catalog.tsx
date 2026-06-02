@@ -31,7 +31,7 @@ export function MusicCatalogPage() {
                 <p className="text-xs text-zinc-400">
                   {track.primaryArtist}
                   {track.bpm != null ? ` • ${track.bpm} ${t('track.bpm')}` : ''}
-                  {track.energy != null ? ` • ${track.energy} ${t('track.energy')}` : ''}
+                  {track.energy != null ? ` • ${t(`track.energy_level.${track.energy}`)} ${t('track.energy')}` : ''}
                   {track.key != null ? ` • ${track.key}` : ''}
                 </p>
                 {track.moodTags.length > 0 && (
