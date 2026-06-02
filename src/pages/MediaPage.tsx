@@ -52,7 +52,11 @@ const MediaPage: React.FC = () => {
       ...((artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[]),
     ];
 
-    return [...new Map(items.map((item) => [item.url, item])).values()];
+    const seen = new Map<string, MediaClippingItem>();
+    for (const item of items) {
+      if (!seen.has(item.url)) seen.set(item.url, item);
+    }
+    return [...seen.values()];
   }, [artist.mediaClipping, t]);
 
   const mediaGroups = useMemo(() => [
