@@ -36,7 +36,8 @@ export function buildDiscographyListItems(
     !!url && !artistSocialUrls.has(url);
 
   return discography.map((release, index) => {
-    const releasePath = getNewsDetailPath(release.id);
+    const localizedSlug = release.newsSlugs?.[lang.slice(0, 2) as 'en' | 'pt'] || release.id;
+    const releasePath = getNewsDetailPath(localizedSlug);
     const releaseUrl = `${baseUrl}${releasePath}`;
 
     const schemaType =

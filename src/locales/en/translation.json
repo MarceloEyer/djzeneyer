@@ -458,6 +458,10 @@
   },
   "music_catalog_title": "Music Catalog",
   "music_catalog_description": "Tracks, edits and releases by DJ Zen Eyer with DJ-friendly metadata.",
+  "track": {
+    "bpm": "BPM",
+    "energy": "energy"
+  },
   "music_page_title": "Music Hub",
   "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
   "music": {
