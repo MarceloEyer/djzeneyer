@@ -4,14 +4,14 @@ import type { Release } from '../data/artist.schema';
  * Maps DISCOGRAPHY entries to release cards enriched with a localized detail path.
  * `getReleasePath` receives the resolved slug and returns the full route string.
  */
-export function buildReleaseCards<T extends Pick<Release, 'id'>>(
+export function buildReleaseCards<T extends Pick<Release, 'id' | 'newsSlugs'>>(
   discography: T[],
-  _lang: string,
-  getReleasePath: (id: string) => string,
+  lang: string,
+  getReleasePath: (slug: string) => string,
 ): (T & { path: string })[] {
   return discography.map((release) => ({
     ...release,
-    path: getReleasePath(release.id),
+    path: getReleasePath(release.newsSlugs?.[lang as 'en' | 'pt'] || release.id),
   }));
 }
 
