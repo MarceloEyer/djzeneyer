@@ -905,7 +905,9 @@
         "connection_desc": "Impeccable floor reading",
         "global": "Global",
         "global_desc": "In-person performances in 14 countries"
-      }
+      },
+      "photo_label": "World Champion {{year}}",
+      "role": "DJ & Producer"
     },
     "media": {
       "title": "Media & Downloads",
@@ -922,7 +924,7 @@
       "download": "Download File"
     },
     "gallery": {
-      "title": "Photo Gallery",
+      "title": "Press Gallery",
       "subtitle": "Moments captured at festivals around the world.",
       "cta": "View All at Photos.djzeneyer"
     },
@@ -934,7 +936,8 @@
       "availability_value": "Worldwide",
       "genre": "Main Genre",
       "links": "Useful Links & Social Media",
-      "whatsapp_message": "Hello Zen Eyer! I'd like to talk about a possible collaboration or booking. How can we proceed?"
+      "whatsapp_message": "Hello Zen Eyer! I'd like to talk about a possible collaboration or booking. How can we proceed?",
+      "booking_label": "Booking"
     },
     "canonical_bio": {
       "title": "Bio for Festivals & Marathons",
@@ -943,6 +946,10 @@
       "copied": "Copied!",
       "whatsapp_default_msg": "Hello Zen Eyer! I'd like to talk about booking.",
       "text": "Zen Eyer is a Brazilian Zouk DJ and music producer from Niterói, Brazil. Also known as DJ Zen Eyer, he won two world titles at the Zouk DJ Championship in 2022: Best Remix and Best DJ Performance. He has performed in 14 countries in person and is known for creamy, emotional sets designed for Brazilian Zouk festivals, marathons, and social dance floors."
+    },
+    "lineups": {
+      "title": "International Line-ups",
+      "subtitle": "Some of the stages where Brazilian Zouk found its unhurried flow."
     }
   },
   "events_add_google": "Add to Calendar",
