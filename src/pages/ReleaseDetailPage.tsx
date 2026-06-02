@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ExternalLink, Music2, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Music2, Calendar, Clock, Mic2 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { ARTIST } from '../data/artistData';
@@ -21,6 +21,21 @@ const formatDuration = (iso: string): string => {
   const sec = (m[3] ?? '0').padStart(2, '0');
   return `${h}${min}:${sec}`;
 };
+
+const getSpotifyEmbedUrl = (url?: string): string | null => {
+  if (!url) return null;
+  const m = url.match(/open\.spotify\.com\/(track|album|playlist)\/([A-Za-z0-9]+)/);
+  if (!m) return null;
+  return `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=oembed`;
+};
+
+const getAppleMusicEmbedUrl = (url?: string): string | null => {
+  if (!url) return null;
+  if (!url.includes('music.apple.com')) return null;
+  return url.replace('https://music.apple.com/', 'https://embed.music.apple.com/');
+};
+
+// ─── Platform config ─────────────────────────────────────────────────────────
 
 const PLATFORMS = [
   { key: 'spotifyUrl', label: 'Spotify', color: '#1DB954' },
@@ -46,6 +61,11 @@ const ITEM_VARIANTS = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.08 + 0.2 } }),
 };
 
+const EMBED_VARIANTS = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { delay: 0.3, duration: 0.5 } },
+};
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 const ReleaseDetailPage: React.FC = () => {
@@ -58,6 +78,16 @@ const ReleaseDetailPage: React.FC = () => {
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('release-detail', lang).replace(':id', id ?? '')}`;
   const musicHubRoute = getLocalizedRoute('music', lang);
 
+  const embedUrl = useMemo(() => {
+    if (!release) return null;
+    return getSpotifyEmbedUrl(release.spotifyUrl) ?? getAppleMusicEmbedUrl(release.appleMusicUrl);
+  }, [release]);
+
+  const isAppleMusicEmbed = useMemo(() => {
+    if (!release || !embedUrl) return false;
+    return !getSpotifyEmbedUrl(release.spotifyUrl) && !!getAppleMusicEmbedUrl(release.appleMusicUrl);
+  }, [release, embedUrl]);
+
   const schema = useMemo(() => {
     if (!release) return null;
 
@@ -67,9 +97,9 @@ const ReleaseDetailPage: React.FC = () => {
 
     const streamingLinks = PLATFORMS
       .map((p) => release[p.key as keyof typeof release])
-      .filter(Boolean) as string[];
+      .filter((v): v is string => typeof v === 'string');
 
-    const base = {
+    return {
       '@context': 'https://schema.org',
       '@graph': [
         {
@@ -115,9 +145,7 @@ const ReleaseDetailPage: React.FC = () => {
         },
       ],
     };
-
-    return base;
-  }, [release, pageUrl, musicHubRoute, lang, t]);
+  }, [release, pageUrl, musicHubRoute, t]);
 
   if (!release) return <NotFoundPage />;
 
@@ -126,6 +154,12 @@ const ReleaseDetailPage: React.FC = () => {
   const dateDisplay = release.releaseDate
     ? new Intl.DateTimeFormat(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate))
     : release.releaseYear ?? '';
+
+  const contributorList = useMemo(() => {
+    if (!release.contributor) return [];
+    const arr = Array.isArray(release.contributor) ? release.contributor : [release.contributor];
+    return arr as Record<string, unknown>[];
+  }, [release.contributor]);
 
   return (
     <>
@@ -143,7 +177,7 @@ const ReleaseDetailPage: React.FC = () => {
       <main className="min-h-screen bg-background text-foreground">
         <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
 
-          {/* Back link */}
+          {/* Back */}
           <Link
             to={musicHubRoute}
             className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
@@ -169,7 +203,7 @@ const ReleaseDetailPage: React.FC = () => {
             <img
               src={release.image}
               alt={`${release.name} cover`}
-              className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shadow-lg flex-shrink-0"
+              className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shadow-lg flex-shrink-0 bg-white/5"
               loading="lazy"
             />
             <div className="flex-1 min-w-0">
@@ -177,6 +211,21 @@ const ReleaseDetailPage: React.FC = () => {
                 {releaseTypeLabel}
               </span>
               <h1 className="mt-1 text-2xl sm:text-3xl font-bold leading-tight">{release.name}</h1>
+
+              {/* Original song badge */}
+              {release.originalSong && (
+                <p className="mt-2 text-sm text-muted-foreground flex items-center gap-1.5">
+                  <Mic2 size={13} className="flex-shrink-0" />
+                  {lang === 'pt' ? 'Versão de' : 'Cover of'}{' '}
+                  <span className="font-medium text-foreground">
+                    &ldquo;{release.originalSong.name}&rdquo;
+                  </span>{' '}
+                  {lang === 'pt' ? 'por' : 'by'}{' '}
+                  <span className="font-medium text-foreground">
+                    {release.originalSong.artistName}
+                  </span>
+                </p>
+              )}
 
               <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
                 {dateDisplay && (
@@ -201,9 +250,29 @@ const ReleaseDetailPage: React.FC = () => {
             </div>
           </motion.div>
 
+          {/* Embed player */}
+          {embedUrl && (
+            <motion.div
+              variants={EMBED_VARIANTS}
+              initial="hidden"
+              animate="visible"
+              className="mt-8"
+            >
+              <iframe
+                src={embedUrl}
+                width="100%"
+                height={isAppleMusicEmbed ? 175 : 152}
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                loading="lazy"
+                className="rounded-xl border border-white/5"
+                title={`Listen to ${release.name}`}
+              />
+            </motion.div>
+          )}
+
           {/* Streaming links */}
           {displayPlatforms.length > 0 && (
-            <section className="mt-10">
+            <section className="mt-8">
               <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
                 {t('music.release_detail.listen_on')}
               </h2>
@@ -229,7 +298,7 @@ const ReleaseDetailPage: React.FC = () => {
             </section>
           )}
 
-          {/* Tracks */}
+          {/* Tracks (only for multi-track releases) */}
           {release.tracks.length > 1 && (
             <section className="mt-10">
               <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
@@ -261,32 +330,32 @@ const ReleaseDetailPage: React.FC = () => {
           )}
 
           {/* Credits */}
-          {(release.byArtist || release.contributor) && (
+          {(release.originalSong || contributorList.length > 0) && (
             <section className="mt-10">
               <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
                 {t('music.release_detail.credits')}
               </h2>
               <dl className="space-y-2 text-sm">
-                {release.byArtist && (release.byArtist as Record<string,unknown>).name && (
+                {release.originalSong && (
                   <div className="flex gap-3">
                     <dt className="text-muted-foreground min-w-28">
                       {t('music.release_detail.original_artist')}
                     </dt>
-                    <dd>{String((release.byArtist as Record<string,unknown>).name)}</dd>
-                  </div>
-                )}
-                {release.contributor && (
-                  <div className="flex gap-3">
-                    <dt className="text-muted-foreground min-w-28">
-                      {t('music.release_detail.collaborator')}
-                    </dt>
                     <dd>
-                      {Array.isArray(release.contributor)
-                        ? (release.contributor as Record<string,unknown>[]).map((c) => String(c.roleName ?? c.name ?? '')).join(', ')
-                        : String((release.contributor as Record<string,unknown>).roleName ?? 'Zen Eyer')}
+                      {release.originalSong.artistName}
+                      {' — '}
+                      &ldquo;{release.originalSong.name}&rdquo;
                     </dd>
                   </div>
                 )}
+                {contributorList.map((c, i) => (
+                  <div key={i} className="flex gap-3">
+                    <dt className="text-muted-foreground min-w-28">
+                      {String(c.roleName ?? t('music.release_detail.collaborator'))}
+                    </dt>
+                    <dd>{String(c.name ?? 'Zen Eyer')}</dd>
+                  </div>
+                ))}
               </dl>
             </section>
           )}
