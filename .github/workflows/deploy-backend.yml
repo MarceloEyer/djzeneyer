@@ -36,6 +36,9 @@ jobs:
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 2
+          persist-credentials: false
 
       - name: 🔨 Build plugin dependencies (Composer)
         run: |
