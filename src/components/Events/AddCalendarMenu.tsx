@@ -2,6 +2,7 @@ import React from 'react';
 import { CalendarPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+import { trackSelectContent } from '../../lib/analytics';
 import type { ZenBitEventListItem } from '../../types/events';
 
 interface AddCalendarMenuProps {
@@ -56,10 +57,19 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(details.title)}&dates=${details.start}/${details.end}&details=${encodeURIComponent(details.details)}&location=${encodeURIComponent(details.location)}`;
 
+    const openCalendar = () => {
+        trackSelectContent('event_calendar', event.event_id || details.title, {
+            item_name: details.title,
+            calendar_provider: 'google',
+            ui_variant: variant,
+        });
+        window.open(googleUrl, '_blank');
+    };
+
     if (variant === 'primary') {
         return (
             <button
-                onClick={() => window.open(googleUrl, '_blank')}
+                onClick={openCalendar}
                 className={`btn btn-outline border-primary/30 text-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm hover:bg-primary/10 transition-all ${className}`}
             >
                 <CalendarPlus size={20} />
@@ -70,7 +80,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     return (
         <button
-            onClick={() => window.open(googleUrl, '_blank')}
+            onClick={openCalendar}
             className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
             title={t('events_add_google')}
         >
