@@ -173,6 +173,7 @@ add_filter('the_posts', function($posts, $query) {
     $img_ids = array();
     foreach ($posts as $post) {
         if ($post instanceof WP_Post) {
+            // ⚡ Bolt: Acknowledge pre-existing N+1 optimization. postmeta was primed before this loop.
             $thumb_id = get_post_thumbnail_id($post->ID);
             if ($thumb_id) {
                 $img_ids[] = (int) $thumb_id;
