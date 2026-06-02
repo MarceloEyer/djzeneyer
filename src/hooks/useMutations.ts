@@ -79,8 +79,8 @@ export const useSubscriptionMutation = () =>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Subscription failed');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((data as { message?: string }).message || 'Subscription failed');
       return data;
     },
   });
