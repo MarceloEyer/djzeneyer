@@ -416,6 +416,12 @@ export interface ReleaseTrack {
   youtubeUrl?: string;
 }
 
+export interface OriginalSong {
+  name: string;
+  artistName: string;
+  artistSameAs?: string[];
+}
+
 export interface Release {
   id: string;
   name: string;
@@ -435,6 +441,7 @@ export interface Release {
   youtubeUrl?: string;
   soundcloudUrl?: string;
   description?: string;
+  originalSong?: OriginalSong; // populated for covers and remixes
   byArtist?: Record<string, unknown>;
   contributor?: Record<string, unknown> | Record<string, unknown>[];
   tracks: ReleaseTrack[];
@@ -451,9 +458,21 @@ export const DISCOGRAPHY: Release[] = [
     type: 'remix',
     releaseDate: '2018-10-25',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-    appleMusicUrl: 'https://music.apple.com/us/song/1596290116',
+    spotifyUrl: 'https://open.spotify.com/track/4KY8BPuSKbNnnI3dQ5fDk9',
+    appleMusicUrl: 'https://music.apple.com/us/album/dont-stop-remixes-single/1596289429?i=1596290116',
     musicBrainzUrl: 'https://musicbrainz.org/release/4ca05fa2-a3c0-4de3-818c-e64cd147dca3',
-    description: "Brazilian Zouk remix of Kaysha's Don't Stop. Apple Music lists the track in Don't Stop (Remixes) - Single, released October 25, 2018.",
+    amazonMusicUrl: 'https://www.amazon.com/dp/B09M791M5V',
+    youtubeUrl: 'https://www.youtube.com/watch?v=mxQ-Y_Vh_18',
+    description: "Brazilian Zouk remix of Kaysha's \"Don't Stop\". Zen Eyer's remix transforms the original into a dance-floor ready Zouk track with his signature cremosidade flow. Part of \"Don't Stop (Remixes) - Single\" on Apple Music.",
+    originalSong: {
+      name: "Don't Stop",
+      artistName: 'Kaysha',
+      artistSameAs: [
+        'https://kaysha.com/',
+        'https://musicbrainz.org/artist/2eecd1cd-31ae-42f3-9e30-300ffbd7f2ef',
+        'https://www.wikidata.org/wiki/Q740711',
+      ],
+    },
     byArtist: {
       '@type': 'Person',
       name: 'Kaysha',
@@ -471,6 +490,7 @@ export const DISCOGRAPHY: Release[] = [
       {
         name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
         duration: 'PT3M39S',
+        spotifyUrl: 'https://open.spotify.com/track/4KY8BPuSKbNnnI3dQ5fDk9',
       },
     ],
   },
@@ -486,6 +506,16 @@ export const DISCOGRAPHY: Release[] = [
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/na-ponta-ela-fica-cover-single/1867840116',
     musicBrainzUrl: 'https://musicbrainz.org/release/7b0c16b2-24a8-4923-b3e1-f3b852e5b064',
+    youtubeUrl: 'https://www.youtube.com/watch?v=ACENa4vgVcY',
+    description: 'Brazilian Zouk cover of the funk hit by MC Delano. Zen Eyer adapts the infectious energy of the original into a smooth, dance-floor ready Zouk arrangement.',
+    originalSong: {
+      name: 'Na Ponta Ela Fica',
+      artistName: 'MC Delano',
+    },
+    byArtist: {
+      '@type': 'Person',
+      name: 'MC Delano',
+    },
     tracks: [
       {
         name: 'Na Ponta Ela Fica - Cover',
@@ -504,6 +534,36 @@ export const DISCOGRAPHY: Release[] = [
     releaseDate: '2026-01-27',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/still-loving-you-feat-walter-xavier-sax-cover-single/1872468504',
+    description: 'Brazilian Zouk cover of the Scorpions classic "Still Loving You" (1984), featuring saxophonist Walter Xavier. The saxophone takes the lead melody over a Zouk groove, creating a deeply romantic, dance-floor arrangement.',
+    originalSong: {
+      name: 'Still Loving You',
+      artistName: 'Scorpions',
+      artistSameAs: [
+        'https://www.scorpions.de/',
+        'https://musicbrainz.org/artist/c6b78b4b-3bd4-4174-99b4-1fd0b0dd3e11',
+        'https://www.wikidata.org/wiki/Q80191',
+      ],
+    },
+    byArtist: {
+      '@type': 'MusicGroup',
+      name: 'Scorpions',
+      sameAs: [
+        'https://www.scorpions.de/',
+        'https://musicbrainz.org/artist/c6b78b4b-3bd4-4174-99b4-1fd0b0dd3e11',
+        'https://www.wikidata.org/wiki/Q80191',
+      ],
+    },
+    contributor: [
+      {
+        '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
+        roleName: 'Cover Performer, Arranger',
+      },
+      {
+        '@type': 'Person',
+        name: 'Walter Xavier',
+        roleName: 'Saxophonist',
+      },
+    ],
     tracks: [
       {
         name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
@@ -522,6 +582,8 @@ export const DISCOGRAPHY: Release[] = [
     releaseYear: '2026',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     musicBrainzUrl: 'https://musicbrainz.org/release/aaea8061-a317-4743-bf87-fad9dc3ed93c',
+    amazonMusicUrl: 'https://www.amazon.co.uk/dp/B0GDRV9WF7',
+    description: "Zen Eyer's original composition — a bilingual Spanish/Portuguese track built for the Brazilian Zouk dance floor. A playful, rhythmic piece that showcases his production style.",
     tracks: [
       {
         name: 'Baila Flaquita',
@@ -541,6 +603,23 @@ export const DISCOGRAPHY: Release[] = [
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/porta-do-sol-cover-single/1867002457',
     musicBrainzUrl: 'https://musicbrainz.org/release/b1c9f977-3642-4c86-a66d-b7b5a4564064',
+    description: 'Brazilian Zouk cover of the beloved Brazilian sertanejo ballad "Porta do Sol". At 5 minutes and 7 seconds, this version gives the melody space to breathe, prioritising connection and fluidity on the dance floor.',
+    originalSong: {
+      name: 'Porta do Sol',
+      artistName: 'Luan Santana',
+      artistSameAs: [
+        'https://musicbrainz.org/artist/b7a9cead-7ab9-4c5f-aff3-0a8ab4edc1fd',
+        'https://www.wikidata.org/wiki/Q3838024',
+      ],
+    },
+    byArtist: {
+      '@type': 'Person',
+      name: 'Luan Santana',
+      sameAs: [
+        'https://musicbrainz.org/artist/b7a9cead-7ab9-4c5f-aff3-0a8ab4edc1fd',
+        'https://www.wikidata.org/wiki/Q3838024',
+      ],
+    },
     tracks: [
       {
         name: 'Porta Do Sol - Cover',

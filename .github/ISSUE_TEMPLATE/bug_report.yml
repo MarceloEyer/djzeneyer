@@ -1,0 +1,54 @@
+name: Bug Report
+description: Algo está quebrado no site ou no build
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Preencha o máximo possível. Issues sem contexto suficiente serão fechadas.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: O que está quebrado?
+      description: Descreva o comportamento atual vs o esperado.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Como reproduzir
+      placeholder: |
+        1. Acessar /pagina
+        2. Clicar em ...
+        3. Ver erro
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área afetada
+      options:
+        - Frontend React (src/)
+        - WordPress / Plugin
+        - Build / CI
+        - SEO / Prerender
+        - i18n / Tradução
+        - Performance
+        - Outro
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: URL afetada (se aplicável)
+      placeholder: https://djzeneyer.com/...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto adicional
+      description: Logs, screenshots, browser, etc.

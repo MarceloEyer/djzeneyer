@@ -513,7 +513,22 @@
       "single": "Single"
     },
     "discography_schema_name": "DJ Zen Eyer Discography",
-    "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing."
+    "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing.",
+    "release_detail": {
+      "back": "Back to Music",
+      "listen_on": "Listen on",
+      "credits": "Credits",
+      "role_remixer": "Remixer",
+      "role_performer": "Performer",
+      "role_producer": "Producer",
+      "original_artist": "Original artist",
+      "collaborator": "Collaborator",
+      "type_label": "Type",
+      "date_label": "Released",
+      "duration_label": "Duration",
+      "not_found": "Release not found.",
+      "not_found_back": "Back to Music Hub"
+    }
   },
   "press": {
     "page_title": "Press Kit",

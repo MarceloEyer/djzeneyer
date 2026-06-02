@@ -261,6 +261,11 @@
             "noindex": true,
             "excludeFromSitemap": true,
             "excludeFromPrerender": true
+        },
+        {
+            "key": "release-detail",
+            "en": "zouk-music/:id",
+            "pt": "musica-zouk/:id"
         }
     ]
 }

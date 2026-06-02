@@ -51,6 +51,7 @@ const DashboardPage = lazyWithRetry(() => import('../pages/DashboardPage'), 'rou
 const MyAccountPage = lazyWithRetry(() => import('../pages/MyAccountPage'), 'route:my-account');
 const FAQPage = lazyWithRetry(() => import('../pages/FAQPage'), 'route:faq');
 const NewsPage = lazyWithRetry(() => import('../pages/NewsPage'), 'route:news');
+const ReleaseDetailPage = lazyWithRetry(() => import('../pages/ReleaseDetailPage'), 'route:release-detail');
 const PrivacyPolicyPage = lazyWithRetry(() => import('../pages/PrivacyPolicyPage'), 'route:privacy');
 const ReturnPolicyPage = lazyWithRetry(() => import('../pages/ReturnPolicyPage'), 'route:returns');
 const TermsPage = lazyWithRetry(() => import('../pages/TermsPage'), 'route:terms');
@@ -137,6 +138,11 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'music',
     component: MusicPage,
     paths: { en: slug('music', 'en') as string, pt: slug('music', 'pt') as string },
+  },
+  {
+    key: 'release-detail',
+    component: ReleaseDetailPage,
+    paths: { en: slug('release-detail', 'en') as string, pt: slug('release-detail', 'pt') as string },
   },
   // News / Blog
   {
