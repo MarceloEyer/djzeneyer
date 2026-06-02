@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Sitemap Generator v8.1 - EVENTS + POSTS SUPPORT
- * Gera sitemaps baseado em arquivo JSON estático e conteúdo público do WordPress
+ * Sitemap Generator v8.2 - AUDIT-HARDENED EVENTS + POSTS SUPPORT
+ * Gera sitemaps a partir de rotas estáticas, eventos públicos e conteúdo indexável do WordPress.
  */
 
 import fs from 'fs';
@@ -21,31 +21,46 @@ const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const ROUTES_DATA_PATH = path.resolve(__dirname, '../src/config/routes-slugs.json');
 const ENCYCLOPEDIA_TERMS_PATH = path.resolve(__dirname, '../src/config/encyclopedia-term-slugs.json');
 
-console.log('🗺️  Sitemap Generator v8.1 - EVENTS + POSTS SUPPORT\n');
+console.log('🗺️  Sitemap Generator v8.2 - AUDIT-HARDENED EVENTS + POSTS SUPPORT\n');
 
 const DEFAULT_IMAGE = `${BASE_URL}/images/zen-eyer-og-image.png`;
+
+function escapeXml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
+function toIsoDate(value, fallback) {
+  if (!value) return fallback;
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? fallback : parsed.toISOString();
+}
 
 function buildUrlEntry(url, date, priority = '0.8', altUrl = null, imageUrl = null, isEnglish = true) {
   let entry = `
   <url>
-    <loc>${url}</loc>
-    <lastmod>${date}</lastmod>
+    <loc>${escapeXml(url)}</loc>
+    <lastmod>${escapeXml(date)}</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>`;
+    <priority>${escapeXml(priority)}</priority>`;
 
   if (altUrl) {
-    const enUrl  = isEnglish ? url : altUrl;
-    const ptUrl  = isEnglish ? altUrl : url;
+    const enUrl = isEnglish ? url : altUrl;
+    const ptUrl = isEnglish ? altUrl : url;
     entry += `
-    <xhtml:link rel="alternate" hreflang="en" href="${enUrl}" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="${ptUrl}" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="${enUrl}" />`;
+    <xhtml:link rel="alternate" hreflang="en" href="${escapeXml(enUrl)}" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="${escapeXml(ptUrl)}" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(enUrl)}" />`;
   }
 
   if (imageUrl) {
     entry += `
     <image:image>
-      <image:loc>${imageUrl}</image:loc>
+      <image:loc>${escapeXml(imageUrl)}</image:loc>
     </image:image>`;
   }
 
@@ -57,8 +72,8 @@ function buildUrlEntry(url, date, priority = '0.8', altUrl = null, imageUrl = nu
 function buildSitemapIndexEntry(url, date) {
   return `
   <sitemap>
-    <loc>${url}</loc>
-    <lastmod>${date}</lastmod>
+    <loc>${escapeXml(url)}</loc>
+    <lastmod>${escapeXml(date)}</lastmod>
   </sitemap>`;
 }
 
@@ -73,7 +88,7 @@ async function fetchEvents() {
   try {
     const INTERNAL_API_EVENTS = `${REST_BASE_URL}/zen-bit/v2/events?mode=upcoming&days=365`;
     console.log(`📡 Fetching events from internal API: ${INTERNAL_API_EVENTS}...`);
-    const res = await fetch(INTERNAL_API_EVENTS, { headers: { 'Accept': 'application/json' } });
+    const res = await fetch(INTERNAL_API_EVENTS, { headers: { Accept: 'application/json' } });
     if (res.ok) {
       const data = await res.json();
       if (data && data.success && Array.isArray(data.events)) {
@@ -92,9 +107,9 @@ async function fetchEvents() {
       console.log(`📡 Fetching events from ${BIT_API_URL}...`);
       const response = await fetch(BIT_API_URL, {
         headers: {
-          'Accept': 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 WordPress/SitemapGenerator'
-        }
+          Accept: 'application/json',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 WordPress/SitemapGenerator',
+        },
       });
 
       if (response.ok) {
@@ -117,18 +132,127 @@ async function fetchEvents() {
   return raw.map(ev => ({
     event_id: String(ev.id || ev.event_id || ''),
     image: ev.artist?.image_url || ev.artist?.thumb_url || ev.image || DEFAULT_IMAGE,
-    canonical_path: ev.canonical_path
+    canonical_path: ev.canonical_path,
   }));
+}
+
+function normalizeLanguage(lang) {
+  const value = String(lang || '').trim().toLowerCase();
+  return value.startsWith('pt') ? 'pt' : 'en';
+}
+
+function normalizeHreflang(lang) {
+  const value = String(lang || '').trim();
+  if (!value) return '';
+  if (value.toLowerCase().startsWith('pt')) return 'pt-BR';
+  if (value.toLowerCase().startsWith('en')) return 'en';
+  return value;
+}
+
+function normalizeFrontendUrl(value) {
+  if (!value) return '';
+  const raw = String(value).trim();
+  if (!raw) return '';
+
+  let pathname = raw;
+  try {
+    if (/^https?:\/\//i.test(raw)) {
+      const parsed = new URL(raw);
+      pathname = parsed.pathname || '/';
+    }
+  } catch (_) {
+    pathname = raw;
+  }
+
+  pathname = pathname.replace(/^https?:\/\/[^/]+/i, '');
+  if (!pathname.startsWith('/')) pathname = `/${pathname}`;
+  pathname = pathname.replace(/\/+/g, '/');
+
+  let url = `${BASE_URL}${pathname}`;
+  if (!url.endsWith('/')) url += '/';
+  return url;
+}
+
+function normalizeTranslations(translations) {
+  if (!translations || typeof translations !== 'object') return {};
+
+  const normalized = {};
+  for (const [lang, url] of Object.entries(translations)) {
+    const hreflang = normalizeHreflang(lang);
+    const normalizedUrl = normalizeFrontendUrl(url);
+    if (hreflang && normalizedUrl) {
+      normalized[hreflang] = normalizedUrl;
+    }
+  }
+  return normalized;
+}
+
+function isNoindexPost(post) {
+  const robots = String(post?.robots || post?.zen_seo?.robots || '').toLowerCase();
+  return Boolean(
+    post?.noindex ||
+    post?.zen_seo?.noindex ||
+    post?._zen_seo_data?.noindex ||
+    robots.includes('noindex')
+  );
+}
+
+function normalizePost(post, fallbackLang = 'en') {
+  const slug = String(post?.slug || post?.post_name || '').replace(/^\/+|\/+$/g, '');
+  const lang = normalizeLanguage(post?.lang || post?.language || fallbackLang);
+  const translations = normalizeTranslations(post?.translations || post?.zen_translations || {});
+
+  if (!translations.en && lang === 'en' && post?.link) translations.en = normalizeFrontendUrl(post.link);
+  if (!translations['pt-BR'] && lang === 'pt' && post?.link) translations['pt-BR'] = normalizeFrontendUrl(post.link);
+
+  return {
+    id: String(post?.id || post?.ID || ''),
+    type: String(post?.type || post?.post_type || 'post'),
+    slug,
+    lang,
+    modified: post?.modified || post?.date || '',
+    image: post?.featured_image_src_full || post?.featured_image_src || post?.image || '',
+    translations,
+    noindex: isNoindexPost(post),
+  };
+}
+
+async function fetchPostsFromZenSeoSitemap() {
+  const url = `${REST_BASE_URL}/zen-seo/v1/sitemap`;
+  console.log(`📡 Fetching indexable posts from Zen SEO sitemap endpoint: ${url}...`);
+
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' } });
+    if (!res.ok) {
+      console.warn(`⚠️ Zen SEO sitemap endpoint respondeu ${res.status}. Usando fallback wp/v2/posts.`);
+      return [];
+    }
+
+    const payload = await res.json();
+    const posts = payload?.data?.posts;
+    if (!Array.isArray(posts)) {
+      console.warn('⚠️ Zen SEO sitemap endpoint sem data.posts válido. Usando fallback wp/v2/posts.');
+      return [];
+    }
+
+    const normalized = posts
+      .map(post => normalizePost(post, post?.lang || 'en'))
+      .filter(post => post.type === 'post' && post.slug && !post.noindex);
+
+    console.log(`✅ Indexable posts loaded via Zen SEO endpoint: ${normalized.length}`);
+    return normalized;
+  } catch (error) {
+    console.warn('⚠️ Error fetching Zen SEO sitemap endpoint:', error instanceof Error ? error.message : String(error));
+    return [];
+  }
 }
 
 /**
  * Fetches all published posts for a given language with pagination.
- * NOTE: noindex filtering relies on the WP server-side sitemap class since
- * the _zen_seo_data field is not exposed by default in the REST API.
- * status=publish is explicit to avoid drafts/scheduled posts.
+ * Fallback usado quando o endpoint zen-seo/v1/sitemap não está disponível.
  */
 async function fetchPostsForLang(lang) {
-  const fields = 'id,date,modified,slug,link,featured_image_src,featured_image_src_full';
+  const fields = 'id,date,modified,slug,link,featured_image_src,featured_image_src_full,zen_seo,zen_translations';
   const posts = [];
   let page = 1;
   while (true) {
@@ -146,7 +270,11 @@ async function fetchPostsForLang(lang) {
     }
     const data = await res.json();
     if (!Array.isArray(data) || data.length === 0) break;
-    posts.push(...data.filter(post => post?.slug));
+    posts.push(
+      ...data
+        .map(post => normalizePost(post, lang))
+        .filter(post => post.slug && !post.noindex)
+    );
     const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
     if (page >= totalPages) break;
     page++;
@@ -155,13 +283,19 @@ async function fetchPostsForLang(lang) {
 }
 
 async function fetchPosts() {
-  console.log('📡 Fetching posts from WP REST API...');
+  const endpointPosts = await fetchPostsFromZenSeoSitemap();
+  if (endpointPosts.length > 0) {
+    return endpointPosts;
+  }
+
+  console.log('📡 Fetching posts from WP REST API fallback...');
   const [en, pt] = await Promise.all([
     fetchPostsForLang('en'),
     fetchPostsForLang('pt'),
   ]);
-  console.log(`✅ Posts loaded: ${en.length} EN, ${pt.length} PT`);
-  return { en, pt };
+  const posts = [...en, ...pt];
+  console.log(`✅ Posts loaded via wp/v2 fallback: ${en.length} EN, ${pt.length} PT`);
+  return posts;
 }
 
 async function generateSitemaps() {
@@ -276,7 +410,7 @@ async function generateSitemaps() {
 
         // Remove prefixos conhecidos para isolar o ID/Slug final do evento
         relativePath = relativePath
-          .replace(/^https?:\/\/[^\/]+/, '') // Remove domínio se vier absoluto
+          .replace(/^https?:\/\/[^/]+/, '') // Remove domínio se vier absoluto
           .replace(eventPrefixRegex, '')
           .replace(/^\/+|\/+$/g, '');
 
@@ -305,43 +439,49 @@ async function generateSitemaps() {
       throw new Error('routes-slugs.json precisa conter a rota "news" com slugs EN/PT antes de gerar o sitemap de posts.');
     }
 
-    const postsByLang = {
-      en: new Map(posts.en.map(post => [post.slug, post])),
-      pt: new Map(posts.pt.map(post => [post.slug, post])),
-    };
-    const postSlugs = [...new Set([...postsByLang.en.keys(), ...postsByLang.pt.keys()])];
-
     let postCount = 0;
+    const seenPostUrls = new Set();
     let postsXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
-    for (const slug of postSlugs) {
-      const enPost = postsByLang.en.get(slug);
-      const ptPost = postsByLang.pt.get(slug);
-      const canonicalPost = enPost || ptPost;
-      if (!canonicalPost) continue;
+    const buildPostUrl = (lang, slug) => getSitemapUrl(lang, `${lang === 'pt' ? newsRoute.pt : newsRoute.en}/${slug}`);
+    const getPostUrlByLang = (post, lang) => {
+      const hreflang = lang === 'pt' ? 'pt-BR' : 'en';
+      if (post.translations?.[hreflang]) return post.translations[hreflang];
+      if (post.lang === lang && post.slug) return buildPostUrl(lang, post.slug);
+      return '';
+    };
 
-      const lastmod = canonicalPost.modified || canonicalPost.date || date;
-      const image = canonicalPost.featured_image_src_full || canonicalPost.featured_image_src || null;
-      const enUrl = getSitemapUrl('en', `${newsRoute.en}/${slug}`);
-      const ptUrl = getSitemapUrl('pt', `${newsRoute.pt}/${slug}`);
+    for (const post of posts) {
+      if (!post.slug || post.noindex) continue;
 
-      if (enPost && ptPost) {
-        // Both languages exist — emit with hreflang alternates
-        postsXml += buildUrlEntry(enUrl, lastmod, '0.7', ptUrl, image, true);
-        postsXml += buildUrlEntry(ptUrl, lastmod, '0.7', enUrl, image, false);
-        postCount += 2;
-      } else if (enPost) {
-        // EN only — no alternates
-        postsXml += buildUrlEntry(enUrl, lastmod, '0.7', null, image, true);
-        postCount++;
-      } else if (ptPost) {
-        // PT only — no alternates
-        postsXml += buildUrlEntry(ptUrl, lastmod, '0.7', null, image, false);
-        postCount++;
+      const lastmod = toIsoDate(post.modified, date);
+      const image = post.image || null;
+      const enUrl = getPostUrlByLang(post, 'en');
+      const ptUrl = getPostUrlByLang(post, 'pt');
+
+      if (enUrl && ptUrl) {
+        if (!seenPostUrls.has(enUrl)) {
+          postsXml += buildUrlEntry(enUrl, lastmod, '0.7', ptUrl, image, true);
+          seenPostUrls.add(enUrl);
+          postCount++;
+        }
+        if (!seenPostUrls.has(ptUrl)) {
+          postsXml += buildUrlEntry(ptUrl, lastmod, '0.7', enUrl, image, false);
+          seenPostUrls.add(ptUrl);
+          postCount++;
+        }
+        continue;
       }
+
+      const fallbackUrl = enUrl || ptUrl || buildPostUrl(post.lang, post.slug);
+      if (!fallbackUrl || seenPostUrls.has(fallbackUrl)) continue;
+
+      postsXml += buildUrlEntry(fallbackUrl, lastmod, '0.7', null, image, post.lang === 'en');
+      seenPostUrls.add(fallbackUrl);
+      postCount++;
     }
 
     postsXml += '\n</urlset>';
