@@ -459,7 +459,7 @@ export const useNewsTaxonomiesQuery = (lang?: string, options: { enabled?: boole
       ]);
       return { categories, tags };
     },
-    staleTime: STALE_TIME.POSTS,
+    staleTime: STALE_TIME.EVENTS,
     enabled: options.enabled,
   });
 
@@ -525,7 +525,7 @@ export const useEventById = (
       }
     },
     enabled: !!eventId,
-    staleTime: STALE_TIME.POSTS,
+    staleTime: STALE_TIME.EVENTS,
     ...options,
   });
 };
