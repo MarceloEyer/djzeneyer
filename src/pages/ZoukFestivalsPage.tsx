@@ -55,7 +55,7 @@ const ZoukFestivalsPage: React.FC = () => {
 
   const { upcoming, past } = useMemo(() => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0); // align with new Date('YYYY-MM-DD') which parses as UTC midnight
     return categorizeFestivals(ARTIST.festivals, today);
   }, []);
 

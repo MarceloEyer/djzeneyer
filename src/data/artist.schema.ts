@@ -22,7 +22,7 @@ const SAME_AS_AUTHORITY = [
 
 // Platforms in ARTIST.social whose URLs belong in sameAs
 const SAME_AS_SOCIAL_KEYS = [
-  'spotify', 'appleMusic', 'youtube', 'YouTubeMusic',
+  'spotify', 'appleMusic', 'YouTube', 'YouTubeMusic',
   'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
   'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
   'bandcamp', 'amazonMusic', 'mixcloud', 'lastfm', 'songkick',
