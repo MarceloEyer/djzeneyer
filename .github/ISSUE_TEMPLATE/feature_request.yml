@@ -1,0 +1,56 @@
+name: Feature Request
+description: Nova funcionalidade ou melhoria
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Descreva a feature com foco no problema que ela resolve, não na solução.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema isso resolve?
+      description: Ex. "Visitantes não conseguem ver a agenda sem rolar até o final da home."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução proposta
+      description: Como você imagina que isso deveria funcionar.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Frontend React (src/)
+        - WordPress / Plugin
+        - SEO / Schema
+        - i18n / Tradução
+        - CI/CD / Build
+        - Design / UX
+        - Outro
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Prioridade estimada
+      options:
+        - Alta — bloqueia algo importante
+        - Média — melhoria relevante
+        - Baixa — nice-to-have
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto adicional
+      description: Mockups, links de referência, notas técnicas.
