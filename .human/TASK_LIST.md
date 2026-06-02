@@ -223,6 +223,33 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 
 ---
 
+### /labs — Página de Experimentos de IA
+
+**O que é:** Uma rota `/labs` (e `/pt/labs`) no site com cards de mini-ferramentas interativas temáticas do universo Zouk/DJ Zen Eyer. Cada card tem título, descrição curta e abre o experimento.
+
+**Por que vale fazer:** Dois benefícios diretos —
+1. **Branding técnico:** reforça a identidade de DJ que pensa em inovação e IA, alinha com a pegada futurista do Zen Eyer.
+2. **SEO de cauda longa:** páginas indexáveis com conteúdo original sobre Zouk (BPM, musicalidade, setlist) que ninguém mais tem.
+
+**Só faz sentido quando tiver ≥ 2 experimentos com substância.** Um card só fica vazio.
+
+**Experimentos sugeridos (a decidir quais implementar primeiro):**
+- **Setlist Builder** — escolhe duração (1h/2h/4h), horário (abertura/pico/fechamento) e mood (cremoso/progressivo/energético). Monta sequência lógica com a discografia + lógica editorial do Zen. Sem IA externa — lógica determinística.
+- **BPM Trainer** — digita um BPM, vê metrônomo visual animado. Útil para professores e dançarinos. SEO em "Zouk BPM guide", "Brazilian Zouk tempo".
+- **Quiz de Personagem Zouk** — já existe em `/quiz`. Poderia ser card no /labs também.
+- **Gerador de capa de EP** — playground visual com fontes e paletas da identidade do Zen.
+
+**Decisão pendente (humano):**
+- Qual nav item ou link vai apontar para /labs? (Não tem posição decidida ainda.)
+- Quais experimentos implementar na v1?
+- O /labs fica dentro do site principal ou num subdomínio (`labs.djzeneyer.com`)?
+
+**Para agentes:** quando a decisão de produto for tomada, implementar como rota nova em `src/pages/LabsPage.tsx`, registrar em `routes-slugs.json` (key: `labs`, en: `labs`, pt: `labs`) e em `src/config/routes.ts`. Seguir o padrão de `EncyclopediaPage` para estrutura de hub com cards.
+
+---
+
+---
+
 ## ⚙️ Configurações Externas Pontuais
 
 - **LiteSpeed Plugin:** Revisar regras de exclusão de cache se o login via JWT apresentar instabilidade.
