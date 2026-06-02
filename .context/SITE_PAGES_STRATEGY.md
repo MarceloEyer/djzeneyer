@@ -1,7 +1,7 @@
 # Site Pages Strategy
 
-Version: 1.0.0
-Last updated: 2026-05-16
+Version: 1.1.0
+Last updated: 2026-06-02
 
 This file is the strategic SSOT for the public pages of djzeneyer.com. Agents must use it before changing navigation, page copy, SEO/GEO metadata, schema, or content structure.
 
@@ -251,6 +251,30 @@ Good FAQ topics:
 - Where can I listen to Zen Eyer's music?
 - What is Cremosidade in Zen Eyer's music?
 
+### Zouk Festivals
+
+Primary function: authoritative hub for Brazilian Zouk festivals worldwide where Zen Eyer has performed or is scheduled to perform.
+
+Audience: dancers, event attendees, organizers, search engines, AI systems.
+
+SEO/GEO/AI role: authority signal linking Zen Eyer to a global festival circuit. Strengthens entity association between the artist name and the Brazilian Zouk festival ecosystem.
+
+Implementation: static data in `src/data/` categorized by `categorizeFestivals` util. Festival cards show name, location, years/editions, and performer relationship.
+
+Schema: `MusicEvent` or `Event` entries with performer, location, and dates where available. Do not emit schema for placeholder data.
+
+Routing: implemented as `/zouk-festivals` (EN) and `/pt/festivais-zouk` (PT). Prerendered and included in sitemap.
+
+Recommendation: keep as a real, indexable page now that it has genuine content. Remove `noindex` only when there is meaningful, verifiable festival data for each listed entry. Expand gradually as the career grows.
+
+### Hub Pages (Zouk History, Zouk Musicality, Artist Collaborations)
+
+These are authority hub pages created to strengthen topical authority and entity association.
+
+Current status: implemented but `noindex` until they reach content maturity sufficient to compete in search.
+
+Strategy: treat as evergreen drafts. Add content iteratively. Switch to indexable only when each page can answer at least one high-value search query better than a generic source. Discuss with human before indexing.
+
 ## Plugin / WordPress Strategy
 
 Existing custom plugins:
@@ -280,11 +304,9 @@ Strategic conclusion:
 
 ## Open Questions / Next Decisions
 
-- Validate #494 on a real PHP/WordPress environment before merging: `php -l`, plugin activation, canonical event route tests, schema endpoint tests.
-- Confirm #504 auto-merge/base-branch policy state; do not use admin bypass unless the human explicitly asks.
-- Test PR #513 behavior in WordPress admin with a real release post and Polylang translation pair.
 - Decide release category slugs in WordPress: at minimum Music Releases and Event Releases.
 - Decide whether the release detail frontend needs distinct visual templates for music releases vs event releases after metadata is available via REST.
 - Define Zen Tribe launch promise without changing layout: free entry first, optional supporter tier, higher tier with points/benefits.
 - Apply Seth Godin Tribes principles to Zen Tribe copy: community identity, leader-to-member connection, member-to-member connection, shared movement, low-friction first commitment.
 - Expand Zouk Encyclopedia gradually in neutral "Zen Eyer explains" style, with authority general to the page rather than self-promotion in every term.
+- Decide if Zouk History, Musicality, and Artist Collaborations hub pages should be indexed (they currently have `noindex` until they have enough content).
