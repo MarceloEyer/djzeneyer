@@ -17,6 +17,7 @@
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
     "context:sync": "node scripts/sync-context-versions.mjs",
+    "facts:check": "node scripts/check-public-facts.mjs",
     "i18n:check": "node scripts/check-i18n-parity.mjs",
     "utf8:check": "node scripts/check-utf8-content.mjs",
     "format": "prettier --write .",
