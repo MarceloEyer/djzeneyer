@@ -11,7 +11,7 @@ export function buildReleaseCards<T extends Pick<Release, 'id' | 'newsSlugs'>>(
 ): (T & { path: string })[] {
   return discography.map((release) => ({
     ...release,
-    path: getReleasePath(release.newsSlugs?.[lang as 'en' | 'pt'] || release.id),
+    path: getReleasePath(release.newsSlugs?.[lang.slice(0, 2) as 'en' | 'pt'] || release.id),
   }));
 }
 
