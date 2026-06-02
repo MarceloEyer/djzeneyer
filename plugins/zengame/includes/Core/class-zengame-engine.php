@@ -96,13 +96,21 @@ final class Engine
             );
 
             if ($rows) {
-                // Check downloadable via _downloadable post meta (WP caches after first read).
-                // Avoids wc_product_meta_lookup (can be stale after bulk imports).
+                // ⚡ Bolt: [performance improvement] Replace get_post_meta loop with a single batched SQL query.
+                // This prevents N+1 queries by querying all _downloadable statuses at once, bypassing object cache misses.
                 $unique_pids = \array_unique(\array_column($rows, 'product_id'));
-                \update_meta_cache('post', $unique_pids);
-                $is_downloadable = [];
-                foreach ($unique_pids as $pid) {
-                    $is_downloadable[(int) $pid] = \get_post_meta((int) $pid, '_downloadable', true) === 'yes';
+                $is_downloadable = \array_fill_keys($unique_pids, false);
+                if (!empty($unique_pids)) {
+                    $pid_placeholders = \implode(',', \array_fill(0, \count($unique_pids), '%d'));
+                    $meta_results = $wpdb->get_results(
+                        $wpdb->prepare(
+                            "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_downloadable' AND meta_value = 'yes' AND post_id IN ($pid_placeholders)",
+                            ...$unique_pids
+                        )
+                    );
+                    foreach ($meta_results as $meta) {
+                        $is_downloadable[(int) $meta->post_id] = true;
+                    }
                 }
 
                 foreach ($rows as $row) {
