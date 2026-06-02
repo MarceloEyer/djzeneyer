@@ -105,7 +105,7 @@ async function fetchEvents() {
         console.warn(`⚠️ Bandsintown respondeu ${response.status}: ${errorText.slice(0, 100)}`);
       }
     } catch (error) {
-      console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error.message);
+      console.warn('\n❌ SITEMAP ERROR: Could not fetch events:', error instanceof Error ? error.message : String(error));
     }
   }
 
@@ -121,30 +121,47 @@ async function fetchEvents() {
   }));
 }
 
-async function fetchPosts() {
+/**
+ * Fetches all published posts for a given language with pagination.
+ * NOTE: noindex filtering relies on the WP server-side sitemap class since
+ * the _zen_seo_data field is not exposed by default in the REST API.
+ * status=publish is explicit to avoid drafts/scheduled posts.
+ */
+async function fetchPostsForLang(lang) {
   const fields = 'id,date,modified,slug,link,featured_image_src,featured_image_src_full';
-  const result = { en: [], pt: [] };
-
-  await Promise.all(['en', 'pt'].map(async (lang) => {
+  const posts = [];
+  let page = 1;
+  while (true) {
+    const url = `${REST_BASE_URL}/wp/v2/posts?lang=${lang}&per_page=100&page=${page}&status=publish&orderby=modified&order=desc&_fields=${encodeURIComponent(fields)}`;
+    let res;
     try {
-      const postsUrl = `${REST_BASE_URL}/wp/v2/posts?per_page=100&lang=${lang}&_fields=${encodeURIComponent(fields)}`;
-      console.log(`📡 Fetching posts (${lang}) from ${postsUrl}...`);
-      const res = await fetch(postsUrl, { headers: { Accept: 'application/json' } });
-
-      if (!res.ok) {
-        console.warn(`⚠️ Posts (${lang}): API respondeu ${res.status}.`);
-        return;
-      }
-
-      const data = await res.json();
-      result[lang] = Array.isArray(data) ? data.filter(post => post?.slug) : [];
-      console.log(`✅ Posts (${lang}): ${result[lang].length} items`);
+      res = await fetch(url, { headers: { Accept: 'application/json' } });
     } catch (error) {
-      console.warn(`⚠️ Posts (${lang}): falha ao buscar — ${error.message}`);
+      console.warn(`⚠️ Error fetching posts (lang=${lang}, page=${page}):`, error instanceof Error ? error.message : String(error));
+      break;
     }
-  }));
+    if (!res.ok) {
+      console.warn(`⚠️ Posts (${lang}): API respondeu ${res.status}.`);
+      break;
+    }
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) break;
+    posts.push(...data.filter(post => post?.slug));
+    const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
+    if (page >= totalPages) break;
+    page++;
+  }
+  return posts;
+}
 
-  return result;
+async function fetchPosts() {
+  console.log('📡 Fetching posts from WP REST API...');
+  const [en, pt] = await Promise.all([
+    fetchPostsForLang('en'),
+    fetchPostsForLang('pt'),
+  ]);
+  console.log(`✅ Posts loaded: ${en.length} EN, ${pt.length} PT`);
+  return { en, pt };
 }
 
 async function generateSitemaps() {
@@ -154,7 +171,7 @@ async function generateSitemaps() {
 
     // 1. Pages Sitemap
     let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
@@ -164,10 +181,10 @@ async function generateSitemaps() {
     const getSitemapUrl = (lang, slug) => {
       const parts = [BASE_URL];
       if (lang === 'pt') parts.push('pt');
-      
+
       const cleanSlug = (slug || '').replace(/^\/+|\/+$/g, '');
       if (cleanSlug) parts.push(cleanSlug);
-      
+
       let url = parts.join('/');
       // Garante trailing slash em tudo (padrão do projeto)
       if (!url.endsWith('/')) url += '/';
@@ -201,7 +218,7 @@ async function generateSitemaps() {
         console.warn(`⚠️ Encyclopedia: propriedade 'terms' ausente ou inválida em ${ENCYCLOPEDIA_TERMS_PATH}`);
       }
     } catch (e) {
-      console.warn(`⚠️ Encyclopedia: falha ao ler ${ENCYCLOPEDIA_TERMS_PATH}: ${e.message}`);
+      console.warn(`⚠️ Encyclopedia: falha ao ler ${ENCYCLOPEDIA_TERMS_PATH}: ${e instanceof Error ? e.message : String(e)}`);
     }
     if (encyclopediaRoute && encyclopediaTerms.length > 0) {
       console.log(`📚 Encyclopedia: ${encyclopediaTerms.length} termos carregados.`);
@@ -223,7 +240,7 @@ async function generateSitemaps() {
 
     // 2. Events Sitemap
     const events = await fetchEvents();
-    
+
     // Obter slugs canônicos de eventos do routes-slugs.json
     const eventsRoute = routesData.routes.find(r => r.key === 'events');
     if (!eventsRoute?.en || !eventsRoute?.pt) {
@@ -248,7 +265,7 @@ async function generateSitemaps() {
 
     let eventCount = 0;
     let eventsXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
@@ -256,7 +273,7 @@ async function generateSitemaps() {
       for (const event of events) {
         // Extração robusta do slug final (ID ou path real)
         let relativePath = event.canonical_path || String(event.event_id);
-        
+
         // Remove prefixos conhecidos para isolar o ID/Slug final do evento
         relativePath = relativePath
           .replace(/^https?:\/\/[^\/]+/, '') // Remove domínio se vier absoluto
@@ -296,7 +313,7 @@ async function generateSitemaps() {
 
     let postCount = 0;
     let postsXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">`;
 
@@ -307,16 +324,22 @@ async function generateSitemaps() {
       if (!canonicalPost) continue;
 
       const lastmod = canonicalPost.modified || canonicalPost.date || date;
-      const image = canonicalPost.featured_image_src_full || canonicalPost.featured_image_src || DEFAULT_IMAGE;
+      const image = canonicalPost.featured_image_src_full || canonicalPost.featured_image_src || null;
       const enUrl = getSitemapUrl('en', `${newsRoute.en}/${slug}`);
       const ptUrl = getSitemapUrl('pt', `${newsRoute.pt}/${slug}`);
 
-      if (enPost) {
+      if (enPost && ptPost) {
+        // Both languages exist — emit with hreflang alternates
         postsXml += buildUrlEntry(enUrl, lastmod, '0.7', ptUrl, image, true);
-        postCount++;
-      }
-      if (ptPost) {
         postsXml += buildUrlEntry(ptUrl, lastmod, '0.7', enUrl, image, false);
+        postCount += 2;
+      } else if (enPost) {
+        // EN only — no alternates
+        postsXml += buildUrlEntry(enUrl, lastmod, '0.7', null, image, true);
+        postCount++;
+      } else if (ptPost) {
+        // PT only — no alternates
+        postsXml += buildUrlEntry(ptUrl, lastmod, '0.7', null, image, false);
         postCount++;
       }
     }
@@ -346,7 +369,7 @@ async function generateSitemaps() {
     console.log('════════════════════════════════════════\n');
 
   } catch (error) {
-    console.error('❌ Error:', error);
+    console.error('❌ Error:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }

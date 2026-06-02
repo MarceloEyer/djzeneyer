@@ -1,4 +1,4 @@
-import type { ComponentType } from 'react';
+import { ComponentType, Suspense } from 'react';
 import { useRoutes, RouteObject } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import ErrorBoundary from './common/ErrorBoundary';
@@ -14,7 +14,9 @@ const STANDALONE_ROUTE_KEYS = new Set(['zenlink']);
 
 const wrapRouteElement = (Component: ComponentType) => (
   <ErrorBoundary>
-    <Component />
+    <Suspense fallback={null}>
+      <Component />
+    </Suspense>
   </ErrorBoundary>
 );
 
