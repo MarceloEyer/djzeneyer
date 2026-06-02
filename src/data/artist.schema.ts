@@ -25,8 +25,8 @@ const SAME_AS_SOCIAL_KEYS = [
   'spotify', 'appleMusic', 'YouTube', 'YouTubeMusic',
   'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
   'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
-  'bandcamp', 'amazonMusic', 'mixcloud', 'lastfm', 'songkick',
-  'bandsintown', 'shazam', 'patreon', 'medium', 'genius',
+  'bandcamp', 'amazonMusic', 'mixcloud',
+  'shazam', 'patreon', 'medium', 'genius',
   'audiomack', 'boomplay', 'napster', 'qobuz',
 ] as const;
 

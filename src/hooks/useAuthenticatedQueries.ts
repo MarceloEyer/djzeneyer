@@ -2,6 +2,17 @@
 // Authenticated queries — require JWT token or WP nonce. Short-to-medium TTLs.
 
 import { useQuery } from '@tanstack/react-query';
+
+/** Extracts the JWT `sub` claim (user ID) without verifying the signature.
+ *  Used only as a React Query cache-key discriminator — never for auth decisions. */
+const jwtSub = (token: string | undefined): string => {
+  if (!token) return '';
+  try {
+    return String(JSON.parse(atob(token.split('.')[1])).sub ?? '');
+  } catch {
+    return 'unknown';
+  }
+};
 import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME } from '../config/queryClient';
@@ -168,7 +179,7 @@ export const useZenGameUserData = (token?: string) => useGamipressQuery(undefine
 
 export const useProfileQuery = (token?: string, options: { enabled?: boolean } = {}) =>
   useQuery<UserProfile | null>({
-    queryKey: [...QUERY_KEYS.user.profile(), !!token],
+    queryKey: [...QUERY_KEYS.user.profile(), jwtSub(token)],
     queryFn: async (): Promise<UserProfile | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
@@ -196,7 +207,7 @@ export const useUserOrdersQuery = (
   options: { enabled?: boolean } = {}
 ) =>
   useQuery<WCOrder[]>({
-    queryKey: [...QUERY_KEYS.user.orders(userId, limit), !!token],
+    queryKey: [...QUERY_KEYS.user.orders(userId, limit), jwtSub(token)],
     queryFn: async (): Promise<WCOrder[]> => {
       if (!token || !userId) return [];
       const apiUrl = buildApiUrl('zeneyer-auth/v1/orders', { limit: String(limit) });
