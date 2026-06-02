@@ -233,22 +233,34 @@
         {
             "key": "zouk-history",
             "en": "brazilian-zouk-history",
-            "pt": "historia-zouk-brasileiro"
+            "pt": "historia-zouk-brasileiro",
+            "noindex": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "zouk-musicality",
             "en": "zouk-musicality-guide",
-            "pt": "guia-musicalidade-zouk"
+            "pt": "guia-musicalidade-zouk",
+            "noindex": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "zouk-festivals",
             "en": "zouk-festivals-directory",
-            "pt": "diretorio-festivais-zouk"
+            "pt": "diretorio-festivais-zouk",
+            "noindex": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "artist-collaborations",
             "en": "collaborations",
-            "pt": "colaboracoes"
+            "pt": "colaboracoes",
+            "noindex": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         }
     ]
 }

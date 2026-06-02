@@ -325,7 +325,7 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
   return (
     <>
       <HeadlessSEO
-        title={`${termName} | ${t('seo.title', { ns: 'encyclopedia' })} | ${ARTIST.identity.stageName}`}
+        title={`${termName} | ${t('seo.title_short', { ns: 'encyclopedia' })} | ${ARTIST.identity.stageName}`}
         description={shortAnswer}
         url={pageUrl}
         hrefLang={[
