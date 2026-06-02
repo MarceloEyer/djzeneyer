@@ -96,9 +96,10 @@ describe('MediaPage — render', () => {
     renderPage();
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
-    expect(hrefs.some((h) => h.includes('wikidata.org'))).toBe(true);
-    expect(hrefs.some((h) => h.includes('musicbrainz.org'))).toBe(true);
-    expect(hrefs.some((h) => h.includes('discogs.com'))).toBe(true);
+    const hostname = (href: string) => { try { return new URL(href).hostname; } catch { return ''; } };
+    expect(hrefs.some((h) => hostname(h).endsWith('wikidata.org'))).toBe(true);
+    expect(hrefs.some((h) => hostname(h).endsWith('musicbrainz.org'))).toBe(true);
+    expect(hrefs.some((h) => hostname(h).endsWith('discogs.com'))).toBe(true);
   });
 
   it('renders published works in the clipping list', () => {
@@ -106,7 +107,7 @@ describe('MediaPage — render', () => {
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
     for (const work of PUBLISHED_WORKS) {
-      expect(hrefs.some((h) => h.includes(work.url) || h === work.url)).toBe(true);
+      expect(hrefs.some((h) => h === work.url)).toBe(true);
     }
   });
 

@@ -31,8 +31,13 @@ const getSpotifyEmbedUrl = (url?: string): string | null => {
 
 const getAppleMusicEmbedUrl = (url?: string): string | null => {
   if (!url) return null;
-  if (!url.includes('music.apple.com')) return null;
-  return url.replace('https://music.apple.com/', 'https://embed.music.apple.com/');
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname !== 'music.apple.com') return null;
+    return `https://embed.music.apple.com${parsed.pathname}${parsed.search}`;
+  } catch {
+    return null;
+  }
 };
 
 // ─── Platform config ─────────────────────────────────────────────────────────
