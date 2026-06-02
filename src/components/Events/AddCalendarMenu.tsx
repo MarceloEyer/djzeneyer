@@ -8,9 +8,10 @@ interface AddCalendarMenuProps {
     event: ZenBitEventListItem;
     variant?: 'primary' | 'ghost';
     className?: string;
+    eventUrl?: string;
 }
 
-const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCalendarMenuProps) => {
+const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl }: AddCalendarMenuProps) => {
     const { t } = useTranslation();
 
     const getDetails = () => {
@@ -41,8 +42,11 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
             const loc = event.location;
             const location = loc.venue ? `${loc.venue}, ${loc.city}` : (loc.city || "TBA");
 
-            const eventUrl = `${window.location.origin}${window.location.pathname}`;
-            const details = `${t('events_view_details')}: ${eventUrl}`;
+            const fallbackUrl = typeof window !== 'undefined'
+                ? `${window.location.origin}${window.location.pathname}`
+                : '';
+            const canonicalEventUrl = eventUrl || event.canonical_url || fallbackUrl;
+            const details = `${t('events_view_details')}: ${canonicalEventUrl}`;
 
             return { title, start, end, location, details };
         } catch (error) {
