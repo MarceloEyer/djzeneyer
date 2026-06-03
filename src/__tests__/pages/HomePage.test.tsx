@@ -124,7 +124,7 @@ describe('HomePage — render', () => {
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
     const matchesDomain = (href: string, domain: string) => {
-      try { const h = new URL(href).hostname; return h === domain || h.endsWith(`.${domain}`); } catch { return false; }
+      try { const h = new URL(href, 'http://localhost').hostname; return h === domain || h.endsWith(`.${domain}`); } catch { return false; }
     };
     expect(hrefs.some((h) => matchesDomain(h, 'wikidata.org'))).toBe(true);
     expect(hrefs.some((h) => matchesDomain(h, 'musicbrainz.org'))).toBe(true);
@@ -136,7 +136,7 @@ describe('HomePage — render', () => {
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
     const matchesDomain = (href: string, domain: string) => {
-      try { const h = new URL(href).hostname; return h === domain || h.endsWith(`.${domain}`); } catch { return false; }
+      try { const h = new URL(href, 'http://localhost').hostname; return h === domain || h.endsWith(`.${domain}`); } catch { return false; }
     };
     expect(hrefs.some((h) => matchesDomain(h, 'soundcloud.com'))).toBe(true);
   });
