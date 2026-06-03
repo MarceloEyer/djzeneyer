@@ -26,6 +26,7 @@ class DJZ_Vite_Loader
         // Prioridade 20 para rodar depois dos enqueues padrões
         add_action('wp_enqueue_scripts', [$this, 'enqueue_assets'], 20);
         add_filter('script_loader_tag', [$this, 'add_module_type'], 10, 3);
+        add_filter('style_loader_tag', [$this, 'make_css_async'], 10, 2);
 
         $this->dist_path = get_theme_file_path('/dist');
         $this->dist_url = get_template_directory_uri() . '/dist';
@@ -178,6 +179,23 @@ class DJZ_Vite_Loader
             </script>
             <?php
         }, 1);
+    }
+
+    /**
+     * Make Vite CSS non-render-blocking using media="print" swap trick.
+     * Critical CSS is already inlined in header.php, so deferring the full
+     * bundle is safe and eliminates the render-blocking resource warning.
+     */
+    public function make_css_async($tag, $handle)
+    {
+        if (strpos($handle, 'djz-react-style-') === 0) {
+            $tag = str_replace(
+                "rel='stylesheet'",
+                "rel='stylesheet' media='print' onload=\"this.media='all'\"",
+                $tag
+            );
+        }
+        return $tag;
     }
 
     /**
