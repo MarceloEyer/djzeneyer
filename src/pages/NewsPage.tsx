@@ -452,7 +452,7 @@ const NewsPage: React.FC = () => {
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(post?.excerpt?.rendered || '')) }}
                       />
                       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
-                        <span className="text-xs text-white/40 font-medium">
+                        <span className="text-xs text-white/60 font-medium">
                           {formatDate(post.date, i18n.language)}
                         </span>
                         <Link to={generatePath(newsDetailRoute, { slug: post.slug })} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
@@ -473,7 +473,7 @@ const NewsPage: React.FC = () => {
 
           {!loading && posts.length > 0 && (
             <div className="mt-20 text-center border-t border-white/10 pt-10">
-              <p className="text-white/40 text-sm mb-4">{t('news.end_reached')}</p>
+              <p className="text-white/60 text-sm mb-4">{t('news.end_reached')}</p>
               <button className="btn btn-outline text-sm px-8 py-3 rounded-full hover:bg-white/5">
                 {t('news.view_archive')}
               </button>
