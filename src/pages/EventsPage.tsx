@@ -29,6 +29,12 @@ const SKELETON_ITEMS = [1, 2, 3];
 
 const EventSkeleton = () => (
   <div className="space-y-6">
+    {/* Placeholder matches filter bar height to prevent CLS on load */}
+    <div className="flex flex-wrap justify-center gap-2 mb-12 min-h-[44px]">
+      {[1, 2, 3].map(i => (
+        <div key={i} className="h-[44px] w-24 bg-white/5 rounded-full animate-pulse" />
+      ))}
+    </div>
     {SKELETON_ITEMS.map(i => (
       <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
         <div className="w-12 h-12 bg-white/5 rounded-full" />
