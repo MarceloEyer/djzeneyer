@@ -31,7 +31,7 @@ export const ARTIST = {
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
   titles: {
-    primary: '2022 Brazilian Zouk DJ World Championship winner (Best DJ Performance & Best Remix)',
+    primary: 'Brazilian Zouk DJ World Champion (Best DJ Performance & Best Remix)',
     event: 'Brazilian Zouk DJ World Championship',
     eventUrl: 'https://alexdecarvalho.com.br/ilhadozouk/pt-br/campeonato-de-djs/',
     location: 'Ilha Grande, Rio de Janeiro, Brazil',
@@ -228,7 +228,7 @@ export const ARTIST = {
       type: 'Event'
     },
     {
-      title: 'Zen Eyer - Brazilian Zouk DJ Profile',
+      title: 'DJ Zen Eyer - World Champion DJ Profile',
       description: 'Professional profile highlighting the Best DJ Performance and Best Remix awards won at the 2022 Brazilian Zouk DJ World Championship.',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
       source: 'Ilha do Zouk',

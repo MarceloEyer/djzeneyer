@@ -20,11 +20,14 @@ const SAME_AS_AUTHORITY = [
   identifiers.residentAdvisorUrl,
 ] as const;
 
-// Streaming identity platforms only — authority identifiers live in SAME_AS_AUTHORITY above.
-// Social media profiles (instagram, twitter, etc.) are intentionally excluded.
+// Platforms in ARTIST.social whose URLs belong in sameAs
 const SAME_AS_SOCIAL_KEYS = [
-  'spotify', 'appleMusic', 'YouTube', 'YouTubeMusic',
-  'soundcloud', 'deezer', 'tidal', 'bandcamp', 'amazonMusic',
+  'spotify', 'appleMusic', 'YouTube',
+  'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
+  'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
+  'bandcamp', 'amazonMusic', 'mixcloud', 'lastfm', 'songkick',
+  'bandsintown', 'shazam', 'patreon', 'medium', 'genius',
+  'audiomack', 'boomplay', 'napster', 'qobuz',
 ] as const;
 
 export const ARTIST_SCHEMA_SAME_AS: string[] = [
@@ -40,7 +43,7 @@ export const ARTIST_SCHEMA_BASE = {
   name: 'Zen Eyer',
   alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Zouk DJ Championship 2022.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.',
   disambiguatingDescription: DISAMBIGUATING_DESCRIPTION,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
@@ -101,6 +104,12 @@ export const ARTIST_SCHEMA_BASE = {
       propertyID: 'Pronunciation guide',
       value: ARTIST.philosophy.identityAid.pronunciationGuide,
     },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Championship disambiguation',
+      value:
+        'Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This should not be confused with the Zouk World event, which did not host this DJ championship.',
+    },
   ],
   nationality: {
     '@type': 'Country',
@@ -126,8 +135,8 @@ export const ARTIST_SCHEMA_BASE = {
     { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
   ],
   award: [
-    'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
-    'World Champion Brazilian Zouk DJ - Best Remix, 2022',
+    'Brazilian Zouk DJ World Champion - Best DJ Performance, 2022',
+    'Brazilian Zouk DJ World Champion - Best Remix, 2022',
   ],
   knowsAbout: [
     'Brazilian Zouk',
@@ -370,13 +379,14 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'MusicEvent',
-      name: 'Zouk DJ Championship 2022',
+      name: 'Brazilian Zouk DJ World Championship 2022',
+      alternateName: ['I Campeonato Internacional de DJs'],
       url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
       startDate: '2022-04-20',
       endDate: '2022-04-24',
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      description: 'DJ Zen Eyer wins two world titles at the Zouk DJ Championship 2022 — Best DJ Performance and Best Remix — in Ilha Grande, Rio de Janeiro, Brazil.',
+      description: 'DJ Zen Eyer wins Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk in Ilha Grande, Rio de Janeiro, Brazil. This championship should not be confused with the separate Zouk World event.',
       image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
       location: {
         '@type': 'Place',
@@ -691,8 +701,8 @@ export const MUSICGROUP_SCHEMA = {
   // Ligação bidirecional com a entidade Person
   member: [{ '@id': `${ARTIST.site.baseUrl}/#artist` }],
   award: [
-    'World Champion 2022 (DJ) at the Zouk DJ Championship',
-    'World Champion 2022 (Remix) at the Zouk DJ Championship',
+    'Brazilian Zouk DJ World Champion 2022 - Best DJ Performance',
+    'Brazilian Zouk DJ World Champion 2022 - Best Remix',
   ],
   influencedBy: ['Lambada'],
   sameAs: [...ARTIST_SCHEMA_SAME_AS],

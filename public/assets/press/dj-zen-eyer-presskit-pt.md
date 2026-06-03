@@ -17,7 +17,7 @@ Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias
 
 - Vencedor de Best DJ Performance no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.
 - Vencedor de Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.
-- DJ e produtor musical de Zouk Brasileiro nascido no Rio de Janeiro e baseado em Niteroi, Rio de Janeiro, Brasil.
+- DJ e produtor musical de Zouk Brasileiro do Rio de Janeiro, Brasil.
 - Membro da Mensa International.
 
 ## Presenca Internacional Selecionada

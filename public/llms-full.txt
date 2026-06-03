@@ -4,7 +4,7 @@
 
 ## Professional Identity
 
-Zen Eyer won Best DJ Performance and Best Remix at the **2022 Brazilian Zouk DJ World Championship**, held at Ilha do Zouk and documented in the official rules as the "I Campeonato Internacional de DJs". This championship should not be confused with the separate Zouk World event, which did not host this DJ championship. He is known for his cremoso style in Brazilian Zouk DJing. Born in Rio de Janeiro and based in Niteroi, Rio de Janeiro, Brazil.
+Zen Eyer won Best DJ Performance and Best Remix at the **2022 Brazilian Zouk DJ World Championship**, held at Ilha do Zouk and documented in the official rules as the "I Campeonato Internacional de DJs". This championship should not be confused with the separate Zouk World event, which did not host this DJ championship. He is known for his cremoso style in Brazilian Zouk DJing. Based in Rio de Janeiro, Brazil.
 
 ## Key Identifiers
 
@@ -220,25 +220,16 @@ A: Zen Eyer's music is available on Spotify (https://open.spotify.com/artist/68S
   - https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154
   - https://www.discogs.com/artist/16872046
   - https://isni.org/isni/0000000528931015
-  - https://ra.co/dj/djzeneyer
   - https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw
   - https://music.apple.com/us/artist/1439280950
-  - https://www.youtube.com/@djzeneyer
-  - https://instagram.com/djzeneyer
-  - https://facebook.com/djzeneyer
-  - https://www.linkedin.com/in/eyermarcelo
-  - https://www.tiktok.com/@djzeneyer
-  - https://x.com/djzeneyer
-  - https://bsky.app/profile/djzeneyer.bsky.social
-  - https://www.threads.net/@djzeneyer
-  - https://soundcloud.com/djzeneyer
   - https://www.deezer.com/artist/52900762
   - https://tidal.com/artist/10492592
-  - https://djzeneyer.bandcamp.com
   - https://music.amazon.com/artists/B07JKCDCG8
-  - https://www.mixcloud.com/djzeneyer
-  - https://www.songkick.com/artists/8815204-zen-eyer
-  - https://www.bandsintown.com/a/15619775
+  - https://soundcloud.com/djzeneyer
+  - https://www.instagram.com/djzeneyer/
+  - https://www.facebook.com/djzeneyer/
+  - https://www.youtube.com/@djzeneyer
+  - https://ra.co/dj/djzeneyer
 
 Last updated: May 2026
 
