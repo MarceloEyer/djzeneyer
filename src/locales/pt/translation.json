@@ -1218,5 +1218,6 @@
   },
   "events_search_results": "Resultados para",
   "events_venue": "Local",
-  "quiz_you_are": "Você é..."
+  "quiz_you_are": "Você é...",
+  "share_event": "Compartilhar {{title}}"
 }

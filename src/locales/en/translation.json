@@ -1218,5 +1218,6 @@
       "product": "{{name}} by Zen Eyer",
       "zenlink": "Official Zen Eyer links for music, booking and support"
     }
-  }
+  },
+  "share_event": "Share {{title}}"
 }

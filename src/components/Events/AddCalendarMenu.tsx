@@ -86,6 +86,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
             onClick={openCalendar}
             className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
             title={t('events_add_google')}
+            aria-label={t('events_add_google')}
         >
             <CalendarPlus size={16} />
         </button>

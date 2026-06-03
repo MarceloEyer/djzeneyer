@@ -27,6 +27,7 @@ Todos são invocados via `npm run <script>` definido em `package.json`, exceto o
 | Script | Comando npm | Quando rodar |
 |--------|-------------|--------------|
 | `check-i18n-parity.mjs` | `npm run i18n:check` | CI e antes de PR. Valida paridade de chaves EN/PT em todos os namespaces de `src/locales/`. |
+| `check-seo-invariants.mjs` | `npm run seo:check` | CI e antes de PR. Impede canonicals e outras props SEO baseadas em `window.location.origin`, que vira localhost durante prerender. |
 | `check-utf8-content.mjs` | `npm run utf8:check` | CI. Detecta mojibake (`Ã§`, `Â©` etc.) em arquivos JSON de locale e MDs críticos. |
 | `check-performance-budget.mjs` | `npm run perf:budget` | CI pós-build. Valida orçamentos de Lighthouse/bundle. Baseline atualizado em `lighthouserc.json`. |
 | `perf-baseline.mjs` | `npm run perf:baseline` | Manual. Recalibra o baseline de performance após mudanças estruturais no bundle. |

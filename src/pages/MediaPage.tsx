@@ -42,17 +42,23 @@ const MediaPage: React.FC = () => {
   const currentPath = getLocalizedRoute('media', currentLang);
   const currentUrl = `${artist.site.baseUrl || ARTIST.site.baseUrl}/${currentPath.replace(/^\//, '')}/`;
 
-  const clippingData = useMemo(
-    () => [
+  const clippingData = useMemo(() => {
+    const items = [
       ...PUBLISHED_WORKS.map((work) => ({
         ...work,
         title: t(`published_works.${work.translationKey}.title`),
         description: t(`published_works.${work.translationKey}.description`),
       })),
       ...((artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[]),
-    ],
-    [artist.mediaClipping, t]
-  );
+    ];
+
+    const seen = new Map<string, MediaClippingItem>();
+    for (const item of items) {
+      const key = item.url || `__no-url__${item.title}`;
+      if (!seen.has(key)) seen.set(key, item);
+    }
+    return [...seen.values()];
+  }, [artist.mediaClipping, t]);
 
   const mediaGroups = useMemo(() => [
     {

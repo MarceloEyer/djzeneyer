@@ -156,6 +156,12 @@ const ReleaseDetailPage: React.FC = () => {
     };
   }, [release, pageUrl, musicHubRoute, t]);
 
+  const contributorList = useMemo(() => {
+    if (!release?.contributor) return [];
+    const arr = Array.isArray(release.contributor) ? release.contributor : [release.contributor];
+    return arr as Record<string, unknown>[];
+  }, [release?.contributor]);
+
   if (!release) return <NotFoundPage />;
 
   const displayPlatforms = PLATFORMS.filter((p) => !!release[p.key as keyof typeof release]);
@@ -163,12 +169,6 @@ const ReleaseDetailPage: React.FC = () => {
   const dateDisplay = release.releaseDate
     ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate + 'T12:00:00'))
     : release.releaseYear ?? '';
-
-  const contributorList = useMemo(() => {
-    if (!release.contributor) return [];
-    const arr = Array.isArray(release.contributor) ? release.contributor : [release.contributor];
-    return arr as Record<string, unknown>[];
-  }, [release.contributor]);
 
   return (
     <>

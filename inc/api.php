@@ -75,7 +75,7 @@ function djz_get_menu($request)
 {
     $lang = sanitize_key($request->get_param('lang') ?? 'en');
     $lang = str_starts_with($lang, 'pt') ? 'pt' : 'en';
-    $cache_key = 'djz_menu_v2_' . $lang;
+    $cache_key = 'djz_menu_v3_' . $lang;
 
     $cached = get_transient($cache_key);
     if ($cached)

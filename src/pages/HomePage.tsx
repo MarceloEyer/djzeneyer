@@ -185,7 +185,8 @@ const HomePage: React.FC = () => {
         leadAnswer={t('home.seo.lead_answer')}
         preload={[
           { href: '/images/hero-background-mobile.webp', as: 'image', media: '(max-width: 768px)' },
-          { href: '/images/hero-background.webp', as: 'image', media: '(min-width: 769px)' }
+          { href: '/images/hero-background-1440.webp', as: 'image', media: '(min-width: 769px) and (max-width: 1440px)' },
+          { href: '/images/hero-background.webp', as: 'image', media: '(min-width: 1441px)' }
         ]}
       />
 
@@ -195,7 +196,11 @@ const HomePage: React.FC = () => {
           <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
             <picture>
               <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.webp" />
-              <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
+              <source
+                media="(min-width: 769px)"
+                srcSet="/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
+                sizes="100vw"
+              />
               <img
                 src="/images/hero-background.webp"
                 alt="Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
@@ -245,7 +250,7 @@ const HomePage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 min-h-[44px] shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
-                aria-label="Listen to Zen Eyer on SoundCloud"
+                aria-label={t('home.cta_soundcloud')}
               >
                 <PlayCircle size={22} />
                 <span>{t('home.cta_soundcloud')}</span>
@@ -253,7 +258,7 @@ const HomePage: React.FC = () => {
               <Link
                 to={routes.booking}
                 className="btn btn-outline btn-lg flex items-center gap-2 min-h-[44px] backdrop-blur-sm"
-                aria-label="Book Zen Eyer or Get Press Kit"
+                aria-label={t('home.cta_booking')}
               >
                 <Mail size={22} />
                 <span>{t('home.cta_booking')}</span>

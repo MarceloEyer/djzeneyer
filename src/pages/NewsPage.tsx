@@ -244,7 +244,7 @@ const NewsPage: React.FC = () => {
       <HeadlessSEO
         title={t('news_page_title')}
         description={t('news_page_meta_desc')}
-        url={`${window.location.origin}${newsRoute}`}
+        url={`${ARTIST.site.baseUrl}${newsRoute}`}
         image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-press-og.jpg`}
         imageAlt={t('og.image_alt.news')}
       />
