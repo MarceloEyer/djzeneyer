@@ -96,9 +96,12 @@ describe('MediaPage — render', () => {
     renderPage();
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
-    expect(hrefs.some((h) => h.includes('wikidata.org'))).toBe(true);
-    expect(hrefs.some((h) => h.includes('musicbrainz.org'))).toBe(true);
-    expect(hrefs.some((h) => h.includes('discogs.com'))).toBe(true);
+    const matchesDomain = (href: string, domain: string) => {
+      try { const h = new URL(href, 'http://localhost').hostname; return h === domain || h.endsWith(`.${domain}`); } catch { return false; }
+    };
+    expect(hrefs.some((h) => matchesDomain(h, 'wikidata.org'))).toBe(true);
+    expect(hrefs.some((h) => matchesDomain(h, 'musicbrainz.org'))).toBe(true);
+    expect(hrefs.some((h) => matchesDomain(h, 'discogs.com'))).toBe(true);
   });
 
   it('renders published works in the clipping list', () => {
@@ -106,7 +109,7 @@ describe('MediaPage — render', () => {
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
     for (const work of PUBLISHED_WORKS) {
-      expect(hrefs.some((h) => h.includes(work.url) || h === work.url)).toBe(true);
+      expect(hrefs.some((h) => h === work.url)).toBe(true);
     }
   });
 

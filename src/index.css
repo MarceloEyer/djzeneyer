@@ -122,7 +122,7 @@
   }
 
   .btn-primary {
-    background: rgb(var(--color-primary));
+    background: rgb(var(--color-primary-darker));
     @apply text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-primary;
     box-shadow: 0 4px 20px rgba(var(--color-primary), 0.3);
   }

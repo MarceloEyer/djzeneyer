@@ -117,6 +117,7 @@
     "legal_name": "Marcelo Eyer Fernandes",
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
+    "loading": "Carregando…",
     "copy": "Copiar",
     "retry": "Tentar novamente",
     "close": "Fechar",
@@ -455,6 +456,17 @@
       "cta": "BAIXAR PRESS KIT"
     }
   },
+  "music_catalog_title": "Catálogo Musical",
+  "music_catalog_description": "Faixas, edits e lançamentos do Zen Eyer com metadados para DJs.",
+  "track": {
+    "bpm": "BPM",
+    "energy": "energia",
+    "energy_level": {
+      "chill": "relaxante",
+      "medium": "média",
+      "high": "alta"
+    }
+  },
   "music_page_title": "Hub de Música",
   "music_page_meta_desc": "Ouça as últimas mixagens e produções do Zen Eyer",
   "music": {
@@ -512,7 +524,23 @@
     "dj_tool_kit_cta": "Acessar Downloads",
     "collections_title": "Coleção Musical",
     "collections_desc": "Tracks exclusivas, mixes e playlists curadas por DJ Zen Eyer",
-    "listen_now_on": "Ouça agora em"
+    "listen_now_on": "Ouça agora em",
+    "release_detail": {
+      "back": "Voltar à Música",
+      "listen_on": "Ouvir em",
+      "credits": "Créditos",
+      "role_remixer": "Remixer",
+      "role_performer": "Artista",
+      "role_producer": "Produtor",
+      "original_artist": "Artista original",
+      "collaborator": "Colaborador",
+      "type_label": "Tipo",
+      "date_label": "Lançado em",
+      "duration_label": "Duração",
+      "not_found": "Lançamento não encontrado.",
+      "not_found_back": "Voltar ao Hub de Música"
+    },
+    "release_seo_desc_fallback": "{{name}} — {{type}} de Zen Eyer. Música Zouk Brasileiro."
   },
   "press": {
     "page_title": "Press Kit",
@@ -1191,5 +1219,6 @@
   },
   "events_search_results": "Resultados para",
   "events_venue": "Local",
-  "quiz_you_are": "Você é..."
+  "quiz_you_are": "Você é...",
+  "share_event": "Compartilhar {{title}}"
 }

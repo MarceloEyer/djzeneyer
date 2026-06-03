@@ -86,6 +86,7 @@
     "legal_name": "Marcelo Eyer Fernandes",
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
+    "loading": "Loading…",
     "copy": "Copy",
     "retry": "Try again",
     "close": "Close",
@@ -456,6 +457,17 @@
   "encyclopedia": {
     "nav_label": "Encyclopedia"
   },
+  "music_catalog_title": "Music Catalog",
+  "music_catalog_description": "Tracks, edits and releases by DJ Zen Eyer with DJ-friendly metadata.",
+  "track": {
+    "bpm": "BPM",
+    "energy": "energy",
+    "energy_level": {
+      "chill": "chill",
+      "medium": "medium",
+      "high": "high"
+    }
+  },
   "music_page_title": "Music Hub",
   "music_page_meta_desc": "Listen to the latest mixes and productions by DJ Zen Eyer",
   "music": {
@@ -513,7 +525,23 @@
       "single": "Single"
     },
     "discography_schema_name": "DJ Zen Eyer Discography",
-    "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing."
+    "discography_schema_desc": "Official releases by DJ Zen Eyer, including singles, remixes, and music for Brazilian Zouk dancing.",
+    "release_detail": {
+      "back": "Back to Music",
+      "listen_on": "Listen on",
+      "credits": "Credits",
+      "role_remixer": "Remixer",
+      "role_performer": "Performer",
+      "role_producer": "Producer",
+      "original_artist": "Original artist",
+      "collaborator": "Collaborator",
+      "type_label": "Type",
+      "date_label": "Released",
+      "duration_label": "Duration",
+      "not_found": "Release not found.",
+      "not_found_back": "Back to Music Hub"
+    },
+    "release_seo_desc_fallback": "{{name}} — {{type}} by Zen Eyer. Brazilian Zouk music."
   },
   "press": {
     "page_title": "Press Kit",
@@ -1191,5 +1219,6 @@
       "product": "{{name}} by Zen Eyer",
       "zenlink": "Official Zen Eyer links for music, booking and support"
     }
-  }
+  },
+  "share_event": "Share {{title}}"
 }

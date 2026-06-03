@@ -40,6 +40,8 @@ export interface PreloadItem {
   media?: string;
   type?: string;
   crossOrigin?: string;
+  imageSrcSet?: string;
+  imageSizes?: string;
 }
 
 export interface EventSchemaData {
@@ -392,7 +394,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       {preload.map((item, index) => {
         const safeHref = safeUrl(item.href, '/');
         return safeHref !== '/' ? (
-          <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin} href={safeHref} />
+          <link key={`preload-${index}`} rel="preload" {...item} crossOrigin={item.crossOrigin} href={safeHref} imageSrcSet={item.imageSrcSet} imageSizes={item.imageSizes} />
         ) : null;
       })}
 

@@ -191,7 +191,7 @@ export const ARTIST = {
     audiomack: { url: 'https://audiomack.com/djzeneyer' },
     boomplay: { url: 'https://www.boomplay.com/artists/35157982' },
     napster: { url: 'https://us.napster.com/artist/art.626690096' },
-    qobuz: { url: 'https://www.qobuz.com/artist/7501129' },
+    qobuz: { url: 'https://play.qobuz.com/artist/4083033' },
     patreon: { url: 'https://www.patreon.com/djzeneyer' },
     medium: { url: 'https://medium.com/@djzeneyer' },
     reddit: { url: 'https://www.reddit.com/user/djzeneyer' },
@@ -272,6 +272,14 @@ export const ARTIST = {
       source: 'PR.com',
       date: '2025-11-24',
       type: 'Press Release'
+    },
+    {
+      title: 'The Art of Staying',
+      description: 'sometimes, when nothing impressive seems to be happening — everything is happening.',
+      url: 'https://events.zoukology.com/articles/the-art-of-staying',
+      source: 'Zoukology',
+      date: '2026-05-27',
+      type: 'Article'
     }
   ],
 

@@ -11,7 +11,7 @@ export function buildReleaseCards<T extends Pick<Release, 'id' | 'newsSlugs'>>(
 ): (T & { path: string })[] {
   return discography.map((release) => ({
     ...release,
-    path: getReleasePath(release.newsSlugs?.[lang as 'en' | 'pt'] || release.id),
+    path: getReleasePath(release.newsSlugs?.[lang.slice(0, 2) as 'en' | 'pt'] || release.id),
   }));
 }
 
@@ -36,8 +36,8 @@ export function buildDiscographyListItems(
     !!url && !artistSocialUrls.has(url);
 
   return discography.map((release, index) => {
-    const newsSlug = release.newsSlugs?.[lang as 'en' | 'pt'] || release.id;
-    const releasePath = getNewsDetailPath(newsSlug);
+    const localizedSlug = release.newsSlugs?.[lang.slice(0, 2) as 'en' | 'pt'] || release.id;
+    const releasePath = getNewsDetailPath(localizedSlug);
     const releaseUrl = `${baseUrl}${releasePath}`;
 
     const schemaType =

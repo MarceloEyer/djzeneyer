@@ -1,8 +1,40 @@
 {
   "ci": {
     "collect": {
-      "url": ["https://djzeneyer.com"],
-      "numberOfRuns": 1
+      "url": [
+        "https://djzeneyer.com",
+        "https://djzeneyer.com/pt/eventos-zouk/",
+        "https://djzeneyer.com/releases/"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop"
+      }
+    },
+    "assert": {
+      "preset": "lighthouse:no-pwa",
+      "assertions": {
+        "categories:performance": ["warn", { "minScore": 0.75 }],
+        "categories:accessibility": ["warn", { "minScore": 0.85 }],
+        "categories:best-practices": ["warn", { "minScore": 0.85 }],
+        "categories:seo": ["warn", { "minScore": 0.80 }],
+        "meta-description": ["error", { "minScore": 1 }],
+        "document-title": ["error", { "minScore": 1 }],
+        "html-has-lang": ["error", { "minScore": 1 }],
+        "canonical": ["warn", { "minScore": 1 }],
+        "color-contrast": ["warn", { "minScore": 1 }],
+        "deprecations": ["warn", { "minScore": 1 }],
+        "label-content-name-mismatch": ["warn", { "minScore": 1 }],
+        "lcp-discovery-insight": ["warn", { "minScore": 1 }],
+        "network-dependency-tree-insight": ["warn", { "minScore": 1 }],
+        "unused-javascript": ["warn", { "minScore": 1 }],
+        "uses-responsive-images": ["warn", { "minScore": 1 }],
+        "button-name": ["warn", { "minScore": 1 }],
+        "cls-culprits-insight": ["warn", { "minScore": 1 }],
+        "document-latency-insight": ["warn", { "minScore": 1 }],
+        "redirects": ["warn", { "minScore": 1 }],
+        "robots-txt": ["warn", { "minScore": 1 }]
+      }
     },
     "upload": {
       "target": "temporary-public-storage"
