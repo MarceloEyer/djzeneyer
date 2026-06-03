@@ -135,8 +135,8 @@ export const ARTIST_SCHEMA_BASE = {
     { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
   ],
   award: [
-    'Brazilian Zouk DJ World Champion - Best DJ Performance, 2022',
-    'Brazilian Zouk DJ World Champion - Best Remix, 2022',
+    '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+    '2022 Brazilian Zouk DJ World Championship - Best Remix',
   ],
   knowsAbout: [
     'Brazilian Zouk',
@@ -701,8 +701,8 @@ export const MUSICGROUP_SCHEMA = {
   // Ligação bidirecional com a entidade Person
   member: [{ '@id': `${ARTIST.site.baseUrl}/#artist` }],
   award: [
-    'Brazilian Zouk DJ World Champion 2022 - Best DJ Performance',
-    'Brazilian Zouk DJ World Champion 2022 - Best Remix',
+    '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+    '2022 Brazilian Zouk DJ World Championship - Best Remix',
   ],
   influencedBy: ['Lambada'],
   sameAs: [...ARTIST_SCHEMA_SAME_AS],
