@@ -167,7 +167,7 @@ declare global {
   interface Window {
     __PRERENDER_DATA__?: {
       events?: { en?: ZenBitEventListItem[]; pt?: ZenBitEventListItem[] };
-      menu?: { en?: unknown[]; pt?: unknown[] };
+
       news?: { en?: WPPost[]; pt?: WPPost[] };
       eventsLimit?: number;
       eventsMode?: FetchEventsParams['mode'];

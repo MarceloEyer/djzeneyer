@@ -182,20 +182,39 @@ class DJZ_Vite_Loader
     }
 
     /**
-     * Make Vite CSS non-render-blocking using media="print" swap trick.
+     * Make Vite CSS non-render-blocking using media="print" + footer script swap.
      * Critical CSS is already inlined in header.php, so deferring the full
      * bundle is safe and eliminates the render-blocking resource warning.
+     *
+     * Uses a data attribute + nonce-bearing footer script instead of an inline
+     * onload handler, because script-src 'strict-dynamic' blocks inline event
+     * handlers on non-script elements (no unsafe-inline in CSP).
      */
     public function make_css_async($tag, $handle)
     {
         if (strpos($handle, 'djz-react-style-') === 0) {
-            $tag = str_replace(
-                "rel='stylesheet'",
-                "rel='stylesheet' media='print' onload=\"this.media='all'\"",
+            // Handles both single and double quote variants WordPress may generate
+            $tag = preg_replace(
+                "/rel=(['\"])stylesheet\\1/",
+                'rel=$1stylesheet$1 media=$1print$1 data-async-css=$11$1',
                 $tag
             );
+            if (!has_action('wp_footer', [$this, 'async_css_swap_script'])) {
+                add_action('wp_footer', [$this, 'async_css_swap_script'], 5);
+            }
         }
         return $tag;
+    }
+
+    /**
+     * Outputs the nonce-bearing script that swaps async CSS links to media="all".
+     * Runs at wp_footer priority 5 so styles apply before other footer scripts execute.
+     */
+    public function async_css_swap_script()
+    {
+        $nonce = !empty($GLOBALS['DJZ_CSP_NONCE']) ? $GLOBALS['DJZ_CSP_NONCE'] : '';
+        $nonce_attr = $nonce ? ' nonce="' . esc_attr($nonce) . '"' : '';
+        echo '<script' . $nonce_attr . '>document.querySelectorAll("link[data-async-css]").forEach(function(l){l.media="all"});</script>' . "\n";
     }
 
     /**

@@ -3,10 +3,25 @@
 // navKey must match a key in src/locales/*/translation.json under "nav".
 // iconKey must match a key in PRECOMPUTED_VISUALS in Navbar.tsx.
 
+import routeSlugs from './routes-slugs.json';
+
+// Derived from routes-slugs.json at compile time — typo in routeKey fails the build.
+export type RouteKey = typeof routeSlugs.routes[number]['key'];
+
+export type NavKey =
+  | 'nav.events'
+  | 'nav.music'
+  | 'nav.about'
+  | 'nav.media'
+  | 'nav.shop'
+  | 'nav.booking'
+  | 'nav.sign_in'
+  | 'nav.join_the_tribe';
+
 export interface StaticNavItem {
   id: number;
-  routeKey: string;
-  navKey: string;
+  routeKey: RouteKey;
+  navKey: NavKey;
   iconKey: 'event' | 'shop' | 'tribe' | 'music' | 'work' | 'media' | 'about' | 'default';
 }
 
