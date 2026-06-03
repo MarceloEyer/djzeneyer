@@ -106,8 +106,6 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
 
       const baseOffer = {
         '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD',
         validFrom: startDate,
         availability: isPast
           ? 'https://schema.org/Discontinued'

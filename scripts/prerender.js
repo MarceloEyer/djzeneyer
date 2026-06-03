@@ -556,6 +556,7 @@ function buildPrerenderPayloadForRoute(route, bandsintownData, postsData) {
 
 async function prerender() {
   let browser = null;
+  let exitCode = 0;
   try {
     await startDevServer();
     const [bandsintownData, postsData] = await Promise.all([fetchEvents(), fetchPosts()]);
@@ -788,11 +789,11 @@ async function prerender() {
 
   } catch (error) {
     console.error('FATAL:', error);
-    process.exit(1);
+    exitCode = 1;
   } finally {
     if (browser) await browser.close();
     if (viteProcess) viteProcess.kill();
-    process.exit(0);
+    process.exit(exitCode);
   }
 }
 
