@@ -1,12 +1,8 @@
 // Shared test fixtures — realistic payloads that match production schema shapes.
 
-import type { MenuItem, WPPost, WCProduct } from '../../hooks/usePublicQueries';
+import type { WPPost, WCProduct } from '../../hooks/usePublicQueries';
 import type { UserProfile, AuthSessionResponse, WCOrder } from '../../hooks/useAuthenticatedQueries';
 
-export const mockMenu: MenuItem[] = [
-  { ID: 1, title: 'Events', url: 'https://djzeneyer.com/zouk-events', target: '' },
-  { ID: 2, title: 'Music', url: 'https://djzeneyer.com/zouk-music', target: '' },
-];
 
 export const mockRawEvent = {
   event_id: '12345678',
