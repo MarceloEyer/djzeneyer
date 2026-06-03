@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { ARTIST } from '../../data/artistData';
+import { ARTIST_SCHEMA_SAME_AS } from '../../data/artist.schema';
 
 describe('artistData canonical keys', () => {
   it('has social.YouTube with capital Y (not social.youtube)', () => {
@@ -14,6 +15,11 @@ describe('artistData canonical keys', () => {
     expect(ARTIST.social.YouTubeMusic.url).toMatch(/youtube\.com|music\.youtube/);
     // @ts-expect-error — intentionally testing the wrong key does not exist
     expect((ARTIST.social as Record<string, unknown>).youtubeMusic).toBeUndefined();
+  });
+
+  it('keeps YouTube Music out of artist sameAs', () => {
+    expect(ARTIST_SCHEMA_SAME_AS).toContain(ARTIST.social.YouTube.url);
+    expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.YouTubeMusic.url);
   });
 
   it('has canonical IPA pronunciation', () => {

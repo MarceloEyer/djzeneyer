@@ -17,7 +17,7 @@ updated: "2026-05-30"
 
 **Marcelo Eyer Fernandes**, conhecido artisticamente principalmente como **Zen Eyer**. **DJ Zen Eyer** é apelido público e histórico, mas não substitui o nome principal.
 
-- 2x Campeao Mundial de Brazilian Zouk — Zouk DJ Championship / I Campeonato Internacional de DJs 2022 (Best DJ Performance + Best Remix).
+- Vencedor de Best DJ Performance e Best Remix no 2022 Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs. O campeonato foi realizado dentro do Ilha do Zouk, mas nao escrever "campeao do Ilha do Zouk" nem confundir com Zouk World/Zouk Worlds.
 - DJ, produtor musical e remixer especializado em Brazilian Zouk.
 - Membro da Mensa International.
 - Presenca internacional consolidada. Contagem de paises presenciais: ver `.context/IDENTITY.md` (SSOT). Qualquer alteracao deve ser alinhada em `src/data/artistData.ts`, press kit, Media, About e `/verified-facts/` simultaneamente.

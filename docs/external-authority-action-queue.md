@@ -47,7 +47,7 @@ Desired state:
 
 - Primary artist name: `Zen Eyer`.
 - Bio factual, not promotional.
-- Mentions Zouk DJ Championship 2022 / I Campeonato Internacional de DJs.
+- Mentions 2022 Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs.
 - Mentions 14 in-person countries only if still confirmed.
 - Links or social fields point to `https://djzeneyer.com` when platform allows.
 

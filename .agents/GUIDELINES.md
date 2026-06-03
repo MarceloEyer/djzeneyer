@@ -67,6 +67,7 @@ Valem para código, documentação e arquitetura de agentes. Nenhuma exceção s
 
 7. **Dados do artista:**
    - Em `src/data/artistData.ts`, as chaves `social.YouTube` e `social.YouTubeMusic` sao escritas com Y e T maiusculos. Nao usar `social.youtube` nem `social.youtubeMusic` (lowercase) — essas variantes nao existem no objeto e retornam `undefined` silenciosamente.
+   - Campeonato de DJs: usar `2022 Brazilian Zouk DJ World Championship` (PT: `Campeonato Mundial de DJs de Zouk Brasileiro de 2022`). O nome nas regras oficiais e `I Campeonato Internacional de DJs`; foi realizado dentro do evento Ilha do Zouk. Nao escrever que Zen Eyer foi "campeao do Ilha do Zouk" e nao confundir com Zouk World/Zouk Worlds.
 
 ## 🐘 PHP & WordPress
 

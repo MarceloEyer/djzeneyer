@@ -85,7 +85,7 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 
 - Dados estruturados Person/MusicGroup foram alinhados entre React e Zen SEO Lite.
 - MusicEvent performer passou a apontar para o node MusicGroup.
-- Campeonato foi normalizado como Zouk DJ Championship / I Campeonato Internacional de DJs, evitando confusao com Zouk Worlds.
+- Campeonato foi normalizado como Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs, evitando confusao com Zouk Worlds.
 - Contagem de paises presenciais: ver `.context/IDENTITY.md` (SSOT).
 - Zoukology article foi preparado como published work externo, com relacao `Zen Eyer -> author of -> article -> published by Zoukology`, sem entrar em `sameAs`.
 

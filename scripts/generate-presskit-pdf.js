@@ -58,7 +58,7 @@ const documents = {
       'Brazilian Zouk DJ and music producer for festivals, congresses and dance marathons that need a musical journey built for dancers.',
     heroMeta: 'Rio de Janeiro / Niteroi, Brazil - available worldwide',
     stats: [
-      ['2x', 'Zouk DJ Championship titles'],
+      ['2x', 'Brazilian Zouk DJ World Championship titles'],
       ['15+', 'countries played'],
       ['4', 'continents'],
       ['2015', 'active as Zen Eyer since'],
@@ -75,8 +75,8 @@ const documents = {
     ],
     achievementsTitle: 'Credibility',
     achievements: [
-      'Winner of Best DJ Performance at the Zouk DJ Championship 2022.',
-      'Winner of Best Remix at the Zouk DJ Championship 2022.',
+      'Winner of Best DJ Performance at the 2022 Brazilian Zouk DJ World Championship.',
+      'Winner of Best Remix at the 2022 Brazilian Zouk DJ World Championship.',
       'Brazilian Zouk DJ and music producer from Rio de Janeiro, Brazil.',
       'Member of Mensa International.',
     ],
@@ -114,14 +114,14 @@ const documents = {
       'DJ e produtor musical de Zouk Brasileiro para festivais, congressos e maratonas que precisam de uma jornada musical feita para quem dança.',
     heroMeta: 'Rio de Janeiro / Niteroi, Brasil - disponibilidade internacional',
     stats: [
-      ['2x', 'titulos no Zouk DJ Championship'],
+      ['2x', 'titulos no Campeonato Mundial de DJs de Zouk Brasileiro'],
       ['15+', 'paises onde tocou'],
       ['4', 'continentes'],
       ['2015', 'ativo como Zen Eyer desde'],
     ],
     page2Title: 'Por que contratar Zen Eyer',
     bookingValue:
-      'Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias no Zouk DJ Championship em 2022: Best DJ Performance e Best Remix. O press kit reúne informações para organizadores de festivais, congressos, maratonas e eventos sociais de Zouk Brasileiro.',
+      'Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias no Campeonato Mundial de DJs de Zouk Brasileiro de 2022: Best DJ Performance e Best Remix. O press kit reúne informações para organizadores de festivais, congressos, maratonas e eventos sociais de Zouk Brasileiro.',
     promoterFitTitle: 'Ideal para festivais e maratonas',
     promoterFit: [
       'Experiencia com salas internacionais de Zouk Brasileiro, sociais noturnos e pistas de longa duracao.',
@@ -131,8 +131,8 @@ const documents = {
     ],
     achievementsTitle: 'Credibilidade',
     achievements: [
-      'Vencedor de Best DJ Performance no Zouk DJ Championship 2022.',
-      'Vencedor de Best Remix no Zouk DJ Championship 2022.',
+      'Vencedor de Best DJ Performance no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.',
+      'Vencedor de Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.',
       'DJ e produtor musical de Zouk Brasileiro do Rio de Janeiro, Brasil.',
       'Membro da Mensa International.',
     ],
