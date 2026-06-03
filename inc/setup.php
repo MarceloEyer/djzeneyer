@@ -230,10 +230,7 @@ function djz_remove_query_strings($src)
     return remove_query_arg('ver', $src);
 }
 
-add_action('wp_head', function () {
-    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . PHP_EOL;
-    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . PHP_EOL;
-}, 0);
+// preconnect já está em header.php antes do wp_head(); dns-prefetch seria redundante e mais fraco.
 
 add_filter('wp_lazy_loading_enabled', '__return_true');
 
