@@ -54,59 +54,10 @@ const ZoukFestivalsPage: React.FC = () => {
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('zouk-festivals', currentLang)}`;
 
   const { upcoming, past } = useMemo(() => {
-    // Build "today at UTC midnight" from the user's local calendar date.
-    // new Date('YYYY-MM-DD') parses as UTC midnight, so the threshold must also
-    // be UTC midnight of the user's local date — not UTC midnight of the UTC date,
-    // which would be wrong for users in UTC+ timezones past midnight.
-    const local = new Date();
-    const today = new Date(Date.UTC(local.getFullYear(), local.getMonth(), local.getDate()));
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     return categorizeFestivals(ARTIST.festivals, today);
   }, []);
-  const festivalsSchema = useMemo(() => {
-    const festivals = [...upcoming, ...past];
-
-    return {
-      '@context': 'https://schema.org',
-      '@graph': [
-        {
-          '@type': 'CollectionPage',
-          '@id': `${pageUrl}#webpage`,
-          url: pageUrl,
-          name: t('hub_pages.zouk_festivals.seo_title'),
-          description: t('hub_pages.zouk_festivals.seo_description'),
-          isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
-          about: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
-          mainEntity: { '@id': `${pageUrl}#festivals` },
-        },
-        {
-          '@type': 'ItemList',
-          '@id': `${pageUrl}#festivals`,
-          name: t('hub_pages.zouk_festivals.h1'),
-          itemListElement: festivals.map((festival, index) => ({
-            '@type': 'ListItem',
-            position: index + 1,
-            item: {
-              '@type': 'Event',
-              '@id': `${pageUrl}#festival-${index + 1}`,
-              name: festival.name,
-              url: safeUrl(festival.url, pageUrl),
-              ...(festival.date ? { startDate: festival.date } : {}),
-              eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-              location: {
-                '@type': 'Place',
-                name: festival.country,
-                address: {
-                  '@type': 'PostalAddress',
-                  addressCountry: festival.country,
-                },
-              },
-              performer: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
-            },
-          })),
-        },
-      ],
-    };
-  }, [pageUrl, past, t, upcoming]);
 
   const formatYear = useCallback((date: string | undefined): string => {
     if (!date) return '';
@@ -125,7 +76,6 @@ const ZoukFestivalsPage: React.FC = () => {
         title={t('hub_pages.zouk_festivals.seo_title')}
         description={t('hub_pages.zouk_festivals.seo_description')}
         url={pageUrl}
-        schema={festivalsSchema}
       />
       <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
         <div className="container mx-auto max-w-5xl">

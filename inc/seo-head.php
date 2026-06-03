@@ -38,8 +38,8 @@ add_action('wp_head', function () {
             'Campeonato Mundial de DJs de Zouk Brasileiro - Best Remix, 2022',
         ]
         : [
-            'Brazilian Zouk DJ World Champion - Best DJ Performance, 2022',
-            'Brazilian Zouk DJ World Champion - Best Remix, 2022',
+            '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+            '2022 Brazilian Zouk DJ World Championship - Best Remix',
         ];
 
     $schema = [
