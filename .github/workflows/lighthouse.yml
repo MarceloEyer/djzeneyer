@@ -1,7 +1,9 @@
 name: Lighthouse Audit
 
 on:
-  push:
+  workflow_run:
+    workflows: ["🚀 Deploy Frontend"]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -17,6 +19,7 @@ jobs:
     name: Audit djzeneyer.com
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Checkout
