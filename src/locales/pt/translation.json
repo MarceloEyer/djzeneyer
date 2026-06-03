@@ -538,7 +538,8 @@
       "duration_label": "Duração",
       "not_found": "Lançamento não encontrado.",
       "not_found_back": "Voltar ao Hub de Música"
-    }
+    },
+    "release_seo_desc_fallback": "{{name}} — {{type}} de Zen Eyer. Música Zouk Brasileiro."
   },
   "press": {
     "page_title": "Press Kit",

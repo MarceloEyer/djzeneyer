@@ -167,18 +167,18 @@ const ReleaseDetailPage: React.FC = () => {
   const displayPlatforms = PLATFORMS.filter((p) => !!release[p.key as keyof typeof release]);
   const releaseTypeLabel = t(`music.release_type.${release.type}`);
   const dateDisplay = release.releaseDate
-    ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate))
+    ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate + 'T12:00:00'))
     : release.releaseYear ?? '';
 
   return (
     <>
       <HeadlessSEO
         title={`${release.name} — Zen Eyer`}
-        description={release.description ?? `${release.name} — ${releaseTypeLabel} by Zen Eyer. Brazilian Zouk music.`}
+        description={release.description ?? t('music.release_seo_desc_fallback', { name: release.name, type: releaseTypeLabel })}
         image={release.image}
         imageAlt={`${release.name} cover art`}
         type="music.song"
-        canonicalUrl={pageUrl}
+        url={pageUrl}
         schema={schema}
         noindex={false}
       />

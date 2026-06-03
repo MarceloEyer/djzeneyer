@@ -20,14 +20,11 @@ const SAME_AS_AUTHORITY = [
   identifiers.residentAdvisorUrl,
 ] as const;
 
-// Platforms in ARTIST.social whose URLs belong in sameAs
+// Streaming identity platforms only — authority identifiers live in SAME_AS_AUTHORITY above.
+// Social media profiles (instagram, twitter, etc.) are intentionally excluded.
 const SAME_AS_SOCIAL_KEYS = [
-  'spotify', 'appleMusic', 'youtube', 'YouTubeMusic',
-  'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
-  'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
-  'bandcamp', 'amazonMusic', 'mixcloud', 'lastfm', 'songkick',
-  'bandsintown', 'shazam', 'patreon', 'medium', 'genius',
-  'audiomack', 'boomplay', 'napster', 'qobuz',
+  'spotify', 'appleMusic', 'YouTube', 'YouTubeMusic',
+  'soundcloud', 'deezer', 'tidal', 'bandcamp', 'amazonMusic',
 ] as const;
 
 export const ARTIST_SCHEMA_SAME_AS: string[] = [
