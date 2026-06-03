@@ -22,10 +22,8 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     
     <link rel="preload" as="image" href="/images/hero-background.webp" fetchpriority="high">
-    <!-- Preconnect speeds up the Google Fonts CSS+font file fetches -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Async (non-blocking) font loading — elimina render-blocking -->
+    <!-- Async (non-blocking) font loading — elimina render-blocking
+         preconnect injetado pelo LiteSpeed Cache (optm-dns_preconnect) -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"></noscript>
 
