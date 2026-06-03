@@ -26,19 +26,20 @@ const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'se
 // ============================================================================
 
 const SKELETON_ITEMS = [1, 2, 3];
+const SKELETON_LIST_ITEMS = [1, 2, 3, 4, 5, 6];
 
 const EventSkeleton = () => (
-  <div className="space-y-6">
+  <div className="space-y-6 min-h-[800px]">
     {/* Placeholder matches filter bar height to prevent CLS on load */}
     <div className="flex flex-wrap justify-center gap-2 mb-12 min-h-[44px]">
       {SKELETON_ITEMS.map(i => (
         <div key={i} className="h-[44px] w-24 bg-white/5 rounded-full animate-pulse" />
       ))}
     </div>
-    {SKELETON_ITEMS.map(i => (
-      <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
-        <div className="w-12 h-12 bg-white/5 rounded-full" />
-        <div className="flex-1 space-y-3">
+    {SKELETON_LIST_ITEMS.map(i => (
+      <div key={i} className="h-[76px] bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
+        <div className="w-10 h-10 bg-white/5 rounded-full shrink-0" />
+        <div className="flex-1 space-y-2">
           <div className="h-4 bg-white/5 rounded w-1/4" />
           <div className="h-3 bg-white/5 rounded w-1/2" />
         </div>
@@ -365,9 +366,11 @@ const EventsPage: React.FC = () => {
           </h1>
         </header>
 
-        <React.Suspense fallback={<EventSkeleton />}>
-          <EventListContent lang={lang} />
-        </React.Suspense>
+        <div className="min-h-[800px]">
+          <React.Suspense fallback={<EventSkeleton />}>
+            <EventListContent lang={lang} />
+          </React.Suspense>
+        </div>
 
         <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-white/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
           <Music className="absolute -right-8 -bottom-8 text-white/5 w-48 h-48 rotate-12 z-10" />

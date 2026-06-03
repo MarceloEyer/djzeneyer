@@ -211,12 +211,13 @@ const NewsPage: React.FC = () => {
                 <h1 className="text-2xl sm:text-4xl md:text-6xl font-black font-display leading-tight mb-6 sm:mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost?.title?.rendered ?? '') }} />
 
                 {postImage !== '#' && (
-                  <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl h-[40vh] md:h-[60vh]">
+                  <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
                     <img
                       src={postImage}
                       className="w-full h-full object-cover"
                       alt={stripHtml(singlePost?.title?.rendered || '')}
                       loading="eager"
+                      fetchPriority="high"
                       width="1200"
                       height="675"
                     />
@@ -346,10 +347,14 @@ const NewsPage: React.FC = () => {
             </section>
           )}
 
+          <div className="min-h-[1200px]">
           {loading ? (
             <div className="animate-pulse space-y-8" aria-busy="true" aria-label={t('common.loading')}>
               <div className="aspect-[16/9] bg-white/5 rounded-2xl w-full" />
               <div className="grid md:grid-cols-3 gap-8">
+                <div className="h-[420px] bg-white/5 rounded-xl" />
+                <div className="h-[420px] bg-white/5 rounded-xl" />
+                <div className="h-[420px] bg-white/5 rounded-xl" />
                 <div className="h-[420px] bg-white/5 rounded-xl" />
                 <div className="h-[420px] bg-white/5 rounded-xl" />
                 <div className="h-[420px] bg-white/5 rounded-xl" />
@@ -479,6 +484,7 @@ const NewsPage: React.FC = () => {
               </button>
             </div>
           )}
+          </div>
         </div>
       </div>
     </>
