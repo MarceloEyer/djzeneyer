@@ -19,10 +19,11 @@ const visit = (directory) => {
     if (!/\.(?:ts|tsx)$/.test(entry.name)) continue;
 
     const source = fs.readFileSync(absolutePath, 'utf8');
-    // Check files that import HeadlessSEO for any window.location.origin usage,
-    // not just inline inside JSX — variables assigned outside JSX can carry the
-    // same localhost-origin bug during prerender.
-    if (source.includes('HeadlessSEO') && source.includes('window.location.origin')) {
+    // Strip comments before checking so explanatory comments don't cause false positives.
+    const stripped = source
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/^\s*\/\/.*$/gm, '');
+    if (stripped.includes('HeadlessSEO') && /\bwindow\.location\.origin\b/.test(stripped)) {
       failures.push(
         `${path.relative(ROOT, absolutePath)}: window.location.origin used in file with HeadlessSEO; use ARTIST.site.baseUrl or an API canonical URL`
       );
