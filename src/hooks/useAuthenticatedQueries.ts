@@ -3,12 +3,19 @@
 
 import { useQuery } from '@tanstack/react-query';
 
-/** Extracts the JWT `sub` claim (user ID) without verifying the signature.
+/** Extracts a stable user ID from a ZenEyer JWT without verifying the signature.
+ *  ZenEyer tokens store the user ID at `data.user_id` (not the standard `sub`).
+ *  Falls back to `sub` for forward-compatibility. Base64URL → Base64 conversion
+ *  handles the `-` / `_` characters that would cause atob() to throw.
  *  Used only as a React Query cache-key discriminator — never for auth decisions. */
 const jwtSub = (token: string | undefined): string => {
   if (!token) return '';
   try {
-    return String(JSON.parse(atob(token.split('.')[1])).sub ?? '');
+    const parts = token.split('.');
+    if (parts.length < 3) return 'unknown';
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
+    return String(payload?.data?.user_id ?? payload?.sub ?? 'unknown');
   } catch {
     return 'unknown';
   }

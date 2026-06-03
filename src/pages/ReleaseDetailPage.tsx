@@ -178,7 +178,7 @@ const ReleaseDetailPage: React.FC = () => {
         image={release.image}
         imageAlt={`${release.name} cover art`}
         type="music.song"
-        canonicalUrl={pageUrl}
+        url={pageUrl}
         schema={schema}
         noindex={false}
       />

@@ -54,8 +54,12 @@ const ZoukFestivalsPage: React.FC = () => {
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('zouk-festivals', currentLang)}`;
 
   const { upcoming, past } = useMemo(() => {
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0); // align with new Date('YYYY-MM-DD') which parses as UTC midnight
+    // Build "today at UTC midnight" from the user's local calendar date.
+    // new Date('YYYY-MM-DD') parses as UTC midnight, so the threshold must also
+    // be UTC midnight of the user's local date — not UTC midnight of the UTC date,
+    // which would be wrong for users in UTC+ timezones past midnight.
+    const local = new Date();
+    const today = new Date(Date.UTC(local.getFullYear(), local.getMonth(), local.getDate()));
     return categorizeFestivals(ARTIST.festivals, today);
   }, []);
 
