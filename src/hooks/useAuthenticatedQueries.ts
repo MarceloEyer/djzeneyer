@@ -2,6 +2,24 @@
 // Authenticated queries — require JWT token or WP nonce. Short-to-medium TTLs.
 
 import { useQuery } from '@tanstack/react-query';
+
+/** Extracts a stable user ID from a ZenEyer JWT without verifying the signature.
+ *  ZenEyer tokens store the user ID at `data.user_id` (not the standard `sub`).
+ *  Falls back to `sub` for forward-compatibility. Base64URL → Base64 conversion
+ *  handles the `-` / `_` characters that would cause atob() to throw.
+ *  Used only as a React Query cache-key discriminator — never for auth decisions. */
+const jwtSub = (token: string | undefined): string => {
+  if (!token) return '';
+  try {
+    const parts = token.split('.');
+    if (parts.length < 3) return 'unknown';
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payload = JSON.parse(atob(base64));
+    return String(payload?.data?.user_id ?? payload?.sub ?? 'unknown');
+  } catch {
+    return 'unknown';
+  }
+};
 import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
 import { QUERY_KEYS, STALE_TIME } from '../config/queryClient';
@@ -168,7 +186,7 @@ export const useZenGameUserData = (token?: string) => useGamipressQuery(undefine
 
 export const useProfileQuery = (token?: string, options: { enabled?: boolean } = {}) =>
   useQuery<UserProfile | null>({
-    queryKey: [...QUERY_KEYS.user.profile(), !!token],
+    queryKey: [...QUERY_KEYS.user.profile(), jwtSub(token)],
     queryFn: async (): Promise<UserProfile | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
@@ -196,7 +214,7 @@ export const useUserOrdersQuery = (
   options: { enabled?: boolean } = {}
 ) =>
   useQuery<WCOrder[]>({
-    queryKey: [...QUERY_KEYS.user.orders(userId, limit), !!token],
+    queryKey: [...QUERY_KEYS.user.orders(userId, limit), jwtSub(token)],
     queryFn: async (): Promise<WCOrder[]> => {
       if (!token || !userId) return [];
       const apiUrl = buildApiUrl('zeneyer-auth/v1/orders', { limit: String(limit) });

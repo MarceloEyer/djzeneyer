@@ -1,6 +1,7 @@
 import React from 'react';
 import { CalendarPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { ARTIST } from '../../data/artistData';
 
 import { trackSelectContent } from '../../lib/analytics';
 import type { ZenBitEventListItem } from '../../types/events';
@@ -43,9 +44,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
             const loc = event.location;
             const location = loc.venue ? `${loc.venue}, ${loc.city}` : (loc.city || "TBA");
 
-            const fallbackUrl = typeof window !== 'undefined'
-                ? `${window.location.origin}${window.location.pathname}`
-                : '';
+            const fallbackUrl = `${ARTIST.site.baseUrl}${typeof window !== 'undefined' ? window.location.pathname : ''}`;
             const canonicalEventUrl = eventUrl || event.canonical_url || fallbackUrl;
             const details = `${t('events_view_details')}: ${canonicalEventUrl}`;
 
