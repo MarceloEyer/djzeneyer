@@ -71,10 +71,11 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   // causing window.location.origin to resolve to http://localhost:5173 and producing
   // a localhost canonical URL — a fatal SEO error.
   const origin = ARTIST.site.baseUrl;
-  const { data: event } = useEventById(id, lang as Language);
+  const { data: event, isLoading, isError } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
 
-  if (!event) return <NotFoundPage />;
+  if (isLoading) return <EventDetailSkeleton />;
+  if (isError || !event) return <NotFoundPage />;
 
   const eventDate = new Date(event.starts_at);
   const isValidDate = !isNaN(eventDate.getTime());
@@ -97,7 +98,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
       <HeadlessSEO
         title={event.title}
         description={cleanDescription.substring(0, 160)}
-        url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
+        url={eventDetailUrl}
         image={event.image || undefined}
         imageAlt={t('og.image_alt.events_detail', { eventTitle: event.title, artist: ARTIST.identity.stageName })}
         type="event"
