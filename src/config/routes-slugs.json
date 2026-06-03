@@ -265,7 +265,9 @@
         {
             "key": "release-detail",
             "en": "zouk-music/:id",
-            "pt": "musica-zouk/:id"
+            "pt": "musica-zouk/:id",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         }
     ]
 }

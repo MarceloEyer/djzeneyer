@@ -539,7 +539,8 @@
       "duration_label": "Duration",
       "not_found": "Release not found.",
       "not_found_back": "Back to Music Hub"
-    }
+    },
+    "release_seo_desc_fallback": "{{name}} — {{type}} by Zen Eyer. Brazilian Zouk music."
   },
   "press": {
     "page_title": "Press Kit",
