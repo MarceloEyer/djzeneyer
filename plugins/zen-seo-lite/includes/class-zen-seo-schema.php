@@ -292,8 +292,8 @@ class Zen_SEO_Schema
         ];
 
         $person['award'] = [
-            'Brazilian Zouk DJ World Champion - Best DJ Performance, 2022',
-            'Brazilian Zouk DJ World Champion - Best Remix, 2022',
+            '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+            '2022 Brazilian Zouk DJ World Championship - Best Remix',
         ];
         if (!empty($settings['awards_list'])) {
             $awards = \array_filter(\array_map('trim', \explode("\n", (string) ($settings['awards_list'] ?? ''))));
@@ -371,8 +371,8 @@ class Zen_SEO_Schema
                 ['@type' => 'PropertyValue', 'propertyID' => 'Championship disambiguation', 'value' => 'Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This should not be confused with the Zouk World event, which did not host this DJ championship.'],
             ],
             'award' => [
-                'Brazilian Zouk DJ World Champion 2022 - Best DJ Performance',
-                'Brazilian Zouk DJ World Champion 2022 - Best Remix',
+                '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+                '2022 Brazilian Zouk DJ World Championship - Best Remix',
             ],
         ];
 
