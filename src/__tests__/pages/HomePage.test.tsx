@@ -123,18 +123,22 @@ describe('HomePage — render', () => {
     renderPage();
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
-    const hostname = (href: string) => { try { return new URL(href).hostname; } catch { return ''; } };
-    expect(hrefs.some((h) => hostname(h).endsWith('wikidata.org'))).toBe(true);
-    expect(hrefs.some((h) => hostname(h).endsWith('musicbrainz.org'))).toBe(true);
-    expect(hrefs.some((h) => hostname(h).endsWith('spotify.com'))).toBe(true);
+    const matchesDomain = (href: string, domain: string) => {
+      try { const h = new URL(href, 'http://localhost').hostname; return h === domain || h.endsWith(`.${domain}`); } catch { return false; }
+    };
+    expect(hrefs.some((h) => matchesDomain(h, 'wikidata.org'))).toBe(true);
+    expect(hrefs.some((h) => matchesDomain(h, 'musicbrainz.org'))).toBe(true);
+    expect(hrefs.some((h) => matchesDomain(h, 'spotify.com'))).toBe(true);
   });
 
   it('renders SoundCloud listen link', () => {
     renderPage();
     const links = screen.getAllByRole('link');
     const hrefs = links.map((l) => l.getAttribute('href') ?? '');
-    const hostname = (href: string) => { try { return new URL(href).hostname; } catch { return ''; } };
-    expect(hrefs.some((h) => hostname(h).endsWith('soundcloud.com'))).toBe(true);
+    const matchesDomain = (href: string, domain: string) => {
+      try { const h = new URL(href, 'http://localhost').hostname; return h === domain || h.endsWith(`.${domain}`); } catch { return false; }
+    };
+    expect(hrefs.some((h) => matchesDomain(h, 'soundcloud.com'))).toBe(true);
   });
 
   it('renders stats section with champion value', () => {
