@@ -95,6 +95,7 @@ Valem para código, documentação e arquitetura de agentes. Nenhuma exceção s
    - Decisões operacionais descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`, nunca mantidas apenas em memória local de Claude/Codex/Antigravity.
    - **PRs de documentação exigem leitura completa:** Nunca mergear PR que modifique `docs/`, `.human/`, `.agents/`, `.context/`, `LEARNINGS.md` ou `AGENTS.md` sem ler cada arquivo alterado e verificar que o conteúdo é factualmente correto, não contradiz regras existentes e não promove padrões banidos. Documentação errada guia todos os agentes futuros — é risco igual ou maior que código errado.
    - Antes de alterar, fechar ou mergear qualquer PR, leia `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`. Com GitHub CLI, use `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
+   - **Revisão obrigatória antes de sugerir merge:** Nunca sugira ou execute merge sem antes: (1) ler o diff completo (`gh pr diff <number>`), (2) verificar que cada mudança resolve o problema declarado e não introduz regressões, (3) confirmar que os reviews existentes não levantam objeções não resolvidas. Sugerir merge sem revisar o diff é proibido, mesmo que o CI esteja verde.
    - Se um PR ou review levantar risco de segurança, privacidade ou comportamento de produto, pergunte ao usuário antes de agir quando houver ambiguidade. Não transforme decisão de produto em "correção de segurança" por suposição.
 
 3. **ESLint:**

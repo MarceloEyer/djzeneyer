@@ -347,12 +347,12 @@ const NewsPage: React.FC = () => {
           )}
 
           {loading ? (
-            <div className="animate-pulse space-y-8">
-              <div className="h-[500px] bg-white/5 rounded-2xl w-full" />
+            <div className="animate-pulse space-y-8" aria-busy="true" aria-label={t('common.loading')}>
+              <div className="aspect-[16/9] bg-white/5 rounded-2xl w-full" />
               <div className="grid md:grid-cols-3 gap-8">
-                <div className="h-64 bg-white/5 rounded-xl" />
-                <div className="h-64 bg-white/5 rounded-xl" />
-                <div className="h-64 bg-white/5 rounded-xl" />
+                <div className="h-[420px] bg-white/5 rounded-xl" />
+                <div className="h-[420px] bg-white/5 rounded-xl" />
+                <div className="h-[420px] bg-white/5 rounded-xl" />
               </div>
             </div>
           ) : (
@@ -362,14 +362,21 @@ const NewsPage: React.FC = () => {
                   className="relative group cursor-pointer mb-20"
                 >
                   <Link to={generatePath(newsDetailRoute, { slug: featuredPost.slug })}>
-                    <div className="relative h-[60vh] md:h-[70vh] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
                       <img
                         src={safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
                         alt={stripHtml(featuredPost?.title?.rendered || '')}
                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         loading="eager"
+                        fetchPriority="high"
                         width="1200"
                         height="675"
+                        srcSet={
+                          featuredPost.featured_image_src && featuredPost.featured_image_src !== featuredPost.featured_image_src_full
+                            ? `${safeUrl(featuredPost.featured_image_src)} 800w, ${safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src)} 1200w`
+                            : undefined
+                        }
+                        sizes="100vw"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent opacity-90" />
 
@@ -424,6 +431,7 @@ const NewsPage: React.FC = () => {
                         loading="lazy"
                         width="800"
                         height="600"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                       <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white border border-white/10">
                         <Clock size={12} className="inline mr-1" /> {t('news.read_time', { min: 3 })}
@@ -444,7 +452,7 @@ const NewsPage: React.FC = () => {
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(post?.excerpt?.rendered || '')) }}
                       />
                       <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
-                        <span className="text-xs text-white/40 font-medium">
+                        <span className="text-xs text-white/60 font-medium">
                           {formatDate(post.date, i18n.language)}
                         </span>
                         <Link to={generatePath(newsDetailRoute, { slug: post.slug })} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
@@ -465,7 +473,7 @@ const NewsPage: React.FC = () => {
 
           {!loading && posts.length > 0 && (
             <div className="mt-20 text-center border-t border-white/10 pt-10">
-              <p className="text-white/40 text-sm mb-4">{t('news.end_reached')}</p>
+              <p className="text-white/60 text-sm mb-4">{t('news.end_reached')}</p>
               <button className="btn btn-outline text-sm px-8 py-3 rounded-full hover:bg-white/5">
                 {t('news.view_archive')}
               </button>

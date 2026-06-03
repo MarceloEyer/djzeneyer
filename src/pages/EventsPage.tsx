@@ -29,6 +29,12 @@ const SKELETON_ITEMS = [1, 2, 3];
 
 const EventSkeleton = () => (
   <div className="space-y-6">
+    {/* Placeholder matches filter bar height to prevent CLS on load */}
+    <div className="flex flex-wrap justify-center gap-2 mb-12 min-h-[44px]">
+      {SKELETON_ITEMS.map(i => (
+        <div key={i} className="h-[44px] w-24 bg-white/5 rounded-full animate-pulse" />
+      ))}
+    </div>
     {SKELETON_ITEMS.map(i => (
       <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
         <div className="w-12 h-12 bg-white/5 rounded-full" />
@@ -119,7 +125,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
             {event.image ? (
-              <img src={event.image} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" />
+              <img src={safeUrl(event.image)} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" sizes="(max-width: 1024px) 100vw, 42vw" />
             ) : (
               <div className="w-full h-full bg-surface flex items-center justify-center text-white/10">
                 <Music size={80} />
@@ -225,7 +231,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
-        <p className="text-white/40">{t('events_no_results')}</p>
+        <p className="text-white/60">{t('events_no_results')}</p>
       </div>
     );
   }
@@ -245,7 +251,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           <button
             onClick={() => setSelectedRegion('all')}
-            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/60 border-white/20 hover:border-white/40'}`}
           >
             {t('common.all')}
           </button>
@@ -253,7 +259,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/60 border-white/20 hover:border-white/40'}`}
             >
               {region}
             </button>
@@ -263,7 +269,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
       {filteredEvents.length === 0 ? (
         <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5">
-          <p className="text-white/40">{t('events_no_results_filter')}</p>
+          <p className="text-white/60">{t('events_no_results_filter')}</p>
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {

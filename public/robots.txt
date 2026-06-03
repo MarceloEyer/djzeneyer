@@ -4,7 +4,7 @@
 
 User-agent: *
 Allow: /
-Content-Signal: ai-train=yes, search=yes, ai-input=yes
+# Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 Disallow: /wp-login.php
@@ -140,7 +140,7 @@ Disallow: /trackback/
 Disallow: /*/trackback$
 Disallow: /*/feed/
 Disallow: /comments/feed/
-Crawl-delay: 1
+# Crawl-delay:1
 
 User-agent: GPTBot
 User-agent: ChatGPT-User
@@ -165,7 +165,7 @@ User-agent: BraveBot
 User-agent: Qwenbot
 User-agent: MistralBot
 Allow: /
-Content-Signal: ai-train=yes, search=yes, ai-input=yes
+# Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 Disallow: /wp-login.php
@@ -238,7 +238,7 @@ Disallow: /trackback/
 Disallow: /*/trackback$
 Disallow: /*/feed/
 Disallow: /comments/feed/
-Crawl-delay: 10
+# Crawl-delay:10
 
 User-agent: SemrushBot
 Allow: /
@@ -276,7 +276,7 @@ Disallow: /trackback/
 Disallow: /*/trackback$
 Disallow: /*/feed/
 Disallow: /comments/feed/
-Crawl-delay: 10
+# Crawl-delay:10
 
 User-agent: MJ12bot
 Allow: /
@@ -314,7 +314,7 @@ Disallow: /trackback/
 Disallow: /*/trackback$
 Disallow: /*/feed/
 Disallow: /comments/feed/
-Crawl-delay: 10
+# Crawl-delay:10
 
 User-agent: DotBot
 Allow: /
@@ -352,7 +352,7 @@ Disallow: /trackback/
 Disallow: /*/trackback$
 Disallow: /*/feed/
 Disallow: /comments/feed/
-Crawl-delay: 5
+# Crawl-delay:5
 
 User-agent: Scrapy
 Disallow: /
