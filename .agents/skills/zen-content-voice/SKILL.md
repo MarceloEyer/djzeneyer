@@ -52,10 +52,10 @@ A **Cremosidade** é o diferencial filosófico e sonoro de Zen Eyer. Não é ape
 ### Exemplos de copy aprovados
 
 **Bio curta (PT):**
-> "Zen Eyer é DJ, produtor e bicampeão mundial de Brazilian Zouk. Criador do conceito de Cremosidade: a arte de fazer a música abraçar o dançarino."
+> "Zen Eyer é DJ e produtor de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Criador do conceito de Cremosidade: a arte de fazer a música abraçar o dançarino."
 
 **Bio curta (EN):**
-> "Zen Eyer is a Brazilian Zouk DJ, producer, and two-time world champion. Creator of the Cremosidade concept: the art of making music embrace the dancer."
+> "Zen Eyer is a Brazilian Zouk DJ and producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship. Creator of the Cremosidade concept: the art of making music embrace the dancer."
 
 **Post de evento:**
 > "Esse set foi feito com cuidado. Para cada transição, uma pergunta: isso vai abraçar quem está dançando? Se a resposta for não, refaço. Cremosidade não é estilo; é respeito pela dança."

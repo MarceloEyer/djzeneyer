@@ -6,7 +6,7 @@ Este documento contém as diretrizes estratégicas e ações humanas necessária
 
 A base da autoridade para o Google e o Gemini é o grafo de conhecimento.
 - [ ] **Wikidata (Q136551855):** Adicionar a nova URL da [Enciclopédia Zouk](https://djzeneyer.com/zouk-encyclopedia) como referência em todas as declarações (claims) de prêmios e ocupações.
-- [ ] **Feedback Direto no GKP:** Agora que o Painel foi reclamado, use a opção "Suggest an edit" para garantir que a descrição principal cite explicitamente: *"Zen Eyer is a 2x World Champion Brazilian Zouk DJ..."*.
+- [ ] **Feedback Direto no GKP:** Agora que o Painel foi reclamado, use a opção "Suggest an edit" para garantir que a descrição principal cite explicitamente: *"Zen Eyer is a Brazilian Zouk DJ and music producer who won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship."*.
 - [ ] **Vínculo Oficial:** Verifique se o Search Console do site está vinculado à conta que gerencia o Knowledge Panel.
 
 ## 2. Estratégia Transmídia (Sinais Semânticos)
@@ -30,6 +30,25 @@ As IAs (ChatGPT, Perplexity, etc.) buscam "respostas prontas".
 
 - [ ] **LLMs Context:** A cada 3 meses, revise o arquivo `public/llms-full.txt` para adicionar novos prêmios ou turnês importantes. As IAs cacheiam essas informações por longos períodos.
 - [ ] **Wikipedia:** Não force a criação da página ainda. Foque em conseguir 3 menções em veículos de mídia *independentes* (que não sejam press releases pagos) para garantir a "notabilidade" exigida pelos editores da Wikipedia.
+
+## 6. Plano de fontes de terceiros
+
+O ponto fraco atual não é o site oficial. É a quantidade de fontes externas independentes que confirmam, em texto rastreável, a mesma entidade: Zen Eyer = Brazilian Zouk DJ, produtor, Cremosidade, Best DJ Performance e Best Remix no 2022 Brazilian Zouk DJ World Championship.
+
+Prioridade prática:
+
+1. **Zoukology e artigos assinados:** publicar 1 artigo por mês com byline `Zen Eyer`. Isso conta como sinal de autoria e expertise, mas não como fonte independente sobre Zen Eyer. Use para E-E-A-T e topical authority, não para `sameAs`.
+2. **Entrevistas e perfis editoriais:** buscar 3 páginas em sites de dança, música ou festivais onde outra pessoa escreva sobre Zen Eyer. Essas são as fontes que mais ajudam Knowledge Panel, LLMs e eventual Wikipedia.
+3. **Lineups permanentes de eventos:** para cada booking, pedir página pública indexável com nome `Zen Eyer`, função `Brazilian Zouk DJ`, link oficial e bio curta. Instagram sozinho não basta.
+4. **Podcasts com transcrição:** aceitar entrevistas somente quando houver página ou descrição indexável com transcrição/resumo, nome completo e links oficiais.
+5. **Prova dos prêmios:** quando citar o campeonato, usar sempre `2022 Brazilian Zouk DJ World Championship`, com a observação de que ele foi documentado nas regras como `I Campeonato Internacional de DJs` e não é o evento `Zouk World`.
+
+Meta mínima para subir de 8/10 para 10/10 em autoridade externa:
+
+- 3 matérias independentes sobre Zen Eyer.
+- 5 lineups/event pages permanentes e rastreáveis.
+- 6 artigos assinados por Zen Eyer em veículo externo, conectando Brazilian Zouk, DJs, Cremosidade e música para dança.
+- 1 página de entrevista longa com transcrição.
 
 ---
 **Status:** Implementação Técnica Concluída (Maio 2026)

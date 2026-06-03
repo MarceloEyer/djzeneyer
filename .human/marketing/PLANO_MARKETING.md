@@ -11,7 +11,7 @@
 
 | Ativo | Detalhe | Peso estratégico |
 |---|---|---|
-| Títulos mundiais | 2× Campeão Mundial — Zouk DJ Championship 2022 (Best DJ Performance + Best Remix) | Alto — credencial objetiva, não autoproclamada |
+| Prêmios no campeonato | Best DJ Performance + Best Remix — 2022 Brazilian Zouk DJ World Championship | Alto — credencial objetiva, não autoproclamada |
 | Conceito próprio | "Cremosidade" — filosofia sonora única, proprietária | Alto — diferencia de todos os outros DJs de Zouk |
 | Presença internacional | 14 países presenciais, 4 continentes | Alto — prova social para organizadores europeus |
 | Autoridade digital | Wikidata Q136551855, MusicBrainz, ISNI, Google KGMID, Discogs, RA.co | Médio — base sólida, mas subaproveitada |
@@ -30,7 +30,7 @@
 | SoundCloud | Ativo | Sets e remixes; público de DJs e professores |
 | Mixcloud | Ativo | Mixes de sets — credencial para organizadores europeus |
 
-**Análise:** A disparidade entre credencial (2× campeão mundial) e números de streaming (2.5K ouvintes/mês) é a maior oportunidade. Artistas com títulos equivalentes em outros gêneros têm 10–50× mais ouvintes. Problema: **distribuição e cadência**, não qualidade.
+**Análise:** A disparidade entre credenciais de campeonato (Best DJ Performance + Best Remix) e números de streaming (2.5K ouvintes/mês) é a maior oportunidade. Artistas com prêmios equivalentes em outros gêneros têm 10–50× mais ouvintes. Problema: **distribuição e cadência**, não qualidade.
 
 ### Tour 2026 — status oficial
 
@@ -80,7 +80,7 @@ Zen Eyer não é "mais um DJ de Zouk". É o único que combina:
 ### Por que a Europa é o próximo passo certo
 
 - O mercado europeu de Zouk é o maior fora do Brasil em número de festivais e poder de compra
-- DJs europeus locais não têm títulos mundiais — você tem vantagem objetiva de credencial
+- DJs europeus locais não têm as mesmas credenciais de campeonato — você tem vantagem objetiva de credencial
 - Festivais europeus pagam melhor e têm maior visibilidade internacional
 - Você já tem base em Holanda, Portugal, Eslovênia, Polônia, Irlanda, Lituânia — não é começar do zero
 - A comunidade europeia valoriza identidade sonora clara — a Cremosidade é isso
@@ -130,7 +130,7 @@ Publicar em PT e EN no WordPress (`djzeneyer.com/news`). Estes artigos preenchem
 Este é o maior gap de autoridade. IAs (ChatGPT, Gemini, Perplexity) priorizam fontes Wikipedia quando disponíveis. Sem um artigo, a IA pode não ter base para citar Zen Eyer com confiança.
 
 Fontes já disponíveis para embasar o artigo:
-- Zouk DJ Championship / evento-sede oficial (danceplace.com documenta o contexto histórico de 2022)
+- 2022 Brazilian Zouk DJ World Championship / evento-sede oficial (danceplace.com documenta o contexto histórico de 2022)
 - Wikidata Q136551855 (já existe — o Wikipedia pode linkar)
 - CarryOnHarry.com (cobertura independente)
 
@@ -320,7 +320,7 @@ Rodar anúncio de vídeo de performance com raio de 2–3km em torno do local do
 |---|---|---|---|
 | 1 | 0 | "Bem-vindo à Cremosidade" | História de Zen Eyer em 3 parágrafos + link para mix favorito |
 | 2 | 3 | "O que é Cremosidade?" | Artigo do blog + vídeo de 60s explicando o conceito |
-| 3 | 7 | "Bastidores de um campeonato mundial" | História do Zouk DJ Championship 2022 — antes, durante e depois |
+| 3 | 7 | "Bastidores de um campeonato mundial" | História do 2022 Brazilian Zouk DJ World Championship — antes, durante e depois |
 | 4 | 14 | "Minha música favorita para dançar Zouk" | Curadoria pessoal de 5 músicas com explicação de cada uma |
 | 5 | 21 | "Você tem acesso exclusivo" | Mix privado, desconto na loja, acesso antecipado |
 
@@ -519,7 +519,7 @@ IAs aprendem com conteúdo estruturado, citável e com autoria clara:
 O objetivo é conseguir 3–5 fontes independentes publicadas que o Wikipedia aceite. Foco em portais que têm histórico editorial real:
 - Blogs especializados em dança social com histórico (Dança em Foco, DanceUK, Dance Magazine)
 - Entrevistas em podcasts COM TRANSCRIÇÃO publicada no site
-- Reportagem em jornal/portal (G1 Cultura, R7, Folha) sobre "DJ brasileiro campeão mundial de Zouk"
+- Reportagem em jornal/portal (G1 Cultura, R7, Folha) sobre "DJ brasileiro vence Best DJ Performance e Best Remix em campeonato mundial de DJs de Zouk"
 - Páginas de artistas em festivais internacionais com descrição editorial (não só lista de DJs)
 
 **Fase C — Wikipedia PT (meses 4–8)**
@@ -537,7 +537,7 @@ Com Wikipedia PT existindo + fontes em EN + artigos de blog publicados e indexad
 #### 6.10 Resident Advisor — completar perfil (🔴 AÇÃO MANUAL)
 
 O perfil `ra.co/dj/djzeneyer` existe no `sameAs` mas precisa de:
-- Bio atualizada com títulos mundiais e anos
+- Bio atualizada com Best DJ Performance, Best Remix e ano
 - Foto profissional recente (mesma da identidade visual do site)
 - Todos os eventos futuros linkados
 
@@ -656,7 +656,7 @@ A estratégia de IA não é um truque técnico. É garantir que quando alguém p
 - [x] ✅ Apple Music for Artists — perfil verificado
 - [ ] 🔴 Verificar/ativar Google Search Console (se ainda não ativo)
 - [ ] 🔴 Ativar Bing Webmaster Tools (alimenta o ChatGPT via Bing)
-- [ ] 🔴 Atualizar bio no RA.co com títulos mundiais e Cremosidade
+- [ ] 🔴 Atualizar bio no RA.co com Best DJ Performance, Best Remix e Cremosidade
 
 ### Mês 1
 

@@ -351,7 +351,7 @@ class DJZ_AI_Authority
             $fragments[] = [
                 "id" => "faq-zouk-brasileiro",
                 "title" => "Perguntas Frequentes sobre Zouk Brasileiro",
-                "summary" => "Respostas oficiais de um campeão mundial.",
+                "summary" => "Respostas oficiais sobre Zen Eyer, Brazilian Zouk e Cremosidade.",
                 "content" => $faq_data,
                 "canonical_url" => $base_url . '/faq',
                 "type" => "faq",

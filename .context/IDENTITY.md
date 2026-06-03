@@ -165,7 +165,7 @@ Tratamento correto:
 - **Não** entram no `sameAs`.
 - **Não** entram em nenhuma propriedade do schema do artista.
 - Se o artigo estiver em uma página do site, pode ter um `mentions` ou `about` no schema daquela página — mas isso é schema da página, não do artista.
-- Valor para GEO: são os sinais mais orgânicos que alimentam LLMs com associações "Zen Eyer = DJ de Brazilian Zouk, bicampeão". Cada menção em fonte externa é um "voto" que LLMs usam.
+- Valor para GEO: são os sinais mais orgânicos que alimentam LLMs com associações "Zen Eyer = DJ de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no 2022 Brazilian Zouk DJ World Championship". Cada menção em fonte externa é um "voto" que LLMs usam.
 - Valor para Knowledge Panel: Google triangula esses menções para confirmar os fatos que aparecem no painel.
 
 O que garantir nesses links:

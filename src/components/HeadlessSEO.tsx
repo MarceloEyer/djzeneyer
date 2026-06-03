@@ -201,7 +201,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
 
   // 2. Fallbacks
   const rawDescription = data?.desc || description || artist.site.defaultDescription;
-  const finalTitle = data?.title || title || 'Zen Eyer | World Champion Brazilian Zouk DJ';
+  const finalTitle = data?.title || title || 'Zen Eyer | Brazilian Zouk DJ & Music Producer';
 
   // AIO Enhancement: Lead Answer logic
   const finalDescription = leadAnswer

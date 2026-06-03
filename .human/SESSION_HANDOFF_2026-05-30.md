@@ -134,7 +134,7 @@ Este é um dos erros mais comuns e mais prejudiciais que agentes cometem. O meca
 
 2. **Artigos escritos por Zen Eyer** (ex: Zoukology) → schema vai no artigo com `author: {"@id": "/#artist"}`. Isso diz: "Zen Eyer escreveu este artigo". É um sinal de Expertise no E-E-A-T. O Google usa isso para confirmar expertise tópica em Brazilian Zouk. O erro seria colocar o URL do artigo no `sameAs` do artista — o Google não interpreta isso como "este é outro perfil do artista", mas como dado incoerente.
 
-3. **Reportagens sobre ele** (outros escrevem) → não têm relação de schema com o artista. Seu valor é como citação que alimenta LLMs durante treinamento. Cada artigo de imprensa que menciona "Zen Eyer, bicampeão do Zouk DJ Championship" é um token que LLMs aprendem a associar com o nome. Isso não precisa de schema — precisa de consistência de nomenclatura.
+3. **Reportagens sobre ele** (outros escrevem) → não têm relação de schema com o artista. Seu valor é como citação que alimenta LLMs durante treinamento. Cada artigo de imprensa que menciona "Zen Eyer, Brazilian Zouk DJ, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship" é um token que LLMs aprendem a associar com o nome. Isso não precisa de schema — precisa de consistência de nomenclatura.
 
 4. **Páginas de lineup de eventos** → mesmo caso: não têm relação de schema com o artista. Seu valor é como prova de atividade que o Google usa para confirmar que a entidade é um performer ativo, e como frequência de menção cross-platform para LLMs.
 

@@ -249,10 +249,7 @@
         {
             "key": "zouk-festivals",
             "en": "zouk-festivals-directory",
-            "pt": "diretorio-festivais-zouk",
-            "noindex": true,
-            "excludeFromSitemap": true,
-            "excludeFromPrerender": true
+            "pt": "diretorio-festivais-zouk"
         },
         {
             "key": "artist-collaborations",

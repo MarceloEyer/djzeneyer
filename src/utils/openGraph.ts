@@ -37,8 +37,8 @@ const OG_ALT_TRANSLATIONS: Record<AltKey, Record<Language, string>> = {
     pt: 'Imagem oficial de imprensa de Zen Eyer',
   },
   facts: {
-    en: 'Zen Eyer with his Brazilian Zouk DJ world championship trophy',
-    pt: 'Zen Eyer com seu troféu de campeão mundial de DJ de Zouk Brasileiro',
+    en: 'Zen Eyer with his Brazilian Zouk DJ championship trophy',
+    pt: 'Zen Eyer com seu troféu do campeonato de DJ de Zouk Brasileiro',
   },
   shop: {
     en: 'Zen Eyer celebrating with the Brazilian Zouk community',

@@ -12,7 +12,7 @@ Como você teve o artigo aprovado e é editor lá, esse é o seu maior "Backlink
 
 O Google puxa as informações do seu perfil de artista do Spotify.
 - [ ] No **Spotify for Artists**, certifique-se de que o link principal do site seja `https://djzeneyer.com/`.
-- [ ] Na sua Bio do Spotify, coloque exatamente os mesmos fatos presentes na sua página `About` (como "World Champion Zouk DJ").
+- [ ] Na sua Bio do Spotify, coloque exatamente os mesmos fatos presentes na sua página `About` (como "winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship").
 
 ## 3. Wikidata
 

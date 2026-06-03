@@ -30,6 +30,8 @@ If it fails, a `dist/` artifact is uploaded for debugging.
 
 ## Daily deploy
 
+Daily prerender is the intended cadence for the current content model. Events are refreshed by the BIT plugin, WordPress content is low-volume, and most authority pages are evergreen. Improve freshness with monitoring and invariant checks, not by increasing deploy frequency without a concrete freshness problem.
+
 `deploy-frontend.yml` runs every day at 04:00 UTC via cron. This triggers a full prerender and deploy, which refreshes event data, sitemaps, and all pre-rendered pages automatically. The quality gate runs only on code changes (push/PR) — it does not run daily, since the daily deploy already handles freshness.
 
 ## Developer workflow

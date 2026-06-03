@@ -28,9 +28,9 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 1. Acesse `artists.spotify.com` com sua conta de artista.
 2. Vá em **Profile** → **Edit profile**.
 3. Campo **Bio (PT):** substitua pelo texto:
-   > Zen Eyer é DJ, produtor e bicampeão mundial de Brazilian Zouk. Vencedor do Zouk DJ Championship 2022 / I Campeonato Internacional de DJs nas categorias Best DJ Performance e Best Remix. Criador do conceito Cremosidade — a filosofia sonora que faz a música abraçar o dançarino. Presença em 14 países.
+   > Zen Eyer é DJ e produtor de Brazilian Zouk. Vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022 / I Campeonato Internacional de DJs. Criador do conceito Cremosidade — a filosofia sonora que faz a música abraçar o dançarino. Presença em 14 países.
 4. Campo **Bio (EN):**
-   > Zen Eyer is a Brazilian Zouk DJ, producer, and two-time world champion. Winner of the Zouk DJ Championship 2022 / I Campeonato Internacional de DJs (Best DJ Performance and Best Remix). Creator of the Cremosidade concept: the art of making music embrace the dancer. Active in 14 countries.
+   > Zen Eyer is a Brazilian Zouk DJ and producer. Winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs. Creator of the Cremosidade concept: the art of making music embrace the dancer. Active in 14 countries.
 5. **Regras para a bio:** não usar "melhor DJ", "revolucionário", "única no mundo" ou qualquer superlativo não verificável. Apenas fatos com fonte.
 6. Verificar que o **nome do artista** no campo de identidade está como "Zen Eyer" (não "DJ Zen Eyer").
 
@@ -58,7 +58,7 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 1. Acesse YouTube Studio → **Customization** → **Basic info**.
 2. **Nome do canal:** garantir que está como "Zen Eyer" (não "DJ Zen Eyer").
 3. **Descrição do canal:** atualizar para algo como:
-   > Zen Eyer — DJ, produtor e bicampeão mundial de Brazilian Zouk. Criador do conceito Cremosidade. Zouk DJ Championship 2022. Música, sets e remixes de Brazilian Zouk. Pronunciação: /zɛn ˈaɪər/ (Zen rima com "Zen Buddhism"; Eyer soa como "Eye-er"). Website: djzeneyer.com
+   > Zen Eyer — DJ e produtor de Brazilian Zouk. Criador do conceito Cremosidade. Vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Música, sets e remixes de Brazilian Zouk. Pronunciação: /zɛn ˈaɪər/ (Zen rima com "Zen Buddhism"; Eyer soa como "Eye-er"). Website: djzeneyer.com
 4. Verificar que o **website** linkado é `https://djzeneyer.com`.
 
 **Passos — vídeos principais:**
@@ -108,7 +108,7 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 **Por quê:** Wikipedia é uma das fontes mais citadas por LLMs e uma das principais âncoras do Knowledge Panel do Google. Um artigo sobre o **campeonato** (não sobre Zen Eyer diretamente) que mencione o vencedor de 2022 seria o sinal GEO mais forte possível.
 
 **Passos:**
-1. Pesquisar no Wikipedia em inglês e português: "Zouk DJ Championship", "I Campeonato Internacional de DJs", "Brazilian Zouk Championship".
+1. Pesquisar no Wikipedia em inglês e português: "Brazilian Zouk DJ World Championship", "I Campeonato Internacional de DJs", "Campeonato Mundial de DJs de Zouk Brasileiro".
 2. Se **não existir artigo**: avaliar criar um artigo sobre o campeonato em si — focado nos fatos do evento, não em você. Um artigo neutro sobre o campeonato que mencione "o vencedor de 2022, Zen Eyer" tem maior chance de ser aceito do que um artigo biográfico.
 3. Se **já existir artigo**: verificar se menciona o resultado de 2022 e se o nome está correto.
 4. Qualquer artigo no Wikipedia sobre o campeonato deve citar fontes externas verificáveis (site do campeonato, notícia, etc.) — não pode citar apenas o próprio site do artista.

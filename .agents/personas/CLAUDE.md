@@ -7,7 +7,7 @@
 
 ## Projeto
 
-Site e plataforma oficial de Zen Eyer, nome artistico publico principal de Marcelo Eyer Fernandes, bicampeao mundial de Brazilian Zouk. DJ Zen Eyer e alias importante e historico, mas nao substitui o nome principal.
+Site e plataforma oficial de Zen Eyer, nome artistico publico principal de Marcelo Eyer Fernandes, DJ e produtor de Brazilian Zouk vencedor de Best DJ Performance e Best Remix no 2022 Brazilian Zouk DJ World Championship. DJ Zen Eyer e alias importante e historico, mas nao substitui o nome principal.
 Pronuncia canonica: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta. Nenhuma outra forma e aceita.
 Arquitetura: WordPress headless + React SPA, com frontend pre-renderizado em build time (SSG) e implantado como tema WordPress bilingue EN/PT.
 Producao: https://djzeneyer.com
