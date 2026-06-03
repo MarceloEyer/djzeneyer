@@ -67,11 +67,6 @@ RewriteCond %{HTTP_COOKIE} wordpress_logged_in_|woocommerce_cart_hash|woocommerc
 RewriteRule .* - [E=Cache-Control:no-cache]
 ### marker NOCACHE COOKIES end ###
 
-### marker NOCACHE USER AGENTS start ###
-RewriteCond %{HTTP_USER_AGENT} /wp\-json/\*|/feed/\*|/comments/feed/\*|/api/\* [NC]
-RewriteRule .* - [E=Cache-Control:no-cache]
-### marker NOCACHE USER AGENTS end ###
-
 ### marker WEBP start ###
 RewriteCond %{HTTP_ACCEPT} image/webp [OR]
 RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
@@ -180,7 +175,7 @@ CacheKeyModify -qs:_ga
     <FilesMatch "\.(css|js|mjs|woff|woff2|ttf|otf)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$">
         Header set Cache-Control "public, max-age=15552000"
     </FilesMatch>
     <FilesMatch "\.webmanifest$">
