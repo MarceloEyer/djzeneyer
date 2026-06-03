@@ -224,7 +224,7 @@ class Zen_SEO_Schema
             'alternateName' => ['DJ Zen Eyer'],
             'birthName' => 'Marcelo Eyer Fernandes',
             'description' => 'Zen Eyer is a Brazilian Zouk DJ, music producer, and remixer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.',
-            'disambiguatingDescription' => 'Zen Eyer is pronounced /zÉ›n ËˆaÉªÉ™r/. DJ Zen Eyer is a commonly used stage-name variant; Zen Ayer is a common misspelling, not an official artist name.',
+            'disambiguatingDescription' => 'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used stage-name variant; Zen Ayer is a common misspelling, not an official artist name.',
             'url' => $base_url,
             'image' => $image,
             'jobTitle' => ['DJ', 'Music Producer', 'Remixer'],
@@ -248,8 +248,8 @@ class Zen_SEO_Schema
             'identifier' => $this->get_canonical_identifier_nodes(),
             'sameAs' => $this->get_schema_same_as_urls($settings),
             'additionalProperty' => [
-                ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zÉ›n ËˆaÉªÉ™r/'],
-                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Ãier.'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zɛn ˈaɪər/'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.'],
                 ['@type' => 'PropertyValue', 'propertyID' => 'Championship disambiguation', 'value' => 'Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This should not be confused with the Zouk World event, which did not host this DJ championship.'],
             ],
         ];
@@ -268,7 +268,7 @@ class Zen_SEO_Schema
 
         $person['homeLocation'] = [
             '@type' => 'Place',
-            'name' => !empty($settings['home_location']) ? \sanitize_text_field((string) $settings['home_location']) : 'NiterÃ³i, Rio de Janeiro, Brazil',
+            'name' => !empty($settings['home_location']) ? \sanitize_text_field((string) $settings['home_location']) : 'Niterói, Rio de Janeiro, Brazil',
         ];
 
         // Contact point - Only if email is set
@@ -345,7 +345,7 @@ class Zen_SEO_Schema
             'name' => 'Zen Eyer',
             'alternateName' => ['DJ Zen Eyer'],
             'description' => 'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases. DJ Zen Eyer is a commonly used stage-name variant.',
-            'disambiguatingDescription' => 'Zen Eyer is pronounced /zÉ›n ËˆaÉªÉ™r/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.',
+            'disambiguatingDescription' => 'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is an important alias; Zen Ayer is a misspelling, not an official artist name.',
             'url' => $base_url,
             'image' => $image,
             'genre' => ['Brazilian Zouk', 'Zouk', 'Dance Music', 'Latin Dance Music'],
@@ -366,8 +366,8 @@ class Zen_SEO_Schema
             'sameAs' => $this->get_schema_same_as_urls($settings),
             'identifier' => $this->get_canonical_identifier_nodes(),
             'additionalProperty' => [
-                ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zÉ›n ËˆaÉªÉ™r/'],
-                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Ãier.'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zɛn ˈaɪər/'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.'],
                 ['@type' => 'PropertyValue', 'propertyID' => 'Championship disambiguation', 'value' => 'Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This should not be confused with the Zouk World event, which did not host this DJ championship.'],
             ],
             'award' => [
