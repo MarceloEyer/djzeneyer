@@ -32,6 +32,8 @@ interface UserContextType {
   requestPasswordReset: (email: string) => Promise<void>;
   resetPassword: (key: string, login: string, password: string) => Promise<void>;
   clearError: () => void;
+  // Opção D: busca o Google Client ID sob demanda (chamado pelo AuthModal ao abrir)
+  loadGoogleClientId: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -63,74 +65,70 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   // ========================================================================
-  // INICIALIZAÇÃO
+  // INICIALIZAÇÃO — Opção D: sem fetch de /settings no mount
+  // Sessão restaurada imediatamente do localStorage; /settings só é buscado
+  // quando AuthModal abre (via loadGoogleClientId).
   // ========================================================================
   useEffect(() => {
-    const init = async () => {
+    const token = localStorage.getItem('zen_jwt');
+    const savedUser = localStorage.getItem('zen_user');
+
+    if (token && savedUser) {
       try {
-        // 1. Busca Google Client ID
-        const settingsRes = await fetch(`${API_URL}/settings`);
-        const settingsText = await settingsRes.text();
+        const parsedUser = JSON.parse(savedUser);
+        setUser({ ...parsedUser, token, isLoggedIn: true });
 
-        if (settingsText.trim().startsWith('<!DOCTYPE') || settingsText.trim().startsWith('<html')) {
-          console.error('[UserContext] ❌ ERRO: Backend retornou HTML ao invés de JSON!');
-          console.error('[UserContext] 💡 Possíveis causas:');
-          console.error('  1. Plugin ZenEyer Auth não está ativo');
-          console.error('  2. Rewrite rules não foram flushed (wp rewrite flush)');
-          console.error('  3. .htaccess bloqueando o endpoint');
-          setError('Plugin de autenticação não está configurado. Contate o administrador.');
-          setLoadingInitial(false);
-          return;
-        }
-
-        const settingsData = JSON.parse(settingsText);
-
-        if (settingsData.success && settingsData.data.google_client_id) {
-          setGoogleClientId(settingsData.data.google_client_id);
-        } else {
-          console.warn('[UserContext] ⚠️ Google Client ID não configurado');
-        }
-
-        // 2. Restaura Sessão
-        const token = localStorage.getItem('zen_jwt');
-        const savedUser = localStorage.getItem('zen_user');
-
-        if (token && savedUser) {
-          const parsedUser = JSON.parse(savedUser);
-          // Garante que o token de zen_jwt esteja sempre presente no user,
-          // mesmo se zen_user foi salvo por versão anterior sem o campo token.
-          setUser({ ...parsedUser, token, isLoggedIn: true });
-
-          // Validação silenciosa
-          queryClient.fetchQuery({
-            queryKey: QUERY_KEYS.user.session(Boolean(token)),
-            queryFn: () => fetchAuthSessionFn(token),
-            staleTime: 0,
+        // Valida token em background sem bloquear a UI
+        queryClient.fetchQuery({
+          queryKey: QUERY_KEYS.user.session(Boolean(token)),
+          queryFn: () => fetchAuthSessionFn(token),
+          staleTime: 0,
+        })
+          .then(data => {
+            if (!data.authenticated) {
+              logout();
+              return;
+            }
+            if (data.user) {
+              saveSession(data.user, token);
+            }
           })
-            .then(data => {
-              if (!data.authenticated) {
-                logout();
-                return;
-              }
-
-              if (data.user) {
-                saveSession(data.user, token);
-              }
-            })
-            .catch(err => {
-              console.error('[UserContext] ❌ Erro na validação:', err);
-            });
-        }
+          .catch(err => {
+            console.error('[UserContext] ❌ Erro na validação:', err);
+          });
       } catch (err) {
-        console.error('[UserContext] ❌ Falha na inicialização:', err);
-        setError('Erro ao conectar com o servidor de autenticação');
-      } finally {
-        setLoadingInitial(false);
+        console.error('[UserContext] ❌ Erro ao restaurar sessão:', err);
+        logout();
       }
-    };
+    }
 
-    init();
-  }, [API_URL, logout, saveSession]);
+    setLoadingInitial(false);
+  }, [logout, saveSession]);
+
+  // ========================================================================
+  // LOAD GOOGLE CLIENT ID — chamado pelo AuthModal ao abrir
+  // Falha isolada: apenas oculta botão Google, email login continua
+  // ========================================================================
+  const loadGoogleClientId = useCallback(async () => {
+    if (googleClientId !== null) return;
+    try {
+      const res = await fetch(`${API_URL}/settings`);
+      const text = await res.text();
+      if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+        console.warn('[UserContext] ⚠️ /settings retornou HTML — Google OAuth indisponível');
+        return;
+      }
+      const data = JSON.parse(text);
+      if (data.success && data.data?.google_client_id) {
+        setGoogleClientId(data.data.google_client_id);
+      } else {
+        console.warn('[UserContext] ⚠️ Google Client ID não configurado no backend');
+      }
+    } catch (err) {
+      console.warn('[UserContext] ⚠️ Falha ao carregar /settings — Google OAuth indisponível:', err);
+      // Não propaga: email login continua funcionando normalmente
+    }
+  }, [API_URL, googleClientId]);
 
 
 
@@ -316,7 +314,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const clearError = useCallback(() => setError(null), []);
 
-  // ⚡ Bolt: Wrapped context value with useMemo to prevent unnecessary re-renders of all consumer components when Provider re-renders.
   const value = useMemo(() => ({
     user,
     googleClientId,
@@ -330,7 +327,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     logout,
     requestPasswordReset,
     resetPassword,
-    clearError
+    clearError,
+    loadGoogleClientId,
   }), [
     user,
     googleClientId,
@@ -343,7 +341,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     logout,
     requestPasswordReset,
     resetPassword,
-    clearError
+    clearError,
+    loadGoogleClientId,
   ]);
 
   // ========================================================================

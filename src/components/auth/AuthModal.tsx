@@ -1,7 +1,7 @@
 // src/components/auth/AuthModal.tsx
 // VERSÃO DEFINITIVA: SEGURANÇA MÁXIMA (Turnstile + Honeypot) + UX PREMIUM
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { X, Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
@@ -47,7 +47,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { login, register, googleLogin, googleClientId } = useUser();
+  const { login, register, googleLogin, googleClientId, loadGoogleClientId } = useUser();
+
+  // Opção D: busca o Google Client ID apenas quando o modal abre
+  useEffect(() => {
+    if (isOpen) {
+      loadGoogleClientId();
+    }
+  }, [isOpen, loadGoogleClientId]);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   // Estados do Formulário
