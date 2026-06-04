@@ -122,7 +122,9 @@
         {
             "key": "tickets",
             "en": "tickets",
-            "pt": "ingressos"
+            "pt": "ingressos",
+            "noindex": true,
+            "excludeFromSitemap": true
         },
         {
             "key": "tickets-checkout",
@@ -193,6 +195,7 @@
             "key": "quiz",
             "en": "quiz",
             "pt": "perguntas",
+            "noindex": true,
             "excludeFromSitemap": true,
             "excludeFromPrerender": true
         },

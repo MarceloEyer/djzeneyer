@@ -439,7 +439,7 @@
     "back_to_list": "BACK TO RELEASES & NOTES",
     "by": "By",
     "read_full": "READ FULL STORY",
-    "latest_stories": "Latest Stories",
+    "latest_stories": "Latest Releases",
     "latest_stories_title": "Latest Releases & <1>Notes</1>",
     "read_more": "Read More",
     "end_reached": "You've reached the end of recent updates.",
@@ -981,7 +981,8 @@
     },
     "lineups": {
       "title": "International Line-ups",
-      "subtitle": "Some of the stages where Brazilian Zouk found its unhurried flow."
+      "subtitle": "Some of the stages where Brazilian Zouk found its unhurried flow.",
+      "global_note": "+ the world tour continues across the Americas, Europe, and Oceania."
     }
   },
   "events_add_google": "Add to Calendar",
