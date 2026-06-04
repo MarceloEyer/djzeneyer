@@ -5,7 +5,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
 import MusicPage from '../../pages/MusicPage';
 import { ARTIST } from '../../data/artistData';
-import { DISCOGRAPHY, MUSICGROUP_SCHEMA } from '../../data/artist.schema';
+import { DISCOGRAPHY } from '../../data/artist.schema';
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 

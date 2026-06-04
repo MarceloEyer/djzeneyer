@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../test/mocks/server';
@@ -160,8 +160,7 @@ describe('useEventsQuery', () => {
 
   it('defaults mode to upcoming', async () => {
     server.use(
-      http.get(`${REST_BASE}/zen-bit/v2/events`, ({ request }) => {
-        const url = new URL(request.url);
+      http.get(`${REST_BASE}/zen-bit/v2/events`, () => {
         // mode not set by default — fetchEventsFn maps upcomingOnly internally
         return HttpResponse.json(mockEventsEnvelope);
       })

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ArrowLeft, BookOpen, ChevronRight, ExternalLink, Search, Sparkles } from 'lucide-react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
