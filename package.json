@@ -25,7 +25,8 @@
     "perf:baseline": "node scripts/perf-baseline.mjs",
     "perf:budget": "node scripts/check-performance-budget.mjs",
     "rollback": "node scripts/rollback.js",
-    "indexnow": "node scripts/submit-indexnow.mjs"
+    "indexnow": "node scripts/submit-indexnow.mjs",
+    "prepare": "husky"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.2",
@@ -60,6 +61,7 @@
     "eslint-plugin-react": "^7.34.3",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.6.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "msw": "^2.10.2",
     "postcss": "^8.5.8",
