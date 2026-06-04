@@ -86,7 +86,7 @@ Linguagem: forte, visual, coerente com artista/DJ; usa identidade, credenciais e
 SEO/AEO/GEO: excelente. Tem `WebSite`, `WebPage`, `Person`, `MusicGroup`, speakable e links de autoridade.
 Schemas: bom, mas `@id` da home usa `currentUrl` sem trailing slash para EN root, gerando `https://djzeneyer.com/#webpage`, que e aceitavel para homepage.
 Performance: hero com preload responsivo e imagem eager; bom para LCP. Framer Motion moderado.
-TraduÃ§Ã£o: i18n coberto.
+Tradução: i18n coberto.
 Congruencia: muito coerente com o restante.
 Veredito: manter. Ajuste fino: garantir que a copy nao use "DJ Zen Eyer" como nome principal quando "Zen Eyer" bastar.
 
@@ -97,7 +97,7 @@ Linguagem: narrativa, emocional e factual. Boa ponte entre historia pessoal, cre
 SEO/AEO/GEO: muito forte. `ProfilePage`, `Person`, `MusicGroup`, facts, IDs e speakable.
 Schemas: coerente com modelo hibrido.
 Performance: visual pesado, mas aceitavel para pagina institucional.
-TraduÃ§Ã£o: namespace `about`; boa arquitetura.
+Tradução: namespace `about`; boa arquitetura.
 Congruencia: coerente com Home, Media e Verified Facts.
 Veredito: manter. Ajuste: revisar textos que possam dizer "bicampeao mundial" sem desambiguacao suficiente; a pagina parece bem protegida pelo schema.
 
@@ -108,7 +108,7 @@ Linguagem: objetiva, util para dancer/organizer.
 SEO/AEO/GEO: uma das superficies mais fortes. Usa eventos do `zen-bit`, canonical e `MusicEvent`.
 Schemas: bom. `HeadlessSEO`/`buildDynamicGraph` cobre `eventStatus`, `endDate`, `offers`, `image`, `performer`.
 Performance: consulta publica com limite 50; adequado.
-TraduÃ§Ã£o: usa rotas localizadas e query por idioma.
+Tradução: usa rotas localizadas e query por idioma.
 Congruencia: forte com Work With Me e Home.
 Veredito: manter. Monitorar: detalhe usa `url` com `id` em vez de `event.canonical_url`; se `canonical_path` tiver slug diferente, pode haver canonical menos ideal.
 
@@ -119,7 +119,7 @@ Linguagem: clara, comercial e musical.
 SEO/AEO/GEO: forte para entidade musical.
 Schemas: `CollectionPage`, `MusicGroup`, `ItemList` de discografia. Bom.
 Performance: pagina estatica/leve, links externos; boa.
-TraduÃ§Ã£o: i18n coberto.
+Tradução: i18n coberto.
 Congruencia: coerente com Releases, Support e plataformas.
 Veredito: manter. Ajuste: `discography_schema_name` em EN usa "DJ Zen Eyer Discography"; considerar "Zen Eyer Discography" para reforcar nome canonico.
 
@@ -131,7 +131,7 @@ SEO/AEO/GEO: alta oportunidade para music search.
 Schemas: `MusicRecording`/`MusicAlbum`, `BreadcrumbList`, `WebPage`; bom conceito.
 Problema: `canonicalUrl={pageUrl}` e ignorado por `HeadlessSEO`; deve ser `url={pageUrl}`.
 Performance: embeds lazy, bom.
-TraduÃ§Ã£o: parte dos labels vem de i18n, mas alguns textos visiveis estao hardcoded em EN/PT conditional ("Cover of", "Versao de", "Tracks").
+Tradução: parte dos labels vem de i18n, mas alguns textos visiveis estao hardcoded em EN/PT conditional ("Cover of", "Versao de", "Tracks").
 Congruencia: boa, mas precisa alinhar canonical e i18n.
 Veredito: bom com correcoes pontuais.
 
@@ -142,7 +142,7 @@ Linguagem: parcialmente desalinhada. Estrategia diz Releases; UI ainda mostra "L
 SEO/AEO/GEO: bom para conteudo temporal, mas schema `NewsArticle` sugere jornalismo.
 Schemas: usar `Article`/`BlogPosting` seria mais honesto para releases e notas; para releases musicais, adicionar grafo musical quando houver metadata real.
 Performance: React Query e cache OK; filtros por query string devem ficar fora de sitemap, como ja ocorre por robots.
-TraduÃ§Ã£o: i18n OK.
+Tradução: i18n OK.
 Congruencia: media/llms chamam "Releases & Notes"; pagina ainda parece "News".
 Veredito: precisa ajuste de copy e schema.
 
@@ -154,7 +154,7 @@ SEO/AEO/GEO: medio. Importante para ecossistema, nao para Knowledge Panel primar
 Schemas: `Organization`, mas sem `@context` no objeto passado. `HeadlessSEO` injeta JSON direto quando `schema` existe, entao schema sem `@context` fica mais fraco/possivelmente invalido.
 Problema: `ogType` ignorado.
 Performance: varios cards e motion; aceitavel.
-TraduÃ§Ã£o: namespace proprio, bom.
+Tradução: namespace proprio, bom.
 Congruencia: boa com Dashboard/My Account, mas tom pode overpromise.
 Veredito: ajustar schema/contexto e promessas de produto.
 
@@ -165,7 +165,7 @@ Linguagem: forte e profissional.
 SEO/AEO/GEO: alta relevancia comercial e autoridade.
 Schemas: atualmente usa SEO basico, sem schema custom de `ProfilePage`, `ContactPage`, `Person`/`MusicGroup` ou `CreativeWork` para press kit.
 Performance: imagens muitas, lazy em galeria; aceitavel.
-TraduÃ§Ã£o: i18n amplo. Ha um texto hardcoded PT em `+ tour mundial continua...`, mesmo na pagina EN.
+Tradução: i18n amplo. Ha um texto hardcoded PT em `+ tour mundial continua...`, mesmo na pagina EN.
 Congruencia: muito coerente com About/Media.
 Veredito: bom, mas merece schema mais rico e remover hardcoded PT.
 
@@ -176,7 +176,7 @@ Linguagem: visual estilo Netflix, forte para conversao; menos sobria que o resto
 SEO/AEO/GEO: secundario. Metadata basica OK. Falta `ItemList`/`Product` para produtos visiveis na listagem.
 Schemas: sem schema custom de produtos na listagem.
 Performance: hero grande, carrosseis e imagens; potencial LCP alto se produto remoto pesado.
-TraduÃ§Ã£o: alguns fallbacks hardcoded em PT ("O Bau esta Sendo Preparado", "Estamos organizando...") podem aparecer em EN se chaves faltarem.
+Tradução: alguns fallbacks hardcoded em PT ("O Bau esta Sendo Preparado", "Estamos organizando...") podem aparecer em EN se chaves faltarem.
 Congruencia: comercialmente coerente, visualmente mais agressiva.
 Veredito: manter, mas adicionar schema de listagem e revisar fallbacks.
 
@@ -187,7 +187,7 @@ Linguagem: direta.
 SEO/AEO/GEO: bom potencial comercial.
 Schemas: `type="product"` em OG, mas sem `Product` JSON-LD com `offers`, `price`, `availability`.
 Performance: imagem principal eager; OK.
-TraduÃ§Ã£o: boa para labels.
+Tradução: boa para labels.
 Congruencia: coerente com Shop.
 Veredito: precisa schema `Product` para SEO de e-commerce.
 
@@ -198,7 +198,7 @@ Linguagem: clara e emocional.
 SEO/AEO/GEO: baixo/medio, mas importante para trust.
 Schemas: SEO basico. Nao precisa schema agressivo.
 Performance: leve.
-TraduÃ§Ã£o: i18n OK.
+Tradução: i18n OK.
 Congruencia: coerente com regra de produto de pagamentos publicos.
 Veredito: manter. Nao tratar dados de pagamento como vazamento.
 
@@ -209,7 +209,7 @@ Linguagem: factual e boa para autoridade.
 SEO/AEO/GEO: muito forte.
 Schemas: `CollectionPage`, `VideoObject`, artigos publicados por Zen Eyer com `author`; bom e alinhado com regra de nao por Zoukology em `sameAs`.
 Performance: video embed lazy e listas; OK.
-TraduÃ§Ã£o: i18n OK.
+Tradução: i18n OK.
 Congruencia: excelente com About, Verified Facts e KG.
 Veredito: manter. Ajuste: asset "press kit PDF" marcado unavailable enquanto existem PDFs em `public/assets/press`; conferir se e intencional.
 
@@ -220,7 +220,7 @@ Linguagem: boa para AEO, segmentada por categorias.
 SEO/AEO/GEO: forte. `HeadlessSEO` gera `FAQPage`; respostas tambem existem visivelmente no DOM quando abertas/colapsadas, o que e aceitavel pois o conteudo esta no HTML.
 Schemas: bom.
 Performance: leve.
-TraduÃ§Ã£o: namespace `faq`, bom.
+Tradução: namespace `faq`, bom.
 Congruencia: boa, sem virar enciclopedia completa.
 Veredito: manter.
 
@@ -231,7 +231,7 @@ Linguagem: neutra/factual, adequada a SEO e IA.
 SEO/AEO/GEO: excelente e uma das maiores oportunidades organicas.
 Schemas: `DefinedTermSet` e `DefinedTerm`; bom.
 Performance: muitos termos em uma pagina, mas ainda aceitavel se pre-renderizada.
-TraduÃ§Ã£o: namespace proprio, bom.
+Tradução: namespace proprio, bom.
 Congruencia: muito boa.
 Veredito: manter e expandir com qualidade.
 
@@ -242,7 +242,7 @@ Linguagem: curta, factual, adequada para snippets e LLMs.
 SEO/AEO/GEO: excelente.
 Schemas: `DefinedTerm`, `FAQPage` com pergunta visivel, `WebPage`, breadcrumbs.
 Performance: leve.
-TraduÃ§Ã£o: bom, mas os slugs PT sao os mesmos slugs ingleses; isso e aceitavel para estabilidade, mas menos natural para PT.
+Tradução: bom, mas os slugs PT sao os mesmos slugs ingleses; isso e aceitavel para estabilidade, mas menos natural para PT.
 Congruencia: excelente.
 Veredito: manter.
 
@@ -254,7 +254,7 @@ SEO/AEO/GEO: muito forte.
 Schemas: `ProfilePage` + entidades globais.
 Problema de conteudo: lista de awards visual mostra `Best Remix` e `Brazilian Zouk DJ World Championship`, mas deveria mostrar `Best Remix` e `Best DJ Performance`; do jeito atual mistura premio com evento.
 Performance: leve.
-TraduÃ§Ã£o: i18n OK.
+Tradução: i18n OK.
 Congruencia: essencial para Knowledge Graph.
 Veredito: corrigir awards visiveis.
 
@@ -265,7 +265,7 @@ Linguagem: simples e factual.
 SEO/AEO/GEO: boa oportunidade de autoridade, indexavel por estrategia.
 Schemas: SEO basico; estrategia menciona `MusicEvent`/`Event` quando houver datas/local, mas pagina ainda nao emite schema custom.
 Performance: leve.
-TraduÃ§Ã£o: OK.
+Tradução: OK.
 Congruencia: boa com About/Events/Media.
 Veredito: manter e adicionar schema apenas para dados verificados.
 
@@ -277,7 +277,7 @@ SEO/AEO/GEO: corretamente `noindex` no componente.
 Problema: aparece em `public/sitemap-pages.xml`.
 Schemas: basico; suficiente enquanto noindex.
 Performance: leve.
-TraduÃ§Ã£o: OK.
+Tradução: OK.
 Congruencia: estrategicamente certo como draft.
 Veredito: remover do sitemap gerado ate maturar.
 
@@ -304,7 +304,7 @@ Linguagem: reaproveita textos de eventos, com `TBD` para data/local.
 SEO/AEO/GEO: fraco se nao ha tickets reais com datas/local. Esta indexavel e no sitemap.
 Schemas: sem `Product`/`Event`.
 Performance: consulta produtos; OK.
-TraduÃ§Ã£o: link para produto usa `getLocalizedRoute` com path literal e `i18n.language`; risco de path incorreto.
+Tradução: link para produto usa `getLocalizedRoute` com path literal e `i18n.language`; risco de path incorreto.
 Congruencia: compete com Shop e Events.
 Veredito: marcar `noindex` ate ter inventario real, ou transformar em pagina real de tickets com dados verificaveis.
 
@@ -349,7 +349,7 @@ Funcao: legal/trust.
 SEO: indexavel, correto.
 Schemas: basico; suficiente.
 Linguagem: juridica clara.
-TraduÃ§Ã£o: namespace proprio.
+Tradução: namespace proprio.
 Veredito: manter.
 
 ### Terms / Conduct - `/terms`, `/pt/termos`, `/conduct`, `/pt/regras-de-conduta`

@@ -17,7 +17,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Championship naming drift:** Nunca substituir o nome do evento vencido por nomes genéricos de "campeonato mundial de Zouk" em inglês, e nunca confundir com Zouk Worlds. O campeonato de DJs vencido foi o **Zouk DJ Championship 2022** / **I Campeonato Internacional de DJs** (Best DJ Performance + Best Remix). "Bicampeão mundial" deve ser mantido como credencial; o nome principal da competição é Zouk DJ Championship.
 - **Pronúncia Única:** Sempre use `/zɛn ˈaɪər/` (IPA). Nunca inventar outras transcrições.
 - **GamiPress Associative Arrays:** `gamipress_get_rank_types()` retorna slugs como chaves. Usar `array_values()` antes de `[0]` é obrigatório. Sempre use `array_values()` ou `reset()` para evitar resultados vazios.
-- **Mojibake:** Arquivos JSON de locale e logs de IA devem ser UTF-8 limpo. Cuidado com `Ã§` e `Â©`.
+- **Mojibake:** Arquivos JSON de locale, código, docs e logs de IA devem ser UTF-8 limpo. Cuidado com sequências corrompidas como `U+00C3 U+00A7` ou `U+00C2 U+00A9`; use sempre os caracteres Unicode corretos.
 - **Lockfile Sync:** Alterações em `package.json` SEMPRE exigem atualização do `package-lock.json` no mesmo commit.
 - **Composer plugin locks:** Todo `plugins/*/composer.json` deve ter `composer.lock` commitado. O deploy deve usar `composer install` a partir do lockfile, nunca resolver dependências novas em produção.
 - **Node CI baseline:** Puppeteer 25 e o toolchain atual (Vite/ESLint) exigem Node ≥ 22.13 no CI. Mantenha `.github/workflows/deploy.yml`, `package.json#engines` e `package-lock.json` alinhados quando atualizações de dependências elevarem requisitos de engine.
