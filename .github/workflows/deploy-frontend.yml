@@ -41,13 +41,13 @@ jobs:
     
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 2
           persist-credentials: false
 
       - name: 🔧 Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
@@ -92,7 +92,7 @@ jobs:
           if [ ! -f "dist/index.md" ]; then echo "❌ Markdown generation failed"; exit 1; fi
 
       - name: 🔐 Setup SSH
-        uses: shimataro/ssh-key-action@v2
+        uses: shimataro/ssh-key-action@87a8f067114a8ce263df83e9ed5c849953548bc3 # v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: |
@@ -102,7 +102,7 @@ jobs:
           name: id_rsa
 
       - name: 📦 Prepare and Backup Remote
-        uses: appleboy/ssh-action@v1.2.5
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
@@ -115,7 +115,7 @@ jobs:
             mkdir -p "${NEXT_DIST_PATH}"
 
       - name: 🚀 Deploy dist/
-        uses: burnett01/rsync-deployments@8.0.5
+        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
         with:
           switches: -avzr --delete --checksum
           path: dist/
@@ -126,7 +126,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: 🔁 Activate dist
-        uses: appleboy/ssh-action@v1.2.5
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
@@ -140,7 +140,7 @@ jobs:
             mv "${THEME_PATH}/dist-new" "${THEME_PATH}/dist"
 
       - name: 📄 Deploy public assets
-        uses: burnett01/rsync-deployments@8.0.5
+        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
         with:
           switches: -avz --ignore-missing-args
           path: public/
@@ -152,7 +152,7 @@ jobs:
 
       - name: 🧹 Purge caches
         continue-on-error: true
-        uses: appleboy/ssh-action@v1.2.5
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
