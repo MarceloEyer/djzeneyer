@@ -771,6 +771,7 @@ async function prerender() {
             successCount++;
           }
         } catch (error) {
+          exitCode = 1;
           console.error(`❌ Erro em ${route}: ${error.message}`);
           if (previousHtml !== null && !existsSync(outputPath)) {
             writeFileSync(outputPath, previousHtml, 'utf8');
@@ -785,6 +786,10 @@ async function prerender() {
     }
 
     console.log(`\n🎉 Prerender concluído: ${successCount}/${CONFIG.routes.length} rotas.`);
+    if (successCount !== CONFIG.routes.length) {
+      exitCode = 1;
+      console.error(`❌ ${CONFIG.routes.length - successCount} rota(s) falharam — exitCode=1`);
+    }
 
   } catch (error) {
     console.error('FATAL:', error);

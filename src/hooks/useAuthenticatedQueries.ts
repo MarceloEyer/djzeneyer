@@ -231,7 +231,7 @@ export const useUserOrdersQuery = (
 
 export const useNewsletterStatusQuery = (token?: string, options: { enabled?: boolean } = {}) =>
   useQuery<boolean | null>({
-    queryKey: QUERY_KEYS.user.newsletter(),
+    queryKey: [...QUERY_KEYS.user.newsletter(), jwtSub(token)],
     queryFn: async (): Promise<boolean | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/newsletter');
