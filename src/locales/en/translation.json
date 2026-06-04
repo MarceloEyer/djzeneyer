@@ -196,7 +196,11 @@
     "notes": "Official English translations. LEGACY FILE - Do not change key names without updating all components."
   },
   "loading": "Loading...",
-  "error": "Error",
+  "error": {
+    "title": "Error",
+    "loading_event": "Error loading event.",
+    "try_again": "Try again"
+  },
   "success": "Success",
   "auth": {
     "login": {
