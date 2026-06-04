@@ -1,11 +1,34 @@
 import { useQuery } from '@tanstack/react-query';
-import { authQueries, type AuthSettingsResponse } from '../queries/auth.queries';
+import { buildApiUrl } from '../config/api';
 
-export type { AuthSettingsResponse };
+interface AuthSettingsResponse {
+  success: boolean;
+  data: {
+    google_client_id: string;
+  };
+}
 
 export const useAuthSettings = (enabled: boolean = false) => {
   return useQuery({
-    ...authQueries.settings(),
+    queryKey: ['auth', 'settings'],
+    queryFn: async (): Promise<AuthSettingsResponse> => {
+      const API_URL = buildApiUrl('zeneyer-auth/v1');
+      const res = await fetch(`${API_URL}/settings`);
+      const text = await res.text();
+
+      if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+        throw new Error('Servidor retornou HTML ao invés de JSON (Plugin inativo ou rewrite rules desatualizadas)');
+      }
+
+      const data = JSON.parse(text);
+      if (!data.success) {
+        throw new Error('Falha ao obter configurações de Auth');
+      }
+
+      return data;
+    },
     enabled,
+    staleTime: 1000 * 60 * 60 * 24, // 24 horas (configuração estática)
+    retry: 1,
   });
 };
