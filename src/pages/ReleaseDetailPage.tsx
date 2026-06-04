@@ -160,7 +160,7 @@ const ReleaseDetailPage: React.FC = () => {
     if (!release?.contributor) return [];
     const arr = Array.isArray(release.contributor) ? release.contributor : [release.contributor];
     return arr as Record<string, unknown>[];
-  }, [release?.contributor]);
+  }, [release]);
 
   if (!release) return <NotFoundPage />;
 

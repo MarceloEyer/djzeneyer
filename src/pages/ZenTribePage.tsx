@@ -27,25 +27,30 @@ import { useUser } from '../contexts/UserContext';
  * Schema.org Organization (Tribo Zen)
  */
 const getOrganizationSchema = (t: (key: string) => string) => ({
-  "@type": "Organization",
-  "@id": "https://djzeneyer.com/zentribe#organization",
-  "name": t('zenTribe.schema.organization_name'),
-  "alternateName": "Tribo Zen",
-  "url": "https://djzeneyer.com/zentribe",
-  "founder": {
-    "@id": "https://djzeneyer.com/#artist"
-  },
-  "description": t('zenTribe.schema.organization_desc'),
-  "areaServed": {
-    "@type": "Place",
-    "name": "Worldwide"
-  },
-  "slogan": t('zenTribe.schema.organization_slogan'),
-  "knowsAbout": ["Brazilian Zouk Community", "Zen Eyer Music", "Zouk Dance Culture"],
-  "memberOf": {
-    "@type": "Organization",
-    "name": "International Brazilian Zouk Community"
-  }
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://djzeneyer.com/zentribe#organization",
+      "name": t('zenTribe.schema.organization_name'),
+      "alternateName": "Tribo Zen",
+      "url": "https://djzeneyer.com/zentribe",
+      "founder": {
+        "@id": "https://djzeneyer.com/#artist"
+      },
+      "description": t('zenTribe.schema.organization_desc'),
+      "areaServed": {
+        "@type": "Place",
+        "name": "Worldwide"
+      },
+      "slogan": t('zenTribe.schema.organization_slogan'),
+      "knowsAbout": ["Brazilian Zouk Community", "Zen Eyer Music", "Zouk Dance Culture"],
+      "memberOf": {
+        "@type": "Organization",
+        "name": "International Brazilian Zouk Community"
+      }
+    }
+  ]
 });
 
 /**
@@ -274,7 +279,7 @@ const ZenTribePage: React.FC = () => {
         description={t('tribe_page_meta_desc')}
         url={currentUrl}
         image="https://djzeneyer.com/images/zen-tribe-og.jpg"
-        ogType="website"
+        type="website"
         schema={schema}
         keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
       />

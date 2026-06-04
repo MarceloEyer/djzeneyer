@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import ZoukFestivalsPage from '../../pages/ZoukFestivalsPage';
 import { ARTIST } from '../../data/artistData';
 import { categorizeFestivals } from '../../utils/festivals';
