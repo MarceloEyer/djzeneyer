@@ -21,7 +21,8 @@
     "main_navigation": "Navegação Principal",
     "mobile_navigation": "Menu Mobile",
     "privacy": "Política de Privacidade",
-    "terms": "Termos de Uso"
+    "terms": "Termos de Uso",
+    "faq": "FAQ"
   },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
@@ -365,7 +366,9 @@
     "musicbrainz": "MusicBrainz",
     "wikidata": "Wikidata",
     "discogs": "Discogs",
-    "resident_advisor": "Resident Advisor"
+    "resident_advisor": "Resident Advisor",
+    "facebook": "Facebook",
+    "whatsapp": "WhatsApp"
   },
   "badge_featured": "Destaque",
   "badge_new": "Novo",

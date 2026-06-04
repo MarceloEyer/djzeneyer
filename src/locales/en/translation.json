@@ -21,7 +21,8 @@
     "close_menu": "Close Menu",
     "open_menu": "Open Menu",
     "main_navigation": "Main Navigation",
-    "mobile_navigation": "Mobile Menu"
+    "mobile_navigation": "Mobile Menu",
+    "faq": "FAQ"
   },
   "dashboard": {
     "loading": "Syncing with the Zen Universe...",
@@ -333,7 +334,9 @@
     "musicbrainz": "MusicBrainz",
     "wikidata": "Wikidata",
     "discogs": "Discogs",
-    "resident_advisor": "Resident Advisor"
+    "resident_advisor": "Resident Advisor",
+    "facebook": "Facebook",
+    "whatsapp": "WhatsApp"
   },
   "badge_featured": "Featured",
   "badge_new": "New",
