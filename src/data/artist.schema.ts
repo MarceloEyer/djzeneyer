@@ -20,14 +20,15 @@ const SAME_AS_AUTHORITY = [
   identifiers.residentAdvisorUrl,
 ] as const;
 
-// Platforms in ARTIST.social whose URLs belong in sameAs
+// Platforms in ARTIST.social whose URLs belong in sameAs.
+// Keep this list conservative: sameAs is reserved for official entity profiles
+// and authority identifiers that unambiguously represent Zen Eyer.
 const SAME_AS_SOCIAL_KEYS = [
   'spotify', 'appleMusic', 'YouTube',
   'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
   'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
-  'bandcamp', 'amazonMusic', 'mixcloud', 'lastfm', 'songkick',
-  'bandsintown', 'shazam', 'patreon', 'medium', 'genius',
-  'audiomack', 'boomplay', 'napster', 'qobuz',
+  'bandcamp', 'amazonMusic', 'mixcloud', 'songkick',
+  'bandsintown',
 ] as const;
 
 export const ARTIST_SCHEMA_SAME_AS: string[] = [
