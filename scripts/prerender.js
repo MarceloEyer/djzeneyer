@@ -786,6 +786,10 @@ async function prerender() {
     }
 
     console.log(`\n🎉 Prerender concluído: ${successCount}/${CONFIG.routes.length} rotas.`);
+    if (bandsintownData?.source === 'ERROR') {
+      exitCode = 1;
+      console.error('❌ fetchEvents() falhou — rotas dinâmicas de eventos não foram geradas. exitCode=1');
+    }
     if (successCount !== CONFIG.routes.length) {
       exitCode = 1;
       console.error(`❌ ${CONFIG.routes.length - successCount} rota(s) falharam — exitCode=1`);

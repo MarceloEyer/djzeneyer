@@ -482,11 +482,12 @@ export const useEventById = (
         const apiUrl = buildApiUrl(`zen-bit/v2/events/${String(eventId)}`, queryParams);
         const res = await fetch(apiUrl);
         if (!res.ok) {
+          if (res.status === 404) return null; // genuine not found — renders NotFoundPage
           logger.error('EVENT_DETAIL_API_ERROR', `Event detail API responded with ${res.status}`, {
             eventId,
             status: res.status,
           });
-          return null;
+          throw new Error(`Event detail API responded with ${res.status}`);
         }
         const json = await res.json();
         const parsed = EventDetailApiResponseSchema.safeParse(json);
@@ -494,12 +495,12 @@ export const useEventById = (
           logger.error('EVENT_DETAIL_SCHEMA_MISMATCH', 'Event detail schema validation failed', {
             issues: parsed.error.issues,
           });
-          return null;
+          throw new Error('Event detail schema validation failed');
         }
         return parsed.data.event;
       } catch (err) {
         logger.error('EVENT_DETAIL_FETCH_FAILED', 'Failed to fetch event detail', { error: String(err) });
-        return null;
+        throw err;
       }
     },
     enabled: !!eventId,

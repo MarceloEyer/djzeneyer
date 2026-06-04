@@ -75,7 +75,18 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const [showToast, setShowToast] = useState(false);
 
   if (isLoading) return <EventDetailSkeleton />;
-  if (isError || !event) return <NotFoundPage />;
+  if (isError) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-white/70">
+      <p className="text-lg">{t('error.loading_event', 'Erro ao carregar o evento.')}</p>
+      <button
+        className="px-4 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors text-sm"
+        onClick={() => window.location.reload()}
+      >
+        {t('error.try_again', 'Tentar novamente')}
+      </button>
+    </div>
+  );
+  if (!event) return <NotFoundPage />;
 
   const eventDate = new Date(event.starts_at);
   const isValidDate = !isNaN(eventDate.getTime());
