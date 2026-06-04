@@ -1,0 +1,2 @@
+# Bloqueia commits com mojibake (UTF-8 corrompido) em PHP e JS/TS
+npm run utf8:check
