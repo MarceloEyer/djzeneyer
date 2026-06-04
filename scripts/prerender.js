@@ -632,7 +632,6 @@ async function prerender() {
         }
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
-        if (reqUrl.includes('/v1/menu')) mockData = menuData[lang] || menuData.en || [];
 
         if (reqUrl.includes('/zen-bit/v2/events/')) {
           const eventId = reqUrl.split('/zen-bit/v2/events/')[1]?.split('?')[0];

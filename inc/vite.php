@@ -193,10 +193,11 @@ class DJZ_Vite_Loader
     public function make_css_async($tag, $handle)
     {
         if (strpos($handle, 'djz-react-style-') === 0) {
-            // Handles both single and double quote variants WordPress may generate
+            // Handles both single and double quote variants WordPress may generate.
+            // Uses ${1} to disambiguate backreference from the literal "1" in data-async-css.
             $tag = preg_replace(
                 "/rel=(['\"])stylesheet\\1/",
-                'rel=$1stylesheet$1 media=$1print$1 data-async-css=$11$1',
+                'rel=${1}stylesheet${1} media=${1}print${1} data-async-css=${1}1${1}',
                 $tag
             );
             if (!has_action('wp_footer', [$this, 'async_css_swap_script'])) {

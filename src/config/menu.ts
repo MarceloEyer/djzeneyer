@@ -1,4 +1,4 @@
-// Static navigation menu — edit here to change menu items, no deploy needed beyond this file.
+// Static navigation menu — edit this file and deploy to change menu items.
 // routeKey must match a key in routes-slugs.json.
 // navKey must match a key in src/locales/*/translation.json under "nav".
 // iconKey must match a key in PRECOMPUTED_VISUALS in Navbar.tsx.
