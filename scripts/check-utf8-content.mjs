@@ -113,9 +113,7 @@ for (const relativePath of files) {
   }
 
   for (const { name, regex } of suspiciousPatterns) {
-    regex.lastIndex = 0;
-    let match;
-    while ((match = regex.exec(content)) !== null) {
+    for (const match of content.matchAll(regex)) {
       const { lineNumber, lineText } = getLine(content, match.index);
       failures.push(`${relativePath}:${lineNumber}: ${name} marker ${JSON.stringify(match[0])} in: ${lineText}`);
     }
