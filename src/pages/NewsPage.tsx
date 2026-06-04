@@ -19,6 +19,7 @@ import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { getDateTimeFormatter } from '../utils/date';
 import { findReleaseByNewsSlug, getReleaseOpenGraphAlt, getReleaseOpenGraphType } from '../utils/openGraph';
+import { buildYouTubeVideoObject } from '../utils/youtube';
 import NotFoundPage from './NotFoundPage';
 
 // ============================================================================
@@ -166,15 +167,39 @@ const NewsPage: React.FC = () => {
           "name": authorName
         };
 
-    const articleSchema = {
-      "@context": "https://schema.org",
+    const articleSchemaBase = {
       "@type": "NewsArticle",
+      "@id": `${postUrl}#article`,
       "headline": stripHtml(singlePost?.title?.rendered ?? ''),
       "image": [postImage],
       "datePublished": singlePost.date,
       "dateModified": singlePost.modified || singlePost.date,
       "author": [authorSchema],
-      "url": postUrl
+      "url": postUrl,
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `${postUrl}#webpage`
+      }
+    };
+
+    const videoObject = buildYouTubeVideoObject(
+      singlePost?.content?.rendered || '',
+      stripHtml(singlePost?.title?.rendered ?? ''),
+      singlePost.date
+    );
+    
+    if (videoObject) {
+      Object.assign(articleSchemaBase, {
+        "video": { "@id": `${postUrl}#video` }
+      });
+    }
+
+    const articleSchema = {
+      "@context": "https://schema.org",
+      "@graph": [
+        articleSchemaBase,
+        ...(videoObject ? [{ ...videoObject, "@type": "VideoObject", "@id": `${postUrl}#video` }] : [])
+      ]
     };
 
     return (
