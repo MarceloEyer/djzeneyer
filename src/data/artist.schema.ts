@@ -23,7 +23,7 @@ const SAME_AS_AUTHORITY = [
 // Streaming identity platforms only — authority identifiers live in SAME_AS_AUTHORITY above.
 // Social media profiles (instagram, twitter, etc.) are intentionally excluded.
 const SAME_AS_SOCIAL_KEYS = [
-  'spotify', 'appleMusic', 'YouTube', 'YouTubeMusic',
+  'spotify', 'appleMusic', 'YouTube',
   'soundcloud', 'deezer', 'tidal', 'bandcamp', 'amazonMusic',
 ] as const;
 

@@ -86,19 +86,19 @@ const Footer: React.FC = () => {
               {t('footer_bio')}
             </p>
             <div className="flex space-x-4">
-              <a href={safeUrl(ARTIST.social.instagram.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Instagram">
+              <a href={safeUrl(ARTIST.social.instagram.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.instagram')}>
                 <InstagramIcon size={22} />
               </a>
-              <a href={safeUrl(ARTIST.social.soundcloud.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="SoundCloud">
+              <a href={safeUrl(ARTIST.social.soundcloud.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.soundcloud')}>
                 <Music2 size={22} />
               </a>
               <a href={safeUrl(ARTIST.social.YouTube.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.YouTube')}>
                 <YouTubeIcon size={22} />
               </a>
-              <a href={safeUrl(ARTIST.social.facebook.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="Facebook">
+              <a href={safeUrl(ARTIST.social.facebook.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.facebook')}>
                 <FacebookIcon size={22} />
               </a>
-              <a href={safeUrl(whatsappLink, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label="WhatsApp">
+              <a href={safeUrl(whatsappLink, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.whatsapp')}>
                 <MessageCircle size={22} />
               </a>
             </div>
@@ -128,7 +128,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-2.5">
               <li><Link to={routes.about} className="text-white/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
               <li><Link to={routes.news} className="text-white/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
-              <li><Link to={routes.faq} className="text-white/75 hover:text-primary transition-colors">FAQ</Link></li>
+              <li><Link to={routes.faq} className="text-white/75 hover:text-primary transition-colors">{t('nav.faq')}</Link></li>
               <li><Link to={routes.encyclopedia} className="text-white/75 hover:text-primary transition-colors">{t('encyclopedia.nav_label')}</Link></li>
               <li><Link to={routes.media} className="text-white/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
             </ul>

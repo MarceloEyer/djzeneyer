@@ -19,14 +19,13 @@ const visit = (directory) => {
     if (!/\.(?:ts|tsx)$/.test(entry.name)) continue;
 
     const source = fs.readFileSync(absolutePath, 'utf8');
-    // Strip comments before checking so explanatory comments don't cause false positives.
-    const stripped = source
-      .replace(/\/\*[\s\S]*?\*\//g, '')
-      .replace(/^\s*\/\/.*$/gm, '');
-    if (stripped.includes('HeadlessSEO') && /\bwindow\.location\.origin\b/.test(stripped)) {
-      failures.push(
-        `${path.relative(ROOT, absolutePath)}: window.location.origin used in file with HeadlessSEO; use ARTIST.site.baseUrl or an API canonical URL`
-      );
+    const headlessSeoBlocks = source.match(/<HeadlessSEO\b[\s\S]*?\/>/g) ?? [];
+    for (const block of headlessSeoBlocks) {
+      if (block.includes('window.location.origin')) {
+        failures.push(
+          `${path.relative(ROOT, absolutePath)}: HeadlessSEO URL uses window.location.origin; use ARTIST.site.baseUrl or an API canonical URL`
+        );
+      }
     }
   }
 };

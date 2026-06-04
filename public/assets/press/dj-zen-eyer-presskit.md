@@ -17,7 +17,7 @@ Zen Eyer is a dance-floor-first Brazilian Zouk DJ. His sets are built around lon
 
 - Winner of Best DJ Performance at the 2022 Brazilian Zouk DJ World Championship.
 - Winner of Best Remix at the 2022 Brazilian Zouk DJ World Championship.
-- Brazilian Zouk DJ and music producer born in Rio de Janeiro and based in Niteroi, Rio de Janeiro, Brazil.
+- Brazilian Zouk DJ and music producer from Rio de Janeiro, Brazil.
 - Member of Mensa International.
 
 ## Selected International Footprint
