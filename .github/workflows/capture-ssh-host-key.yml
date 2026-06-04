@@ -31,3 +31,5 @@ jobs:
           git add .github/ssh_known_hosts
           git diff --cached --quiet || git commit -m "security: pin SSH host key"
           git push
+
+# Trigger capture after workflow registration.
