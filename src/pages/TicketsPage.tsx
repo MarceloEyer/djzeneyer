@@ -23,6 +23,17 @@ const TicketsPage: React.FC = () => {
 
   const tickets = ticketsData || EMPTY_TICKETS_ARRAY;
 
+  // ⚡ Bolt: Pre-calculate localized routes to prevent O(N) recalculations and string reallocations
+  // of getLocalizedRoute on every render cycle within the mapping iteration.
+  const ticketRoutes = useMemo(() => {
+    return Object.fromEntries(
+      tickets.map(ticket => [
+        ticket.slug,
+        getLocalizedRoute(`/shop/product/${ticket.slug}`, i18n.language)
+      ])
+    );
+  }, [tickets, i18n.language]);
+
   const formatPrice = (price: string) => {
     if (!price) return t('price_free');
     const numPrice = parseFloat(price);
@@ -70,7 +81,7 @@ const TicketsPage: React.FC = () => {
                   transition={{ delay: index * 0.1 }}
                   className="bg-surface rounded-xl overflow-hidden border border-white/10 group hover:border-primary/50 transition-colors"
                 >
-                  <Link to={getLocalizedRoute(`/shop/product/${ticket.slug}`, i18n.language)} className="block relative aspect-video overflow-hidden">
+                  <Link to={ticketRoutes[ticket.slug]} className="block relative aspect-video overflow-hidden">
                     <img
                       src={safeUrl(ticket.images[0]?.src, 'https://placehold.co/600x400/1a1a1a/ffffff?text=Event')}
                       alt={ticket.name}
@@ -101,7 +112,7 @@ const TicketsPage: React.FC = () => {
                       </div>
 
                       <Link
-                        to={getLocalizedRoute(`/shop/product/${ticket.slug}`, i18n.language)}
+                        to={ticketRoutes[ticket.slug]}
                         className="btn btn-outline btn-sm rounded-full flex items-center gap-2"
                       >
                         {t('nav.about')} <ArrowRight size={16} />
