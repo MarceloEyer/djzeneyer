@@ -6,7 +6,6 @@ paths-ignore:
   - '**/vendor/**'
   - '**/*.min.js'
   - 'gamipress/**'
-  - 'scripts/**'
   - 'en_old.json'
   - 'pt_old.json'
   - 'debug-*.php'
