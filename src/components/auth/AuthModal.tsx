@@ -11,6 +11,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import { useUser } from '../../contexts/UserContext';
 import { getTurnstileSiteKey } from '../../config/api';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { useAuthSettings } from '../../hooks/useAuthSettings';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -47,7 +48,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { login, register, googleLogin, googleClientId } = useUser();
+  const { login, register, googleLogin } = useUser();
+  const { data: authSettings, isLoading: isLoadingSettings, error: _settingsError } = useAuthSettings(isOpen);
+  const googleClientId = authSettings?.data?.google_client_id;
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   // Estados do Formulário
@@ -229,36 +232,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </motion.div>
               )}
 
-              {googleClientId ? (
-                <div className="mb-6">
-                  <GoogleOAuthProvider clientId={googleClientId}>
-                    <div className="w-full flex justify-center">
-                      <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={() => setError(t('auth.errors.google_connect_error'))}
-                        theme="filled_black"
-                        size="large"
-                        text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                        width={368}
-                        logo_alignment="center"
-                      />
-                    </div>
-                  </GoogleOAuthProvider>
-                </div>
-              ) : (
+              {isLoadingSettings ? (
                 <div className="mb-6 h-12 bg-white/5 animate-pulse rounded-lg flex items-center justify-center border border-white/5">
                   <Loader2 size={20} className="animate-spin text-white/40" />
                 </div>
-              )}
-
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10"></div>
-                </div>
-                <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
-                  <span className="px-3 bg-[#1a1a1a] text-white/40">{t('auth.or_continue_with_email')}</span>
-                </div>
-              </div>
+              ) : googleClientId ? (
+                <>
+                  <div className="mb-6">
+                    <GoogleOAuthProvider clientId={googleClientId}>
+                      <div className="w-full flex justify-center">
+                        <GoogleLogin
+                          onSuccess={handleGoogleSuccess}
+                          onError={() => setError(t('auth.errors.google_connect_error'))}
+                          theme="filled_black"
+                          size="large"
+                          text={mode === 'login' ? 'signin_with' : 'signup_with'}
+                          width={368}
+                          logo_alignment="center"
+                        />
+                      </div>
+                    </GoogleOAuthProvider>
+                  </div>
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-white/10"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
+                      <span className="px-3 bg-[#1a1a1a] text-white/40">{t('auth.or_continue_with_email')}</span>
+                    </div>
+                  </div>
+                </>
+              ) : null}
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} aria-hidden="true">
