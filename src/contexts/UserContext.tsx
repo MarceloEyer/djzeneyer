@@ -18,7 +18,6 @@ interface WordPressUser {
 
 interface UserContextType {
   user: WordPressUser | null;
-  googleClientId: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   loadingInitial: boolean;
@@ -38,7 +37,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<WordPressUser | null>(null);
-  const [googleClientId, setGoogleClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,30 +66,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const init = async () => {
       try {
-        // 1. Busca Google Client ID
-        const settingsRes = await fetch(`${API_URL}/settings`);
-        const settingsText = await settingsRes.text();
-
-        if (settingsText.trim().startsWith('<!DOCTYPE') || settingsText.trim().startsWith('<html')) {
-          console.error('[UserContext] ❌ ERRO: Backend retornou HTML ao invés de JSON!');
-          console.error('[UserContext] 💡 Possíveis causas:');
-          console.error('  1. Plugin ZenEyer Auth não está ativo');
-          console.error('  2. Rewrite rules não foram flushed (wp rewrite flush)');
-          console.error('  3. .htaccess bloqueando o endpoint');
-          setError('Plugin de autenticação não está configurado. Contate o administrador.');
-          setLoadingInitial(false);
-          return;
-        }
-
-        const settingsData = JSON.parse(settingsText);
-
-        if (settingsData.success && settingsData.data.google_client_id) {
-          setGoogleClientId(settingsData.data.google_client_id);
-        } else {
-          console.warn('[UserContext] ⚠️ Google Client ID não configurado');
-        }
-
-        // 2. Restaura Sessão
+        // 1. Restaura Sessão
         const token = localStorage.getItem('zen_jwt');
         const savedUser = localStorage.getItem('zen_user');
 
@@ -319,7 +294,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // ⚡ Bolt: Wrapped context value with useMemo to prevent unnecessary re-renders of all consumer components when Provider re-renders.
   const value = useMemo(() => ({
     user,
-    googleClientId,
     isAuthenticated: !!user,
     loading,
     loadingInitial,
@@ -333,7 +307,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     clearError
   }), [
     user,
-    googleClientId,
     loading,
     loadingInitial,
     error,
