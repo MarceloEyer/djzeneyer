@@ -56,7 +56,10 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          known_hosts: |
+            |1|TNUVcyD1aWr2wGYOmlQPeemFgTE=|5B1Q6wvwM69bU8G3GUrrKiRut0o= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDShI+yYwF5uYrL7PTxqcZtl3B7EouJcdgS233vGtyRePOflah2WGeZZIT5DFHKxwlMfhSC0wKjLJa4wwTKZpIT4j7bH07h5iHm8XFmeOdU6kv0pu4W+7nLmVDZzh82/0iodYw1XgRfunt1K+JhCmHIOnWDaf6C80DtOZR4YcpeJAbyKSWhQTNhUm5oN3u1b703M1iomP6KCs8Jf7hiR0FOWFCsJ4qE1AR80I0RIigpdAJPieEHjyglsxRXvR90oCYNyNbAuOMF6H7gMKY5FsQyoe3DiOJWKbyad20CqheFB0hBkqaxwTtil2xW6xG6ZT8ELTuZp5QEzp3lJUrtC/YiKyfNLoJq7tFEyTGjVzkA1FJdxE7q7CZlc4WgmGmWbPZWF/cMSIKt4VAZeizZayrFOtPZmicdCAqwZXEerTONhtLs+IEF+/mGcadNZlyqop5mgegNoM1Cs21zRqQIn06WOZEX7nr/zra/snQiODJ2d+afOED1o+NSIHHApFZNWSU=
+            |1|/fdbloAM89tpWbUllaYu487m+XE=|6vm64/rMpLGUlMAoh8eC3hF7HAY= ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFxQCICOTF37QQ0qOp8sP5FxG9Na/euvpJY66hO14H6atxwu3wCoNXHhiY8nRUxmq4yzhDsEuklJuVWM+4vSDPY=
+            |1|j3r8EBK800IPfRXohTW0XOek1Ks=|Vp6bWwZs1aymxjlr/UZPDreSUs8= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ3BBPDXxVSsh7zTZu2jBnm08DuW6HYGb6V4fKXFCSyD
           name: id_rsa
 
       - name: 🔌 Deploy plugins/
