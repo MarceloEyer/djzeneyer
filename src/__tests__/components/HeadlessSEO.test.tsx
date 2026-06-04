@@ -107,8 +107,6 @@ function buildMusicEventGraph(events: EventSchemaData[]): Array<Record<string, u
 
     const baseOffer = {
       '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD',
       validFrom: startDate,
       availability: isPast ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock',
     };

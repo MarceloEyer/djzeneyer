@@ -476,40 +476,6 @@ function startDevServer() {
   });
 }
 
-/**
- * Busca o menu do WP para injetar no __PRERENDER_DATA__.
- * O menu muda raramente — injetar elimina o fetch de v1/menu do critical path.
- */
-async function fetchMenuData() {
-  const langs = ['en', 'pt'];
-  const result = {};
-  // ⚡ Bolt: Parallelized menu fetches for each language using Promise.all
-  // instead of a blocking sequential for-loop. This reduces the total fetch time
-  // significantly (e.g. from ~3000ms to ~470ms).
-  await Promise.all(langs.map(async (lang) => {
-    try {
-      const res = await fetch(`${SITE_BASE_URL}/wp-json/djzeneyer/v1/menu?lang=${lang}`, {
-        headers: { Accept: 'application/json' },
-        signal: AbortSignal.timeout(8000),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        result[lang] = Array.isArray(data) ? data : [];
-      } else {
-        result[lang] = [];
-      }
-    } catch {
-      result[lang] = [];
-    }
-  }));
-  const total = (result.en?.length || 0) + (result.pt?.length || 0);
-  if (total > 0) {
-    console.log(`🗂️ Menu: ${result.en?.length || 0} itens EN, ${result.pt?.length || 0} itens PT.`);
-  } else {
-    console.warn('⚠️ Menu vazio — v1/menu não respondeu. Usuários farão fetch normal.');
-  }
-  return result;
-}
 
 /**
  * Busca posts do WordPress para injetar no __PRERENDER_DATA__.
@@ -565,13 +531,9 @@ function isNewsListRoute(route) {
   return route === NEWS_ROUTE_EN || route === NEWS_ROUTE_PT;
 }
 
-function buildPrerenderPayloadForRoute(route, bandsintownData, menuData, postsData) {
+function buildPrerenderPayloadForRoute(route, bandsintownData, postsData) {
   const lang = getRouteLang(route);
   const payload = {
-    menu: {
-      en: menuData.en || [],
-      pt: menuData.pt || [],
-    },
     fetchedAt: bandsintownData.fetchedAt,
   };
 
@@ -594,9 +556,10 @@ function buildPrerenderPayloadForRoute(route, bandsintownData, menuData, postsDa
 
 async function prerender() {
   let browser = null;
+  let exitCode = 0;
   try {
     await startDevServer();
-    const [bandsintownData, menuData, postsData] = await Promise.all([fetchEvents(), fetchMenuData(), fetchPosts()]);
+    const [bandsintownData, postsData] = await Promise.all([fetchEvents(), fetchPosts()]);
 
     // 🌟 Inject Dynamic Event Routes into Prerender List
     if (bandsintownData && bandsintownData.list) {
@@ -669,7 +632,6 @@ async function prerender() {
         }
         if (reqUrl.includes('/products')) mockData = [];
         if (reqUrl.includes('/gamipress')) mockData = {};
-        if (reqUrl.includes('/v1/menu')) mockData = menuData[lang] || menuData.en || [];
 
         if (reqUrl.includes('/zen-bit/v2/events/')) {
           const eventId = reqUrl.split('/zen-bit/v2/events/')[1]?.split('?')[0];
@@ -766,7 +728,7 @@ async function prerender() {
             unlinkSync(outputPath);
           }
 
-          const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, menuData, postsData);
+          const prerenderPayloadObj = buildPrerenderPayloadForRoute(route, bandsintownData, postsData);
           page = await createPrerenderPage();
           
           // Injeta o __PRERENDER_DATA__ na window do navegador Headless
@@ -809,6 +771,7 @@ async function prerender() {
             successCount++;
           }
         } catch (error) {
+          exitCode = 1;
           console.error(`❌ Erro em ${route}: ${error.message}`);
           if (previousHtml !== null && !existsSync(outputPath)) {
             writeFileSync(outputPath, previousHtml, 'utf8');
@@ -823,14 +786,22 @@ async function prerender() {
     }
 
     console.log(`\n🎉 Prerender concluído: ${successCount}/${CONFIG.routes.length} rotas.`);
+    if (bandsintownData?.source === 'ERROR') {
+      exitCode = 1;
+      console.error('❌ fetchEvents() falhou — rotas dinâmicas de eventos não foram geradas. exitCode=1');
+    }
+    if (successCount !== CONFIG.routes.length) {
+      exitCode = 1;
+      console.error(`❌ ${CONFIG.routes.length - successCount} rota(s) falharam — exitCode=1`);
+    }
 
   } catch (error) {
     console.error('FATAL:', error);
-    process.exit(1);
+    exitCode = 1;
   } finally {
     if (browser) await browser.close();
     if (viteProcess) viteProcess.kill();
-    process.exit(0);
+    process.exit(exitCode);
   }
 }
 

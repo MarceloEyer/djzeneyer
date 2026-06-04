@@ -25,10 +25,9 @@
       imagesrcset="/images/hero-background-mobile.webp 768w, /images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
       imagesizes="100vw"
       fetchpriority="high">
-    <!-- Async (non-blocking) font loading — elimina render-blocking
-         preconnect injetado pelo LiteSpeed Cache (optm-dns_preconnect) -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700&display=swap"></noscript>
+    <!-- Preconnect para Google Fonts — carregamento async gerenciado pelo LiteSpeed Cache (optm-ggfonts_async) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <style>
         /* CSS Crítico */

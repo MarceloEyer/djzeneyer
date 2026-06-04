@@ -1,6 +1,5 @@
 import { http, HttpResponse } from 'msw';
 import {
-  mockMenu,
   mockRawEvent,
   mockEventsEnvelope,
   mockPosts,
@@ -15,8 +14,6 @@ import {
 
 export const handlers = [
   // ── Public ──────────────────────────────────────────────────────────────────
-  http.get(`${REST_BASE}/djzeneyer/v1/menu`, () => HttpResponse.json(mockMenu)),
-
   http.get(`${REST_BASE}/zen-bit/v2/events`, () => HttpResponse.json(mockEventsEnvelope)),
 
   http.get(`${REST_BASE}/zen-bit/v2/events/:id`, ({ params }) => {

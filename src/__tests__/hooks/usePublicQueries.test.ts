@@ -4,51 +4,18 @@ import { http, HttpResponse } from 'msw';
 import { server } from '../../test/mocks/server';
 import { renderHookWithProviders } from '../../test/utils';
 import {
-  fetchMenuFn,
   fetchEventsFn,
   fetchNewsFn,
-  useMenuQuery,
   useEventsQuery,
   useNewsQuery,
 } from '../../hooks/usePublicQueries';
-import { mockMenu, mockRawEvent, mockEventsEnvelope, mockPosts, REST_BASE } from '../../test/mocks/fixtures';
+import { mockRawEvent, mockEventsEnvelope, mockPosts, REST_BASE } from '../../test/mocks/fixtures';
 
 // Mock getLocalizedRoute — avoids loading lazy page components in testes
 vi.mock('../../config/routes', () => ({
   getLocalizedRoute: () => '/events/:id',
   normalizeLanguage: (lang: string) => (lang.startsWith('pt') ? 'pt' : 'en'),
 }));
-
-// ── fetchMenuFn ──────────────────────────────────────────────────────────────
-
-describe('fetchMenuFn', () => {
-  it('returns menu items on success', async () => {
-    const result = await fetchMenuFn('en');
-    expect(result).toEqual(mockMenu);
-  });
-
-  it('throws when API responds with non-ok status', async () => {
-    server.use(
-      http.get(`${REST_BASE}/djzeneyer/v1/menu`, () =>
-        HttpResponse.json({ message: 'Not Found' }, { status: 404 })
-      )
-    );
-    await expect(fetchMenuFn('en')).rejects.toThrow('Failed to fetch menu');
-  });
-
-  it('always fetches from API even when prerender data is available', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
-    Object.assign(window, {
-      __PRERENDER_DATA__: { menu: { en: mockMenu }, eventsLimit: 10, eventsMode: 'upcoming', eventsDays: 365 },
-    });
-    const result = await fetchMenuFn('en');
-    expect(result).toEqual(mockMenu);
-    expect(fetchSpy).toHaveBeenCalled();
-    // restore
-    Object.assign(window, { __PRERENDER_DATA__: undefined });
-    fetchSpy.mockRestore();
-  });
-});
 
 // ── fetchEventsFn ─────────────────────────────────────────────────────────────
 
@@ -130,21 +97,6 @@ describe('fetchNewsFn', () => {
       )
     );
     await expect(fetchNewsFn('en')).rejects.toThrow('Failed to fetch news posts');
-  });
-});
-
-// ── useMenuQuery ─────────────────────────────────────────────────────────────
-
-describe('useMenuQuery', () => {
-  it('fetches and returns menu items', async () => {
-    const { result } = renderHookWithProviders(() => useMenuQuery('en'));
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual(mockMenu);
-  });
-
-  it('starts in loading state', () => {
-    const { result } = renderHookWithProviders(() => useMenuQuery('en'));
-    expect(result.current.isLoading).toBe(true);
   });
 });
 

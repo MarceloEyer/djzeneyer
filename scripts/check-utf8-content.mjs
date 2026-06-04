@@ -7,7 +7,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.resolve(__dirname, '..');
 
+// PHP dirs to scan for mojibake (glob-style, checked recursively)
+const phpDirs = ['inc', 'plugins'];
+
+const phpFiles = phpDirs.flatMap(dir => {
+  const abs = path.join(root, dir);
+  if (!fs.existsSync(abs)) return [];
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap(e =>
+    e.isDirectory() ? walk(path.join(d, e.name)) : e.name.endsWith('.php') ? [path.join(d, e.name)] : []
+  );
+  return walk(abs).map(f => path.relative(root, f));
+});
+
 const filesToCheck = [
+  ...phpFiles,
   'public/llms.txt',
   'public/llms-full.txt',
   'public/robots.txt',

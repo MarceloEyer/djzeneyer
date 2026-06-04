@@ -23,12 +23,6 @@ import { logger } from '../lib/logger';
 // TYPES
 // ----------------------------------------------------------------------------
 
-export interface MenuItem {
-  ID: number;
-  title: string;
-  url: string;
-  target: string;
-}
 
 export interface MusicTrack {
   id: number;
@@ -173,7 +167,7 @@ declare global {
   interface Window {
     __PRERENDER_DATA__?: {
       events?: { en?: ZenBitEventListItem[]; pt?: ZenBitEventListItem[] };
-      menu?: { en?: MenuItem[]; pt?: MenuItem[] };
+
       news?: { en?: WPPost[]; pt?: WPPost[] };
       eventsLimit?: number;
       eventsMode?: FetchEventsParams['mode'];
@@ -207,7 +201,7 @@ const getPrerenderUpdatedAt = (): number => {
 };
 
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
-const getPrerenderMenu = (lang?: string) => getPrerenderData<MenuItem[]>(lang, 'menu');
+
 const getPrerenderNews = (lang?: string) => getPrerenderData<WPPost[]>(lang, 'news');
 
 const withProcessedEvents = (events: ZenBitEventListItem[], lang?: string): ZenBitEventListItem[] => {
@@ -258,14 +252,7 @@ const getPrerenderEventsForParams = ({
 // FETCH FUNCTIONS (exportadas para prefetch/SSG)
 // ----------------------------------------------------------------------------
 
-export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
-  const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
-  const res = await fetch(apiUrl);
-  if (!res.ok) throw new Error('Failed to fetch menu');
-  const data = await res.json();
-  if (!Array.isArray(data)) throw new Error('Menu API returned unexpected format');
-  return data;
-};
+
 
 export const fetchArtistProfileFn = async (): Promise<ArtistProfile> => {
   const apiUrl = buildApiUrl('zen-seo/v1/profile');
@@ -388,15 +375,6 @@ export const fetchProductCollectionsFn = async (
 // HOOKS
 // ----------------------------------------------------------------------------
 
-export const useMenuQuery = (lang: string) =>
-  useQuery({
-    queryKey: QUERY_KEYS.menu.list(lang),
-    queryFn: () => fetchMenuFn(lang),
-    initialData: () => { const d = getPrerenderMenu(lang); return d !== null && d.length > 0 ? d : undefined; },
-    initialDataUpdatedAt: getPrerenderUpdatedAt,
-    staleTime: STALE_TIME.MENU,
-    retry: 1,
-  });
 
 export const useZenSeoSettings = () =>
   useQuery({
@@ -504,11 +482,12 @@ export const useEventById = (
         const apiUrl = buildApiUrl(`zen-bit/v2/events/${String(eventId)}`, queryParams);
         const res = await fetch(apiUrl);
         if (!res.ok) {
+          if (res.status === 404) return null; // genuine not found — renders NotFoundPage
           logger.error('EVENT_DETAIL_API_ERROR', `Event detail API responded with ${res.status}`, {
             eventId,
             status: res.status,
           });
-          return null;
+          throw new Error(`Event detail API responded with ${res.status}`);
         }
         const json = await res.json();
         const parsed = EventDetailApiResponseSchema.safeParse(json);
@@ -516,12 +495,12 @@ export const useEventById = (
           logger.error('EVENT_DETAIL_SCHEMA_MISMATCH', 'Event detail schema validation failed', {
             issues: parsed.error.issues,
           });
-          return null;
+          throw new Error('Event detail schema validation failed');
         }
         return parsed.data.event;
       } catch (err) {
         logger.error('EVENT_DETAIL_FETCH_FAILED', 'Failed to fetch event detail', { error: String(err) });
-        return null;
+        throw err;
       }
     },
     enabled: !!eventId,

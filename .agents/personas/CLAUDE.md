@@ -74,7 +74,6 @@ Use `npm`, nao `pnpm`. Mudancas de dependencia precisam atualizar `package-lock.
 - Em producao, assets Vite saem de `/wp-content/themes/zentheme/dist/`.
 - Arquivos em `public/` so chegam ao webroot quando o CI os copia explicitamente.
 - `scripts/prerender.js` e obrigatorio para SSG e nao deve ser removido.
-- Payloads de prerender precisam incluir `menu.en` e `menu.pt`.
 - O minificador padrao e OXC. Nunca forcar `minify: 'esbuild'`.
 
 ## Relacao com os outros arquivos de contexto
