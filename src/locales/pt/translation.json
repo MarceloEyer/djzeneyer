@@ -227,7 +227,11 @@
     "notes": "Traduções oficiais em português. ARQUIVO LEGADO - Não altere nomes de chaves sem atualizar todos os componentes."
   },
   "loading": "Carregando...",
-  "error": "Erro",
+  "error": {
+    "title": "Erro",
+    "loading_event": "Erro ao carregar o evento.",
+    "try_again": "Tentar novamente"
+  },
   "success": "Sucesso",
   "auth": {
     "login": {
