@@ -156,7 +156,7 @@ Quando este repositório for o workspace ativo, aplicar estas regras de estraté
 
 **Cluster 3: Festivais de Zouk**
 - Pillar page: "Festivais de Brazilian Zouk na Europa — Guia 2026"
-- Supporting: "Zouk DJ Championship 2022 — O que aconteceu", "Silesian Zouk Festival", "Dutch International Zouk Congress"
+- Supporting: "2022 Brazilian Zouk DJ World Championship — O que aconteceu", "Silesian Zouk Festival", "Dutch International Zouk Congress"
 
 ### Público-alvo por tipo de conteúdo
 

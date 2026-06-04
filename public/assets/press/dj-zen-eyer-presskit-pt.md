@@ -4,7 +4,7 @@ DJ e produtor musical de Zouk Brasileiro para festivais, congressos e maratonas 
 
 ## Por que contratar Zen Eyer
 
-Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias no Zouk DJ Championship em 2022: Best DJ Performance e Best Remix. O press kit reúne informações para organizadores de festivais, congressos, maratonas e eventos sociais de Zouk Brasileiro.
+Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias no Campeonato Mundial de DJs de Zouk Brasileiro de 2022: Best DJ Performance e Best Remix. O press kit reúne informações para organizadores de festivais, congressos, maratonas e eventos sociais de Zouk Brasileiro.
 
 ## Ideal para festivais e maratonas
 
@@ -15,9 +15,9 @@ Zen Eyer é DJ e produtor musical de Zouk Brasileiro. Ele venceu duas categorias
 
 ## Credibilidade
 
-- Vencedor de Best DJ Performance no Zouk DJ Championship 2022.
-- Vencedor de Best Remix no Zouk DJ Championship 2022.
-- DJ e produtor musical de Zouk Brasileiro do Rio de Janeiro, Brasil.
+- Vencedor de Best DJ Performance no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.
+- Vencedor de Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.
+- DJ e produtor musical de Zouk Brasileiro nascido no Rio de Janeiro e baseado em Niteroi, Rio de Janeiro, Brasil.
 - Membro da Mensa International.
 
 ## Presenca Internacional Selecionada

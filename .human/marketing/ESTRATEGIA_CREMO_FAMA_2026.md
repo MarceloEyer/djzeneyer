@@ -14,7 +14,7 @@ A oportunidade é rara porque Zen Eyer já tem ativos que muitos artistas famoso
 
 | Ativo real | Por que é poderoso | Como vira fama |
 |---|---|---|
-| 🏆 2× Campeão Mundial de Brazilian Zouk | Prova objetiva de excelência | Autoridade imediata em mídia, booking e SEO |
+| 🏆 Best DJ Performance + Best Remix no 2022 Brazilian Zouk DJ World Championship | Prova objetiva de excelência | Autoridade imediata em mídia, booking e SEO |
 | 🌍 14 países presenciais | Prova social internacional | Confiança para festivais e imprensa |
 | 🧠 Mensa International | Gancho incomum para entrevistas | Diferenciação fora da bolha do Zouk |
 | 🧈 Cremosidade | Conceito proprietário e memorável | Meme cultural, assinatura artística e comunidade |
@@ -112,13 +112,13 @@ Deixar claro para humanos, algoritmos e IAs que Zen Eyer é uma entidade artíst
 ### Ações
 
 1. **Definir a narrativa curta oficial**
-   - PT: "Zen Eyer é DJ, produtor e Bicampeão Mundial de Brazilian Zouk, criador da Cremosidade — a arte de fazer a música abraçar o dançarino."
-   - EN: "Zen Eyer is a Brazilian Zouk DJ, producer, and two-time World Champion, creator of Cremosidade — the art of making music embrace the dancer."
+   - PT: "Zen Eyer é DJ e produtor de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022, criador da Cremosidade — a arte de fazer a música abraçar o dançarino."
+   - EN: "Zen Eyer is a Brazilian Zouk DJ and producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, creator of Cremosidade — the art of making music embrace the dancer."
 
 2. **Padronizar bios em todas as plataformas**
    - Instagram, TikTok, YouTube, Spotify, SoundCloud, Mixcloud, Resident Advisor, Bandsintown, Linktree/Beacons se existir.
    - Nunca usar grafia incorreta do nome artístico.
-   - Sempre reforçar "2× World Champion" + "Cremosidade".
+   - Sempre reforçar "Best DJ Performance + Best Remix" + "Cremosidade".
 
 3. **Criar o kit público da campanha**
    - 1 foto horizontal premium.
@@ -164,7 +164,7 @@ Criar repetição. Repetição gera familiaridade. Familiaridade gera fama.
 | 🕺 Reação de pista | Reels/Stories | 2×/semana | Dançarinos reagindo ao drop assinatura |
 | 🧠 Por que funciona | Carrossel/Reel | 1×/semana | Explicar uma escolha musical em 30s |
 | 🌍 Tour diary | Stories/Shorts | Em eventos | Bastidor, aeroporto, soundcheck, abraço pós-set |
-| 👑 Autoridade sem arrogância | Post/LinkedIn | 1×/semana | "O que aprendi sendo 2× campeão mundial..." |
+| 👑 Autoridade sem arrogância | Post/LinkedIn | 1×/semana | "O que aprendi vencendo Best DJ Performance e Best Remix..." |
 
 ### Fórmula dos vídeos
 
@@ -324,7 +324,7 @@ Sair da bolha do Zouk sem abandonar a raiz.
 
 | Ângulo | Título sugerido | Veículos possíveis |
 |---|---|---|
-| Campeão mundial | "O DJ brasileiro bicampeão mundial que está levando o Zouk para o mundo" | Cultura, música, dança |
+| Prêmios no campeonato | "O DJ brasileiro que venceu Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022" | Cultura, música, dança |
 | Mensa + música | "Como um membro da Mensa pensa a emoção de uma pista de dança" | Podcasts, tecnologia, comportamento |
 | Cremosidade | "A filosofia brasileira que quer desacelerar a dança" | Lifestyle, wellness, cultura |
 | Internacionalização | "De festivais de Zouk à Europa: a jornada global de Zen Eyer" | Imprensa local e brasileira |
@@ -472,7 +472,7 @@ A fama começa quando outras pessoas conseguem explicar você melhor do que voc�
 
 A frase que todo fã deve conseguir repetir:
 
-> **"Zen Eyer é o DJ bicampeão mundial de Brazilian Zouk que criou a Cremosidade — a música que abraça o dançarino."**
+> **"Zen Eyer é o DJ de Brazilian Zouk que venceu Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022 e criou a Cremosidade — a música que abraça o dançarino."**
 
 Se essa frase aparecer em bios, posts, entrevistas, artigos, vídeos, comentários, newsletters e conversas de festival, Zen Eyer deixa de ser apenas um artista conhecido por alguns e passa a ser uma ideia circulando pelo mundo.
 

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import { Share2, RefreshCw, ChevronRight, Music, Heart, Zap, Sparkles, Coffee } from 'lucide-react';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import patternSvg from '../assets/images/pattern.svg';
@@ -208,10 +208,14 @@ const ZoukPersonaQuizPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('quiz.ui.meta_title', { stageName: ARTIST.identity.stageName })}</title>
-        <meta name="description" content={t('quiz.ui.meta_desc')} />
-      </Helmet>
+      <HeadlessSEO
+        title={t('quiz.ui.meta_title', { stageName: ARTIST.identity.stageName })}
+        description={t('quiz.ui.meta_desc')}
+        url={quizUrl}
+        image={`${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`}
+        imageAlt={t('og.image_alt.default')}
+        noindex
+      />
 
       <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 relative overflow-hidden font-sans">
         {/* Background */}

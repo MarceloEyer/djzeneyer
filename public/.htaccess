@@ -297,7 +297,7 @@ RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
   ForceType application/linkset+json
   <IfModule mod_headers.c>
     Header set Content-Type "application/linkset+json; profile=\"https://www.rfc-editor.org/info/rfc9727\""
-    Header append Link "</.well-known/api-catalog>; rel=\"api-catalog\""
+    Header append Link "</.well-known/api-catalog>; rel=api-catalog"
     Header set Cache-Control "public, max-age=86400, stale-while-revalidate=3600"
   </IfModule>
 </Files>

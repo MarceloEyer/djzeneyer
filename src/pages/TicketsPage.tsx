@@ -39,6 +39,7 @@ const TicketsPage: React.FC = () => {
         description={t('common.checkout.description')}
         url={`https://djzeneyer.com/${getLocalizedRoute('tickets', currentLang).replace(/^\//, '')}`}
         isHomepage={false}
+        noindex
       />
 
       <div className="min-h-screen pt-24 pb-12 bg-background text-white">

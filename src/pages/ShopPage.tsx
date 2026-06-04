@@ -6,12 +6,14 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { stripHtml } from '../utils/text';
 import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Toast } from '../components/common/Toast';
 import { getCurrencyFormatter } from '../utils/currency';
+import { ARTIST } from '../data/artistData';
 import {
   Loader2,
   ChevronLeft,
@@ -350,7 +352,7 @@ const ShopPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
   const canonicalUrl = useMemo(
-    () => `https://djzeneyer.com/${getLocalizedRoute('shop', currentLang).replace(/^\//, '')}`,
+    () => `${ARTIST.site.baseUrl}${getLocalizedRoute('shop', currentLang)}`,
     [currentLang]
   );
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
@@ -394,6 +396,62 @@ const ShopPage: React.FC = () => {
   const newReleasesIds = useMemo(() => new Set(newReleases.map(p => p.id)), [newReleases]);
   const bestSellersIds = useMemo(() => new Set(bestSellers.map(p => p.id)), [bestSellers]);
   const curatedSelectionIds = useMemo(() => new Set(curatedSelection.map(p => p.id)), [curatedSelection]);
+  const visibleProducts = useMemo(() => {
+    const productsById = new Map<number, Product>();
+    [featuredProduct, ...newReleases, ...bestSellers, ...curatedSelection].forEach((product) => {
+      if (product) productsById.set(product.id, product);
+    });
+    return Array.from(productsById.values());
+  }, [bestSellers, curatedSelection, featuredProduct, newReleases]);
+  const shopSchema = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${canonicalUrl}#webpage`,
+        url: canonicalUrl,
+        name: t('shop.page_title'),
+        description: t('shop.page_meta_desc'),
+        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+        about: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${canonicalUrl}#products`,
+        name: t('shop.page_title'),
+        itemListElement: visibleProducts.map((product, index) => {
+          const productUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('product-detail', currentLang).replace(':slug', product.slug)}`;
+          const imageUrl = safeUrl(product.images?.[0]?.sizes?.large || product.images?.[0]?.src, '');
+          const price = product.price || product.regular_price;
+
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Product',
+              '@id': `${productUrl}#product`,
+              name: product.name,
+              url: productUrl,
+              sku: String(product.id),
+              ...(imageUrl ? { image: imageUrl } : {}),
+              ...(product.short_description ? { description: stripHtml(product.short_description) } : {}),
+              ...(product.categories?.length ? { category: product.categories.map((category) => category.name).join(', ') } : {}),
+              brand: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+              offers: {
+                '@type': 'Offer',
+                url: productUrl,
+                priceCurrency: 'BRL',
+                ...(price ? { price } : {}),
+                availability: product.stock_status === 'instock'
+                  ? 'https://schema.org/InStock'
+                  : 'https://schema.org/OutOfStock',
+              },
+            },
+          };
+        }),
+      },
+    ],
+  }), [canonicalUrl, currentLang, t, visibleProducts]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
@@ -415,6 +473,7 @@ const ShopPage: React.FC = () => {
         url={canonicalUrl}
         image={featuredProduct?.images?.[0]?.sizes?.large || featuredProduct?.images?.[0]?.src || '/images/og/zen-eyer-shop-og.jpg'}
         imageAlt={featuredProduct ? t('og.image_alt.product', { name: featuredProduct.name }) : t('og.image_alt.shop')}
+        schema={shopSchema}
       />
 
       <Toast

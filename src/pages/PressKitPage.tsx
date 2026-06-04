@@ -381,7 +381,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="mt-12 px-4 text-center">
-                <p className="text-lg italic text-white/30">+ tour mundial contínua cobrindo Américas, Europa e Oceania.</p>
+                <p className="text-lg italic text-white/30">{t('presskit.lineups.global_note')}</p>
               </div>
             </motion.div>
           </div>

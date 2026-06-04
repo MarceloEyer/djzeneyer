@@ -61,10 +61,10 @@ describe('ZoukFestivalsPage', () => {
     expect(() => renderPage()).not.toThrow();
   });
 
-  it('passes noindex to HeadlessSEO (page is not yet indexed)', () => {
+  it('does not pass noindex to HeadlessSEO (directory is indexable)', () => {
     renderPage();
     const seo = screen.getByTestId('seo');
-    expect(seo.getAttribute('data-noindex')).toBe('true');
+    expect(seo.getAttribute('data-noindex')).toBe('false');
   });
 
   it('passes seo_title i18n key to HeadlessSEO', () => {

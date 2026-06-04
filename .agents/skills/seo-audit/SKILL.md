@@ -114,7 +114,7 @@ Verify cross-platform consistency for AI grounding. Platform list, IDs, and curr
 
 - [ ] Canonical name "Zen Eyer" (not "DJ Zen Eyer") used as primary on all platforms.
 - [ ] `sameAs` contains only official identity profile URLs — no articles, lineups, or playlists. See `.context/IDENTITY.md` for approved URLs.
-- [ ] Wikidata Q136551855 facts have sources. Championship naming: "Zouk DJ Championship 2022" / "I Campeonato Internacional de DJs".
+- [ ] Wikidata Q136551855 facts have sources. Championship naming: "2022 Brazilian Zouk DJ World Championship" / "I Campeonato Internacional de DJs"; do not conflate with Zouk World/Zouk Worlds.
 - [ ] Country count and biography facts consistent across site and platforms — canonical value in `.context/IDENTITY.md`.
 - [ ] Zoukology article: return link to djzeneyer.com present. Schema uses `author: {/@id: /#artist}`.
 - [ ] Pronunciation file accessible at `public/pronunciation.txt` and referenced from `llms.txt`.

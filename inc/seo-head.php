@@ -24,22 +24,22 @@ add_action('wp_head', function () {
     }
 
     $website_description = $is_pt
-        ? 'Site oficial de Zen Eyer, DJ e produtor musical de Brazilian Zouk, bicampeão mundial no Zouk DJ Championship.'
-        : 'Official website of Zen Eyer, Brazilian Zouk DJ and music producer, two-time World Champion at the Zouk DJ Championship.';
+        ? 'Site oficial de Zen Eyer, DJ e produtor musical de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.'
+        : 'Official website of Zen Eyer, Brazilian Zouk DJ and music producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.';
     $person_description = $is_pt
-        ? 'Zen Eyer é DJ e produtor musical de Brazilian Zouk, bicampeão mundial no Zouk DJ Championship 2022.'
-        : 'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Zouk DJ Championship 2022.';
+        ? 'Zen Eyer é DJ e produtor musical de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.'
+        : 'Zen Eyer is a Brazilian Zouk DJ and music producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.';
     $musicgroup_description = $is_pt
         ? 'Zen Eyer é o nome artístico oficial para performances, remixes, edits e lançamentos de Brazilian Zouk.'
         : 'Zen Eyer is the official artist name for Brazilian Zouk DJ performances, remixes, edits, and official releases.';
     $awards = $is_pt
         ? [
-            'Campeão mundial de Brazilian Zouk DJ - Best DJ Performance, 2022',
-            'Campeão mundial de Brazilian Zouk DJ - Best Remix, 2022',
+            'Campeonato Mundial de DJs de Zouk Brasileiro - Best DJ Performance, 2022',
+            'Campeonato Mundial de DJs de Zouk Brasileiro - Best Remix, 2022',
         ]
         : [
-            'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
-            'World Champion Brazilian Zouk DJ - Best Remix, 2022',
+            '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+            '2022 Brazilian Zouk DJ World Championship - Best Remix',
         ];
 
     $schema = [

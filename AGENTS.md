@@ -61,6 +61,19 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - `public/.well-known/ai-bots.txt` deve continuar coerente com `allow_training: yes`.
 - Nunca mudar `ai-train` para `no` sem pedido explicito do usuario.
 
+### 7. Nome do Campeonato de DJs de Zouk
+
+Padronização obrigatória:
+
+- EN: `2022 Brazilian Zouk DJ World Championship`
+- PT: `Campeonato Mundial de DJs de Zouk Brasileiro de 2022`
+- Nome nas regras oficiais: `I Campeonato Internacional de DJs`
+- Contexto: realizado dentro do evento `Ilha do Zouk`, organizado por Alex de Carvalho.
+- Prêmios de Zen Eyer: `Best DJ Performance` e `Best Remix`.
+
+**Não escrever** que Zen Eyer foi "campeão do Ilha do Zouk"; Ilha do Zouk foi o evento anfitrião.
+**Não confundir** com `Zouk World`/`Zouk Worlds`; esse evento separado não realizou este campeonato de DJs.
+
 ---
 
 ## ⚠️ Armadilhas Conhecidas
@@ -95,7 +108,7 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - **`Header unset Content-Security-Policy` ou `Header always unset Content-Security-Policy` no `.htaccess`** — `mod_headers` roda após o PHP e remove a CSP dinâmica gerada por `inc/csp.php`, deixando o cliente sem proteção.
 - **`Strict-Transport-Security` no `.htaccess`** — HSTS é gerenciado pelo Cloudflare. Definir nos dois lugares cria duas fontes de verdade.
 
-### 7. Classificação de Links Externos (Knowledge Panel e sameAs)
+### 8. Classificação de Links Externos (Knowledge Panel e sameAs)
 
 Antes de adicionar qualquer URL externo ao schema, ao `sameAs` ou a `artistData.ts`, classifique o tipo:
 

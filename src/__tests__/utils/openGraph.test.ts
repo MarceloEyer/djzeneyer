@@ -14,7 +14,7 @@ import {
 
 describe('getMetaDescription', () => {
   it('returns the string unchanged when below 160 chars', () => {
-    const short = 'Zen Eyer is a world champion Brazilian Zouk DJ.';
+    const short = 'Zen Eyer is a Brazilian Zouk DJ and music producer.';
     expect(getMetaDescription(short)).toBe(short);
   });
 

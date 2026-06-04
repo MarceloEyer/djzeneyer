@@ -145,8 +145,8 @@ const VerifiedFactsPage: React.FC = () => {
             <div className="rounded-2xl border border-white/10 bg-surface/35 p-6">
               <h2 className="mb-4 font-display text-2xl font-black">{t('verified_facts.awards')}</h2>
               <ol className="list-decimal space-y-2 pl-5 text-white/75">
-                <li>Best Remix</li>
-                <li>Brazilian Zouk DJ World Championship</li>
+                <li>{t('verified_facts.facts.award_performance_value')}</li>
+                <li>{t('verified_facts.facts.award_remix_value')}</li>
               </ol>
             </div>
             <div className="rounded-2xl border border-white/10 bg-surface/35 p-6">

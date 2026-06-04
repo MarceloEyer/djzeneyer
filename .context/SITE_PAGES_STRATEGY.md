@@ -263,9 +263,9 @@ Implementation: static data in `src/data/` categorized by `categorizeFestivals` 
 
 Schema: `MusicEvent` or `Event` entries with performer, location, and dates where available. Do not emit schema for placeholder data.
 
-Routing: implemented as `/zouk-festivals` (EN) and `/pt/festivais-zouk` (PT). Prerendered and included in sitemap.
+Routing: implemented as `/zouk-festivals-directory` (EN) and `/pt/diretorio-festivais-zouk` (PT). Prerendered and included in sitemap.
 
-Recommendation: keep as a real, indexable page now that it has genuine content. Remove `noindex` only when there is meaningful, verifiable festival data for each listed entry. Expand gradually as the career grows.
+Recommendation: keep as a real, indexable page now that it has meaningful, verifiable festival data. Expand gradually as the career grows; if placeholder entries are ever introduced, keep those entries out of schema and out of indexable page copy until verified.
 
 ### Hub Pages (Zouk History, Zouk Musicality, Artist Collaborations)
 
