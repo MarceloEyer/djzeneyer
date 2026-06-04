@@ -22,6 +22,14 @@ describe('artistData canonical keys', () => {
     expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.YouTubeMusic.url);
   });
 
+  it('keeps non-authority catalog and support URLs out of artist sameAs', () => {
+    expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.lastfm.url);
+    expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.shazam.url);
+    expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.genius.url);
+    expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.patreon.url);
+    expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.medium.url);
+  });
+
   it('has canonical IPA pronunciation', () => {
     expect(ARTIST.identity.pronunciationIPA).toBe('/zɛn ˈaɪər/');
   });
