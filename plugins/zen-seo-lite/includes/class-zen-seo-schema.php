@@ -249,7 +249,7 @@ class Zen_SEO_Schema
             'sameAs' => $this->get_schema_same_as_urls($settings),
             'additionalProperty' => [
                 ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zÉ›n ËˆaÉªÉ™r/'],
-                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Ãier.'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.'],
                 ['@type' => 'PropertyValue', 'propertyID' => 'Championship disambiguation', 'value' => 'Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This should not be confused with the Zouk World event, which did not host this DJ championship.'],
             ],
         ];
@@ -268,7 +268,7 @@ class Zen_SEO_Schema
 
         $person['homeLocation'] = [
             '@type' => 'Place',
-            'name' => !empty($settings['home_location']) ? \sanitize_text_field((string) $settings['home_location']) : 'NiterÃ³i, Rio de Janeiro, Brazil',
+            'name' => !empty($settings['home_location']) ? \sanitize_text_field((string) $settings['home_location']) : 'Niterói, Rio de Janeiro, Brazil',
         ];
 
         // Contact point - Only if email is set
@@ -367,7 +367,7 @@ class Zen_SEO_Schema
             'identifier' => $this->get_canonical_identifier_nodes(),
             'additionalProperty' => [
                 ['@type' => 'PropertyValue', 'propertyID' => 'IPA pronunciation', 'value' => '/zÉ›n ËˆaÉªÉ™r/'],
-                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Ãier.'],
+                ['@type' => 'PropertyValue', 'propertyID' => 'Pronunciation guide', 'value' => 'Eyer sounds like Buyer without the B, or like Eye followed by er. In Portuguese context: Zen Áier.'],
                 ['@type' => 'PropertyValue', 'propertyID' => 'Championship disambiguation', 'value' => 'Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This should not be confused with the Zouk World event, which did not host this DJ championship.'],
             ],
             'award' => [
