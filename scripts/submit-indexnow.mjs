@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 /**
  * submit-indexnow.mjs
- * Submits URLs to IndexNow protocol after each deploy.
- * Called via: npm run indexnow
- * Requires env: INDEXNOW_KEY, SITE_BASE_URL (optional)
+ *
+ * Submits public sitemap URLs through IndexNow after deploy.
+ *
+ * Required env:
+ * - INDEXNOW_KEY: key also deployed as https://djzeneyer.com/<key>.txt
+ *
+ * Optional env:
+ * - INDEXNOW_STRICT=true: exit non-zero if any batch fails
  */
 
 import fs from 'fs';
@@ -12,148 +17,189 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const KEY  = process.env.INDEXNOW_KEY;
+const KEY = process.env.INDEXNOW_KEY?.trim();
+const STRICT = process.env.INDEXNOW_STRICT === 'true';
 const HOST = 'djzeneyer.com';
 const BASE = `https://${HOST}`;
+const KEY_LOCATION = `${BASE}/${KEY}.txt`;
 
-if (!KEY) {
-  console.error('❌  INDEXNOW_KEY env var not set — skipping submission.');
-  process.exit(0); // soft exit so CI doesn't fail
-}
-
-// ── Key-file readiness check ──────────────────────────────────────────────────
-
-/**
- * Polls https://<host>/<key>.txt until it responds 200 with the correct key
- * content, or until MAX_ATTEMPTS is reached.
- * Needed because LiteSpeed may serve a cached 404 for a few seconds after
- * a newly-deployed file lands on the server.
- */
-async function waitForKeyFile(maxAttempts = 6, delayMs = 5000) {
-  const url = `${BASE}/${KEY}.txt`;
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    try {
-      const res = await fetch(url, {
-        cache: 'no-store',
-        signal: AbortSignal.timeout(5000),
-        headers: { 'Cache-Control': 'no-cache' },
-      });
-      if (res.ok) {
-        const body = (await res.text()).trim();
-        if (body === KEY) {
-          console.log(`✅ Key file verified at ${url} (attempt ${attempt})`);
-          return true;
-        }
-        console.warn(`⚠️  Key file content mismatch on attempt ${attempt} — got: "${body.slice(0, 40)}"`);
-      } else {
-        console.warn(`⚠️  Key file not ready (HTTP ${res.status}) — attempt ${attempt}/${maxAttempts}`);
-      }
-    } catch (err) {
-      console.warn(`⚠️  Key file fetch error on attempt ${attempt}: ${err.message}`);
-    }
-    if (attempt < maxAttempts) {
-      console.log(`   Retrying in ${delayMs / 1000}s…`);
-      await new Promise(r => setTimeout(r, delayMs));
-    }
-  }
-  return false;
-}
-
-console.log(`\n🔑 Verifying key file at https://${HOST}/${KEY}.txt…`);
-const keyReady = await waitForKeyFile();
-if (!keyReady) {
-  console.error(`❌ Key file not accessible after all attempts — skipping submission to avoid wasted 403s.`);
-  process.exit(0); // soft exit: don't fail the deploy, but don't submit either
-}
-
-// ── Collect URLs ─────────────────────────────────────────────────────────────
-
-/**
- * Parse a sitemap XML file and return all <loc> URLs.
- * Works for both urlset (regular sitemap) and sitemapindex.
- */
-function parseLocsFromFile(filePath) {
-  if (!fs.existsSync(filePath)) return [];
-  const xml = fs.readFileSync(filePath, 'utf-8');
-  const matches = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)];
-  return matches.map(m => m[1].trim()).filter(Boolean);
-}
-
-// Read pages sitemap (static routes in both EN + PT)
-const pagesFile  = path.resolve(__dirname, '../public/sitemap-pages.xml');
-const eventsFile = path.resolve(__dirname, '../public/sitemap-events.xml');
-const postsFile  = path.resolve(__dirname, '../public/sitemap-posts.xml');
-
-const pageUrls  = parseLocsFromFile(pagesFile);
-const eventUrls = parseLocsFromFile(eventsFile);
-const postUrls  = parseLocsFromFile(postsFile);
-
-// Always include the sitemap index itself
-const extraUrls = [
-  `${BASE}/sitemap.xml`,
-  `${BASE}/sitemap-pages.xml`,
-  `${BASE}/sitemap-events.xml`,
-  `${BASE}/sitemap-posts.xml`,
+const ENDPOINTS = [
+  'https://api.indexnow.org/indexnow',
+  'https://www.bing.com/indexnow',
 ];
 
-// Deduplicate
-const allUrls = [...new Set([...pageUrls, ...eventUrls, ...postUrls, ...extraUrls])];
-
-if (allUrls.length === 0) {
-  console.warn('⚠️  No URLs found to submit — sitemap files might be missing.');
+if (!KEY) {
+  console.warn('[indexnow] INDEXNOW_KEY env var not set; skipping submission.');
   process.exit(0);
 }
 
-console.log(`\n📡 IndexNow — submitting ${allUrls.length} URLs to api.indexnow.org...`);
+if (!/^[A-Za-z0-9_-]{8,128}$/.test(KEY)) {
+  console.warn('[indexnow] INDEXNOW_KEY has unusual characters or length; provider verification may fail.');
+}
 
-// ── Submit ────────────────────────────────────────────────────────────────────
+async function sleep(ms) {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-// IndexNow accepts up to 10 000 URLs per request but recommends batches ≤ 10 000.
-// We'll batch in 500 to stay safe.
-const BATCH_SIZE = 500;
+/**
+ * Poll the public key file until the same bytes are visible over HTTPS.
+ * LiteSpeed/Cloudflare may serve stale content briefly after deploy.
+ */
+async function waitForKeyFile(maxAttempts = 8, delayMs = 5000) {
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    try {
+      const cacheBustUrl = `${KEY_LOCATION}?indexnow_check=${Date.now()}`;
+      const res = await fetch(cacheBustUrl, {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(8000),
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          'User-Agent': 'djzeneyer-indexnow-verifier/1.0',
+        },
+      });
 
-async function submitBatch(urls, batchIndex) {
-  const body = JSON.stringify({
-    host: HOST,
-    key: KEY,
-    keyLocation: `${BASE}/${KEY}.txt`,
-    urlList: urls,
-  });
+      const body = res.ok ? (await res.text()).trim() : '';
+      if (res.ok && body === KEY) {
+        console.log(`[indexnow] Key file verified at ${KEY_LOCATION} (attempt ${attempt}).`);
+        return true;
+      }
 
-  const res = await fetch('https://api.indexnow.org/indexnow', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    body,
-  });
+      console.warn(
+        `[indexnow] Key file not ready on attempt ${attempt}/${maxAttempts}: ` +
+        `HTTP ${res.status}; body prefix="${body.slice(0, 24)}".`
+      );
+    } catch (err) {
+      console.warn(`[indexnow] Key file fetch error on attempt ${attempt}/${maxAttempts}: ${err.message}`);
+    }
 
-  const status = res.status;
-  let detail = '';
-  try { detail = await res.text(); } catch (_) {}
+    if (attempt < maxAttempts) {
+      await sleep(delayMs);
+    }
+  }
 
-  if (status === 200) {
-    console.log(`  ✅ Batch ${batchIndex}: ${urls.length} URLs accepted (200 OK)`);
-  } else if (status === 202) {
-    console.log(`  ✅ Batch ${batchIndex}: ${urls.length} URLs received, crawl pending (202 Accepted)`);
-  } else if (status === 400) {
-    console.warn(`  ⚠️  Batch ${batchIndex}: Bad request (400) — ${detail.slice(0, 120)}`);
-  } else if (status === 403) {
-    console.error(`  ❌ Batch ${batchIndex}: Forbidden (403) — key file not found or key mismatch. Check https://${HOST}/${KEY}.txt`);
-  } else if (status === 422) {
-    console.warn(`  ⚠️  Batch ${batchIndex}: Unprocessable (422) — URLs may contain invalid characters.`);
-  } else if (status === 429) {
-    console.warn(`  ⚠️  Batch ${batchIndex}: Rate limited (429) — too many requests today.`);
-  } else {
-    console.warn(`  ⚠️  Batch ${batchIndex}: Unexpected status ${status} — ${detail.slice(0, 120)}`);
+  return false;
+}
+
+function parseLocsFromFile(filePath) {
+  if (!fs.existsSync(filePath)) return [];
+  const xml = fs.readFileSync(filePath, 'utf-8');
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map((match) => match[1].trim())
+    .filter((url) => url.startsWith(`${BASE}/`));
+}
+
+function getUrlsToSubmit() {
+  const sitemapFiles = [
+    '../public/sitemap-pages.xml',
+    '../public/sitemap-events.xml',
+    '../public/sitemap-posts.xml',
+  ].map((relativePath) => path.resolve(__dirname, relativePath));
+
+  const sitemapUrls = sitemapFiles.flatMap(parseLocsFromFile);
+  const extraUrls = [
+    `${BASE}/sitemap.xml`,
+    `${BASE}/sitemap-pages.xml`,
+    `${BASE}/sitemap-events.xml`,
+    `${BASE}/sitemap-posts.xml`,
+  ];
+
+  return [...new Set([...sitemapUrls, ...extraUrls])];
+}
+
+async function submitToEndpoint(endpoint, urls) {
+  try {
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'User-Agent': 'djzeneyer-indexnow-submit/1.0',
+      },
+      body: JSON.stringify({
+        host: HOST,
+        key: KEY,
+        keyLocation: KEY_LOCATION,
+        urlList: urls,
+      }),
+    });
+
+    let detail = '';
+    try {
+      detail = await res.text();
+    } catch {
+      detail = '';
+    }
+
+    return {
+      endpoint,
+      ok: res.status === 200 || res.status === 202,
+      status: res.status,
+      detail: detail.slice(0, 240),
+    };
+  } catch (err) {
+    return {
+      endpoint,
+      ok: false,
+      status: 0,
+      detail: err instanceof Error ? err.message.slice(0, 240) : 'Network request failed',
+    };
   }
 }
 
-(async () => {
-  let batchIndex = 1;
-  for (let i = 0; i < allUrls.length; i += BATCH_SIZE) {
-    const batch = allUrls.slice(i, i + BATCH_SIZE);
-    await submitBatch(batch, batchIndex++);
+async function submitBatch(urls, batchIndex) {
+  const attempts = [];
+
+  for (const endpoint of ENDPOINTS) {
+    const result = await submitToEndpoint(endpoint, urls);
+    attempts.push(result);
+
+    if (result.ok) {
+      console.log(
+        `[indexnow] Batch ${batchIndex}: ${urls.length} URLs accepted by ${endpoint} ` +
+        `(HTTP ${result.status}).`
+      );
+      return { ok: true, attempts };
+    }
+
+    console.warn(
+      `[indexnow] Batch ${batchIndex}: ${endpoint} returned HTTP ${result.status}` +
+      (result.detail ? ` - ${result.detail}` : '.')
+    );
+
+    if (![0, 403, 408, 429, 500, 502, 503, 504].includes(result.status)) {
+      break;
+    }
   }
-  console.log('\n════════════════════════════════════════');
-  console.log('✅ IndexNow submission complete!');
-  console.log('════════════════════════════════════════\n');
-})();
+
+  return { ok: false, attempts };
+}
+
+const keyReady = await waitForKeyFile();
+if (!keyReady) {
+  console.error(`[indexnow] Key file was not publicly verifiable at ${KEY_LOCATION}; skipping submission.`);
+  process.exit(STRICT ? 1 : 0);
+}
+
+const allUrls = getUrlsToSubmit();
+if (allUrls.length === 0) {
+  console.warn('[indexnow] No sitemap URLs found to submit.');
+  process.exit(0);
+}
+
+console.log(`[indexnow] Submitting ${allUrls.length} URLs for ${HOST}.`);
+
+const BATCH_SIZE = 500;
+let failedBatches = 0;
+
+for (let i = 0; i < allUrls.length; i += BATCH_SIZE) {
+  const batch = allUrls.slice(i, i + BATCH_SIZE);
+  const result = await submitBatch(batch, Math.floor(i / BATCH_SIZE) + 1);
+  if (!result.ok) failedBatches += 1;
+}
+
+if (failedBatches > 0) {
+  console.error(`[indexnow] Completed with ${failedBatches} failed batch(es).`);
+  process.exit(STRICT ? 1 : 0);
+}
+
+console.log('[indexnow] Submission complete: all batches accepted.');

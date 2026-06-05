@@ -60,9 +60,10 @@ const EventDetailSkeleton = () => (
 const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const { t } = useTranslation();
   const origin = ARTIST.site.baseUrl;
-  const { data: event } = useEventById(id, lang as Language);
+  const { data: event, isLoading, isFetching } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
 
+  if ((isLoading || isFetching) && !event) return <EventDetailSkeleton />;
   if (!event) return <NotFoundPage />;
 
   const eventDate = new Date(event.starts_at);

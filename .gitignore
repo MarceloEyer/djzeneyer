@@ -26,6 +26,7 @@ dist-debug/
 *.sw?
 .env
 dist-test/
+coverage/
 
 # Claude Code worktrees (gerados automaticamente, não commitar)
 .claude/worktrees/
