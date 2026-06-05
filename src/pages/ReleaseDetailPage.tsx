@@ -212,8 +212,11 @@ const ReleaseDetailPage: React.FC = () => {
             <img
               src={release.image}
               alt={`${release.name} cover`}
+              width="192"
+              height="192"
               className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shadow-lg flex-shrink-0 bg-white/5"
               loading="lazy"
+              decoding="async"
             />
             <div className="flex-1 min-w-0">
               <span className="text-xs uppercase tracking-widest text-primary font-bold">
