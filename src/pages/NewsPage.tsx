@@ -372,7 +372,7 @@ const NewsPage: React.FC = () => {
             </section>
           )}
 
-          <div className="min-h-[1200px]">
+          <div className={loading ? 'min-h-[1600px]' : ''}>
           {loading ? (
             <div className="animate-pulse space-y-8" aria-busy="true" aria-label={t('common.loading')}>
               <div className="aspect-[16/9] bg-white/5 rounded-2xl w-full" />

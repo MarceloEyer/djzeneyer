@@ -1,5 +1,6 @@
 import { ComponentType, Suspense } from 'react';
-import { useRoutes, RouteObject } from 'react-router-dom';
+import { useRoutes, RouteObject, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MainLayout from '../layouts/MainLayout';
 import ErrorBoundary from './common/ErrorBoundary';
 import {
@@ -12,11 +13,28 @@ import {
 
 const STANDALONE_ROUTE_KEYS = new Set(['zenlink']);
 
-const RouteFallback = () => (
-  <div className="min-h-[60vh] flex items-center justify-center bg-background" role="status" aria-label="Loading page">
-    <div className="h-12 w-12 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
-  </div>
-);
+const LISTING_FALLBACK_PATHS = [
+  '/zouk-events',
+  '/pt/eventos-zouk',
+  '/releases',
+  '/pt/lancamentos',
+];
+
+const RouteFallback = () => {
+  const { t } = useTranslation();
+  const { pathname } = useLocation();
+  const reservesListingHeight = LISTING_FALLBACK_PATHS.some((path) => pathname.startsWith(path));
+
+  return (
+    <div
+      className={`${reservesListingHeight ? 'min-h-[1600px]' : 'min-h-[60vh]'} flex items-start justify-center bg-background pt-32`}
+      role="status"
+      aria-label={t('common.loading_page', { defaultValue: 'Loading page' })}
+    >
+      <div className="h-12 w-12 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+    </div>
+  );
+};
 
 const wrapRouteElement = (Component: ComponentType) => (
   <ErrorBoundary>

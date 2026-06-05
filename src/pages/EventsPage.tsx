@@ -352,7 +352,7 @@ const EventsPage: React.FC = () => {
           </h1>
         </header>
 
-        <React.Suspense fallback={<EventSkeleton />}>
+        <React.Suspense fallback={<div className="min-h-[1600px]"><EventSkeleton /></div>}>
           <EventListContent lang={lang} />
         </React.Suspense>
 
