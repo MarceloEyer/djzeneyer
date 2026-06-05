@@ -33,7 +33,7 @@ describe('Analytics Library', () => {
 
     it('calls gtag if available', () => {
       window.gtag = vi.fn();
-      trackEvent('test_event', { prop: 'value', num: 1, bool: true, obj: {} as any });
+      trackEvent('test_event', { prop: 'value', num: 1, bool: true, obj: {} as Record<string, unknown> });
       
       expect(window.gtag).toHaveBeenCalledWith('event', 'test_event', {
         prop: 'value',

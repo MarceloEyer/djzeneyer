@@ -17,6 +17,16 @@ describe('extractYouTubeId', () => {
     expect(extractYouTubeId(html)).toBe('dQw4w9WgXcQ');
   });
 
+  it('extracts ID from shorts url', () => {
+    const html = 'https://www.youtube.com/shorts/dQw4w9WgXcQ?feature=share';
+    expect(extractYouTubeId(html)).toBe('dQw4w9WgXcQ');
+  });
+
+  it('handles repeated watch parameters without catastrophic backtracking', () => {
+    const repeated = `https://youtube.com/watch?${'&v=youtube.com/watch?'.repeat(500)}&v=dQw4w9WgXcQ`;
+    expect(extractYouTubeId(repeated)).toBe('dQw4w9WgXcQ');
+  });
+
   it('returns null when no youtube url is present', () => {
     const html = '<p>Just some text</p>';
     expect(extractYouTubeId(html)).toBeNull();

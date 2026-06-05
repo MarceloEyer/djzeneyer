@@ -8,7 +8,7 @@ vi.mock('../../config/queryClient', () => ({
     prefetchQuery: vi.fn(),
   },
   QUERY_KEYS: {
-    events: { list: (params: any) => ['events', params] },
+    events: { list: (params: unknown) => ['events', params] },
     posts: { list: (lang: string) => ['posts', lang] },
     products: { list: (lang: string) => ['products', lang] },
   },

@@ -4,15 +4,18 @@ import { useGamiPress } from '../../hooks/useGamiPress';
 import * as UserContext from '../../contexts/UserContext';
 import * as useQueries from '../../hooks/useQueries';
 
+type UseUserReturn = ReturnType<typeof UserContext.useUser>;
+type UseGamipressQueryReturn = ReturnType<typeof useQueries.useGamipressQuery>;
+
 describe('useGamiPress hook', () => {
   it('returns fallback data when query has no data', () => {
-    vi.spyOn(UserContext, 'useUser').mockReturnValue({ user: null } as any);
+    vi.spyOn(UserContext, 'useUser').mockReturnValue({ user: null } as UseUserReturn);
     vi.spyOn(useQueries, 'useGamipressQuery').mockReturnValue({
       data: undefined,
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as any);
+    } as unknown as UseGamipressQueryReturn);
 
     const { result } = renderHook(() => useGamiPress());
     
@@ -23,7 +26,7 @@ describe('useGamiPress hook', () => {
   });
 
   it('returns valid data when query succeeds', () => {
-    vi.spyOn(UserContext, 'useUser').mockReturnValue({ user: { id: 1, token: 'abc' } } as any);
+    vi.spyOn(UserContext, 'useUser').mockReturnValue({ user: { id: 1, token: 'abc' } } as unknown as UseUserReturn);
     vi.spyOn(useQueries, 'useGamipressQuery').mockReturnValue({
       data: {
         main_points_slug: 'xp',
@@ -39,7 +42,7 @@ describe('useGamiPress hook', () => {
       isLoading: false,
       error: null,
       refetch: vi.fn(),
-    } as any);
+    } as unknown as UseGamipressQueryReturn);
 
     const { result } = renderHook(() => useGamiPress());
     
@@ -58,7 +61,7 @@ describe('useGamiPress hook', () => {
       isLoading: false,
       error: null,
       refetch: refetchMock,
-    } as any);
+    } as unknown as UseGamipressQueryReturn);
 
     const { result } = renderHook(() => useGamiPress());
     result.current.refresh();
