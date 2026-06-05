@@ -18,7 +18,7 @@ import NotFoundPage from './NotFoundPage';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 import type { EventSchemaData } from '../components/HeadlessSEO';
 
-// ⚡ Bolt: Extracted static MONTH_NAMES array to module scope to prevent reallocation on every render cycle.
+// Static month keys stay at module scope to avoid reallocation on every render.
 const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
 
 // ============================================================================
@@ -59,10 +59,6 @@ const EventDetailSkeleton = () => (
 
 const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const { t } = useTranslation();
-  // FIX: Use ARTIST.site.baseUrl instead of window.location.origin.
-  // During prerender, Puppeteer has window defined so the typeof check is always true,
-  // causing window.location.origin to resolve to http://localhost:5173 and producing
-  // a localhost canonical URL — a fatal SEO error.
   const origin = ARTIST.site.baseUrl;
   const { data: event } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
@@ -181,10 +177,6 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 
 const EventListContent = ({ lang }: { lang: string }) => {
   const { t } = useTranslation();
-  // FIX: Use ARTIST.site.baseUrl instead of window.location.origin.
-  // During prerender, Puppeteer has window defined so the typeof check is always true,
-  // causing window.location.origin to resolve to http://localhost:5173 and producing
-  // a localhost canonical URL — a fatal SEO error.
   const origin = ARTIST.site.baseUrl;
   const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',

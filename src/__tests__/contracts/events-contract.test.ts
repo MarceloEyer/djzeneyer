@@ -45,7 +45,7 @@ describe('Events API contract', () => {
   });
 
   it('rejects event missing canonical_url', () => {
-    const { canonical_url, ...withoutUrl } = mockRawEvent;
+    const { canonical_url: _canonicalUrl, ...withoutUrl } = mockRawEvent;
     const result = ZenBitEventListItemSchema.safeParse(withoutUrl);
     expect(result.success).toBe(false);
   });

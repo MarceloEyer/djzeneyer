@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../test/mocks/server';
@@ -11,9 +11,7 @@ import {
   fetchProductCollectionsFn,
   useZenSeoSettings,
   useNewsBySlug,
-  useEventById,
   useShopPageQuery,
-  useLeaderboardQuery,
   useTrackBySlug
 } from '../../hooks/usePublicQueries';
 

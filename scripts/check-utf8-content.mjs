@@ -102,6 +102,10 @@ const files = getTrackedFiles();
 
 for (const relativePath of files) {
   const absolutePath = path.join(root, relativePath);
+  if (!fs.existsSync(absolutePath)) {
+    continue;
+  }
+
   const bytes = fs.readFileSync(absolutePath);
   let content;
 
