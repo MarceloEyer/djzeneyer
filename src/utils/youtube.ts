@@ -7,9 +7,16 @@ const YOUTUBE_URL_REGEX =
 
 const YOUTUBE_PATH_PREFIXES = ['/embed/', '/v/', '/shorts/', '/live/'];
 
+function sanitizeYouTubeIdCandidate(candidate: string | undefined): string | null {
+  if (!candidate) return null;
+  const id = candidate.replace(/[^A-Za-z0-9_-]+$/, '');
+  return YOUTUBE_ID_REGEX.test(id) ? id : null;
+}
+
 function normalizeYouTubeUrl(candidate: string): URL | null {
   try {
-    return new URL(candidate.startsWith('http') ? candidate : `https://${candidate}`);
+    const normalized = candidate.replace(/&amp;/g, '&');
+    return new URL(normalized.startsWith('http') ? normalized : `https://${normalized}`);
   } catch {
     return null;
   }
@@ -21,24 +28,24 @@ function extractYouTubeIdFromUrl(candidate: string): string | null {
 
   const hostname = url.hostname.replace(/^(?:www\.|m\.)/, '');
   if (hostname === 'youtu.be') {
-    const id = url.pathname.split('/').filter(Boolean)[0];
-    return id && YOUTUBE_ID_REGEX.test(id) ? id : null;
+    return sanitizeYouTubeIdCandidate(url.pathname.split('/').filter(Boolean)[0]);
   }
 
   if (hostname !== 'youtube.com' && hostname !== 'youtube-nocookie.com') {
     return null;
   }
 
-  for (const watchId of url.searchParams.getAll('v')) {
-    if (YOUTUBE_ID_REGEX.test(watchId)) {
+  for (const rawWatchId of url.searchParams.getAll('v')) {
+    const watchId = sanitizeYouTubeIdCandidate(rawWatchId);
+    if (watchId) {
       return watchId;
     }
   }
 
   for (const prefix of YOUTUBE_PATH_PREFIXES) {
     if (url.pathname.startsWith(prefix)) {
-      const id = url.pathname.slice(prefix.length).split('/')[0];
-      return id && YOUTUBE_ID_REGEX.test(id) ? id : null;
+      const id = sanitizeYouTubeIdCandidate(url.pathname.slice(prefix.length).split('/')[0]);
+      if (id) return id;
     }
   }
 

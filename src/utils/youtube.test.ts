@@ -27,6 +27,16 @@ describe('extractYouTubeId', () => {
     expect(extractYouTubeId(repeated)).toBe('dQw4w9WgXcQ');
   });
 
+  it('handles trailing punctuation gracefully', () => {
+    expect(extractYouTubeId('https://youtu.be/dQw4w9WgXcQ.')).toBe('dQw4w9WgXcQ');
+    expect(extractYouTubeId('https://youtube.com/watch?v=dQw4w9WgXcQ)')).toBe('dQw4w9WgXcQ');
+  });
+
+  it('handles HTML entities in URLs', () => {
+    const html = 'https://youtube.com/watch?feature=share&amp;v=dQw4w9WgXcQ';
+    expect(extractYouTubeId(html)).toBe('dQw4w9WgXcQ');
+  });
+
   it('returns null when no youtube url is present', () => {
     const html = '<p>Just some text</p>';
     expect(extractYouTubeId(html)).toBeNull();
