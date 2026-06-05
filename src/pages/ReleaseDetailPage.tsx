@@ -215,7 +215,7 @@ const ReleaseDetailPage: React.FC = () => {
               width="192"
               height="192"
               className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shadow-lg flex-shrink-0 bg-white/5"
-              loading="lazy"
+              fetchPriority="high"
               decoding="async"
             />
             <div className="flex-1 min-w-0">
