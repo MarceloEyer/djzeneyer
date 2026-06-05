@@ -165,6 +165,7 @@ jobs:
             php -r "opcache_reset();" 2>/dev/null || true
 
       - name: 📡 Submit URLs to IndexNow
+        continue-on-error: true
         env:
           INDEXNOW_STRICT: 'true'
         run: |
