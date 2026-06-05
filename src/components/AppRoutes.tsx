@@ -12,9 +12,15 @@ import {
 
 const STANDALONE_ROUTE_KEYS = new Set(['zenlink']);
 
+const RouteFallback = () => (
+  <div className="min-h-[60vh] flex items-center justify-center bg-background" role="status" aria-label="Loading page">
+    <div className="h-12 w-12 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+  </div>
+);
+
 const wrapRouteElement = (Component: ComponentType) => (
   <ErrorBoundary>
-    <Suspense fallback={null}>
+    <Suspense fallback={<RouteFallback />}>
       <Component />
     </Suspense>
   </ErrorBoundary>
