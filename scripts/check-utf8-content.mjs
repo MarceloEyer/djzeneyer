@@ -41,6 +41,10 @@ const textFilenames = new Set([
   'AGENTS.md',
 ]);
 
+const skippedFiles = new Set([
+  'scripts/README.md', // contains intentional mojibake examples for documentation
+]);
+
 const skippedPrefixes = [
   '.claude/worktrees/',
   '.git/',
@@ -79,7 +83,7 @@ function isTextFile(filePath) {
 
 function shouldSkip(filePath) {
   const normalizedPath = normalizeGitPath(filePath);
-  return skippedPrefixes.some((prefix) => normalizedPath.startsWith(prefix));
+  return skippedFiles.has(normalizedPath) || skippedPrefixes.some((prefix) => normalizedPath.startsWith(prefix));
 }
 
 function getTrackedFiles() {
