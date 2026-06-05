@@ -30,6 +30,7 @@ describe('artistData canonical keys', () => {
     expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.medium.url);
   });
 
+
   it('has canonical IPA pronunciation', () => {
     expect(ARTIST.identity.pronunciationIPA).toBe('/zɛn ˈaɪər/');
   });
