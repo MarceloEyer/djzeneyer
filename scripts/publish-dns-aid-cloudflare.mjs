@@ -76,6 +76,11 @@ function recordNeedsUpdate(existing, desired) {
 }
 
 async function ensureDnssec({ zoneId, token, dryRun }) {
+  if (dryRun && !token) {
+    console.log('DNSSEC: would check status and activate if needed (no credentials in dry-run).');
+    return;
+  }
+
   const dnssec = await cloudflareRequest(`/zones/${zoneId}/dnssec`, { token });
 
   if (dnssec.status === 'active') {
@@ -106,6 +111,11 @@ async function ensureDnssec({ zoneId, token, dryRun }) {
 }
 
 async function upsertRecord({ zoneId, token, desired, dryRun }) {
+  if (dryRun && !token) {
+    console.log(`Would create/update ${desired.type} ${desired.name} (no credentials to check current state)`);
+    return;
+  }
+
   const params = new URLSearchParams({
     type: desired.type,
     name: desired.name,
@@ -172,11 +182,11 @@ async function main() {
   const dryRun = process.argv.includes('--dry-run');
   const skipDoh = process.argv.includes('--skip-doh');
 
-  if (!token || !zoneId) {
+  if (!dryRun && (!token || !zoneId)) {
     throw new Error(
       'Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID, or aliases CF_API_TOKEN and CF_ZONE_ID.',
     );
-  }
+
 
   await ensureDnssec({ zoneId, token, dryRun });
 
