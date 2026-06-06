@@ -311,6 +311,15 @@ RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
   </IfModule>
 </Files>
 
+<FilesMatch "^(oauth-authorization-server|oauth-protected-resource)$">
+  ForceType application/json
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/json"
+    Header set Cache-Control "public, max-age=3600, stale-while-revalidate=600"
+    Header always set Access-Control-Allow-Origin "*"
+  </IfModule>
+</FilesMatch>
+
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
