@@ -1,5 +1,6 @@
 {
   "resource": "https://djzeneyer.com",
+  "resource_name": "DJ Zen Eyer",
   "authorization_servers": [
     "https://djzeneyer.com"
   ],
