@@ -98,7 +98,7 @@ const NewsPage: React.FC = () => {
   const { data: singlePost, isLoading: loadingDetail } = useNewsBySlug(slug, normalizedLanguage);
 
   const posts = postsData || EMPTY_NEWS_ARRAY;
-  const loading = slug ? loadingDetail : loadingList;
+  const loading = slug ? loadingDetail : (loadingList || waitsForTaxonomyLookup);
 
   // Helper para rotas localizadas usando SSOT
   const getRouteForKey = (key: string): string => {
@@ -264,6 +264,7 @@ const NewsPage: React.FC = () => {
   // --- RENDERIZAÇÃO DA LISTA ---
   const featuredPost = posts[0];
   const secondaryPosts = posts.slice(1);
+  const reserveListHeight = loading || (!slug && posts.length === 0);
 
   return (
     <>
@@ -372,7 +373,7 @@ const NewsPage: React.FC = () => {
             </section>
           )}
 
-          <div className={loading ? 'min-h-[1600px]' : ''}>
+          <div className={reserveListHeight ? 'min-h-[1600px]' : ''}>
           {loading ? (
             <div className="animate-pulse space-y-8" aria-busy="true" aria-label={t('common.loading')}>
               <div className="aspect-[16/9] bg-white/5 rounded-2xl w-full" />

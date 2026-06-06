@@ -591,6 +591,12 @@ async function prerender() {
       console.log(`📋 Rotas dinâmicas de posts injetadas. Total:`, CONFIG.routes.length);
     }
 
+    writeFileSync(
+      join(CONFIG.distDir, 'spa-routes.json'),
+      JSON.stringify({ routes: CONFIG.routes }, null, 2),
+      'utf8'
+    );
+
     browser = await puppeteer.launch({
       headless: 'shell',
       args: ['--no-sandbox', '--disable-setuid-sandbox'],

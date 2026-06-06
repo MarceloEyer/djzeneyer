@@ -33,17 +33,24 @@ function djz_spa_known_paths(): array
 
     $known_paths = ['/'];
     $routes_file = get_theme_file_path('/src/config/routes-slugs.json');
-    if (!file_exists($routes_file)) {
+    $routes_manifest_file = get_theme_file_path('/dist/spa-routes.json');
+    $routes_source = file_exists($routes_file) ? $routes_file : $routes_manifest_file;
+    if (!file_exists($routes_source)) {
         return $known_paths;
     }
 
-    $routes_json = file_get_contents($routes_file);
+    $routes_json = file_get_contents($routes_source);
     $routes_data = $routes_json !== false ? json_decode($routes_json, true) : null;
     if (!is_array($routes_data) || empty($routes_data['routes']) || !is_array($routes_data['routes'])) {
         return $known_paths;
     }
 
     foreach ($routes_data['routes'] as $route) {
+        if (is_string($route)) {
+            $known_paths[] = djz_spa_normalize_path($route);
+            continue;
+        }
+
         if (!is_array($route)) {
             continue;
         }
@@ -99,6 +106,21 @@ function djz_spa_path_is_known(string $path): bool
     return strpos($dist_route, $dist_root) === 0;
 }
 
+function djz_spa_send_success_headers(): void
+{
+    status_header(200);
+
+    if (is_user_logged_in()) {
+        nocache_headers();
+        return;
+    }
+
+    header_remove('Expires');
+    header_remove('Pragma');
+    header_remove('Cache-Control');
+    header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
+}
+
 /**
  * Route all React paths through index.php
  *
@@ -136,8 +158,7 @@ add_filter('template_include', function($template) {
         $wp_query->is_404 = false;
         $wp_query->is_page = true;
 
-        status_header(200);
-        nocache_headers();
+        djz_spa_send_success_headers();
 
         return get_theme_file_path('/index.php');
     }

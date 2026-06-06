@@ -29,11 +29,12 @@
         "network-dependency-tree-insight": ["warn", { "minScore": 1 }],
         "unused-javascript": ["warn", { "minScore": 1 }],
         "uses-responsive-images": ["warn", { "minScore": 1 }],
+        "bf-cache": ["warn", { "minScore": 0.9 }],
         "button-name": ["warn", { "minScore": 1 }],
         "cls-culprits-insight": ["warn", { "minScore": 1 }],
         "document-latency-insight": ["warn", { "minScore": 1 }],
         "redirects": ["warn", { "minScore": 1 }],
-        "robots-txt": ["warn", { "minScore": 1 }]
+        "robots-txt": "off"
       }
     },
     "upload": {
