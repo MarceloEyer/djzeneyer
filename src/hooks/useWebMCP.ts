@@ -38,7 +38,7 @@ export function useWebMCP() {
               },
               execute: () => {
                 return {
-                  name: ARTIST.identity.djAlias,
+                  name: ARTIST.identity.stageName,
                   style: ARTIST.philosophy.style,
                   mission: ARTIST.philosophy.mission,
                   bio: ARTIST.site.defaultDescription,
