@@ -16,7 +16,7 @@
     "anonymous_public"
   ],
   "claim_ceremony_supported": false,
-  "documentation": "https://djzeneyer.com/auth.md",
+  "service_documentation": "https://djzeneyer.com/auth.md",
   "agent_auth": {
     "register_uri": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration",
     "revocation_uri": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke",

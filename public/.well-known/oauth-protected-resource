@@ -9,6 +9,5 @@
   "scopes_supported": [
     "public:read"
   ],
-  "resource_documentation": "https://djzeneyer.com/auth.md",
-  "auth_documentation": "https://djzeneyer.com/.well-known/oauth-authorization-server"
+  "resource_documentation": "https://djzeneyer.com/auth.md"
 }
