@@ -1,17 +1,35 @@
 {
   "issuer": "https://djzeneyer.com",
-  "agent_registration_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration",
-  "agent_revocation_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke",
+  "token_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration",
+  "revocation_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke",
+  "grant_types_supported": [
+    "urn:ietf:params:oauth:grant-type:jwt-bearer",
+    "urn:workos:agent-auth:grant-type:claim"
+  ],
   "scopes_supported": [
     "public:read"
   ],
   "bearer_methods_supported": [
     "header"
   ],
-  "credential_types_supported": [
-    "user_claimed",
-    "anonymous_public"
-  ],
-  "claim_ceremony_supported": false,
-  "documentation": "https://djzeneyer.com/.well-known/auth.md"
+  "service_documentation": "https://djzeneyer.com/auth.md",
+  "agent_auth": {
+    "skill": "https://djzeneyer.com/auth.md",
+    "identity_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration",
+    "claim_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-claim",
+    "events_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke",
+    "identity_types_supported": [
+      "anonymous",
+      "identity_assertion"
+    ],
+    "identity_assertion": {
+      "assertion_types_supported": [
+        "urn:ietf:params:oauth:token-type:id-jag",
+        "verified_email"
+      ]
+    },
+    "events_supported": [
+      "https://schemas.workos.com/events/agent/auth/identity/assertion/revoked"
+    ]
+  }
 }
