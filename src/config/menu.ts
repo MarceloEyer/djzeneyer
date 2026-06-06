@@ -14,6 +14,7 @@ export type NavKey =
   | 'nav.about'
   | 'nav.media'
   | 'nav.shop'
+  | 'nav.tribe'
   | 'nav.booking'
   | 'nav.sign_in'
   | 'nav.join_the_tribe';
@@ -26,10 +27,9 @@ export interface StaticNavItem {
 }
 
 export const STATIC_MENU: StaticNavItem[] = [
-  { id: 1, routeKey: 'events',  navKey: 'nav.events',  iconKey: 'event'  },
-  { id: 2, routeKey: 'music',   navKey: 'nav.music',   iconKey: 'music'  },
-  { id: 3, routeKey: 'about',   navKey: 'nav.about',   iconKey: 'about'  },
-  { id: 4, routeKey: 'media',   navKey: 'nav.media',   iconKey: 'media'  },
-  { id: 5, routeKey: 'shop',    navKey: 'nav.shop',    iconKey: 'shop'   },
-  { id: 6, routeKey: 'booking', navKey: 'nav.booking', iconKey: 'work'   },
+  { id: 1, routeKey: 'events',   navKey: 'nav.events',  iconKey: 'event' },
+  { id: 2, routeKey: 'music',    navKey: 'nav.music',   iconKey: 'music' },
+  { id: 3, routeKey: 'shop',     navKey: 'nav.shop',    iconKey: 'shop'  },
+  { id: 4, routeKey: 'zentribe', navKey: 'nav.tribe',   iconKey: 'tribe' },
+  { id: 5, routeKey: 'booking',  navKey: 'nav.booking', iconKey: 'work'  },
 ];
