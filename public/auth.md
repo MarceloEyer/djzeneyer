@@ -31,6 +31,19 @@ Content-Type: application/json
 
 The returned token grants no private access. Public endpoints remain readable without a token.
 
+Agents can also call the claim endpoint to confirm that no user-account claim ceremony is required for public-read access:
+
+```http
+POST https://djzeneyer.com/wp-json/djzeneyer/v1/agent-claim
+Content-Type: application/json
+
+{
+  "type": "anonymous"
+}
+```
+
+The response indicates `claim_required: false`. Private user APIs remain outside autonomous agent registration.
+
 ## Discovery
 
 OAuth discovery documents:

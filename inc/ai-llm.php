@@ -43,6 +43,12 @@ class DJZ_AI_Authority
             'permission_callback' => '__return_true',
         ]);
 
+        register_rest_route('djzeneyer/v1', '/agent-claim', [
+            'methods' => 'POST',
+            'callback' => [$this, 'claim_public_agent'],
+            'permission_callback' => '__return_true',
+        ]);
+
         register_rest_route('djzeneyer/v1', '/agent-revoke', [
             'methods' => 'POST',
             'callback' => [$this, 'revoke_public_agent'],
@@ -68,6 +74,16 @@ class DJZ_AI_Authority
             'agent_id' => 'public-' . substr(hash('sha256', (string) $agent_seed), 0, 16),
             'issued_at' => gmdate('c'),
             'note' => 'This token is informational and grants only public read access. Zen Eyer public AI resources are also available without registration.',
+        ]);
+    }
+
+    public function claim_public_agent()
+    {
+        return rest_ensure_response([
+            'claim_required' => false,
+            'claim_status' => 'not_required',
+            'scope' => 'public:read',
+            'note' => 'Zen Eyer public AI resources do not require a user-account claim ceremony. Use agent-registration for an informational public-read token.',
         ]);
     }
 
