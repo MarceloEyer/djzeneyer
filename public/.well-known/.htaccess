@@ -17,18 +17,18 @@
     Header set Access-Control-Allow-Origin "*"
   </Files>
 
-  # OAuth 2.0 metadata (RFC 8414)
+  # OAuth 2.0 metadata (RFC 8414) — served via PHP handlers; short TTL
   <Files "oauth-authorization-server">
     ForceType "application/json"
     Header set Content-Type "application/json; charset=UTF-8"
-    Header set Cache-Control "public, max-age=3600"
+    Header set Cache-Control "public, max-age=300, stale-while-revalidate=60"
     Header set Access-Control-Allow-Origin "*"
   </Files>
 
   <Files "oauth-protected-resource">
     ForceType "application/json"
     Header set Content-Type "application/json; charset=UTF-8"
-    Header set Cache-Control "public, max-age=3600"
+    Header set Cache-Control "public, max-age=300, stale-while-revalidate=60"
     Header set Access-Control-Allow-Origin "*"
   </Files>
 
