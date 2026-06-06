@@ -1,6 +1,13 @@
 # Content-Type for extensionless RFC well-known files
 # Serves api-catalog, oauth-*, agent-registration without .json extension
 
+# Route OAuth discovery endpoints to PHP handlers for guaranteed Content-Type
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /.well-known/
+  RewriteRule ^(oauth-authorization-server|oauth-protected-resource)$ $1.php [L,QSA]
+</IfModule>
+
 <IfModule mod_mime.c>
   # RFC 9727 — API Catalog
   <Files "api-catalog">

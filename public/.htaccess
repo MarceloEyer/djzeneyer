@@ -271,6 +271,9 @@ RewriteRule ^pt/eventos/?$ /pt/eventos-zouk/ [R=301,L,NC]
 # Duplicate index files -> canonical home pages
 RewriteRule ^index\.html$ / [R=301,L]
 RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
+
+# Well-known OAuth discovery: PHP handlers guarantee Content-Type and bypass caching
+RewriteRule ^\.well-known/(oauth-authorization-server|oauth-protected-resource)$ /.well-known/$1.php [L,QSA]
 </IfModule>
 
 # ==============================================================================
@@ -320,11 +323,11 @@ RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
   </IfModule>
 </Files>
 
-<FilesMatch "^(oauth-authorization-server|oauth-protected-resource)$">
+<FilesMatch "^(oauth-authorization-server|oauth-protected-resource)(\.php)?$">
   ForceType application/json
   <IfModule mod_headers.c>
-    Header set Content-Type "application/json"
-    Header set Cache-Control "public, max-age=3600, stale-while-revalidate=600"
+    Header set Content-Type "application/json; charset=UTF-8"
+    Header set Cache-Control "public, max-age=300, stale-while-revalidate=60"
     Header always set Access-Control-Allow-Origin "*"
   </IfModule>
 </FilesMatch>
