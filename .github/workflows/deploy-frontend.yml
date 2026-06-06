@@ -1,4 +1,4 @@
-name: 🚀 Deploy Frontend
+name: 🖥️ Deploy · Frontend
 
 on:
   push:
@@ -35,7 +35,7 @@ env:
 
 jobs:
   build-and-deploy:
-    name: 🏗️ Build & Deploy React App
+    name: 🏗️ Build & Deploy · React/Vite → Hostinger
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     
