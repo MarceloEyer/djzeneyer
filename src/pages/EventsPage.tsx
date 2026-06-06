@@ -12,6 +12,7 @@ import { ARTIST } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
+import { PageHeader } from '../components/ui/PageHeader';
 import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
 import NotFoundPage from './NotFoundPage';
@@ -344,13 +345,12 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <Breadcrumb items={[{ label: t('nav.events') }]} className="mb-8" />
-        <header className="text-center mb-16 px-4">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 font-display uppercase text-white tracking-tighter">
-            {t('events.title_part1')} <span className="text-primary">{t('events.title_part2')}</span>
-          </h1>
-        </header>
+      <div className="max-w-6xl mx-auto relative pt-8">
+        <PageHeader 
+          titlePart1={t('events.title_part1')}
+          titlePart2={t('events.title_part2')}
+          breadcrumbs={[{ label: t('nav.events') }]}
+        />
 
         <React.Suspense fallback={<div className="min-h-[1600px]"><EventSkeleton /></div>}>
           <EventListContent lang={lang} />

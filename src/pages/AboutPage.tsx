@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { Breadcrumb } from '../components/Breadcrumb';
+import { PageHeader } from '../components/ui/PageHeader';
 import { useTranslation, Trans } from 'react-i18next';
 import { ARTIST } from '../data/artistData';
 import { ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artist.schema';
@@ -242,8 +242,12 @@ const AboutPage: React.FC = () => {
 
         {/* Hero Section */}
         <div className="pt-24 pb-12 relative md:pt-32 md:pb-20">
-          <div className="container mx-auto max-w-6xl relative z-10 px-4">
-            <Breadcrumb items={[{ label: t('nav.about') }]} className="mb-8" />
+          <div className="container mx-auto max-w-6xl relative z-10 px-4 pt-8">
+            <PageHeader 
+              titlePart1={t('about.hero.title_part1', { defaultValue: 'The' })}
+              titlePart2={t('about.hero.title_part2', { defaultValue: 'Journey' })}
+              breadcrumbs={[{ label: t('nav.about') }]}
+            />
             <motion.div
               initial={FADE_IN_UP_INITIAL}
               animate={FADE_IN_UP_ANIMATE}
@@ -261,12 +265,6 @@ const AboutPage: React.FC = () => {
                   {t('about.hero.badge')}
                 </div>
               </motion.div>
-              <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 text-white leading-tight">
-                <Trans i18nKey="about.hero.title" ns="about">
-                  {/* Fallback text if translation fails */}
-                  The <span className="text-primary">Journey</span>
-                </Trans>
-              </h1>
               <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
                 {t('about.hero.subtitle')}
                 <span id="pronunciation-faq-summary" className="sr-only">{t('about.hero.pronunciation_hint')}</span>
