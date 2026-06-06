@@ -302,6 +302,15 @@ RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
   </IfModule>
 </Files>
 
+<Files "http-message-signatures-directory">
+  ForceType application/jwk-set+json
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/jwk-set+json"
+    Header set Cache-Control "public, max-age=86400, stale-while-revalidate=3600"
+    Header always set Access-Control-Allow-Origin "*"
+  </IfModule>
+</Files>
+
 # BEGIN WordPress
 <IfModule mod_rewrite.c>
 RewriteEngine On
