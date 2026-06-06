@@ -75,11 +75,16 @@ function recordNeedsUpdate(existing, desired) {
   );
 }
 
-async function ensureDnssec({ zoneId, token }) {
+async function ensureDnssec({ zoneId, token, dryRun }) {
   const dnssec = await cloudflareRequest(`/zones/${zoneId}/dnssec`, { token });
 
   if (dnssec.status === 'active') {
     console.log('DNSSEC is active for the zone.');
+    return;
+  }
+
+  if (dryRun) {
+    console.log(`DNSSEC status is "${dnssec.status || 'unknown'}"; dry-run will not request activation.`);
     return;
   }
 
@@ -92,7 +97,11 @@ async function ensureDnssec({ zoneId, token }) {
 
   console.log(`DNSSEC status after update: ${updated.status || 'unknown'}.`);
   if (updated.status !== 'active') {
-    console.log('Registrar DS publication may still be required before validators return AD=true.');
+    console.log(
+      'Registrar DS publication required: go to Cloudflare Dashboard → djzeneyer.com → DNS → DNSSEC ' +
+        '→ copy the DS record → paste it at your domain registrar. ' +
+        'Validators return AD=true only after the DS record propagates (up to 48h).',
+    );
   }
 }
 
@@ -169,7 +178,7 @@ async function main() {
     );
   }
 
-  await ensureDnssec({ zoneId, token });
+  await ensureDnssec({ zoneId, token, dryRun });
 
   for (const desired of DNS_AID_RECORDS) {
     await upsertRecord({ zoneId, token, desired, dryRun });
