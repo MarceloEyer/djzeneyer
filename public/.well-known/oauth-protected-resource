@@ -9,5 +9,5 @@
   "scopes_supported": [
     "public:read"
   ],
-  "resource_documentation": "https://djzeneyer.com/.well-known/auth.md"
+  "resource_documentation": "https://djzeneyer.com/auth.md"
 }
