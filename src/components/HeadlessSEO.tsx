@@ -40,6 +40,7 @@ export interface PreloadItem {
   media?: string;
   type?: string;
   crossOrigin?: string;
+  fetchPriority?: 'high' | 'low' | 'auto';
   imageSrcSet?: string;
   imageSizes?: string;
 }
