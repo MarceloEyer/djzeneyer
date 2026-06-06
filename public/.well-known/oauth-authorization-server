@@ -15,15 +15,16 @@
   "agent_auth": {
     "skill": "https://djzeneyer.com/auth.md",
     "register_uri": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration",
+    "claim_endpoint": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-claim",
     "revocation_uri": "https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke",
     "identity_types_supported": [
-      "anonymous"
+      "anonymous",
+      "identity_assertion"
     ],
-    "anonymous": {
-      "credential_types_supported": [
-        "access_token"
-      ]
-    },
+    "credential_types_supported": [
+      "user_claimed",
+      "anonymous_public"
+    ],
     "events_supported": [
       "https://schemas.workos.com/events/agent/auth/identity/assertion/revoked"
     ]

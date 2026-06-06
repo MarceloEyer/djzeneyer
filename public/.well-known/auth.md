@@ -1,3 +1,16 @@
+---
+agent_auth:
+  register_uri: https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration
+  claim_endpoint: https://djzeneyer.com/wp-json/djzeneyer/v1/agent-claim
+  revocation_uri: https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke
+  identity_types_supported:
+    - anonymous
+    - identity_assertion
+  credential_types_supported:
+    - user_claimed
+    - anonymous_public
+---
+
 # Auth.md
 
 ## Zen Eyer Agent Authentication
