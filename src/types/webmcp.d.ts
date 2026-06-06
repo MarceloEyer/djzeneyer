@@ -1,3 +1,4 @@
+/** A single tool exposed to AI agents via the WebMCP protocol. */
 export interface WebMCPTool {
   name: string;
   description: string;
@@ -5,10 +6,12 @@ export interface WebMCPTool {
   execute: (input: unknown) => Promise<unknown> | unknown;
 }
 
+/** Collection of tools registered with the browser's model context. */
 export interface WebMCPContext {
   tools: Record<string, WebMCPTool>;
 }
 
+/** Browser API for registering WebMCP context with AI agents. */
 export interface ModelContext {
   provideContext: (context: WebMCPContext) => void;
 }
