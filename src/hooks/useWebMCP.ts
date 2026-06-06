@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { ARTIST } from '../data/artistData';
 
 /**
  * Hook para expor ferramentas do site para agentes de IA (WebMCP).
@@ -52,9 +53,9 @@ export function useWebMCP() {
               },
               execute: () => {
                 return {
-                  spotify: 'https://open.spotify.com/',
-                  soundcloud: 'https://soundcloud.com/',
-                  youtube: 'https://youtube.com/'
+                  spotify: ARTIST.social.spotify.url,
+                  soundcloud: ARTIST.social.soundcloud.url,
+                  youtube: ARTIST.social.YouTube.url,
                 };
               }
             }

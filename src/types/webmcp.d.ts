@@ -1,8 +1,8 @@
 export interface WebMCPTool {
   name: string;
   description: string;
-  inputSchema: any;
-  execute: (input: any) => Promise<any> | any;
+  inputSchema: Record<string, unknown>;
+  execute: (input: unknown) => Promise<unknown> | unknown;
 }
 
 export interface WebMCPContext {
