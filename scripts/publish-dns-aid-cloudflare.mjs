@@ -16,8 +16,7 @@ const DNS_AID_RECORDS = [
       value:
         'mandatory=alpn,port alpn="h2" port=443 key65280="/.well-known/ai-plugin.json" key65281="/llms.txt" key65282="/wp-json/djzeneyer/v1/ai-context"',
     },
-    comment:
-      'DNS-AID organization index for Zen Eyer AI discovery. key65280-65282 are experimental private-use descriptor locators.',
+    comment: 'DNS-AID index for djzeneyer.com. key65280-65282: experimental private-use descriptor locators.',
   },
 ];
 
