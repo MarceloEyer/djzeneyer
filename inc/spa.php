@@ -121,6 +121,47 @@ function djz_spa_send_success_headers(): void
     header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
 }
 
+function djz_spa_request_path(): string
+{
+    return strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
+}
+
+function djz_spa_should_route_path(string $path): bool
+{
+    if (preg_match('/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|webmanifest|php)$/i', $path)) {
+        return false;
+    }
+
+    if (strpos($path, '/wp-content/') !== false || strpos($path, '/wp-includes/') !== false) {
+        return false;
+    }
+
+    return djz_spa_path_is_known($path);
+}
+
+function djz_spa_mark_routed(): void
+{
+    $GLOBALS['DJZ_SPA_ROUTED'] = true;
+
+    global $wp_query;
+    if ($wp_query) {
+        $wp_query->is_404 = false;
+        $wp_query->is_page = true;
+    }
+
+    djz_spa_send_success_headers();
+}
+
+add_action('template_redirect', function() {
+    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST)) {
+        return;
+    }
+
+    if (is_404() && djz_spa_should_route_path(djz_spa_request_path())) {
+        djz_spa_mark_routed();
+    }
+}, 0);
+
 /**
  * Route all React paths through index.php
  *
@@ -134,31 +175,16 @@ add_filter('template_include', function($template) {
     }
     
     // Only intercept main front-end 404s (i.e., unknown WP routes) and hand them to the SPA.
-    if (is_404() && is_main_query()) {
+    if (is_404() || !empty($GLOBALS['DJZ_SPA_ROUTED'])) {
         // SEGURANÇA: Se o path parece um arquivo estático (está no wp-content ou tem extensão comum),
         // NÃO intercepte. Deixe o WordPress retornar 404 real ou o Web Server tratar.
         // Isso evita loops 522 ao tentar servir HTML pesado para cada imagem/js quebrado.
-        $path = strtok($_SERVER['REQUEST_URI'], '?');
-        if (preg_match('/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff2?|ttf|eot|webmanifest|php)$/i', $path)) {
+        $path = djz_spa_request_path();
+        if (empty($GLOBALS['DJZ_SPA_ROUTED']) && !djz_spa_should_route_path($path)) {
             return $template;
         }
 
-        if (strpos($path, '/wp-content/') !== false || strpos($path, '/wp-includes/') !== false) {
-            return $template;
-        }
-
-        if (!djz_spa_path_is_known($path)) {
-            return $template;
-        }
-
-        // Mark that we intentionally routed to the SPA so other hooks do not restore the 404 header.
-        $GLOBALS['DJZ_SPA_ROUTED'] = true;
-        
-        global $wp_query;
-        $wp_query->is_404 = false;
-        $wp_query->is_page = true;
-
-        djz_spa_send_success_headers();
+        djz_spa_mark_routed();
 
         return get_theme_file_path('/index.php');
     }
