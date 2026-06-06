@@ -1,4 +1,6 @@
-# Zen Eyer Agent Authentication
+# Auth.md
+
+## Zen Eyer Agent Authentication
 
 Zen Eyer publishes public AI discovery resources for reading, grounding, SEO, booking context, music metadata, and event context. These public resources do not require authentication.
 
