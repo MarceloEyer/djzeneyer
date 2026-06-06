@@ -92,7 +92,11 @@ async function ensureDnssec({ zoneId, token }) {
 
   console.log(`DNSSEC status after update: ${updated.status || 'unknown'}.`);
   if (updated.status !== 'active') {
-    console.log('Registrar DS publication may still be required before validators return AD=true.');
+    console.log(
+      'Registrar DS publication required: go to Cloudflare Dashboard → djzeneyer.com → DNS → DNSSEC ' +
+        '→ copy the DS record → paste it at your domain registrar. ' +
+        'Validators return AD=true only after the DS record propagates (up to 48h).',
+    );
   }
 }
 
