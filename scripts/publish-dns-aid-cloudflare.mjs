@@ -75,11 +75,16 @@ function recordNeedsUpdate(existing, desired) {
   );
 }
 
-async function ensureDnssec({ zoneId, token }) {
+async function ensureDnssec({ zoneId, token, dryRun }) {
   const dnssec = await cloudflareRequest(`/zones/${zoneId}/dnssec`, { token });
 
   if (dnssec.status === 'active') {
     console.log('DNSSEC is active for the zone.');
+    return;
+  }
+
+  if (dryRun) {
+    console.log(`DNSSEC status is "${dnssec.status || 'unknown'}"; dry-run will not request activation.`);
     return;
   }
 
@@ -173,7 +178,7 @@ async function main() {
     );
   }
 
-  await ensureDnssec({ zoneId, token });
+  await ensureDnssec({ zoneId, token, dryRun });
 
   for (const desired of DNS_AID_RECORDS) {
     await upsertRecord({ zoneId, token, desired, dryRun });

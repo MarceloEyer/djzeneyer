@@ -20,6 +20,12 @@ const DNS_AID_NAMES = [
   `_index._agents.${DOMAIN}`,
 ];
 
+/**
+ * Query a DNS-AID SVCB record through public DNS-over-HTTPS.
+ *
+ * @param {string} name Fully-qualified DNS name to verify.
+ * @returns {Promise<{name: string, found: boolean, dnssec: boolean, rdata: string | null, rcode: number}>}
+ */
 async function checkRecord(name) {
   const params = new URLSearchParams({ name, type: '64', do: '1' });
   const response = await fetch(`${DOH_RESOLVER}?${params}`, {
@@ -47,6 +53,11 @@ async function checkRecord(name) {
   };
 }
 
+/**
+ * Verify every DNS-AID entrypoint and report missing records or DNSSEC gaps.
+ *
+ * @returns {Promise<void>}
+ */
 async function main() {
   let allOk = true;
 
@@ -62,7 +73,7 @@ async function main() {
 
     if (!result.found) {
       console.error(`❌ ${name}: SVCB record not found (RCODE=${result.rcode})`);
-      console.error(`   → Run: CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ZONE_ID=... node scripts/publish-dns-aid-cloudflare.mjs`);
+      console.error('   → Export CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID first, then run: npm run dns-aid:publish');
       allOk = false;
       continue;
     }

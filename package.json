@@ -26,7 +26,7 @@
     "perf:budget": "node scripts/check-performance-budget.mjs",
     "rollback": "node scripts/rollback.js",
     "indexnow": "node scripts/submit-indexnow.mjs",
-    "dns-aid:publish": "node scripts/publish-dns-aid-cloudflare.mjs",
+    "dns-aid:publish": "node scripts/publish-dns-aid-cloudflare.mjs --skip-doh",
     "dns-aid:dry": "node scripts/publish-dns-aid-cloudflare.mjs --dry-run --skip-doh",
     "dns-aid:verify": "node scripts/check-dns-aid.mjs",
     "prepare": "husky"
