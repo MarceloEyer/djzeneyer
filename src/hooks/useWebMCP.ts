@@ -31,16 +31,17 @@ export function useWebMCP() {
             },
             get_bio: {
               name: 'get_bio',
-              description: 'Retorna a biografia curta e o estilo musical do DJ Zeneyer.',
+              description: 'Retorna a biografia curta e o estilo musical do DJ Zen Eyer.',
               inputSchema: {
                 type: 'object',
                 properties: {},
               },
               execute: () => {
                 return {
-                  name: 'DJ Zeneyer',
-                  style: ['House', 'Techno', 'Melodic'],
-                  bio: 'DJ Zeneyer é conhecido por seus sets imersivos que misturam house e techno melódico.'
+                  name: ARTIST.identity.djAlias,
+                  style: ARTIST.philosophy.style,
+                  mission: ARTIST.philosophy.mission,
+                  bio: ARTIST.site.defaultDescription,
                 };
               }
             },
