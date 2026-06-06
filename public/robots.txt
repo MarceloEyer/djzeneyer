@@ -4,7 +4,7 @@
 
 User-agent: *
 Allow: /
-# Content-Signal: ai-train=yes, search=yes, ai-input=yes
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 Disallow: /wp-login.php
@@ -165,7 +165,7 @@ User-agent: BraveBot
 User-agent: Qwenbot
 User-agent: MistralBot
 Allow: /
-# Content-Signal: ai-train=yes, search=yes, ai-input=yes
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
 Disallow: /wp-login.php
