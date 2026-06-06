@@ -302,6 +302,15 @@ RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
   </IfModule>
 </Files>
 
+<Files "auth.md">
+  <IfModule mod_headers.c>
+    Header set Content-Type "text/markdown; charset=UTF-8"
+    Header always set Access-Control-Allow-Origin "*"
+    Header append Link "</.well-known/oauth-authorization-server>; rel=\"oauth-authorization-server\""
+    Header append Link "</.well-known/oauth-protected-resource>; rel=\"oauth-protected-resource\""
+  </IfModule>
+</Files>
+
 <Files "http-message-signatures-directory">
   ForceType application/jwk-set+json
   <IfModule mod_headers.c>

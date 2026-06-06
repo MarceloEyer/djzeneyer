@@ -1,16 +1,3 @@
----
-agent_auth:
-  register_uri: https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration
-  claim_endpoint: https://djzeneyer.com/wp-json/djzeneyer/v1/agent-claim
-  revocation_uri: https://djzeneyer.com/wp-json/djzeneyer/v1/agent-revoke
-  identity_types_supported:
-    - anonymous
-    - identity_assertion
-  credential_types_supported:
-    - user_claimed
-    - anonymous_public
----
-
 # Auth.md
 
 ## Zen Eyer Agent Authentication
@@ -38,23 +25,17 @@ POST https://djzeneyer.com/wp-json/djzeneyer/v1/agent-registration
 Content-Type: application/json
 
 {
-  "type": "user_claimed",
-  "audience": "https://djzeneyer.com",
-  "scope": ["public:read"]
+  "type": "anonymous"
 }
 ```
 
-The returned token grants no private access. It only confirms that the agent discovered the public-read registration flow. Public endpoints remain readable without a token.
-
-## Protected User APIs
-
-Authenticated user-account APIs, orders, profile data, and newsletter preferences use the site's existing WordPress/JWT authentication. Autonomous agent registration is not allowed to create or access private user accounts.
+The returned token grants no private access. Public endpoints remain readable without a token.
 
 ## Discovery
 
-OAuth-style discovery documents:
+OAuth discovery documents:
 
-- Protected resource metadata: `https://djzeneyer.com/.well-known/oauth-protected-resource`
-- Authorization server metadata: `https://djzeneyer.com/.well-known/oauth-authorization-server`
+- Protected resource: `https://djzeneyer.com/.well-known/oauth-protected-resource`
+- Authorization server: `https://djzeneyer.com/.well-known/oauth-authorization-server`
 
 Contact: `booking@djzeneyer.com`
