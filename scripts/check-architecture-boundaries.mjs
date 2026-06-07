@@ -26,11 +26,9 @@ const FORBIDDEN_DIRS = [
 // Dívida técnica conhecida — arquivos com fetch() legítimo e rastreado.
 // Remover daqui quando a refatoração correspondente for concluída.
 // Ref: .context/ENGINEERING_PRINCIPLES.md — "Dívida técnica conhecida e rastreada"
-const KNOWN_DEBT = new Set([
-  path.join(root, 'src', 'contexts', 'CartContext.tsx'),  // Fase B2: mover para useMutations.ts
-  path.join(root, 'src', 'contexts', 'UserContext.tsx'),  // Fase B1: mover para src/services/authService.ts
-  path.join(root, 'src', 'pages', 'CheckoutPage.tsx'),    // Fase B3: mover para useCheckoutMutation
-]);
+// Dívida técnica conhecida. Remover entrada quando a refatoração for concluída.
+// Ref: .context/ENGINEERING_PRINCIPLES.md — "Dívida técnica conhecida e rastreada"
+const KNOWN_DEBT = new Set([]);
 
 // Padrão: \bfetch( — captura chamadas diretas à Fetch API.
 // \b garante word boundary: não casa com onPrefetch(, prefetch(, etc.

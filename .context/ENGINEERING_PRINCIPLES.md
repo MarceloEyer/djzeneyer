@@ -26,7 +26,7 @@ Legenda: ✅ bem aplicado · 🟡 parcial · ❌ falta · ⚠️ risco ativo
 | 10 | Schema validation at boundaries              | 🟡     | Zod usado em eventos, auth e gamificação. Produtos e posts aceitam tipos soltos.                          |
 | 11 | Typed domain models                          | 🟡     | Interfaces TS existem; algumas respostas REST ainda são `unknown` ou casts.                               |
 | 12 | Thin Components                              | 🟡     | Regra existe; contexts ainda fazem trabalho demais.                                                       |
-| 13 | Hooks as data layer                          | 🟡     | `usePublicQueries`, `useAuthenticatedQueries`, `useMutations` existem, mas contexts ainda fazem fetch.    |
+| 13 | Hooks as data layer                          | ✅     | `usePublicQueries`, `useAuthenticatedQueries`, `useMutations`. Contexts não fazem mais fetch.             |
 | 14 | Query key discipline                         | ✅     | `QUERY_KEYS` centralizado e bem separado por domínio.                                                     |
 | 15 | Server-side filtering                        | ✅     | Eventos e shop aplicam filtros no backend.                                                                |
 | 16 | No backend work in frontend                  | 🟡     | Eventos respeitam. Carrinho e auth têm lógica operacional no frontend.                                    |
@@ -109,9 +109,6 @@ Estas são violações reconhecidas da regra acima, com owner e plano de correç
 
 | Arquivo                          | Violação                                      | Fase de correção |
 |----------------------------------|-----------------------------------------------|------------------|
-| `src/contexts/CartContext.tsx`   | `fetch()` direto para WooCommerce Store API       | Fase B2          |
-| `src/contexts/UserContext.tsx`   | `fetch()` para login, register, Google, reset     | Fase B1          |
-| `src/pages/CheckoutPage.tsx`     | `fetch()` para checkout GET e POST de pedido      | Fase B3          |
 | `inc/api.php`                    | SRP violado (shop, produtos, newsletter, profile) | Fase D1–D5       |
 
 Nenhuma nova violação deve ser adicionada a esta lista sem decisão explícita do usuário.

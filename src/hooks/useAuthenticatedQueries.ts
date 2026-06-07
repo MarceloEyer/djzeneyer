@@ -229,6 +229,36 @@ export const useUserOrdersQuery = (
     retry: false,
   });
 
+interface CheckoutData {
+  payment_methods: Array<{ id: string; title: string; description: string }>;
+  billing_address: {
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    phone?: string;
+    address_1?: string;
+    city?: string;
+    state?: string;
+    postcode?: string;
+    country?: string;
+  };
+}
+
+export const useCheckoutQuery = () =>
+  useQuery<CheckoutData | null>({
+    queryKey: QUERY_KEYS.checkout.current,
+    queryFn: async (): Promise<CheckoutData | null> => {
+      const apiUrl = buildApiUrl('wc/store/v1/checkout');
+      const res = await fetch(apiUrl, {
+        headers: getAuthHeaders() as HeadersInit,
+        credentials: 'include',
+      });
+      if (!res.ok) return null;
+      return res.json() as Promise<CheckoutData>;
+    },
+    staleTime: 60 * 1000,
+  });
+
 export const useNewsletterStatusQuery = (token?: string, options: { enabled?: boolean } = {}) =>
   useQuery<boolean | null>({
     queryKey: [...QUERY_KEYS.user.newsletter(), jwtSub(token)],
