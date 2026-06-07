@@ -398,9 +398,25 @@ const ShopPage: React.FC = () => {
   const curatedSelectionIds = useMemo(() => new Set(curatedSelection.map(p => p.id)), [curatedSelection]);
   const visibleProducts = useMemo(() => {
     const productsById = new Map<number, Product>();
-    [featuredProduct, ...newReleases, ...bestSellers, ...curatedSelection].forEach((product) => {
-      if (product) productsById.set(product.id, product);
-    });
+
+    // ⚡ Bolt: Replaced spread operator array creation with direct iteration to avoid O(N) memory allocation per render
+    if (featuredProduct) productsById.set(featuredProduct.id, featuredProduct);
+
+    for (let i = 0; i < newReleases.length; i++) {
+      const p = newReleases[i];
+      if (p) productsById.set(p.id, p);
+    }
+
+    for (let i = 0; i < bestSellers.length; i++) {
+      const p = bestSellers[i];
+      if (p) productsById.set(p.id, p);
+    }
+
+    for (let i = 0; i < curatedSelection.length; i++) {
+      const p = curatedSelection[i];
+      if (p) productsById.set(p.id, p);
+    }
+
     return Array.from(productsById.values());
   }, [bestSellers, curatedSelection, featuredProduct, newReleases]);
   const shopSchema = useMemo(() => ({
