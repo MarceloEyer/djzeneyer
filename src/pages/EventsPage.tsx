@@ -116,13 +116,14 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         <div className="lg:col-span-5 relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
-            {event.image ? (
-              <img src={event.image} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" />
-            ) : (
-              <div className="w-full h-full bg-surface flex items-center justify-center text-white/10">
-                <Music size={80} />
-              </div>
-            )}
+            <img 
+              src={event.image || '/images/default-event-poster.png'} 
+              alt={event.title} 
+              className="w-full h-full object-cover" 
+              loading="lazy" 
+              width="600" 
+              height="800" 
+            />
             <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black via-black/60 to-transparent">
               <div className="inline-block px-4 py-1 rounded-full bg-primary text-black font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
                 {t('events.featured', { defaultValue: 'Featured Event' })}
