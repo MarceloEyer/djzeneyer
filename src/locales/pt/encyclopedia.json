@@ -8,6 +8,10 @@
   "intro_label": "Visão geral do Zouk Brasileiro",
   "no_results": "Nenhum termo encontrado para esta busca na enciclopédia.",
   "sources_label": "Fontes",
+  "schema_topics": {
+    "brazilian_zouk": "Zouk Brasileiro",
+    "zouk_music": "Música Zouk"
+  },
   "seo": {
     "title": "Enciclopédia e História do Zouk Brasileiro",
     "title_short": "Enciclopédia Zouk",
