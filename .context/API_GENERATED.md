@@ -3,7 +3,7 @@
 > **Gerado automaticamente** por `scripts/generate-api-inventory.mjs` em 2026-06-07.
 > Não edite manualmente. Para o mapa curado, veja [`.context/API.md`](./API.md).
 
-Total de endpoints encontrados: **46**
+Total de endpoints encontrados: **44**
 
 ---
 
@@ -29,12 +29,10 @@ Total de endpoints encontrados: **46**
 | `POST` | `/agent-claim` | `$this, claim_public_agent` | `__return_true` | `inc/ai-llm.php` |
 | `POST` | `/agent-revoke` | `$this, revoke_public_agent` | `__return_true` | `inc/ai-llm.php` |
 | `GET` | `/menu` | `djz_get_menu` | `__return_true` | `inc/api.php` |
-| `GET` | `/shop/page` | `djz_get_shop_page` | `__return_true` | `inc/api.php` |
-| `GET` | `/products` | `djz_get_products` | `__return_true` | `inc/api.php` |
-| `GET` | `/products/collections` | `djz_get_product_collections` | `__return_true` | `inc/api.php` |
 | `POST` | `/subscribe` | `djz_subscribe_newsletter` | `__return_true` | `inc/api.php` |
-| `POST` | `/user/update-profile` | `djz_update_profile` | `__return_true` | `inc/api.php` |
-| `GET` | `/gamipress/user-data` | — | — | `inc/api.php` |
+| `GET` | `/products` | `__CLASS__, get_products` | `__return_true` | `plugins/zen-commerce/includes/class-rest-controller.php` |
+| `GET` | `/products/collections` | `__CLASS__, get_collections` | `__return_true` | `plugins/zen-commerce/includes/class-rest-controller.php` |
+| `GET` | `/shop/page` | `__CLASS__, get_shop_page` | `__return_true` | `plugins/zen-commerce/includes/class-rest-controller.php` |
 
 ## `zen-mailer/v1`
 
@@ -97,16 +95,14 @@ Endpoints com `permission_callback => __return_true` que merecem revisão:
 | `POST` | `djzeneyer/v1` | `/agent-claim` | `inc/ai-llm.php` |
 | `POST` | `djzeneyer/v1` | `/agent-revoke` | `inc/ai-llm.php` |
 | `GET` | `djzeneyer/v1` | `/menu` | `inc/api.php` |
-| `GET` | `djzeneyer/v1` | `/shop/page` | `inc/api.php` |
-| `GET` | `djzeneyer/v1` | `/products` | `inc/api.php` |
-| `GET` | `djzeneyer/v1` | `/products/collections` | `inc/api.php` |
 | `POST` | `djzeneyer/v1` | `/subscribe` | `inc/api.php` |
-| `POST` | `djzeneyer/v1` | `/user/update-profile` | `inc/api.php` |
-| `GET` | `djzeneyer/v1` | `/gamipress/user-data` | `inc/api.php` |
 | `GET` | `[$ns]` | `/events` | `plugins/zen-bit/zen-bit.php` |
 | `GET` | `[$ns]` | `/events/schema` | `plugins/zen-bit/zen-bit.php` |
 | `GET` | `[$ns]` | `/events/(?P<event_id>[^/]+)` | `plugins/zen-bit/zen-bit.php` |
 | `GET` | `[$ns]` | `/events/(?P<event_id>[^/]+)/schema` | `plugins/zen-bit/zen-bit.php` |
+| `GET` | `djzeneyer/v1` | `/products` | `plugins/zen-commerce/includes/class-rest-controller.php` |
+| `GET` | `djzeneyer/v1` | `/products/collections` | `plugins/zen-commerce/includes/class-rest-controller.php` |
+| `GET` | `djzeneyer/v1` | `/shop/page` | `plugins/zen-commerce/includes/class-rest-controller.php` |
 | `GET` | `zen-seo/v1` | `/meta` | `plugins/zen-seo-lite/includes/class-zen-seo-rest-api.php` |
 | `GET` | `zen-seo/v1` | `/settings` | `plugins/zen-seo-lite/includes/class-zen-seo-rest-api.php` |
 | `GET` | `zen-seo/v1` | `/profile` | `plugins/zen-seo-lite/includes/class-zen-seo-rest-api.php` |
