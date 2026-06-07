@@ -11,6 +11,7 @@ import {
 type EncyclopediaMessages = {
   terms: Record<string, { term?: string; short?: string; body?: string }>;
   sources: Record<string, string>;
+  schema_topics: Record<string, string>;
 };
 
 describe('zouk encyclopedia detail routes', () => {
@@ -45,5 +46,16 @@ describe('zouk encyclopedia detail routes', () => {
         expect(messages.sources[source.labelKey], `sources.${source.labelKey}`).toBeTruthy();
       }
     }
+  });
+
+  it.each([
+    ['EN', enEncyclopedia as EncyclopediaMessages],
+    ['PT', ptEncyclopedia as EncyclopediaMessages],
+  ])('%s schema_topics has required keys as non-empty strings', (_lang, messages) => {
+    expect(typeof messages.schema_topics.brazilian_zouk).toBe('string');
+    expect(messages.schema_topics.brazilian_zouk.length).toBeGreaterThan(0);
+
+    expect(typeof messages.schema_topics.zouk_music).toBe('string');
+    expect(messages.schema_topics.zouk_music.length).toBeGreaterThan(0);
   });
 });
