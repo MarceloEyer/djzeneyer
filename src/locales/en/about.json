@@ -11,7 +11,9 @@
       "badge": "MY STORY",
       "title": "The <1>Journey</1>",
       "subtitle": "From a passion for music to connecting with thousands of souls through Brazilian Zouk",
-      "pronunciation_hint": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B, or like 'Eye' followed by 'er')."
+      "pronunciation_hint": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B, or like 'Eye' followed by 'er').",
+      "title_part1": "The",
+      "title_part2": "Journey"
     },
     "stats": {
       "stories": "Connection",
