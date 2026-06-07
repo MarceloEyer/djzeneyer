@@ -47,9 +47,10 @@ add_action('rest_api_init', function () {
         'permission_callback' => '__return_true',
     ]);
 
-    // User meta exposed to REST — auth_callback restricts write to owner or admin
+    // User meta — show_in_rest=false to block direct REST writes;
+    // re-exposed as read-only via register_rest_field below.
     register_meta('user', 'zen_login_streak', [
-        'show_in_rest'  => true,
+        'show_in_rest'  => false,  // disabled — exposed read-only via register_rest_field below
         'single'        => true,
         'type'          => 'integer',
         'auth_callback' => function ($allowed, $meta_key, $object_id) {
@@ -58,12 +59,27 @@ add_action('rest_api_init', function () {
     ]);
 
     register_meta('user', 'zen_last_login', [
-        'show_in_rest'  => true,
+        'show_in_rest'  => false,
         'single'        => true,
         'type'          => 'string',
         'auth_callback' => function ($allowed, $meta_key, $object_id) {
             return current_user_can('edit_user', $object_id);
         },
+    ]);
+
+    // Read-only REST exposure — no update_callback means write is blocked
+    register_rest_field('user', 'zen_login_streak', [
+        'get_callback' => function ($user) {
+            return (int) get_user_meta($user['id'], 'zen_login_streak', true);
+        },
+        'schema' => ['type' => 'integer', 'description' => 'Login streak count'],
+    ]);
+
+    register_rest_field('user', 'zen_last_login', [
+        'get_callback' => function ($user) {
+            return (string) get_user_meta($user['id'], 'zen_last_login', true);
+        },
+        'schema' => ['type' => 'string', 'description' => 'Last login timestamp'],
     ]);
 });
 

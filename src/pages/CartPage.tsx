@@ -32,7 +32,7 @@ const ITEM_VARIANTS = {
 
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { data: cart, isLoading } = useCartQuery();
+  const { data: cart, isLoading, error, refetch } = useCartQuery();
   const removeItem = useRemoveCartItemMutation();
   const currentLang = React.useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
@@ -49,6 +49,19 @@ const CartPage: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-white">
+        <div className="text-center">
+          <p className="text-white/60 mb-4">Não foi possível carregar o carrinho.</p>
+          <button onClick={() => refetch()} className="btn btn-primary">
+            {t('common.retry')}
+          </button>
+        </div>
       </div>
     );
   }

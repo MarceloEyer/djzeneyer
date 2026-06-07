@@ -43,9 +43,20 @@ const ShopPageViewModelSchema = z.object({
 }).catchall(z.unknown());
 
 async function fetchJson(path: string): Promise<unknown> {
-  const response = await fetch(`${SITE_URL}${path}`, { headers });
-  if (!response.ok) throw new Error(`${path} HTTP ${response.status}`);
-  return response.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  try {
+    const response = await fetch(`${SITE_URL}${path}`, { headers, signal: controller.signal });
+    if (!response.ok) throw new Error(`${path} HTTP ${response.status}`);
+    return response.json();
+  } catch (err) {
+    if (err instanceof Error && err.name === 'AbortError') {
+      throw new Error(`Timeout after 10s — ${path}`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function testEventsEndpoint() {

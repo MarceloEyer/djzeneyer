@@ -68,7 +68,7 @@ for (const file of files) {
   if (matches.length === 0) continue;
 
   const rel = path.relative(root, file);
-  if (KNOWN_DEBT.has(file)) {
+  if (KNOWN_DEBT.has(rel)) {
     debt.push({ file: rel, lines: matches });
   } else {
     violations.push({ file: rel, lines: matches });

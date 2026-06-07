@@ -74,9 +74,6 @@ class Zen_Commerce_Product_Formatter {
         if (empty($ids)) return;
         $ids = array_unique(array_map('intval', $ids));
 
-        if (function_exists('update_meta_cache')) {
-            update_meta_cache('post', $ids);
-        }
         if (function_exists('_prime_post_caches')) {
             _prime_post_caches($ids, false, true);
         }
