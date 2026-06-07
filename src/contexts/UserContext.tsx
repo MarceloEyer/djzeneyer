@@ -68,7 +68,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             })
             .then((data) => {
               if (!data.authenticated) { logout(); return; }
-              if (data.user) saveSession(data.user, token);
+              if (data.user) {
+                // Merge top-level roles from session response into the user object
+                // so that roles are preserved in localStorage and UserContext state.
+                saveSession({ ...data.user, roles: data.roles ?? [] }, token);
+              }
             })
             .catch((err) => {
               console.error('[UserContext] Erro na validação de sessão:', err);

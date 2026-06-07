@@ -71,7 +71,10 @@ class Zen_Commerce_REST_Controller {
         $lang  = $request->get_param('lang');
         $limit = max(1, min(20, (int) $request->get_param('limit')));
 
-        $cache_key = 'zen_commerce_collections_v1_' . md5($lang . '|' . $limit);
+        // Use the same version counter as the product repository so both caches
+        // are invalidated atomically when Zen_Commerce_Product_Repository::flush_cache() runs.
+        $col_version = (int) get_option('zen_commerce_products_cache_version', 0);
+        $cache_key = 'zen_commerce_collections_v' . $col_version . '_' . md5($lang . '|' . $limit);
         $cached    = get_transient($cache_key);
         if ($cached !== false) return rest_ensure_response($cached);
 

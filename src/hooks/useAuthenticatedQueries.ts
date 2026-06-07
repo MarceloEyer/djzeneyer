@@ -245,15 +245,15 @@ interface CheckoutData {
 }
 
 export const useCheckoutQuery = () =>
-  useQuery<CheckoutData | null>({
+  useQuery<CheckoutData>({
     queryKey: QUERY_KEYS.checkout.current,
-    queryFn: async (): Promise<CheckoutData | null> => {
+    queryFn: async (): Promise<CheckoutData> => {
       const apiUrl = buildApiUrl('wc/store/v1/checkout');
       const res = await fetch(apiUrl, {
         headers: getAuthHeaders() as HeadersInit,
         credentials: 'include',
       });
-      if (!res.ok) return null;
+      if (!res.ok) throw new Error(`Failed to fetch checkout data: HTTP ${res.status}`);
       return res.json() as Promise<CheckoutData>;
     },
     staleTime: 60 * 1000,

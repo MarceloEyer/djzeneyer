@@ -19,7 +19,7 @@ Legenda: ✅ bem aplicado · 🟡 parcial · ❌ falta · ⚠️ risco ativo
 | 3  | DRY                                          | 🟡     | Lei técnica formal; formatação de produto ainda repetida entre endpoints de produtos e shop.              |
 | 4  | YAGNI                                        | 🟡     | Bom como princípio; verificar se AI discovery, skills e docs têm checks automáticos de relevância.        |
 | 5  | Separation of Concerns                       | 🟡     | Fronteiras existem, mas `inc/api.php` e contexts do React acumulam responsabilidades.                     |
-| 6  | Single Responsibility Principle              | 🟡     | `zen-bit` está bom. `inc/api.php`, `UserContext` e `CartContext` violam.                                  |
+| 6  | Single Responsibility Principle              | 🟡     | `zen-bit` e `zen-commerce` estão bons. `inc/api.php` e `UserContext` ainda violam.                        |
 | 7  | Backend owns domain logic                    | 🟡     | Eventos: excelente. Shop/produtos ainda parcialmente presos ao tema.                                      |
 | 8  | Frontend owns presentation only              | 🟡     | Eventos respeitam. Auth e cart ainda decidem lógica de domínio no frontend.                               |
 | 9  | API Contract First                           | 🟡     | Schemas Zod existem; falta contrato gerado/testado automaticamente.                                       |
@@ -30,7 +30,7 @@ Legenda: ✅ bem aplicado · 🟡 parcial · ❌ falta · ⚠️ risco ativo
 | 14 | Query key discipline                         | ✅     | `QUERY_KEYS` centralizado e bem separado por domínio.                                                     |
 | 15 | Server-side filtering                        | ✅     | Eventos e shop aplicam filtros no backend.                                                                |
 | 16 | No backend work in frontend                  | 🟡     | Eventos respeitam. Carrinho e auth têm lógica operacional no frontend.                                    |
-| 17 | Plugin encapsulation                         | 🟡     | Auth, eventos, SEO, game pluginizados. Shop, newsletter e profile ainda no tema.                          |
+| 17 | Plugin encapsulation                         | 🟡     | Auth, eventos, SEO, game e commerce (PR #711) pluginizados. Newsletter e profile ainda no tema.           |
 | 18 | Capability-based permissions                 | 🟡     | Plugins principais usam capabilities. Rotas antigas do tema precisam revisão.                             |
 | 19 | Least privilege                              | ⚠️     | Revisar `register_meta(... auth_callback => __return_true)` e endpoints com `permission_callback => __return_true`. |
 | 20 | Secure by default                            | 🟡     | Auth tem rate limit e JWT. Rotas legadas precisam limpeza.                                                |
@@ -47,7 +47,7 @@ Legenda: ✅ bem aplicado · 🟡 parcial · ❌ falta · ⚠️ risco ativo
 | 31 | Backwards compatibility with deprecation     | 🟡     | Aliases de auth e endpoints legados existem. Sem política formal de deprecação.                           |
 | 32 | No legacy without owner                      | 🟡     | TODOs apontam refs antigas. Falta check automático.                                                       |
 | 33 | Docs follow code                             | 🟡     | Regra existe. Falta inventário gerado automaticamente.                                                    |
-| 34 | Generated API inventory                      | ❌     | Mapa de API é curado, não gerado. Pode ficar obsoleto.                                                    |
+| 34 | Generated API inventory                      | ✅     | `scripts/generate-api-inventory.mjs` gera `.context/API_GENERATED.md` automaticamente (PR #711).         |
 | 35 | Broken link checking                         | ❌     | Check de links internos em MDs críticos ainda não existe. (→ script A2)                                   |
 | 36 | ADR — Architecture Decision Records          | ❌     | Decisões arquiteturais não têm registro formal. Um `.context/decisions/` simples resolve.                 |
 | 37 | Domain boundaries                            | 🟡     | Eventos, auth, game e SEO bem separados. Shop, newsletter e profile misturados no tema.                   |
@@ -61,9 +61,9 @@ Legenda: ✅ bem aplicado · 🟡 parcial · ❌ falta · ⚠️ risco ativo
 | 45 | i18n by default                              | ✅     | Toda string visível deve usar `t()`. Check automático existe.                                             |
 | 46 | SEO/GEO/AEO as domain, not decoration        | ✅     | SEO, schema, llms, sitemap e discovery são parte central da arquitetura.                                  |
 | 47 | Route governance                             | 🟡     | `routes-slugs.json` é SSOT de slugs, mas `routes.ts` ainda exige atualização manual.                     |
-| 48 | View-model endpoints                         | 🟡     | `/shop/page` entrega view-model — ótimo conceito, mas deve morar em plugin próprio.                       |
+| 48 | View-model endpoints                         | ✅     | `/shop/page` entrega view-model e mora em `plugins/zen-commerce` (PR #711).                               |
 | 49 | Continuous cleanup                           | 🟡     | `IMPLEMENTATION_STATUS.md` existe mas precisa poda periódica.                                             |
-| 50 | Architecture fitness functions               | ❌     | Falta check automático de violações de fronteira frontend/backend/SSOT. (→ script A3)                     |
+| 50 | Architecture fitness functions               | ✅     | `scripts/check-architecture-boundaries.mjs` verifica violações de fronteira (PR #711).                   |
 
 ---
 

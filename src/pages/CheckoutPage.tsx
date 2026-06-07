@@ -102,8 +102,11 @@ const CheckoutPage: React.FC = () => {
           getLocalizedRoute('shop', currentLang)
         );
       } else {
-        await clearCart.mutateAsync();
-        setOrderSuccess(true);
+        // Order placed successfully — clear the cart but treat failure as non-fatal.
+        // Navigate to the success state regardless of whether cart clear succeeds.
+        clearCart.mutate(undefined, {
+          onSettled: () => setOrderSuccess(true),
+        });
       }
     } catch (error) {
       console.error('Checkout error:', error);

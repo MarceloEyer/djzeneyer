@@ -22,7 +22,7 @@ Total de endpoints encontrados: **49**
 | `GET` | `/products/collections` | `get_collections` | `__return_true` | `plugins/zen-commerce/includes/class-rest-controller.php` |
 | `GET` | `/shop/page` | `get_shop_page` | `__return_true` | `plugins/zen-commerce/includes/class-rest-controller.php` |
 
-## `zen-bit/v2 *(namespace inferido)*`
+## `zen-bit/v2`
 
 | Método | Rota | Callback | Permission | Arquivo |
 |--------|------|----------|------------|---------|

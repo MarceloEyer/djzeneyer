@@ -36,10 +36,11 @@ add_action('rest_api_init', ['Zen_Commerce_REST_Controller', 'register_routes'])
 // Cache invalidation
 // ---------------------------------------------------------------------------
 
-add_action('save_post_product', function (): void {
+add_action('save_post_product', function (int $post_id): void {
+    if (wp_is_post_autosave($post_id) || wp_is_post_revision($post_id)) return;
     Zen_Commerce_Product_Repository::flush_cache();
     Zen_Commerce_Shop_View_Model::flush_cache();
-});
+}, 10, 1);
 
 // ---------------------------------------------------------------------------
 // Admin: "Clear Commerce Cache" button in admin bar

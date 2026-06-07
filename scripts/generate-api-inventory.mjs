@@ -459,12 +459,13 @@ for (const file of files) {
   allRoutes.push(...routes);
 }
 
-// Group by namespace
+// Group by namespace — strip the " ⚠" suffix so guessed and canonical namespaces
+// are merged into the same group instead of creating duplicate sections.
 const byNamespace = {};
 for (const r of allRoutes) {
-  const nsKey = r.namespace.replace(' ⚠', ''); // group guessed with canonical
-  if (!byNamespace[r.namespace]) byNamespace[r.namespace] = [];
-  byNamespace[r.namespace].push(r);
+  const nsKey = r.namespace.replace(' ⚠', '');
+  if (!byNamespace[nsKey]) byNamespace[nsKey] = [];
+  byNamespace[nsKey].push(r);
 }
 
 // ---------------------------------------------------------------------------

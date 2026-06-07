@@ -25,13 +25,24 @@ const authBase = () => buildApiUrl('zeneyer-auth/v1');
 
 const parseJsonOrThrow = async (res: Response): Promise<unknown> => {
   const text = await res.text();
-  if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+  if (!res.ok) {
+    // Try to parse as JSON for a structured error message, fall back to HTTP status.
+    try {
+      const json = JSON.parse(text) as { message?: string; error?: string };
+      throw new Error(json.message ?? json.error ?? `HTTP ${res.status}`);
+    } catch (inner) {
+      if (inner instanceof SyntaxError) throw new Error(`HTTP ${res.status}`);
+      throw inner;
+    }
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
     throw new Error(
       'Servidor retornou HTML ao invés de JSON. ' +
       'Verifique se o plugin ZenEyer Auth está ativo e se as rewrite rules estão corretas.'
     );
   }
-  return JSON.parse(text);
 };
 
 const extractAuthResult = (json: unknown): AuthResult => {
@@ -79,7 +90,7 @@ export const authRequestPasswordReset = async (email: string): Promise<void> => 
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email }),
   });
-  const json = await res.json() as { success: boolean; message?: string };
+  const json = await parseJsonOrThrow(res) as { success: boolean; message?: string };
   if (!json.success) throw new Error(json.message || 'Erro ao solicitar reset de senha');
 };
 
@@ -89,6 +100,6 @@ export const authResetPassword = async (key: string, login: string, password: st
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ key, login, password }),
   });
-  const json = await res.json() as { success: boolean; message?: string };
+  const json = await parseJsonOrThrow(res) as { success: boolean; message?: string };
   if (!json.success) throw new Error(json.message || 'Erro ao definir nova senha');
 };

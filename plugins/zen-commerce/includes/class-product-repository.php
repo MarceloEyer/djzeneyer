@@ -34,11 +34,12 @@ class Zen_Commerce_Product_Repository {
                             ? strtoupper($options['order'])
                             : 'DESC';
 
+        $version = (int) get_option('zen_commerce_products_cache_version', 0);
         $cache_suffix = md5((string) wp_json_encode(compact(
             'lang', 'slug', 'category', 'exclude_category',
             'on_sale', 'featured', 'limit', 'orderby', 'order', 'meta_key'
         )));
-        $cache_key = self::CACHE_PREFIX . 'v3_' . $cache_suffix;
+        $cache_key = self::CACHE_PREFIX . 'v' . $version . '_' . $cache_suffix;
 
         $cached = get_transient($cache_key);
         if ($cached !== false && empty($slug)) return $cached;
@@ -77,14 +78,8 @@ class Zen_Commerce_Product_Repository {
      * Flush all product transients. Called on save_post_product.
      */
     public static function flush_cache(): void {
-        global $wpdb;
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s",
-                '_transient_' . self::CACHE_PREFIX . '%',
-                '_transient_timeout_' . self::CACHE_PREFIX . '%'
-            )
-        );
+        $version = (int) get_option('zen_commerce_products_cache_version', 0);
+        update_option('zen_commerce_products_cache_version', $version + 1, false);
     }
 
     // -------------------------------------------------------------------------

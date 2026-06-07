@@ -12,7 +12,8 @@ class Zen_Commerce_Shop_View_Model {
     const CACHE_TTL    = 24 * HOUR_IN_SECONDS;
 
     public static function build(string $lang): array {
-        $cache_key = self::CACHE_PREFIX . 'v1_' . sanitize_key($lang);
+        $version   = (int) get_option('zen_commerce_shop_cache_version', 0);
+        $cache_key = self::CACHE_PREFIX . 'v' . $version . '_' . sanitize_key($lang);
         $cached    = get_transient($cache_key);
         if ($cached !== false) return $cached;
 
@@ -32,15 +33,13 @@ class Zen_Commerce_Shop_View_Model {
             'order'            => 'DESC',
         ]);
 
-        // Preserve the previous /shop/page behavior: this row is rendered in
-        // React with title `badge_sale`, so it should contain products currently
-        // on sale rather than true all-time best sellers.
+        // Use total_sales to match the semantics of best_sellers in get_collections().
         $sale_products = Zen_Commerce_Product_Repository::query([
-            'lang'    => $lang,
-            'limit'   => 10,
-            'on_sale' => true,
-            'orderby' => 'date',
-            'order'   => 'DESC',
+            'lang'     => $lang,
+            'limit'    => 10,
+            'meta_key' => 'total_sales',
+            'orderby'  => 'meta_value_num',
+            'order'    => 'DESC',
         ]);
 
         $curated = Zen_Commerce_Product_Repository::query([
@@ -66,13 +65,7 @@ class Zen_Commerce_Shop_View_Model {
      * Flush shop page transients. Called alongside Product_Repository::flush_cache().
      */
     public static function flush_cache(): void {
-        global $wpdb;
-        $wpdb->query(
-            $wpdb->prepare(
-                "DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s",
-                '_transient_' . self::CACHE_PREFIX . '%',
-                '_transient_timeout_' . self::CACHE_PREFIX . '%'
-            )
-        );
+        $version = (int) get_option('zen_commerce_shop_cache_version', 0);
+        update_option('zen_commerce_shop_cache_version', $version + 1, false);
     }
 }
