@@ -39,7 +39,8 @@ export function useWebMCP() {
               execute: () => {
                 return {
                   name: ARTIST.identity.stageName,
-                  style: ARTIST.philosophy.style,
+                  genre: 'Brazilian Zouk',
+                  philosophy: ARTIST.philosophy.style,
                   mission: ARTIST.philosophy.mission,
                   bio: ARTIST.site.defaultDescription,
                 };
