@@ -51,7 +51,7 @@ async function fetchJson(path: string): Promise<unknown> {
     return response.json();
   } catch (err) {
     if (err instanceof Error && err.name === 'AbortError') {
-      throw new Error(`Timeout after 10s — ${path}`);
+      throw new Error(`Timeout after 10s — ${path}`, { cause: err });
     }
     throw err;
   } finally {

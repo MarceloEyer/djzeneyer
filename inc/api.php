@@ -253,7 +253,7 @@ function djz_subscribe_newsletter($request)
         $api     = \MailPoet\API\API::MP('v1');
         $lists   = $api->getLists();
         $list_id = (int) apply_filters('djz_mailpoet_list_id', 0);
-        if ($list_id <= 0) $list_id = $lists[0]['id'] ?? 1;
+        if ($list_id <= 0) $list_id = ($lists[0] ?? [])['id'] ?? 1;
 
         $api->addSubscriber(['email' => $email, 'status' => 'subscribed'], [$list_id]);
 
@@ -262,7 +262,7 @@ function djz_subscribe_newsletter($request)
         if (stripos($e->getMessage(), 'already exists') !== false) {
             return rest_ensure_response(['success' => true, 'message' => 'Already subscribed!']);
         }
-        return new WP_Error('subscription_failed', 'Ocorreu um erro na inscrição. Tente novamente mais tarde.', ['status' => 500]);
+        return new WP_Error('subscription_failed', __('Subscription failed. Please try again later.', 'djzeneyer'), ['status' => 500]);
     }
 }
 
