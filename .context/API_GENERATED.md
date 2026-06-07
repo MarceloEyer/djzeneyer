@@ -101,10 +101,10 @@ Endpoints com `permission_callback => __return_true` que merecem revisão:
 | `POST` | `djzeneyer/v1` | `/agent-revoke` | `inc/ai-llm.php` |
 | `GET` | `djzeneyer/v1` | `/menu` | `inc/api.php` |
 | `POST` | `djzeneyer/v1` | `/subscribe` | `inc/api.php` |
-| `GET` | `zen-bit/v2 ⚠` | `/events` | `plugins/zen-bit/zen-bit.php` |
-| `GET` | `zen-bit/v2 ⚠` | `/events/schema` | `plugins/zen-bit/zen-bit.php` |
-| `GET` | `zen-bit/v2 ⚠` | `/events/(?P<event_id>[^/]+)` | `plugins/zen-bit/zen-bit.php` |
-| `GET` | `zen-bit/v2 ⚠` | `/events/(?P<event_id>[^/]+)/schema` | `plugins/zen-bit/zen-bit.php` |
+| `GET` | `zen-bit/v2` | `/events` | `plugins/zen-bit/zen-bit.php` |
+| `GET` | `zen-bit/v2` | `/events/schema` | `plugins/zen-bit/zen-bit.php` |
+| `GET` | `zen-bit/v2` | `/events/(?P<event_id>[^/]+)` | `plugins/zen-bit/zen-bit.php` |
+| `GET` | `zen-bit/v2` | `/events/(?P<event_id>[^/]+)/schema` | `plugins/zen-bit/zen-bit.php` |
 | `GET` | `djzeneyer/v1` | `/products` | `plugins/zen-commerce/includes/class-rest-controller.php` |
 | `GET` | `djzeneyer/v1` | `/products/collections` | `plugins/zen-commerce/includes/class-rest-controller.php` |
 | `GET` | `djzeneyer/v1` | `/shop/page` | `plugins/zen-commerce/includes/class-rest-controller.php` |

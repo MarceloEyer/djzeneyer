@@ -523,7 +523,8 @@ if (unsecured.length === 0) {
   lines.push(`|--------|-----------|------|---------|`);
   for (const r of unsecured) {
     const methods = r.methods.split(/[,|]/).map(m => `\`${m.trim()}\``).join(' ');
-    lines.push(`| ${methods} | \`${r.namespace}\` | \`${r.route}\` | \`${r.file}\` |`);
+    const nsDisplay = r.namespace.replace(' ⚠', '');
+    lines.push(`| ${methods} | \`${nsDisplay}\` | \`${r.route}\` | \`${r.file}\` |`);
   }
 }
 

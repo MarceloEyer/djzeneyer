@@ -37,10 +37,11 @@ const parseJsonOrThrow = async (res: Response): Promise<unknown> => {
   }
   try {
     return JSON.parse(text);
-  } catch {
+  } catch (e) {
     throw new Error(
       'Servidor retornou HTML ao invés de JSON. ' +
-      'Verifique se o plugin ZenEyer Auth está ativo e se as rewrite rules estão corretas.'
+      'Verifique se o plugin ZenEyer Auth está ativo e se as rewrite rules estão corretas.',
+      { cause: e }
     );
   }
 };

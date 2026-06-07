@@ -60,23 +60,22 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           const parsedUser = JSON.parse(savedUser);
           setUser({ ...parsedUser, token, isLoggedIn: true });
 
-          queryClient
-            .fetchQuery({
+          try {
+            const data = await queryClient.fetchQuery({
               queryKey: QUERY_KEYS.user.session(Boolean(token)),
               queryFn: () => fetchAuthSessionFn(token),
               staleTime: 0,
-            })
-            .then((data) => {
-              if (!data.authenticated) { logout(); return; }
-              if (data.user) {
-                // Merge top-level roles from session response into the user object
-                // so that roles are preserved in localStorage and UserContext state.
-                saveSession({ ...data.user, roles: data.roles ?? [] }, token);
-              }
-            })
-            .catch((err) => {
-              console.error('[UserContext] Erro na validação de sessão:', err);
             });
+            if (!data.authenticated) {
+              logout();
+            } else if (data.user) {
+              // Merge top-level roles from session response into the user object
+              // so that roles are preserved in localStorage and UserContext state.
+              saveSession({ ...data.user, roles: data.roles ?? [] }, token);
+            }
+          } catch (err) {
+            console.error('[UserContext] Erro na validação de sessão:', err);
+          }
         }
       } catch (err) {
         console.error('[UserContext] Falha na inicialização:', err);

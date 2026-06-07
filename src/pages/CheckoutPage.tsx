@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -34,15 +34,19 @@ const CheckoutPage: React.FC = () => {
     country: '',
   });
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const billingHydrated = useRef(false);
 
-  // Sync payment methods and billing address from checkout query
+  // Sync payment methods and billing address from checkout query.
+  // The billing address hydration is guarded by a ref so it only runs once —
+  // subsequent React Query refetches will not overwrite user edits.
   React.useEffect(() => {
     if (!checkoutData) return;
     if (checkoutData.payment_methods?.length > 0) {
       setPaymentMethods(checkoutData.payment_methods);
       setSelectedPaymentMethod((prev) => prev || checkoutData.payment_methods[0].id);
     }
-    if (checkoutData.billing_address) {
+    if (checkoutData.billing_address && !billingHydrated.current) {
+      billingHydrated.current = true;
       const ba = checkoutData.billing_address;
       setFormData((prev) => ({
         ...prev,
