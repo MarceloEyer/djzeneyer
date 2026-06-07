@@ -12,6 +12,26 @@
 if (!defined('ABSPATH'))
     exit;
 
+/**
+ * Defensive bootstrap for Zen Commerce.
+ *
+ * The React frontend depends on `/wp-json/djzeneyer/v1/products` and
+ * `/wp-json/djzeneyer/v1/shop/page`. Those endpoints now live in the
+ * `zen-commerce` plugin, but a fresh deploy can place the plugin files on disk
+ * before a human has activated it in wp-admin. Loading it defensively from the
+ * theme prevents a production gap where shop endpoints disappear between deploy
+ * and activation.
+ *
+ * If the plugin is already active, WordPress loads it before the theme and the
+ * class_exists() guard keeps this a no-op.
+ */
+if (!class_exists('Zen_Commerce_REST_Controller')) {
+    $zen_commerce_file = WP_PLUGIN_DIR . '/zen-commerce/zen-commerce.php';
+    if (file_exists($zen_commerce_file)) {
+        require_once $zen_commerce_file;
+    }
+}
+
 add_action('rest_api_init', function () {
     $ns = 'djzeneyer/v1';
 
