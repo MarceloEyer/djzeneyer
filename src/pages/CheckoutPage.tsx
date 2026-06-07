@@ -119,10 +119,10 @@ const CheckoutPage: React.FC = () => {
   };
 
   const formatPrice = (price: string | number) => {
-    if (price === undefined || price === null) return 'R$ 0,00';
+    const locale = isPortuguese ? 'pt-BR' : 'en-US';
+    if (price === undefined || price === null) return getCurrencyFormatter(locale, 'BRL').format(0);
     if (typeof price === 'string' && (price.includes('R$') || price.includes('$'))) return price;
     const numPrice = typeof price === 'string' ? parseFloat(price) : price;
-    const locale = isPortuguese ? 'pt-BR' : 'en-US';
     return isNaN(numPrice) ? price.toString() : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   };
 

@@ -75,6 +75,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
           } catch (err) {
             console.error('[UserContext] Erro na validação de sessão:', err);
+            logout(); // clear stale token on validation failure
           }
         }
       } catch (err) {
