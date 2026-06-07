@@ -59,7 +59,7 @@ const EventDetailSkeleton = () => (
 );
 
 const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('translation');
   const origin = ARTIST.site.baseUrl;
   const { data: event, isLoading, isFetching } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
@@ -179,7 +179,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 };
 
 const EventListContent = ({ lang }: { lang: string }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('translation');
   const origin = ARTIST.site.baseUrl;
   const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',
@@ -329,7 +329,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
 const EventsPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('translation');
   const { artist } = useBranding();
   const lang = normalizeLanguage(i18n.language);
   const pressKitUrl = artist?.site?.media?.epkPdf || ARTIST.site.media.epkPdf;
