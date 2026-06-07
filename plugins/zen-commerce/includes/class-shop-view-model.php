@@ -32,12 +32,15 @@ class Zen_Commerce_Shop_View_Model {
             'order'            => 'DESC',
         ]);
 
-        $best_sellers = Zen_Commerce_Product_Repository::query([
-            'lang'     => $lang,
-            'limit'    => 10,
-            'meta_key' => 'total_sales',
-            'orderby'  => 'meta_value_num',
-            'order'    => 'DESC',
+        // Preserve the previous /shop/page behavior: this row is rendered in
+        // React with title `badge_sale`, so it should contain products currently
+        // on sale rather than true all-time best sellers.
+        $sale_products = Zen_Commerce_Product_Repository::query([
+            'lang'    => $lang,
+            'limit'   => 10,
+            'on_sale' => true,
+            'orderby' => 'date',
+            'order'   => 'DESC',
         ]);
 
         $curated = Zen_Commerce_Product_Repository::query([
@@ -50,7 +53,8 @@ class Zen_Commerce_Shop_View_Model {
         $data = [
             'featured'     => !empty($featured) ? $featured[0] : null,
             'new_releases' => $new_releases,
-            'best_sellers' => $best_sellers,
+            // Backwards-compatible key kept for the frontend contract.
+            'best_sellers' => $sale_products,
             'curated'      => $curated,
         ];
 
