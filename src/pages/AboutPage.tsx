@@ -244,8 +244,8 @@ const AboutPage: React.FC = () => {
         <div className="pt-24 pb-12 relative md:pt-32 md:pb-20">
           <div className="container mx-auto max-w-6xl relative z-10 px-4 pt-8">
             <PageHeader 
-              titlePart1={t('about.hero.title_part1', { defaultValue: 'The' })}
-              titlePart2={t('about.hero.title_part2', { defaultValue: 'Journey' })}
+              titlePart1={t('about.hero.title_part1', { ns: 'about', defaultValue: 'The' })}
+              titlePart2={t('about.hero.title_part2', { ns: 'about', defaultValue: 'Journey' })}
               breadcrumbs={[{ label: t('nav.about') }]}
             />
             <motion.div
