@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../../lib/logger';
 
 interface LanguageWrapperProps {
   children: React.ReactNode;
@@ -23,7 +24,7 @@ const LanguageWrapper: React.FC<LanguageWrapperProps> = ({ children }) => {
 
     if (currentLang !== targetLang) {
       i18n.changeLanguage(targetLang).catch((err) => {
-        console.error('[LanguageWrapper] i18n.changeLanguage error:', err);
+        logger.error('LANGUAGE_WRAPPER', 'i18n.changeLanguage error', { error: String(err) });
       });
     }
 

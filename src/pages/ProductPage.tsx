@@ -13,6 +13,7 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { useAddToCartMutation, useProductQuery, type WCProductDetail } from '../hooks/useQueries';
 import { ARTIST } from '../data/artistData';
 import NotFoundPage from './NotFoundPage';
+import { logger } from '../lib/logger';
 
 interface ProductGalleryProps {
   product: WCProductDetail;
@@ -95,7 +96,7 @@ const ProductPage: React.FC = () => {
     try {
       await addToCartMutation.mutateAsync({ productId: product.id, quantity: 1 });
     } catch (err) {
-      console.error('Error adding to cart:', err);
+      logger.error('PRODUCT_PAGE', 'Error adding to cart', { error: String(err) });
     }
   }, [addToCartMutation, product]);
 

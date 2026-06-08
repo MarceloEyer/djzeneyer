@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { ARTIST } from '../data/artistData';
+import { logger } from '../lib/logger';
 
 /**
  * Hook para expor ferramentas do site para agentes de IA (WebMCP).
@@ -63,9 +64,9 @@ export function useWebMCP() {
             }
           }
         });
-        console.log('[WebMCP] Ferramentas de IA registradas com sucesso.');
+        logger.debug('WEB_MCP', 'AI tools registered successfully');
       } catch (error) {
-        console.error('[WebMCP] Erro ao registrar ferramentas:', error);
+        logger.error('WEB_MCP', 'Error registering tools', { error: String(error) });
       }
     }
   }, []);

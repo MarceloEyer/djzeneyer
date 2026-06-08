@@ -1,6 +1,7 @@
 // src/utils/gamification.ts
 
 import { getCurrencyFormatter } from './currency';
+import { logger } from '../lib/logger';
 import { getDateTimeFormatter } from './date';
 
 /**
@@ -61,7 +62,7 @@ export function formatLogDate(dateString: string): string {
             minute: '2-digit',
         }).format(date);
     } catch (e) {
-        console.error('[gamification] Error formatting log date:', e, dateString);
+        logger.error('GAMIFICATION', 'Error formatting log date', { error: String(e), dateString });
         return dateString;
     }
 }

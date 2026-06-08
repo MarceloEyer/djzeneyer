@@ -19,6 +19,7 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { stripHtml } from '../utils/text';
 import ManaProgressBar from '../components/ui/ManaProgressBar';
 import { safeUrl } from '../utils/sanitize';
+import { logger } from '../lib/logger';
 import type { ZenGameRankRequirement } from '../types/gamification';
 
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
@@ -148,7 +149,7 @@ const MyAccountContent: React.FC = () => {
       logout();
       navigate(getLocalizedRoute('', currentLang));
     } catch (error) {
-      console.error('[MyAccountPage] Erro no logout:', error);
+      logger.error('MY_ACCOUNT_PAGE', 'Logout error', { error: String(error) });
       navigate(getLocalizedRoute('', currentLang));
     }
   }, [logout, navigate, currentLang]);
@@ -172,7 +173,7 @@ const MyAccountContent: React.FC = () => {
       setProfileSaved(true);
       setTimeout(() => setProfileSaved(false), 3000);
     } catch (error) {
-      console.error('[MyAccountPage] Error saving profile:', error);
+      logger.error('MY_ACCOUNT_PAGE', 'Error saving profile', { error: String(error) });
     } finally {
       setSavingProfile(false);
     }
