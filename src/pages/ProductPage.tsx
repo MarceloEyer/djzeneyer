@@ -35,7 +35,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
     <div>
       <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
         <img
-          src={safeUrl(mainImage)}
+          src={safeUrl(mainImage, placeholderImage)}
           alt={product.name || ''}
           className="w-full h-full object-cover"
           loading="eager"
@@ -55,7 +55,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
                 activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-white/10 hover:border-white/30'
               }`}
             >
-              <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
+              <img src={safeUrl(img.sizes?.thumbnail || img.src, '')} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
             </button>
           ))}
         </div>
