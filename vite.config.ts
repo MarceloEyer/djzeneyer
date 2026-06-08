@@ -46,6 +46,14 @@ export default defineConfig(({ command, mode }) => {
       },
     },
 
+    // framer-motion and lucide-react have many sub-modules that can stall the
+    // Vite pre-bundler in memory-constrained environments (containers, CI).
+    // They are already split into their own vendor chunks at build time so
+    // excluding them from optimizeDeps is safe and consistent.
+    optimizeDeps: {
+      exclude: ['framer-motion', 'lucide-react'],
+    },
+
     build: {
       manifest: true,
       outDir: 'dist',
