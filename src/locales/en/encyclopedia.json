@@ -8,6 +8,10 @@
   "intro_label": "Brazilian Zouk overview",
   "sources_label": "Sources",
   "no_results": "No encyclopedia terms found for this search.",
+  "schema_topics": {
+    "brazilian_zouk": "Brazilian Zouk",
+    "zouk_music": "Zouk music"
+  },
   "seo": {
     "title": "Brazilian Zouk Encyclopedia & History",
     "title_short": "Zouk Encyclopedia",

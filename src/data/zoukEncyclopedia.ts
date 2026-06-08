@@ -5,8 +5,7 @@ export interface EncyclopediaTerm {
   category: EncyclopediaCategory;
   relatedTerms?: string[];
   sources?: Array<{
-    label?: string;
-    labelKey?: string;
+    labelKey: string;
     url: string;
   }>;
 }

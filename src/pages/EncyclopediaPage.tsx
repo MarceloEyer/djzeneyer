@@ -82,14 +82,14 @@ const EncyclopediaHubPage: React.FC = () => {
         description: t('seo.description', { ns: 'encyclopedia' }),
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
         about: [
-          { '@type': 'Thing', name: 'Brazilian Zouk' },
-          { '@type': 'Thing', name: 'Zouk music' },
+          { '@type': 'Thing', name: t('schema_topics.brazilian_zouk', { ns: 'encyclopedia' }) },
+          { '@type': 'Thing', name: t('schema_topics.zouk_music', { ns: 'encyclopedia' }) },
           { '@id': `${pageUrl}#defined-term-set` },
         ],
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: ARTIST.site.baseUrl },
+            { '@type': 'ListItem', position: 1, name: t('nav.home'), item: ARTIST.site.baseUrl },
             { '@type': 'ListItem', position: 2, name: t('nav_label', { ns: 'encyclopedia' }), item: pageUrl },
           ],
         },
@@ -229,7 +229,7 @@ const EncyclopediaHubPage: React.FC = () => {
                                   rel="noopener noreferrer"
                                   className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary"
                                 >
-                                  {source.labelKey ? t(`sources.${source.labelKey}`, { ns: 'encyclopedia' }) : source.label}
+                                  {t(`sources.${source.labelKey}`, { ns: 'encyclopedia' })}
                                   <ExternalLink size={12} />
                                 </a>
                               ))}
@@ -313,7 +313,7 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: ARTIST.site.baseUrl },
+            { '@type': 'ListItem', position: 1, name: t('nav.home'), item: ARTIST.site.baseUrl },
             { '@type': 'ListItem', position: 2, name: t('nav_label', { ns: 'encyclopedia' }), item: hubUrl },
             { '@type': 'ListItem', position: 3, name: termName, item: pageUrl },
           ],
@@ -396,7 +396,7 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
                 <div className="flex flex-wrap gap-2">
                   {term.sources.map((source) => (
                     <a key={source.url} href={safeUrl(source.url, '/')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary">
-                      {source.labelKey ? t(`sources.${source.labelKey}`, { ns: 'encyclopedia' }) : source.label}
+                      {t(`sources.${source.labelKey}`, { ns: 'encyclopedia' })}
                       <ExternalLink size={14} />
                     </a>
                   ))}
