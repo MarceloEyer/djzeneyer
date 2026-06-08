@@ -21,6 +21,7 @@ import { getDateTimeFormatter } from '../utils/date';
 import { findReleaseByNewsSlug, getReleaseOpenGraphAlt, getReleaseOpenGraphType } from '../utils/openGraph';
 import { buildYouTubeVideoObject } from '../utils/youtube';
 import NotFoundPage from './NotFoundPage';
+import { logger } from '../lib/logger';
 
 // ============================================================================
 // HELPERS
@@ -37,7 +38,7 @@ const formatDate = (dateString: string, lang: string = 'pt-BR') => {
       year: 'numeric'
     }).format(date);
   } catch (e) {
-    console.error('[NewsPage] Error formatting date:', e, dateString);
+    logger.error('NEWS_PAGE', 'Error formatting date', { error: String(e) });
     return dateString;
   }
 };

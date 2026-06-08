@@ -1,6 +1,7 @@
 // src/contexts/UserContext.tsx
 import React, { createContext, useState, useContext, useEffect, ReactNode, useMemo, useCallback } from 'react';
 import { clearAllCache, queryClient, QUERY_KEYS } from '../config/queryClient';
+import { logger } from '../lib/logger';
 import { fetchAuthSessionFn } from '../hooks/useQueries';
 import {
   authLogin,
@@ -74,12 +75,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
               saveSession({ ...data.user, roles: data.roles ?? [] }, token);
             }
           } catch (err) {
-            console.error('[UserContext] Erro na validação de sessão:', err);
+            logger.error('USER_CONTEXT', 'Session validation error', { error: String(err) });
             logout(); // clear stale token on validation failure
           }
         }
       } catch (err) {
-        console.error('[UserContext] Falha na inicialização:', err);
+        logger.error('USER_CONTEXT', 'Initialization failure', { error: String(err) });
         setError('Erro ao conectar com o servidor de autenticação');
       } finally {
         setLoadingInitial(false);
@@ -97,7 +98,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         saveSession(u, token);
       } catch (err) {
         const e = err as Error;
-        console.error('[UserContext] Erro no login:', e);
+        logger.error('USER_CONTEXT', 'Login error', { error: String(e) });
         setError(e.message);
         throw e;
       } finally {
@@ -116,7 +117,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         saveSession(u, token);
       } catch (err) {
         const e = err as Error;
-        console.error('[UserContext] Erro no registro:', e);
+        logger.error('USER_CONTEXT', 'Register error', { error: String(e) });
         setError(e.message);
         throw e;
       } finally {
@@ -135,7 +136,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         saveSession(u, token);
       } catch (err) {
         const e = err as Error;
-        console.error('[UserContext] Google Login falhou:', e);
+        logger.error('USER_CONTEXT', 'Google login failed', { error: String(e) });
         setError(e.message);
         throw e;
       } finally {
@@ -152,7 +153,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await authRequestPasswordReset(email);
     } catch (err) {
       const e = err as Error;
-      console.error('[UserContext] Erro ao solicitar reset:', e);
+      logger.error('USER_CONTEXT', 'Password reset request error', { error: String(e) });
       setError(e.message);
       throw e;
     } finally {
@@ -167,7 +168,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       await authResetPassword(key, login, password);
     } catch (err) {
       const e = err as Error;
-      console.error('[UserContext] Erro ao resetar senha:', e);
+      logger.error('USER_CONTEXT', 'Password reset error', { error: String(e) });
       setError(e.message);
       throw e;
     } finally {

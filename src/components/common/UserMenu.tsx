@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useUser } from '../../contexts/UserContext';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { logger } from '../../lib/logger';
 
 const UserMenu: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -70,7 +71,7 @@ const UserMenu: React.FC = () => {
       setIsOpen(false);
       navigate(getLocalizedRoute('', currentLang));
     } catch (error) {
-      console.error('Logout error:', error);
+      logger.error('USER_MENU', 'Logout error', { error: String(error) });
     }
   };
 

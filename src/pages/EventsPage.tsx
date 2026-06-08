@@ -8,6 +8,7 @@ import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { extractRegions, filterEventsByRegion, groupEventsByMonth } from '../utils/events';
+import { logger } from '../lib/logger';
 import { ARTIST } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
@@ -194,7 +195,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   useEffect(() => {
     if (error) {
-      console.error('Error fetching events:', error);
+      logger.error('EVENTS_PAGE', 'Error fetching events', { error: String(error) });
     }
   }, [error]);
 
