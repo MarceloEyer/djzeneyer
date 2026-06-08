@@ -31,7 +31,7 @@ const parseJsonOrThrow = async (res: Response): Promise<unknown> => {
       const json = JSON.parse(text) as { message?: string; error?: string };
       throw new Error(json.message ?? json.error ?? `HTTP ${res.status}`);
     } catch (inner) {
-      if (inner instanceof SyntaxError) throw new Error(`HTTP ${res.status}`);
+      if (inner instanceof SyntaxError) throw new Error(`HTTP ${res.status}`, { cause: inner });
       throw inner;
     }
   }
