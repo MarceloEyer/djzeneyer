@@ -36,7 +36,7 @@ export const formatDateVal = (dateValue: string | Date, locale: string, options:
 
     return getDateTimeFormatter(locale, options).format(date);
   } catch (error) {
-    logger.error('DATE', 'Error formatting date', { error: String(error) });
+    logger.error('DATE_UTIL', 'Error formatting date', { error: String(error), dateValue: String(dateValue) });
     return typeof dateValue === 'string' ? dateValue : '';
   }
 };

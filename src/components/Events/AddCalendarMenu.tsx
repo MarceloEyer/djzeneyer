@@ -51,7 +51,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
 
             return { title, start, end, location, details };
         } catch (error) {
-            logger.error('ADD_CALENDAR_MENU', 'Error processing date', { error: String(error) });
+            logger.error('ADD_CALENDAR_MENU', 'Error processing date', { error: String(error), event });
             return null;
         }
     };

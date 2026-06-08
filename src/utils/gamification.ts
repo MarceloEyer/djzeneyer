@@ -62,7 +62,7 @@ export function formatLogDate(dateString: string): string {
             minute: '2-digit',
         }).format(date);
     } catch (e) {
-        logger.error('GAMIFICATION', 'Error formatting log date', { error: String(e) });
+        logger.error('GAMIFICATION', 'Error formatting log date', { error: String(e), dateString });
         return dateString;
     }
 }

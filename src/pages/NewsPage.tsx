@@ -38,7 +38,7 @@ const formatDate = (dateString: string, lang: string = 'pt-BR') => {
       year: 'numeric'
     }).format(date);
   } catch (e) {
-    logger.error('NEWS_PAGE', 'Error formatting date', { error: String(e) });
+    logger.error('NEWS_PAGE', 'Error formatting date', { error: String(e), dateString });
     return dateString;
   }
 };
