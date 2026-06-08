@@ -306,7 +306,7 @@ const MyAccountContent: React.FC = () => {
                 >
                   <div className="relative z-10 flex flex-col items-center text-center">
                     <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-white/5'}`}>
-                      {ach?.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
+                      {ach?.image ? <img src={safeUrl(ach.image, '')} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
                     </div>
                     <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || t('account.achievement_unknown')}</h4>
                     <p className="text-sm text-white/40 mb-6 leading-relaxed">

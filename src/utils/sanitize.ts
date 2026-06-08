@@ -105,6 +105,7 @@ const TRUSTED_DOMAINS = [
     'google.com',
     'googleusercontent.com',  // Google OAuth profile photos (lh3.googleusercontent.com)
     'gravatar.com',            // WordPress/Gravatar avatars
+    'placehold.co',            // Placeholder images used in dev/fallbacks
 ];
 
 /**
