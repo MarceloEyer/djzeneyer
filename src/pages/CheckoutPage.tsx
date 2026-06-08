@@ -20,7 +20,6 @@ const CheckoutPage: React.FC = () => {
   const clearCart = useClearCartMutation();
   const submitOrder = useSubmitOrderMutation();
 
-  const [paymentMethods, setPaymentMethods] = useState<Array<{ id: string; title: string; description: string }>>([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [formData, setFormData] = useState({
     firstName: '',
@@ -36,15 +35,19 @@ const CheckoutPage: React.FC = () => {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const billingHydrated = useRef(false);
 
-  // Sync payment methods and billing address from checkout query.
+  // ⚡ Bolt: Removed `paymentMethods` state and direct setState calls inside useEffect to prevent cascading renders.
+  // We now derive the payment methods directly from checkoutData.
+  const derivedPaymentMethods = checkoutData?.payment_methods || [];
+
+  // Also derive selectedPaymentMethod initially if not set
+  const actualSelectedPaymentMethod = selectedPaymentMethod || (derivedPaymentMethods.length > 0 ? derivedPaymentMethods[0].id : '');
+
+  // Sync billing address from checkout query.
   // The billing address hydration is guarded by a ref so it only runs once —
   // subsequent React Query refetches will not overwrite user edits.
   React.useEffect(() => {
     if (!checkoutData) return;
-    if (checkoutData.payment_methods?.length > 0) {
-      setPaymentMethods(checkoutData.payment_methods);
-      setSelectedPaymentMethod((prev) => prev || checkoutData.payment_methods[0].id);
-    }
+
     if (checkoutData.billing_address && !billingHydrated.current) {
       billingHydrated.current = true;
       const ba = checkoutData.billing_address;
@@ -97,7 +100,7 @@ const CheckoutPage: React.FC = () => {
           postcode: formData.zip,
           country: formData.country,
         },
-        payment_method: selectedPaymentMethod,
+        payment_method: actualSelectedPaymentMethod,
       });
 
       if (data.payment_result?.redirect_url) {
@@ -262,12 +265,12 @@ const CheckoutPage: React.FC = () => {
                 </h2>
 
                 <div className="space-y-4">
-                  {paymentMethods.length > 0 ? (
-                    paymentMethods.map((method) => (
+                  {derivedPaymentMethods.length > 0 ? (
+                    derivedPaymentMethods.map((method) => (
                       <label
                         key={method.id}
                         className={`p-4 rounded-lg border flex items-start gap-4 cursor-pointer transition-colors ${
-                          selectedPaymentMethod === method.id
+                          actualSelectedPaymentMethod === method.id
                             ? 'border-primary bg-primary/10'
                             : 'border-white/10 hover:border-white/30 bg-black/20'
                         }`}
@@ -277,7 +280,7 @@ const CheckoutPage: React.FC = () => {
                           id={`payment-method-${method.id}`}
                           name="paymentMethod"
                           value={method.id}
-                          checked={selectedPaymentMethod === method.id}
+                          checked={actualSelectedPaymentMethod === method.id}
                           onChange={() => setSelectedPaymentMethod(method.id)}
                           className="mt-1"
                         />
