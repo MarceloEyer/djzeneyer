@@ -1,4 +1,4 @@
-﻿# Auditoria de paginas publicas, SEO, GEO, AEO e schemas - djzeneyer.com
+# Auditoria de paginas publicas, SEO, GEO, AEO e schemas - djzeneyer.com
 
 Data: 2026-06-04
 Escopo: paginas React configuradas em `src/config/routes-slugs.json`, paginas dinamicas principais, sitemaps, recursos publicos para IA e pontos centrais de Knowledge Graph.
