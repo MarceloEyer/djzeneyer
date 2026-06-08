@@ -57,7 +57,7 @@ const ZoukFestivalsPage: React.FC = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     return categorizeFestivals(ARTIST.festivals, today);
-  }, []);
+  }, [ARTIST.festivals]);
 
   const formatYear = useCallback((date: string | undefined): string => {
     if (!date) return '';
