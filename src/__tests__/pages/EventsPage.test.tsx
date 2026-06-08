@@ -35,13 +35,20 @@ vi.mock('../../config/routes', () => ({
   getLocalizedRoute: (key: string) => `/${key}`,
 }));
 
-vi.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, initial: _i, animate: _a, ...p }: React.HTMLAttributes<HTMLDivElement> & Record<string, unknown>) =>
-      React.createElement('div', p, children),
-  },
-  useReducedMotion: () => false,
-}));
+vi.mock('framer-motion', () => {
+  const mockElement =
+    (tag: string) =>
+    ({ children, initial: _i, animate: _a, transition: _t, ...p }: React.HTMLAttributes<HTMLElement> & Record<string, unknown>) =>
+      React.createElement(tag, p, children);
+  return {
+    motion: {
+      div: mockElement('div'),
+      h1: mockElement('h1'),
+      a: mockElement('a'),
+    },
+    useReducedMotion: () => false,
+  };
+});
 
 vi.mock('../../contexts/BrandingContext', () => ({
   useBranding: () => ({ artist: ARTIST }),

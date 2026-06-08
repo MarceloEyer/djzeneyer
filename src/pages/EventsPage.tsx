@@ -12,6 +12,7 @@ import { ARTIST } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
+import { PageHeader } from '../components/ui/PageHeader';
 import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
 import NotFoundPage from './NotFoundPage';
@@ -58,7 +59,7 @@ const EventDetailSkeleton = () => (
 );
 
 const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('translation');
   const origin = ARTIST.site.baseUrl;
   const { data: event, isLoading, isFetching } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
@@ -115,13 +116,14 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         <div className="lg:col-span-5 relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
-            {event.image ? (
-              <img src={event.image} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" />
-            ) : (
-              <div className="w-full h-full bg-surface flex items-center justify-center text-white/10">
-                <Music size={80} />
-              </div>
-            )}
+            <img 
+              src={event.image || '/images/default-event-poster.png'} 
+              alt={event.title} 
+              className="w-full h-full object-cover" 
+              loading="lazy" 
+              width="600" 
+              height="800" 
+            />
             <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black via-black/60 to-transparent">
               <div className="inline-block px-4 py-1 rounded-full bg-primary text-black font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
                 {t('events.featured', { defaultValue: 'Featured Event' })}
@@ -177,7 +179,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 };
 
 const EventListContent = ({ lang }: { lang: string }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('translation');
   const origin = ARTIST.site.baseUrl;
   const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',
@@ -327,7 +329,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
 const EventsPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('translation');
   const { artist } = useBranding();
   const lang = normalizeLanguage(i18n.language);
   const pressKitUrl = artist?.site?.media?.epkPdf || ARTIST.site.media.epkPdf;
@@ -344,13 +346,12 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <Breadcrumb items={[{ label: t('nav.events') }]} className="mb-8" />
-        <header className="text-center mb-16 px-4">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 font-display uppercase text-white tracking-tighter">
-            {t('events.title_part1')} <span className="text-primary">{t('events.title_part2')}</span>
-          </h1>
-        </header>
+      <div className="max-w-6xl mx-auto relative pt-8">
+        <PageHeader 
+          titlePart1={t('events.title_part1')}
+          titlePart2={t('events.title_part2')}
+          breadcrumbs={[{ label: t('nav.events') }]}
+        />
 
         <React.Suspense fallback={<div className="min-h-[1600px]"><EventSkeleton /></div>}>
           <EventListContent lang={lang} />
