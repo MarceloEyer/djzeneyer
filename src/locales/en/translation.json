@@ -110,7 +110,8 @@
       "shipping": "Shipping",
       "shipping_calc": "Calculated at checkout",
       "total": "Total",
-      "checkout": "Proceed to Checkout"
+      "checkout": "Proceed to Checkout",
+      "load_error": "Could not load the cart."
     },
     "checkout": {
       "title": "Checkout",

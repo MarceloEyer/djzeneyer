@@ -45,6 +45,15 @@ jobs:
       - name: TypeScript check
         run: npm run type-check
 
+      - name: Architecture boundary check
+        run: npm run arch:check
+
+      - name: Docs internal links check
+        run: npm run docs:links
+
+      - name: API inventory freshness check
+        run: npm run api:inventory:check
+
       - name: i18n parity check
         run: npm run i18n:check
 

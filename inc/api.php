@@ -1,76 +1,92 @@
 <?php
 /**
- * REST API Endpoints - Gold Standard v3.0
- * GamiPress, WooCommerce, Menu, Newsletter
+ * REST API Endpoints — Theme layer
+ *
+ * Responsabilidade: menu, newsletter subscribe e user meta.
+ * Shop/produtos → plugin zen-commerce.
+ * Auth/perfil   → plugin zeneyer-auth.
+ * Eventos       → plugin zen-bit.
+ * Gamificação   → plugin zengame.
  */
 
 if (!defined('ABSPATH'))
     exit;
 
 /**
- * Register all endpoints
+ * Defensive bootstrap for Zen Commerce.
+ *
+ * The React frontend depends on `/wp-json/djzeneyer/v1/products` and
+ * `/wp-json/djzeneyer/v1/shop/page`. Those endpoints now live in the
+ * `zen-commerce` plugin, but a fresh deploy can place the plugin files on disk
+ * before a human has activated it in wp-admin. Loading it defensively from the
+ * theme prevents a production gap where shop endpoints disappear between deploy
+ * and activation.
+ *
+ * If the plugin is already active, WordPress loads it before the theme and the
+ * class_exists() guard keeps this a no-op.
  */
+if (!class_exists('Zen_Commerce_REST_Controller')) {
+    $zen_commerce_file = WP_PLUGIN_DIR . '/zen-commerce/zen-commerce.php';
+    if (file_exists($zen_commerce_file)) {
+        require_once $zen_commerce_file;
+    }
+}
+
 add_action('rest_api_init', function () {
     $ns = 'djzeneyer/v1';
 
     register_rest_route($ns, '/menu', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_menu',
-        'permission_callback' => '__return_true',
-    ]);
-
-    register_rest_route($ns, '/shop/page', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_shop_page',
-        'permission_callback' => '__return_true',
-    ]);
-
-    register_rest_route($ns, '/products', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_products',
-        'permission_callback' => '__return_true',
-    ]);
-
-    register_rest_route($ns, '/products/collections', [
-        'methods' => 'GET',
-        'callback' => 'djz_get_product_collections',
+        'methods'             => 'GET',
+        'callback'            => 'djz_get_menu',
         'permission_callback' => '__return_true',
     ]);
 
     register_rest_route($ns, '/subscribe', [
-        'methods' => 'POST',
-        'callback' => 'djz_subscribe_newsletter',
+        'methods'             => 'POST',
+        'callback'            => 'djz_subscribe_newsletter',
         'permission_callback' => '__return_true',
     ]);
 
-    register_rest_route($ns, '/user/update-profile', [
-        'methods' => 'POST',
-        'callback' => 'djz_update_profile',
-        'permission_callback' => '__return_true', // Token validation handled in callback
-    ]);
-
-    // register_rest_route($ns, '/gamipress/user-data', [ ... ]); 
-    // Handled by ZenGame plugin
-
-    // Register Custom User Meta for REST
+    // User meta — show_in_rest=false to block direct REST writes;
+    // re-exposed as read-only via register_rest_field below.
     register_meta('user', 'zen_login_streak', [
-        'show_in_rest' => true,
-        'single' => true,
-        'type' => 'integer',
-        'auth_callback' => '__return_true',
+        'show_in_rest'  => false,  // disabled — exposed read-only via register_rest_field below
+        'single'        => true,
+        'type'          => 'integer',
+        'auth_callback' => function ($allowed, $meta_key, $object_id) {
+            return current_user_can('edit_user', $object_id);
+        },
     ]);
 
     register_meta('user', 'zen_last_login', [
-        'show_in_rest' => true,
-        'single' => true,
-        'type' => 'string',
-        'auth_callback' => '__return_true',
+        'show_in_rest'  => false,
+        'single'        => true,
+        'type'          => 'string',
+        'auth_callback' => function ($allowed, $meta_key, $object_id) {
+            return current_user_can('edit_user', $object_id);
+        },
+    ]);
+
+    // Read-only REST exposure — no update_callback means write is blocked
+    register_rest_field('user', 'zen_login_streak', [
+        'get_callback' => function ($user) {
+            return (int) get_user_meta($user['id'], 'zen_login_streak', true);
+        },
+        'schema' => ['type' => 'integer', 'description' => 'Login streak count'],
+    ]);
+
+    register_rest_field('user', 'zen_last_login', [
+        'get_callback' => function ($user) {
+            return (string) get_user_meta($user['id'], 'zen_last_login', true);
+        },
+        'schema' => ['type' => 'string', 'description' => 'Last login timestamp'],
     ]);
 });
 
-/**
- * Menu Endpoint (Cached 6h)
- */
+// ---------------------------------------------------------------------------
+// Menu endpoint (cached 6h)
+// ---------------------------------------------------------------------------
+
 function djz_get_menu($request)
 {
     $lang = sanitize_key($request->get_param('lang') ?? 'en');
@@ -78,66 +94,58 @@ function djz_get_menu($request)
     $cache_key = 'djz_menu_v3_' . $lang;
 
     $cached = get_transient($cache_key);
-    if ($cached)
+    if ($cached !== false)
         return rest_ensure_response($cached);
+
     if (function_exists('pll_set_language')) {
         pll_set_language($lang);
     }
 
     $locations = get_nav_menu_locations();
-    $menu_id = $locations['primary_menu'] ?? 0;
+    $menu_id   = $locations['primary_menu'] ?? 0;
 
     if (!$menu_id) {
-        $menus = wp_get_nav_menus();
+        $menus   = wp_get_nav_menus();
         $menu_id = $menus[0]->term_id ?? 0;
     }
 
-    $items = wp_get_nav_menu_items($menu_id);
+    $items     = wp_get_nav_menu_items($menu_id);
     $formatted = [];
-    $home = home_url();
+    $home      = home_url();
 
     if ($items) {
         foreach ($items as $item) {
-            if ((int) $item->menu_item_parent !== 0)
-                continue;
-
-            $url = djz_localize_menu_url($item->url, $lang, $home);
+            if ((int) $item->menu_item_parent !== 0) continue;
 
             $formatted[] = [
-                'ID' => $item->ID,
-                'title' => $item->title,
-                'url' => $url,
+                'ID'     => $item->ID,
+                'title'  => $item->title,
+                'url'    => djz_localize_menu_url($item->url, $lang, $home),
                 'target' => $item->target ?: '_self',
             ];
         }
     }
 
-    set_transient($cache_key, $formatted, DJZ_CACHE_MENU);
+    set_transient($cache_key, $formatted, 6 * HOUR_IN_SECONDS);
     return rest_ensure_response($formatted);
 }
 
 /**
- * Localize a WordPress menu URL using the React route SSOT.
- *
- * Polylang can return the translated menu item title while keeping a custom-link
- * URL in the default language. The React app can fix that client-side, but the
- * REST endpoint and prerender payload should already expose the localized path.
+ * Localizes a WordPress menu URL using the React route SSOT (routes-slugs.json).
+ * Polylang can return the translated title while keeping a custom-link URL in the
+ * default language — this fixes it server-side so prerender and REST are consistent.
  */
 function djz_localize_menu_url(string $url, string $lang, string $home): string
 {
     $parsed_url = wp_parse_url($url);
     if (is_array($parsed_url) && !empty($parsed_url['scheme'])) {
         $scheme = strtolower((string) $parsed_url['scheme']);
-        if (!in_array($scheme, ['http', 'https'], true)) {
-            return $url;
-        }
+        if (!in_array($scheme, ['http', 'https'], true)) return $url;
     }
 
     if (is_array($parsed_url) && !empty($parsed_url['host'])) {
         $home_host = wp_parse_url($home, PHP_URL_HOST);
-        if (!is_string($home_host) || strcasecmp((string) $parsed_url['host'], $home_host) !== 0) {
-            return $url;
-        }
+        if (!is_string($home_host) || strcasecmp((string) $parsed_url['host'], $home_host) !== 0) return $url;
     }
 
     $path = $url;
@@ -145,34 +153,31 @@ function djz_localize_menu_url(string $url, string $lang, string $home): string
         $path = '/' . ltrim(substr($path, strlen($home)), '/');
     }
 
-    $parts = wp_parse_url($path);
-    $raw_path = isset($parts['path']) ? (string) $parts['path'] : '/';
-    $query = isset($parts['query']) && $parts['query'] !== '' ? '?' . $parts['query'] : '';
-    $fragment = isset($parts['fragment']) && $parts['fragment'] !== '' ? '#' . $parts['fragment'] : '';
+    $parts       = wp_parse_url($path);
+    $raw_path    = isset($parts['path']) ? (string) $parts['path'] : '/';
+    $query       = isset($parts['query'])    && $parts['query']    !== '' ? '?' . $parts['query']    : '';
+    $fragment    = isset($parts['fragment']) && $parts['fragment'] !== '' ? '#' . $parts['fragment'] : '';
 
-    $normalized_path = djz_normalize_menu_path($raw_path);
-    $route = djz_menu_route_by_path($normalized_path);
+    $normalized  = djz_normalize_menu_path($raw_path);
+    $route       = djz_menu_route_by_path($normalized);
+
     if (!$route) {
-        $fallback_path = '/' . ltrim($normalized_path, '/');
-        if ($fallback_path !== '/') {
-            $fallback_path = rtrim($fallback_path, '/') . '/';
-        }
-        return $fallback_path . $query . $fragment;
+        $fallback = '/' . ltrim($normalized, '/');
+        if ($fallback !== '/') $fallback = rtrim($fallback, '/') . '/';
+        return $fallback . $query . $fragment;
     }
 
-    $localized = djz_menu_route_path($route, $lang);
-    return $localized . $query . $fragment;
+    return djz_menu_route_path($route, $lang) . $query . $fragment;
 }
 
 function djz_normalize_menu_path(string $path): string
 {
-    $segments = array_values(array_filter(explode('/', trim(rawurldecode($path), '/')), static function ($segment) {
-        return $segment !== '' && $segment !== '.';
-    }));
+    $segments = array_values(array_filter(
+        explode('/', trim(rawurldecode($path), '/')),
+        static fn($s) => $s !== '' && $s !== '.'
+    ));
 
-    if (in_array('..', $segments, true)) {
-        return '/';
-    }
+    if (in_array('..', $segments, true)) return '/';
 
     return '/' . implode('/', $segments);
 }
@@ -180,27 +185,18 @@ function djz_normalize_menu_path(string $path): string
 function djz_menu_routes(): array
 {
     static $routes = null;
+    if ($routes !== null) return $routes;
 
-    if ($routes !== null) {
-        return $routes;
-    }
-
-    $routes = [];
+    $routes      = [];
     $routes_file = get_theme_file_path('/src/config/routes-slugs.json');
-    if (!file_exists($routes_file)) {
-        return $routes;
-    }
+    if (!file_exists($routes_file)) return $routes;
 
-    $routes_json = file_get_contents($routes_file);
-    $routes_data = $routes_json !== false ? json_decode($routes_json, true) : null;
-    if (!is_array($routes_data) || empty($routes_data['routes']) || !is_array($routes_data['routes'])) {
-        return $routes;
-    }
+    $raw  = file_get_contents($routes_file);
+    $data = $raw !== false ? json_decode($raw, true) : null;
+    if (!is_array($data) || empty($data['routes']) || !is_array($data['routes'])) return $routes;
 
-    foreach ($routes_data['routes'] as $route) {
-        if (is_array($route) && empty($route['private'])) {
-            $routes[] = $route;
-        }
+    foreach ($data['routes'] as $route) {
+        if (is_array($route) && empty($route['private'])) $routes[] = $route;
     }
 
     return $routes;
@@ -212,25 +208,17 @@ function djz_menu_route_by_path(string $path): ?array
 
     foreach (djz_menu_routes() as $route) {
         foreach (['en', 'pt'] as $lang) {
-            $slug = isset($route[$lang]) ? trim((string) $route[$lang], '/') : '';
+            $slug       = isset($route[$lang]) ? trim((string) $route[$lang], '/') : '';
             $route_path = $lang === 'pt' ? '/pt' . ($slug === '' ? '' : '/' . $slug) : '/' . $slug;
-            if (djz_normalize_menu_path($route_path) === $normalized) {
-                return $route;
-            }
+            if (djz_normalize_menu_path($route_path) === $normalized) return $route;
 
-            if (empty($route['aliases'][$lang]) || !is_array($route['aliases'][$lang])) {
-                continue;
-            }
+            if (empty($route['aliases'][$lang]) || !is_array($route['aliases'][$lang])) continue;
 
             foreach ($route['aliases'][$lang] as $alias) {
                 $alias_slug = trim((string) $alias, '/');
-                if ($alias_slug === '') {
-                    continue;
-                }
+                if ($alias_slug === '') continue;
                 $alias_path = $lang === 'pt' ? '/pt/' . $alias_slug : '/' . $alias_slug;
-                if (djz_normalize_menu_path($alias_path) === $normalized) {
-                    return $route;
-                }
+                if (djz_normalize_menu_path($alias_path) === $normalized) return $route;
             }
         }
     }
@@ -245,298 +233,10 @@ function djz_menu_route_path(array $route, string $lang): string
     return $path === '/' ? '/' : rtrim($path, '/') . '/';
 }
 
-/**
- * Products Endpoint (Cached 30min)
- */
-function djz_get_products($request)
-{
-    $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
-    $slug = sanitize_title($request->get_param('slug') ?? '');
-    $category = sanitize_title($request->get_param('category') ?? '');
-    $exclude_category = sanitize_title($request->get_param('exclude_category') ?? '');
-    $on_sale = filter_var($request->get_param('on_sale'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-    $limit = max(1, min(100, (int) ($request->get_param('limit') ?: 100)));
-    $orderby = sanitize_key($request->get_param('orderby') ?? 'date');
-    $order = strtoupper(sanitize_text_field($request->get_param('order') ?? 'DESC'));
+// ---------------------------------------------------------------------------
+// Newsletter subscribe
+// ---------------------------------------------------------------------------
 
-    if (!in_array($orderby, ['date', 'title', 'menu_order', 'modified', 'rand'], true)) {
-        $orderby = 'date';
-    }
-
-    if (!in_array($order, ['ASC', 'DESC'], true)) {
-        $order = 'DESC';
-    }
-
-    $cache_suffix = md5(wp_json_encode([
-        'lang' => $lang,
-        'slug' => $slug,
-        'category' => $category,
-        'exclude_category' => $exclude_category,
-        'on_sale' => $on_sale,
-        'limit' => $limit,
-        'orderby' => $orderby,
-        'order' => $order,
-    ]));
-
-    $cache_key = 'djz_products_v3_' . $cache_suffix;
-
-    $cached = get_transient($cache_key);
-    if ($cached && empty($slug))
-        return rest_ensure_response($cached);
-
-    $products = djz_query_products([
-        'lang' => $lang,
-        'slug' => $slug,
-        'category' => $category,
-        'exclude_category' => $exclude_category,
-        'on_sale' => $on_sale,
-        'limit' => $limit,
-        'orderby' => $orderby,
-        'order' => $order,
-    ]);
-
-    if (empty($slug)) {
-        set_transient($cache_key, $products, DJZ_CACHE_PRODUCTS);
-    }
-    return rest_ensure_response($products);
-}
-
-function djz_get_product_collections($request)
-{
-    $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
-    $limit = max(1, min(20, (int) ($request->get_param('limit') ?: 10)));
-    $cache_key = 'djz_products_collections_v1_' . md5($lang . '|' . $limit);
-
-    $cached = get_transient($cache_key);
-    if ($cached) {
-        return rest_ensure_response($cached);
-    }
-
-    $response = [
-        'featured' => djz_query_products([
-            'lang' => $lang,
-            'featured' => true,
-            'limit' => 1,
-            'orderby' => 'date',
-            'order' => 'DESC',
-        ]),
-        'new_releases' => djz_query_products([
-            'lang' => $lang,
-            'exclude_category' => 'featured',
-            'limit' => $limit,
-            'orderby' => 'date',
-            'order' => 'DESC',
-        ]),
-        'best_sellers' => djz_query_products([
-            'lang' => $lang,
-            'limit' => $limit,
-            'meta_key' => 'total_sales',
-            'orderby' => 'meta_value_num',
-            'order' => 'DESC',
-        ]),
-        'top_picks' => djz_query_products([
-            'lang' => $lang,
-            'limit' => $limit,
-            'orderby' => 'rand',
-            'order' => 'DESC',
-        ]),
-    ];
-
-    set_transient($cache_key, $response, DJZ_CACHE_PRODUCTS);
-
-    return rest_ensure_response($response);
-}
-
-function djz_query_products(array $options = [])
-{
-    $lang = sanitize_text_field($options['lang'] ?? 'en');
-    $slug = sanitize_title($options['slug'] ?? '');
-    $category = sanitize_title($options['category'] ?? '');
-    $exclude_category = sanitize_title($options['exclude_category'] ?? '');
-    $on_sale = $options['on_sale'] ?? null;
-    $featured = filter_var($options['featured'] ?? false, FILTER_VALIDATE_BOOLEAN);
-    $meta_key = sanitize_key($options['meta_key'] ?? '');
-
-    $args = [
-        'post_type' => 'product',
-        'posts_per_page' => $options['limit'] ?? 10,
-        'post_status' => 'publish',
-        'no_found_rows' => true,
-        'orderby' => $options['orderby'] ?? 'date',
-        'order' => $options['order'] ?? 'DESC',
-    ];
-
-    if (!empty($meta_key)) {
-        $args['meta_key'] = $meta_key;
-    }
-
-    if (!empty($slug)) {
-        $args['name'] = $slug;
-        $args['posts_per_page'] = 1;
-    }
-
-    $tax_query = [];
-    if (!empty($category)) {
-        $tax_query[] = [
-            'taxonomy' => 'product_cat',
-            'field' => 'slug',
-            'terms' => [$category],
-        ];
-    }
-
-    if (!empty($exclude_category)) {
-        $tax_query[] = [
-            'taxonomy' => 'product_cat',
-            'field' => 'slug',
-            'terms' => [$exclude_category],
-            'operator' => 'NOT IN',
-        ];
-    }
-
-    if ($featured) {
-        $tax_query[] = [
-            'taxonomy' => 'product_visibility',
-            'field' => 'name',
-            'terms' => 'featured',
-            'operator' => 'IN',
-        ];
-    }
-
-    if (!empty($tax_query)) {
-        $args['tax_query'] = $tax_query;
-    }
-
-    if (function_exists('pll_get_post_language')) {
-        $args['lang'] = $lang;
-    }
-
-    if ($on_sale === true) {
-        $args['meta_query'] = [
-            [
-                'key' => '_sale_price',
-                'value' => 0,
-                'type' => 'NUMERIC',
-                'compare' => '>',
-            ]
-        ];
-    }
-
-    $query = new WP_Query($args);
-    $products = [];
-
-    if ($query->have_posts()) {
-        $product_objects = [];
-        $product_ids = [];
-        $all_img_ids = [];
-        // ⚡ Bolt: Cache product image IDs to avoid redundant calls to djz_get_product_image_ids in the formatting loop
-        $product_images_map = [];
-
-        while ($query->have_posts()) {
-            $query->the_post();
-            $product = wc_get_product(get_the_ID());
-
-            if (!$product)
-                continue;
-
-            if ($on_sale === true && !$product->is_on_sale()) {
-                continue;
-            }
-
-            $product_objects[] = $product;
-            $product_ids[] = $product->get_id();
-
-            $img_ids = djz_get_product_image_ids($product, empty($slug));
-            $product_images_map[$product->get_id()] = $img_ids;
-            if (!empty($img_ids)) {
-                // ⚡ Bolt: Replace O(N^2) array_merge with faster array_push spreading to avoid memory reallocation overhead
-                \array_push($all_img_ids, ...\array_values($img_ids));
-            }
-        }
-
-        if (!empty($all_img_ids)) {
-            djz_prime_thumbnails_cache($all_img_ids);
-        }
-
-        if (!empty($product_ids)) {
-            update_object_term_cache($product_ids, 'product');
-        }
-
-        foreach ($product_objects as $product) {
-            $images = [];
-            // ⚡ Bolt: Retrieve image IDs from our pre-computed map in O(1) time
-            $img_ids = $product_images_map[$product->get_id()] ?? [];
-
-            foreach ($img_ids as $img_id) {
-                $src = wp_get_attachment_url($img_id);
-                if ($src) {
-                    $img_data = [
-                        'id' => $img_id,
-                        'src' => $src,
-                        'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
-                    ];
-
-                    $sizes = empty($slug)
-                        ? ['medium', 'medium_large']
-                        : ['thumbnail', 'medium', 'medium_large', 'large'];
-
-                    $img_sizes = [];
-                    $meta = wp_get_attachment_metadata($img_id);
-                    $base_url = trailingslashit(dirname((string) $src));
-
-                    foreach ($sizes as $size) {
-                        if (is_array($meta) && isset($meta['sizes'][$size]['file'])) {
-                            $file_url = $base_url . $meta['sizes'][$size]['file'];
-                            // Restore CDN compatibility via core hook
-                            $img_sizes[$size] = apply_filters('wp_get_attachment_url', $file_url, $img_id);
-                        } else {
-                            // Fallback for missing size (e.g. SVG or image smaller than requested size)
-                            $img_sizes[$size] = $src;
-                        }
-                    }
-                    if (!empty($img_sizes)) {
-                        $img_data['sizes'] = $img_sizes;
-                    }
-
-                    $images[] = $img_data;
-                }
-            }
-
-            $categories = wp_get_post_terms($product->get_id(), 'product_cat');
-            if (is_wp_error($categories)) {
-                $categories = [];
-            }
-
-            $products[] = [
-                'id' => $product->get_id(),
-                'name' => $product->get_name(),
-                'slug' => $product->get_slug(),
-                'price' => $product->get_price(),
-                'regular_price' => $product->get_regular_price(),
-                'sale_price' => $product->get_sale_price(),
-                'on_sale' => $product->is_on_sale(),
-                'stock_status' => $product->get_stock_status(),
-                'images' => $images,
-                'short_description' => $product->get_short_description(),
-                'description' => !empty($slug) ? $product->get_description() : '',
-                'permalink' => $product->get_permalink(), // ⚡ Bolt: Use WooCommerce native get_permalink instead of core get_permalink
-                'categories' => array_map(function ($term) {
-                    return [
-                        'id' => $term->term_id,
-                        'name' => $term->name,
-                        'slug' => $term->slug,
-                    ];
-                }, $categories),
-            ];
-        }
-        wp_reset_postdata();
-    }
-
-    return $products;
-}
-
-/**
- * Newsletter Subscription
- */
 function djz_subscribe_newsletter($request)
 {
     $email = sanitize_email($request->get_param('email'));
@@ -550,340 +250,75 @@ function djz_subscribe_newsletter($request)
     }
 
     try {
-        $api = \MailPoet\API\API::MP('v1');
-        $lists = $api->getLists();
+        $api     = \MailPoet\API\API::MP('v1');
+        $lists   = $api->getLists();
         $list_id = (int) apply_filters('djz_mailpoet_list_id', 0);
-        if ($list_id <= 0) {
-            $list_id = $lists[0]['id'] ?? 1;
-        }
+        if ($list_id <= 0) $list_id = ($lists[0] ?? [])['id'] ?? 1;
 
-        $api->addSubscriber([
-            'email' => $email,
-            'status' => 'subscribed',
-        ], [$list_id]);
+        $api->addSubscriber(['email' => $email, 'status' => 'subscribed'], [$list_id]);
 
-        return rest_ensure_response([
-            'success' => true,
-            'message' => 'Subscribed!',
-        ]);
+        return rest_ensure_response(['success' => true, 'message' => 'Subscribed!']);
     } catch (Exception $e) {
         if (stripos($e->getMessage(), 'already exists') !== false) {
-            return rest_ensure_response([
-                'success' => true,
-                'message' => 'Already subscribed!',
-            ]);
+            return rest_ensure_response(['success' => true, 'message' => 'Already subscribed!']);
         }
-
-        return new WP_Error('subscription_failed', 'Ocorreu um erro na inscrição. Tente novamente mais tarde.', ['status' => 500]);
+        return new WP_Error('subscription_failed', __('Subscription failed. Please try again later.', 'djzeneyer'), ['status' => 500]);
     }
 }
 
-/**
- * Update Profile
- */
-function djz_update_profile($request)
-{
-    $user_id = get_current_user_id();
-    if (!$user_id) {
-        return new WP_Error('rest_not_logged_in', __('You must be logged in to update your profile.', 'djzeneyer'), ['status' => 401]);
-    }
+// ---------------------------------------------------------------------------
+// Cache hooks
+// ---------------------------------------------------------------------------
 
-    $params = $request->get_json_params();
-    if (empty($params)) {
-        return new WP_Error('invalid_data', __('No data provided.', 'djzeneyer'), ['status' => 400]);
-    }
-
-    $data = ['ID' => $user_id];
-    $updated = false;
-
-    if (isset($params['displayName'])) {
-        $display_name = sanitize_text_field($params['displayName']);
-        if (!empty($display_name)) {
-            $data['display_name'] = $display_name;
-            $updated = true;
-        }
-    }
-
-    if (!$updated) {
-        return new WP_Error('nothing_to_update', __('Nothing to update.', 'djzeneyer'), ['status' => 400]);
-    }
-
-    $result = wp_update_user($data);
-
-    if (is_wp_error($result)) {
-        return $result;
-    }
-
-    return rest_ensure_response([
-        'success' => true,
-        'message' => __('Profile updated successfully!', 'djzeneyer'),
-    ]);
-}
-
-/**
- * GamiPress & Achievement logic moved to ZenGame plugin.
- */
-
-/**
- * Clear cache on menu update
- */
 add_action('wp_update_nav_menu', function () {
     global $wpdb;
-    $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_menu_%'");
+    $wpdb->query(
+        $wpdb->prepare(
+            "DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s",
+            '_transient_djz_menu_%',
+            '_transient_timeout_djz_menu_%'
+        )
+    );
 });
 
-/**
- * Clear cache on product update
- */
-add_action('save_post_product', function () {
-    global $wpdb;
-    $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_products_%'");
-});
-
-/**
- * Clear achievements cache on update
- */
 add_action('save_post_achievement', function () {
     global $wpdb;
-    // Clears gamipress data for all users as it contains achievement titles/descriptions
-    $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_gamipress_%'");
+    $wpdb->query(
+        $wpdb->prepare(
+            "DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s",
+            '_transient_djz_gamipress_%',
+            '_transient_timeout_djz_gamipress_%'
+        )
+    );
 });
 
-/**
- * Admin: Clear Cache Button
- */
-add_action('admin_bar_menu', function ($wp_admin_bar) {
-    if (!current_user_can('manage_options'))
-        return;
+// ---------------------------------------------------------------------------
+// Admin: "Clear All Cache" button (menu + gamipress; shop cache is in zen-commerce)
+// ---------------------------------------------------------------------------
+
+add_action('admin_bar_menu', function (WP_Admin_Bar $wp_admin_bar) {
+    if (!current_user_can('manage_options')) return;
 
     $wp_admin_bar->add_node([
-        'id' => 'djz_clear_cache',
+        'id'    => 'djz_clear_cache',
         'title' => '🧹 Clear Cache',
-        'href' => wp_nonce_url(add_query_arg('djz_clear_cache', '1', admin_url()), 'djz_clear_cache'),
+        'href'  => wp_nonce_url(add_query_arg('djz_clear_cache', '1', admin_url()), 'djz_clear_cache'),
     ]);
 }, 999);
 
 add_action('admin_init', function () {
-    if (!isset($_GET['djz_clear_cache']) || !current_user_can('manage_options'))
-        return;
-
+    if (!isset($_GET['djz_clear_cache']) || !current_user_can('manage_options')) return;
     check_admin_referer('djz_clear_cache');
 
     global $wpdb;
-    $wpdb->query("DELETE FROM $wpdb->options WHERE option_name LIKE '_transient_djz_%'");
+    $wpdb->query(
+        $wpdb->prepare(
+            "DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s",
+            '_transient_djz_%',
+            '_transient_timeout_djz_%'
+        )
+    );
 
     wp_safe_redirect(remove_query_arg('djz_clear_cache'));
     exit;
 });
-/**
- * Get product image IDs with optimization for list views
- * 
- * @param WC_Product $product
- * @param bool $is_list_view
- * @return array
- */
-function djz_get_product_image_ids($product, $is_list_view = false)
-{
-    if (!$product)
-        return [];
-
-    $img_ids = $product->get_gallery_image_ids();
-    $featured_id = $product->get_image_id();
-
-    if ($featured_id) {
-        // Ensure featured image is first and unique
-        array_unshift($img_ids, $featured_id);
-        $img_ids = array_unique($img_ids);
-    }
-
-    // OPTIMIZATION: In list view, only return the first image (usually featured)
-    if ($is_list_view && !empty($img_ids)) {
-        $img_ids = array_slice($img_ids, 0, 1);
-    }
-
-    return $img_ids;
-}
-
-/**
- * Helper to prime thumbnail caches efficiently
- */
-function djz_prime_thumbnails_cache($ids)
-{
-    if (empty($ids))
-        return;
-    $ids = array_unique(array_map('intval', $ids));
-
-    if (function_exists('update_meta_cache')) {
-        update_meta_cache('post', $ids);
-    }
-
-    // _prime_post_caches is an internal function since WP 6.1
-    // We use version_compare or function_exists for safety.
-    if (function_exists('_prime_post_caches')) {
-        _prime_post_caches($ids, false, true);
-    }
-}
-
-/**
- * Shop Page View-Model Endpoint (Aggregated & Cached)
- */
-function djz_get_shop_page($request)
-{
-    $lang = sanitize_text_field($request->get_param('lang') ?? 'en');
-    $cache_key = 'djz_shop_page_v1_' . $lang;
-
-    $cached = get_transient($cache_key);
-    if ($cached)
-        return rest_ensure_response($cached);
-
-    $format_products = function ($query_args) use ($lang) {
-        $args = array_merge([
-            'post_type' => 'product',
-            'post_status' => 'publish',
-            'no_found_rows' => true,
-        ], $query_args);
-
-        if (function_exists('pll_get_post_language')) {
-            $args['lang'] = $lang;
-        }
-
-        $query = new WP_Query($args);
-        $products = [];
-
-        if ($query->have_posts()) {
-            $product_objects = [];
-            $product_ids = [];
-            $all_img_ids = [];
-            // ⚡ Bolt: Cache product image IDs to avoid redundant calls to djz_get_product_image_ids in the formatting loop
-            $product_images_map = [];
-
-            while ($query->have_posts()) {
-                $query->the_post();
-                $id = get_the_ID();
-                $product = wc_get_product($id);
-                if (!$product)
-                    continue;
-
-                $product_objects[] = $product;
-                $product_ids[] = $product->get_id();
-
-                $img_ids = djz_get_product_image_ids($product, true); // true = list view
-                $product_images_map[$product->get_id()] = $img_ids;
-
-                if (!empty($img_ids)) {
-                    // ⚡ Bolt: Replace O(N^2) array_merge with faster array_push spreading to avoid memory reallocation overhead
-                    \array_push($all_img_ids, ...\array_values($img_ids));
-                }
-            }
-
-            if (!empty($all_img_ids))
-                djz_prime_thumbnails_cache($all_img_ids);
-            if (!empty($product_ids))
-                update_object_term_cache($product_ids, 'product');
-
-            foreach ($product_objects as $product) {
-                // ⚡ Bolt: Retrieve image IDs from our pre-computed map in O(1) time
-                $img_ids = $product_images_map[$product->get_id()] ?? [];
-                $images = [];
-                foreach ($img_ids as $img_id) {
-                    $src = wp_get_attachment_url($img_id);
-                    if ($src) {
-                        $img_data = [
-                            'id' => $img_id,
-                            'src' => $src,
-                            'alt' => get_post_meta($img_id, '_wp_attachment_image_alt', true),
-                        ];
-                        $sizes = ['medium', 'medium_large'];
-                        $img_sizes = [];
-                        $meta = wp_get_attachment_metadata($img_id);
-                        $base_url = trailingslashit(dirname((string) $src));
-
-                        foreach ($sizes as $size) {
-                            if (is_array($meta) && isset($meta['sizes'][$size]['file'])) {
-                                $file_url = $base_url . $meta['sizes'][$size]['file'];
-                                $img_sizes[$size] = apply_filters('wp_get_attachment_url', $file_url, $img_id);
-                            } else {
-                                $img_sizes[$size] = $src;
-                            }
-                        }
-                        if (!empty($img_sizes))
-                            $img_data['sizes'] = $img_sizes;
-                        $images[] = $img_data;
-                    }
-                }
-
-                $categories = wp_get_post_terms($product->get_id(), 'product_cat');
-                $products[] = [
-                    'id' => $product->get_id(),
-                    'name' => $product->get_name(),
-                    'slug' => $product->get_slug(),
-                    'price' => $product->get_price(),
-                    'regular_price' => $product->get_regular_price(),
-                    'sale_price' => $product->get_sale_price(),
-                    'on_sale' => $product->is_on_sale(),
-                    'stock_status' => $product->get_stock_status(),
-                    'images' => $images,
-                    'short_description' => $product->get_short_description(),
-                    'description' => '',
-                    'permalink' => $product->get_permalink(), // ⚡ Bolt: Use WooCommerce native get_permalink instead of core get_permalink
-                    'categories' => !is_wp_error($categories) ? array_map(function ($term) {
-                        return ['id' => $term->term_id, 'name' => $term->name, 'slug' => $term->slug];
-                    }, $categories) : [],
-                ];
-            }
-        }
-        return $products;
-    };
-
-    $featured = $format_products([
-        'posts_per_page' => 1,
-        'tax_query' => [
-            [
-                'taxonomy' => 'product_cat',
-                'field' => 'slug',
-                'terms' => 'featured',
-            ]
-        ]
-    ]);
-
-    $new_releases = $format_products([
-        'posts_per_page' => 10,
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'tax_query' => [
-            [
-                'taxonomy' => 'product_cat',
-                'field' => 'slug',
-                'terms' => 'featured',
-                'operator' => 'NOT IN'
-            ]
-        ]
-    ]);
-
-    $best_sellers = $format_products([
-        'posts_per_page' => 10,
-        'meta_query' => [
-            [
-                'relation' => 'OR',
-                ['key' => '_sale_price', 'value' => 0, 'compare' => '>', 'type' => 'numeric'],
-                ['key' => '_min_variation_sale_price', 'value' => 0, 'compare' => '>', 'type' => 'numeric']
-            ]
-        ]
-    ]);
-
-    $curated = $format_products([
-        'posts_per_page' => 10,
-        'orderby' => 'date',
-        'order' => 'ASC',
-    ]);
-
-    $data = [
-        'featured' => !empty($featured) ? $featured[0] : null,
-        'new_releases' => $new_releases,
-        'best_sellers' => $best_sellers,
-        'curated' => $curated,
-    ];
-
-    set_transient($cache_key, $data, DJZ_CACHE_PRODUCTS);
-    return rest_ensure_response($data);
-}

@@ -141,7 +141,8 @@
       "shipping": "Frete",
       "shipping_calc": "Calculado no checkout",
       "total": "Total",
-      "checkout": "Finalizar Compra"
+      "checkout": "Finalizar Compra",
+      "load_error": "Não foi possível carregar o carrinho."
     },
     "checkout": {
       "title": "Checkout",

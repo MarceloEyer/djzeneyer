@@ -1,30 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { useCart } from '../contexts/CartContext';
-import { buildApiUrl, getAuthHeaders } from '../config/api';
+import { useCartQuery, useCheckoutQuery } from '../hooks/useAuthenticatedQueries';
+import { useClearCartMutation, useSubmitOrderMutation } from '../hooks/useMutations';
 import { sanitizeHtml, safeRedirect } from '../utils/sanitize';
 import { getCurrencyFormatter } from '../utils/currency';
 
-interface PaymentMethod {
-  id: string;
-  title: string;
-  description: string;
-}
-
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading, getCart, clearCart } = useCart();
   const currentLang = React.useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
 
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
+  const { data: cart, isLoading: cartLoading } = useCartQuery();
+  const { data: checkoutData } = useCheckoutQuery();
+  const clearCart = useClearCartMutation();
+  const submitOrder = useSubmitOrderMutation();
 
+  const [paymentMethods, setPaymentMethods] = useState<Array<{ id: string; title: string; description: string }>>([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -34,73 +31,52 @@ const CheckoutPage: React.FC = () => {
     city: '',
     state: '',
     zip: '',
-    country: ''
+    country: '',
   });
-  const [isProcessing, setIsProcessing] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const billingHydrated = useRef(false);
 
+  // Sync payment methods and billing address from checkout query.
+  // The billing address hydration is guarded by a ref so it only runs once —
+  // subsequent React Query refetches will not overwrite user edits.
   React.useEffect(() => {
-    const fetchCheckoutData = async () => {
-      try {
-        const url = buildApiUrl('wc/store/v1/checkout');
-        const headers = getAuthHeaders();
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: headers as HeadersInit,
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          if (data.payment_methods) {
-            setPaymentMethods(data.payment_methods);
-            // Select the first one by default if available
-            if (data.payment_methods.length > 0) {
-              setSelectedPaymentMethod(data.payment_methods[0].id);
-            }
-          }
-          if (data.billing_address) {
-            setFormData(prev => ({
-              ...prev,
-              firstName: data.billing_address.first_name || '',
-              lastName: data.billing_address.last_name || '',
-              email: data.billing_address.email || '',
-              phone: data.billing_address.phone || '',
-              address: data.billing_address.address_1 || '',
-              city: data.billing_address.city || '',
-              state: data.billing_address.state || '',
-              zip: data.billing_address.postcode || '',
-              country: data.billing_address.country || '',
-            }));
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch checkout data', error);
-      }
-    };
-
-    fetchCheckoutData();
-  }, []);
+    if (!checkoutData) return;
+    if (checkoutData.payment_methods?.length > 0) {
+      setPaymentMethods(checkoutData.payment_methods);
+      setSelectedPaymentMethod((prev) => prev || checkoutData.payment_methods[0].id);
+    }
+    if (checkoutData.billing_address && !billingHydrated.current) {
+      billingHydrated.current = true;
+      const ba = checkoutData.billing_address;
+      setFormData((prev) => ({
+        ...prev,
+        firstName: ba.first_name || '',
+        lastName: ba.last_name || '',
+        email: ba.email || '',
+        phone: ba.phone || '',
+        address: ba.address_1 || '',
+        city: ba.city || '',
+        state: ba.state || '',
+        zip: ba.postcode || '',
+        country: ba.country || '',
+      }));
+    }
+  }, [checkoutData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!selectedPaymentMethod) {
       alert(t('common.checkout.select_payment'));
       return;
     }
 
-    setIsProcessing(true);
-
     try {
-      const url = buildApiUrl('wc/store/v1/checkout');
-      const headers = getAuthHeaders();
-
-      const payload = {
+      const data = await submitOrder.mutateAsync({
         billing_address: {
           first_name: formData.firstName,
           last_name: formData.lastName,
@@ -122,54 +98,35 @@ const CheckoutPage: React.FC = () => {
           country: formData.country,
         },
         payment_method: selectedPaymentMethod,
-      };
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: headers as HeadersInit,
-        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || t('common.checkout.error_failed'));
-      }
-
-      // Refresh cart state after checkout
-      await getCart();
-
-      // Handle redirect or success
       if (data.payment_result?.redirect_url) {
-        // Garantimos que o redirecionamento seja seguro
-        window.location.href = safeRedirect(data.payment_result.redirect_url, getLocalizedRoute('shop', currentLang));
+        window.location.href = safeRedirect(
+          data.payment_result.redirect_url,
+          getLocalizedRoute('shop', currentLang)
+        );
       } else {
-        // Defensive clear to guarantee local cart consistency in non-redirect payments
-        await clearCart();
-        setOrderSuccess(true);
+        // Order placed successfully — clear the cart but treat failure as non-fatal.
+        // Navigate to the success state regardless of whether cart clear succeeds.
+        clearCart.mutate(undefined, {
+          onSettled: () => setOrderSuccess(true),
+        });
       }
     } catch (error) {
       console.error('Checkout error:', error);
       alert(error instanceof Error ? error.message : t('common.checkout.generic_error'));
-    } finally {
-      setIsProcessing(false);
     }
   };
 
-  // Improved price formatting
   const formatPrice = (price: string | number) => {
-    if (price === undefined || price === null) return 'R$ 0,00';
-    if (typeof price === 'string' && (price.includes('R$') || price.includes('$'))) return price;
-
-    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
-
-    return isNaN(numPrice)
-      ? price.toString()
-      : getCurrencyFormatter(locale, 'BRL').format(numPrice);
+    if (price === undefined || price === null) return getCurrencyFormatter(locale, 'BRL').format(0);
+    if (typeof price === 'string' && (price.includes('R$') || price.includes('$'))) return price;
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    return isNaN(numPrice) ? price.toString() : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   };
 
-  if (loading) {
+  if (cartLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -189,12 +146,11 @@ const CheckoutPage: React.FC = () => {
             <CheckCircle size={40} className="text-primary" />
           </div>
           <h1 className="text-3xl font-bold mb-4 font-display">{t('common.checkout.success_title')}</h1>
-          <p className="text-white/70 mb-8">
-            {t('common.checkout.success_desc')}
-          </p>
+          <p className="text-white/70 mb-8">{t('common.checkout.success_desc')}</p>
           <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary w-full">
             {t('common.checkout.back_shop')}
-          </Link>        </motion.div>
+          </Link>
+        </motion.div>
       </div>
     );
   }
@@ -213,7 +169,6 @@ const CheckoutPage: React.FC = () => {
           <h1 className="text-3xl font-bold mb-8 font-display">{t('common.checkout.title')}</h1>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Checkout Form */}
             <div className="lg:col-span-2">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -229,129 +184,67 @@ const CheckoutPage: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="checkout-first-name" className="block text-sm text-white/60 mb-1">{t('common.form.first_name')}</label>
-                      <input
-                        type="text"
-                        id="checkout-first-name"
-                        name="firstName"
-                        required
+                      <input type="text" id="checkout-first-name" name="firstName" required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.firstName}
-                        onChange={handleInputChange}
-                        autoComplete="given-name"
-                      />
+                        value={formData.firstName} onChange={handleInputChange} autoComplete="given-name" />
                     </div>
                     <div>
                       <label htmlFor="checkout-last-name" className="block text-sm text-white/60 mb-1">{t('common.form.last_name')}</label>
-                      <input
-                        type="text"
-                        id="checkout-last-name"
-                        name="lastName"
-                        required
+                      <input type="text" id="checkout-last-name" name="lastName" required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.lastName}
-                        onChange={handleInputChange}
-                        autoComplete="family-name"
-                      />
+                        value={formData.lastName} onChange={handleInputChange} autoComplete="family-name" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="checkout-email" className="block text-sm text-white/60 mb-1">{t('common.form.email')}</label>
-                      <input
-                        type="email"
-                        id="checkout-email"
-                        name="email"
-                        required
+                      <input type="email" id="checkout-email" name="email" required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        autoComplete="email"
-                      />
+                        value={formData.email} onChange={handleInputChange} autoComplete="email" />
                     </div>
                     <div>
                       <label htmlFor="checkout-phone" className="block text-sm text-white/60 mb-1">{t('common.form.phone')}</label>
-                      <input
-                        type="tel"
-                        id="checkout-phone"
-                        name="phone"
+                      <input type="tel" id="checkout-phone" name="phone"
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        autoComplete="tel"
-                      />
+                        value={formData.phone} onChange={handleInputChange} autoComplete="tel" />
                     </div>
                   </div>
 
                   <div>
                     <label htmlFor="checkout-address" className="block text-sm text-white/60 mb-1">{t('common.form.address')}</label>
-                    <input
-                      type="text"
-                      id="checkout-address"
-                      name="address"
-                      required
+                    <input type="text" id="checkout-address" name="address" required
                       className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      autoComplete="street-address"
-                    />
+                      value={formData.address} onChange={handleInputChange} autoComplete="street-address" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="checkout-city" className="block text-sm text-white/60 mb-1">{t('common.form.city')}</label>
-                      <input
-                        type="text"
-                        id="checkout-city"
-                        name="city"
-                        required
+                      <input type="text" id="checkout-city" name="city" required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.city}
-                        onChange={handleInputChange}
-                        autoComplete="address-level2"
-                      />
+                        value={formData.city} onChange={handleInputChange} autoComplete="address-level2" />
                     </div>
                     <div>
                       <label htmlFor="checkout-state" className="block text-sm text-white/60 mb-1">{t('common.form.state')}</label>
-                      <input
-                        type="text"
-                        id="checkout-state"
-                        name="state"
-                        required
+                      <input type="text" id="checkout-state" name="state" required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                        autoComplete="address-level1"
-                      />
+                        value={formData.state} onChange={handleInputChange} autoComplete="address-level1" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label htmlFor="checkout-zip" className="block text-sm text-white/60 mb-1">{t('common.form.zip')}</label>
-                      <input
-                        type="text"
-                        id="checkout-zip"
-                        name="zip"
-                        required
+                      <input type="text" id="checkout-zip" name="zip" required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.zip}
-                        onChange={handleInputChange}
-                        autoComplete="postal-code"
-                      />
+                        value={formData.zip} onChange={handleInputChange} autoComplete="postal-code" />
                     </div>
                     <div>
                       <label htmlFor="checkout-country" className="block text-sm text-white/60 mb-1">{t('common.form.country')}</label>
-                      <input
-                        type="text"
-                        id="checkout-country"
-                        name="country"
-                        required
+                      <input type="text" id="checkout-country" name="country" required
                         className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
-                        value={formData.country}
-                        onChange={handleInputChange}
-                        autoComplete="country"
-                      />
+                        value={formData.country} onChange={handleInputChange} autoComplete="country" />
                     </div>
                   </div>
                 </form>
@@ -373,10 +266,11 @@ const CheckoutPage: React.FC = () => {
                     paymentMethods.map((method) => (
                       <label
                         key={method.id}
-                        className={`p-4 rounded-lg border flex items-start gap-4 cursor-pointer transition-colors ${selectedPaymentMethod === method.id
-                          ? 'border-primary bg-primary/10'
-                          : 'border-white/10 hover:border-white/30 bg-black/20'
-                          }`}
+                        className={`p-4 rounded-lg border flex items-start gap-4 cursor-pointer transition-colors ${
+                          selectedPaymentMethod === method.id
+                            ? 'border-primary bg-primary/10'
+                            : 'border-white/10 hover:border-white/30 bg-black/20'
+                        }`}
                       >
                         <input
                           type="radio"
@@ -389,7 +283,10 @@ const CheckoutPage: React.FC = () => {
                         />
                         <div>
                           <div className="font-semibold">{method.title}</div>
-                          <div className="text-xs text-white/60 mt-1" dangerouslySetInnerHTML={{ __html: sanitizeHtml(method.description) }} />
+                          <div
+                            className="text-xs text-white/60 mt-1"
+                            dangerouslySetInnerHTML={{ __html: sanitizeHtml(method.description) }}
+                          />
                         </div>
                       </label>
                     ))
@@ -405,7 +302,6 @@ const CheckoutPage: React.FC = () => {
               </motion.div>
             </div>
 
-            {/* Order Summary Sidebar */}
             <div className="lg:col-span-1">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -421,12 +317,8 @@ const CheckoutPage: React.FC = () => {
                   <div className="space-y-4 mb-6">
                     {cart.items.map((item: { key?: string; id?: string; quantity: number; name: string; price: string | number; totals?: { line_total: string | number } }) => (
                       <div key={item.key || item.id} className="flex justify-between items-start text-sm">
-                        <span className="text-white/80 line-clamp-2 pr-4">
-                          {item.quantity}x {item.name}
-                        </span>
-                        <span className="font-mono text-white/60">
-                          {formatPrice(item.totals?.line_total || item.price)}
-                        </span>
+                        <span className="text-white/80 line-clamp-2 pr-4">{item.quantity}x {item.name}</span>
+                        <span className="font-mono text-white/60">{formatPrice(item.totals?.line_total || item.price)}</span>
                       </div>
                     ))}
                   </div>
@@ -451,10 +343,10 @@ const CheckoutPage: React.FC = () => {
                 <button
                   type="submit"
                   form="checkout-form"
-                  disabled={isProcessing || !cart?.items?.length}
+                  disabled={submitOrder.isPending || !cart?.items?.length}
                   className="btn btn-primary w-full py-3 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  {isProcessing ? (
+                  {submitOrder.isPending ? (
                     <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
                   ) : (
                     t('common.checkout.place_order')

@@ -13,8 +13,9 @@ if (!defined('ABSPATH'))
  * Constants
  * --------------------------------------------------
  */
-define('DJZ_CACHE_PRODUCTS', 24 * HOUR_IN_SECONDS);
+define('DJZ_CACHE_PRODUCTS', 24 * HOUR_IN_SECONDS); // kept for back-compat; zen-commerce uses its own TTL
 define('DJZ_CACHE_GAMIPRESS', 48 * HOUR_IN_SECONDS);
+define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS); // was missing — djz_get_menu silently cached with TTL=0
 
 
 /**

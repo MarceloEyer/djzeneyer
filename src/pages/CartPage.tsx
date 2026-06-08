@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Trash2, ShoppingCart, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { useCart } from '../contexts/CartContext';
+import { useCartQuery } from '../hooks/useAuthenticatedQueries';
+import { useRemoveCartItemMutation } from '../hooks/useMutations';
 import { getCurrencyFormatter } from '../utils/currency';
 
 interface CartItem {
@@ -31,28 +32,36 @@ const ITEM_VARIANTS = {
 
 const CartPage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { cart, loading, removeItem } = useCart();
+  const { data: cart, isLoading, error, refetch } = useCartQuery();
+  const removeItem = useRemoveCartItemMutation();
   const currentLang = React.useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
 
-  // Improved price formatting
   const formatPrice = (price: string | number) => {
     if (price === undefined || price === null) return 'R$ 0,00';
-    // If it's already formatted (contains currency symbol), return as is
     if (typeof price === 'string' && (price.includes('R$') || price.includes('$'))) return price;
-
     const numPrice = typeof price === 'string' ? parseFloat(price) : price;
     const locale = isPortuguese ? 'pt-BR' : 'en-US';
-
-    return isNaN(numPrice)
-      ? price.toString()
-      : getCurrencyFormatter(locale, 'BRL').format(numPrice);
+    return isNaN(numPrice) ? price.toString() : getCurrencyFormatter(locale, 'BRL').format(numPrice);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background text-white">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-white">
+        <div className="text-center">
+          <p className="text-white/60 mb-4">{t('common.cart.load_error')}</p>
+          <button onClick={() => refetch()} className="btn btn-primary">
+            {t('common.retry')}
+          </button>
+        </div>
       </div>
     );
   }
@@ -96,7 +105,6 @@ const CartPage: React.FC = () => {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Cart Items List */}
               <motion.div
                 variants={CONTAINER_VARIANTS}
                 initial="hidden"
@@ -123,8 +131,9 @@ const CartPage: React.FC = () => {
                       <div className="flex justify-between items-start">
                         <h3 className="font-semibold text-lg line-clamp-2">{item.name}</h3>
                         <button
-                          onClick={() => removeItem(item.key)}
-                          className="text-white/40 hover:text-error transition-colors p-1"
+                          onClick={() => removeItem.mutate(item.key)}
+                          disabled={removeItem.isPending}
+                          className="text-white/40 hover:text-error transition-colors p-1 disabled:opacity-50"
                           aria-label={t('common.cart.remove_item')}
                         >
                           <Trash2 size={18} />
@@ -144,7 +153,6 @@ const CartPage: React.FC = () => {
                 ))}
               </motion.div>
 
-              {/* Order Summary */}
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}

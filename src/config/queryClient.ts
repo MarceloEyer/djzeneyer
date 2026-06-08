@@ -166,6 +166,11 @@ export const QUERY_KEYS = {
   shop: {
     page: (lang?: string) => ['shop', 'page', lang] as const,
   },
+
+  /** Checkout */
+  checkout: {
+    current: ['checkout', 'current'] as const,
+  },
 } as const;
 
 // ============================================================================
