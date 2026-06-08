@@ -62,7 +62,14 @@ class Zen_Commerce_Product_Repository {
         if (function_exists('pll_get_post_language')) $args['lang'] = $lang;
 
         if ($on_sale === true) {
-            $args['meta_query'] = [['key' => '_sale_price', 'value' => 0, 'type' => 'NUMERIC', 'compare' => '>']];
+            // wc_get_product_ids_on_sale() handles both simple and variable products.
+            $sale_ids = function_exists('wc_get_product_ids_on_sale') ? wc_get_product_ids_on_sale() : [];
+            if (!empty($sale_ids)) {
+                $args['post__in'] = $sale_ids;
+            } else {
+                // Fallback: meta_query for simple products (variable products may be missed).
+                $args['meta_query'] = [['key' => '_sale_price', 'value' => 0, 'type' => 'NUMERIC', 'compare' => '>']];
+            }
         }
 
         $products = self::run_query($args, $on_sale, $slug);
