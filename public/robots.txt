@@ -3,6 +3,7 @@
 # Standard: RFC 9309
 
 User-agent: *
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
@@ -142,6 +143,7 @@ Disallow: /comments/feed/
 # Crawl-delay:1
 
 User-agent: GPTBot
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 User-agent: ChatGPT-User
 User-agent: Claude-Web
 User-agent: anthropic-ai
