@@ -6,6 +6,7 @@ User-agent: *
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
@@ -62,6 +63,7 @@ User-agent: Googlebot-Image
 User-agent: Googlebot-Video
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
@@ -106,6 +108,7 @@ User-agent: Bingbot
 User-agent: MSNBot
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
@@ -168,6 +171,7 @@ User-agent: MistralBot
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
