@@ -3,6 +3,7 @@
 # Standard: RFC 9309
 
 User-agent: *
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
@@ -163,6 +164,7 @@ User-agent: AI2Bot
 User-agent: BraveBot
 User-agent: Qwenbot
 User-agent: MistralBot
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
 Disallow: /wp-admin/
