@@ -79,16 +79,29 @@ const NewsPage: React.FC = () => {
   const { data: taxonomiesData } = useNewsTaxonomiesQuery(normalizedLanguage, {
     enabled: !slug,
   });
-  const selectedFilters = useMemo(() => {
-    const selectedCategory = taxonomiesData?.categories.find(term => term.slug === selectedFilterSlugs.category);
-    const selectedTag = taxonomiesData?.tags.find(term => term.slug === selectedFilterSlugs.tag);
+  const taxonomyMaps = useMemo(() => {
+    const categories = new Map<string, string>();
+    const tags = new Map<string, string>();
 
+    if (taxonomiesData) {
+      for (const term of taxonomiesData.categories) {
+        categories.set(term.slug, String(term.id));
+      }
+      for (const term of taxonomiesData.tags) {
+        tags.set(term.slug, String(term.id));
+      }
+    }
+    return { categories, tags };
+  }, [taxonomiesData]);
+
+  const selectedFilters = useMemo(() => {
+    // ⚡ Bolt: Using O(1) Map lookups to improve performance and avoid redundant O(N) array scans when filter parameters change.
     return {
-      category: selectedCategory ? String(selectedCategory.id) : undefined,
-      tag: selectedTag ? String(selectedTag.id) : undefined,
+      category: selectedFilterSlugs.category ? taxonomyMaps.categories.get(selectedFilterSlugs.category) : undefined,
+      tag: selectedFilterSlugs.tag ? taxonomyMaps.tags.get(selectedFilterSlugs.tag) : undefined,
       search: selectedFilterSlugs.search,
     };
-  }, [selectedFilterSlugs.category, selectedFilterSlugs.search, selectedFilterSlugs.tag, taxonomiesData]);
+  }, [selectedFilterSlugs.category, selectedFilterSlugs.search, selectedFilterSlugs.tag, taxonomyMaps]);
   const waitsForTaxonomyLookup = Boolean(
     (selectedFilterSlugs.category || selectedFilterSlugs.tag) && !taxonomiesData
   );
