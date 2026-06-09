@@ -51,48 +51,56 @@ const OG_ALT_TRANSLATIONS: Record<AltKey, Record<Language, string>> = {
 };
 
 // ─── Route → OG image map ────────────────────────────────────────────────────
-const PAGE_OG_IMAGES: Array<{ match: RegExp; image: string; altKey: AltKey }> = [
-  {
-    match: /^\/(pt\/)?$/,
-    image: '/images/og/zen-eyer-home-og.jpg',
-    altKey: 'home',
-  },
-  {
-    match: /^\/(pt\/)?(about|sobre)\/?$/,
-    image: '/images/og/zen-eyer-about-og.jpg',
-    altKey: 'about',
-  },
-  {
-    match: /^\/(pt\/)?(events|zouk-events|eventos-zouk)(\/|$)/,
-    image: '/images/og/zen-eyer-events-og.jpg',
-    altKey: 'events',
-  },
-  {
-    match: /^\/(pt\/)?(music|musica)(\/|$)/,
-    image: '/images/og/zen-eyer-music-og.jpg',
-    altKey: 'music',
-  },
-  {
-    match: /^\/(pt\/)?(press-kit|kit-imprensa|media|midia)(\/|$)/,
-    image: '/images/og/zen-eyer-press-og.jpg',
-    altKey: 'press',
-  },
-  {
-    match: /^\/(pt\/)?(verified-facts|fatos-verificados)(\/|$)/,
-    image: '/images/og/zen-eyer-facts-og.jpg',
-    altKey: 'facts',
-  },
-  {
-    match: /^\/(pt\/)?(shop|loja|tickets|ingressos)(\/|$)/,
-    image: '/images/og/zen-eyer-shop-og.jpg',
-    altKey: 'shop',
-  },
-  {
-    match: /^\/(pt\/)?(support|apoie|zenlink)(\/|$)/,
-    image: '/images/og/zen-eyer-support-og.jpg',
-    altKey: 'support',
-  },
-];
+const PATH_MAP = new Map<string, AltKey>([
+  ['about', 'about'],
+  ['sobre', 'about'],
+  ['events', 'events'],
+  ['zouk-events', 'events'],
+  ['eventos-zouk', 'events'],
+  ['music', 'music'],
+  ['musica', 'music'],
+  ['press-kit', 'press'],
+  ['kit-imprensa', 'press'],
+  ['media', 'press'],
+  ['midia', 'press'],
+  ['verified-facts', 'facts'],
+  ['fatos-verificados', 'facts'],
+  ['shop', 'shop'],
+  ['loja', 'shop'],
+  ['tickets', 'shop'],
+  ['ingressos', 'shop'],
+  ['support', 'support'],
+  ['apoie', 'support'],
+  ['zenlink', 'support'],
+]);
+
+// ⚡ Bolt: Fast manual parsing instead of linear regex array evaluation
+const getRouteMatch = (pathname: string): { altKey: AltKey; image: string } | undefined => {
+  const p = pathname || '/';
+
+  if (p === '/' || p === '/pt' || p === '/pt/') {
+    return { altKey: 'home', image: '/images/og/zen-eyer-home-og.jpg' };
+  }
+
+  let start = p.charCodeAt(0) === 47 /* '/' */ ? 1 : 0;
+
+  if (p.charCodeAt(start) === 112 /* p */ && p.charCodeAt(start + 1) === 116 /* t */ && p.charCodeAt(start + 2) === 47 /* '/' */) {
+    start += 3;
+  }
+
+  const end = p.indexOf('/', start);
+  const segment = end === -1 ? p.slice(start) : p.slice(start, end);
+
+  const key = PATH_MAP.get(segment);
+  if (!key) return undefined;
+
+  // Strict match for about page
+  if (key === 'about' && end !== -1 && end !== p.length - 1) {
+    return undefined;
+  }
+
+  return { altKey: key, image: `/images/og/zen-eyer-${key}-og.jpg` };
+};
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -102,8 +110,7 @@ const toAbsolute = (image: string, baseUrl: string): string => {
 };
 
 export const getOpenGraphImageForPath = (pathname: string, baseUrl: string): string => {
-  const normalizedPath = pathname || '/';
-  const match = PAGE_OG_IMAGES.find((entry) => entry.match.test(normalizedPath));
+  const match = getRouteMatch(pathname);
   return toAbsolute(match?.image || DEFAULT_OG_IMAGE, baseUrl);
 };
 
@@ -112,8 +119,7 @@ export const getOpenGraphImageForPath = (pathname: string, baseUrl: string): str
  * Falls back to the `default` key when no route match is found.
  */
 export const getOpenGraphAltForPath = (pathname: string, lang: Language = 'en'): string => {
-  const normalizedPath = pathname || '/';
-  const key = PAGE_OG_IMAGES.find((entry) => entry.match.test(normalizedPath))?.altKey ?? 'default';
+  const key = getRouteMatch(pathname)?.altKey ?? 'default';
   return OG_ALT_TRANSLATIONS[key][lang] ?? OG_ALT_TRANSLATIONS[key].en;
 };
 
