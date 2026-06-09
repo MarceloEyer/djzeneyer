@@ -5,6 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
+// ⚡ Bolt: Extract static framer-motion variants to preserve object references and prevent unnecessary reallocations
+const FADE_UP_INITIAL = { opacity: 0, y: 20 };
+const FADE_UP_ANIMATE = { opacity: 1, y: 0 };
+
 const CodeOfConductPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'conduct']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
@@ -117,8 +121,8 @@ const CodeOfConductPage: React.FC = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
@@ -135,8 +139,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Introduction */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card p-8 mb-8 border-l-4 border-primary"
           >
@@ -151,8 +155,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Core Principles */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="mb-12"
           >
@@ -161,8 +165,8 @@ const CodeOfConductPage: React.FC = () => {
               {principles.map((principle, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={FADE_UP_INITIAL}
+                  animate={FADE_UP_ANIMATE}
                   transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                   className="card p-6 text-center"
                 >
@@ -186,8 +190,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Prohibited Behavior */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.6 }}
             className="mb-12"
           >
@@ -204,8 +208,8 @@ const CodeOfConductPage: React.FC = () => {
               {prohibitedBehavior.map((category, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={FADE_UP_INITIAL}
+                  animate={FADE_UP_ANIMATE}
                   transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
                   className="card p-6 border-l-4 border-red-500/50"
                 >
@@ -225,8 +229,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Reporting */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.0 }}
             className="card p-8 mb-8 bg-gradient-to-br from-primary/10 to-transparent"
           >
@@ -283,8 +287,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Consequences */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.1 }}
             className="mb-8"
           >
@@ -296,8 +300,8 @@ const CodeOfConductPage: React.FC = () => {
               {consequences.map((consequence, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={FADE_UP_INITIAL}
+                  animate={FADE_UP_ANIMATE}
                   transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
                   className="card p-6 flex items-start gap-4"
                 >
@@ -316,8 +320,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Scope */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.5 }}
             className="card p-8 mb-8"
           >
@@ -351,8 +355,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Contact */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.6 }}
             className="card p-8 text-center"
           >
@@ -374,8 +378,8 @@ const CodeOfConductPage: React.FC = () => {
 
           {/* Acknowledgment */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_UP_INITIAL}
+            animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.7 }}
             className="text-center text-white/50 text-sm mt-8 space-y-2"
           >
