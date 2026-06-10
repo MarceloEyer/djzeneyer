@@ -270,7 +270,7 @@
     <loc>https://djzeneyer.com/privacy-policy/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/privacy-policy/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/privacidade/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/privacy-policy/" />
@@ -282,7 +282,7 @@
     <loc>https://djzeneyer.com/pt/privacidade/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/privacy-policy/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/privacidade/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/privacy-policy/" />
@@ -294,7 +294,7 @@
     <loc>https://djzeneyer.com/return-policy/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/return-policy/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/reembolso/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/return-policy/" />
@@ -306,7 +306,7 @@
     <loc>https://djzeneyer.com/pt/reembolso/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/return-policy/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/reembolso/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/return-policy/" />
@@ -318,7 +318,7 @@
     <loc>https://djzeneyer.com/terms/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/terms/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/termos/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/terms/" />
@@ -330,7 +330,7 @@
     <loc>https://djzeneyer.com/pt/termos/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.3</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/terms/" />
     <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/termos/" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/terms/" />
@@ -411,25 +411,121 @@
     </image:image>
   </url>
   <url>
-    <loc>https://djzeneyer.com/zouk-music/:id/</loc>
+    <loc>https://djzeneyer.com/zouk-music/dont-stop-zen-eyer-remix-kaysha/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/:id/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/:id/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/:id/" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/dont-stop-zen-eyer-remix-kaysha/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/dont-stop-remix-zen-eyer-kaysha/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/dont-stop-zen-eyer-remix-kaysha/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>
   </url>
   <url>
-    <loc>https://djzeneyer.com/pt/musica-zouk/:id/</loc>
+    <loc>https://djzeneyer.com/pt/musica-zouk/dont-stop-remix-zen-eyer-kaysha/</loc>
     <lastmod>2026-06-04T17:47:07.913Z</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/:id/" />
-    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/:id/" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/:id/" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/dont-stop-zen-eyer-remix-kaysha/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/dont-stop-remix-zen-eyer-kaysha/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/dont-stop-zen-eyer-remix-kaysha/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/zouk-music/na-ponta-ela-fica-brazilian-zouk-cover/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/na-ponta-ela-fica-brazilian-zouk-cover/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/na-ponta-ela-fica-cover-zouk-brasileiro/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/na-ponta-ela-fica-brazilian-zouk-cover/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/pt/musica-zouk/na-ponta-ela-fica-cover-zouk-brasileiro/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/na-ponta-ela-fica-brazilian-zouk-cover/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/na-ponta-ela-fica-cover-zouk-brasileiro/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/na-ponta-ela-fica-brazilian-zouk-cover/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/zouk-music/still-loving-you-sax-cover-walter-xavier/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/still-loving-you-sax-cover-walter-xavier/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/still-loving-you-cover-sax-walter-xavier/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/still-loving-you-sax-cover-walter-xavier/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/pt/musica-zouk/still-loving-you-cover-sax-walter-xavier/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/still-loving-you-sax-cover-walter-xavier/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/still-loving-you-cover-sax-walter-xavier/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/still-loving-you-sax-cover-walter-xavier/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/zouk-music/baila-flaquita-original-single/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/baila-flaquita-original-single/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/baila-flaquita-single-original/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/baila-flaquita-original-single/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/pt/musica-zouk/baila-flaquita-single-original/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/baila-flaquita-original-single/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/baila-flaquita-single-original/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/baila-flaquita-original-single/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/zouk-music/porta-do-sol-brazilian-zouk-cover/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/porta-do-sol-brazilian-zouk-cover/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/porta-do-sol-cover-zouk-brasileiro/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/porta-do-sol-brazilian-zouk-cover/" />
+    <image:image>
+      <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://djzeneyer.com/pt/musica-zouk/porta-do-sol-cover-zouk-brasileiro/</loc>
+    <lastmod>2026-06-04T17:47:07.913Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://djzeneyer.com/zouk-music/porta-do-sol-brazilian-zouk-cover/" />
+    <xhtml:link rel="alternate" hreflang="pt-BR" href="https://djzeneyer.com/pt/musica-zouk/porta-do-sol-cover-zouk-brasileiro/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://djzeneyer.com/zouk-music/porta-do-sol-brazilian-zouk-cover/" />
     <image:image>
       <image:loc>https://djzeneyer.com/images/zen-eyer-og-image.png</image:loc>
     </image:image>

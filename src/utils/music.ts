@@ -49,6 +49,7 @@ export function buildDiscographyListItems(
       name: release.name,
       url: releaseUrl,
       image: release.image,
+      genre: ['Brazilian Zouk', 'Zouk'],
       byArtist: release.byArtist || { '@id': `${baseUrl}/#musicgroup` },
     };
 
@@ -94,6 +95,14 @@ export function buildDiscographyListItems(
       const t0 = release.tracks[0];
       if (t0.duration) releaseNode.duration = t0.duration;
       if (t0.isrcCode) releaseNode.isrcCode = t0.isrcCode;
+    }
+
+    const listenUrl = release.spotifyUrl || release.appleMusicUrl || release.youtubeMusicUrl || release.youtubeUrl;
+    if (listenUrl) {
+      releaseNode.potentialAction = {
+        '@type': 'ListenAction',
+        target: listenUrl,
+      };
     }
 
     return {
