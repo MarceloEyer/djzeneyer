@@ -3,6 +3,12 @@
 // Imports ARTIST from artistData.ts — all URL/identity values come from there.
 
 import { ARTIST } from './artistData';
+import routesSlugs from '../config/routes-slugs.json';
+
+// Booking route slugs derived from routes-slugs.json (SSOT for canonical paths)
+const bookingRoute = routesSlugs.routes.find(r => r.key === 'booking');
+const BOOKING_URL_EN = `${ARTIST.site.baseUrl}/${bookingRoute?.en ?? 'work-with-me'}`;
+const BOOKING_URL_PT = `${ARTIST.site.baseUrl}/pt/${bookingRoute?.pt ?? 'trabalhe-comigo'}/`;
 
 // Descrição de desambiguação única fonética (SSOT)
 export const DISAMBIGUATING_DESCRIPTION =
@@ -183,14 +189,14 @@ export const ARTIST_SCHEMA_BASE = {
     {
       '@type': 'ContactPoint',
       contactType: 'Booking',
-      url: `${ARTIST.site.baseUrl}/work-with-me`,
+      url: BOOKING_URL_EN,
       email: ARTIST.contact.email,
       availableLanguage: 'English',
     },
     {
       '@type': 'ContactPoint',
       contactType: 'Booking',
-      url: `${ARTIST.site.baseUrl}/pt/trabalhe-comigo/`,
+      url: BOOKING_URL_PT,
       email: ARTIST.contact.email,
       availableLanguage: 'Portuguese',
     },
@@ -767,14 +773,14 @@ export const MUSICGROUP_SCHEMA = {
     {
       '@type': 'ContactPoint',
       contactType: 'Booking',
-      url: `${ARTIST.site.baseUrl}/work-with-me`,
+      url: BOOKING_URL_EN,
       email: ARTIST.contact.email,
       availableLanguage: 'English',
     },
     {
       '@type': 'ContactPoint',
       contactType: 'Booking',
-      url: `${ARTIST.site.baseUrl}/pt/trabalhe-comigo/`,
+      url: BOOKING_URL_PT,
       email: ARTIST.contact.email,
       availableLanguage: 'Portuguese',
     },

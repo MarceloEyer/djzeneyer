@@ -378,13 +378,14 @@ async function generateSitemaps() {
       console.warn(`⚠️ release-slugs.json: ${e instanceof Error ? e.message : String(e)}`);
     }
     if (releaseDetailRoute && Array.isArray(releaseData.releases) && releaseData.releases.length > 0) {
-      const releaseBase = releaseDetailRoute.en.replace('/:id', '').replace(/^\/+|\/+$/g, '');
+      const releaseBaseEn = releaseDetailRoute.en.replace('/:id', '').replace(/^\/+|\/+$/g, '');
+      const releaseBasePt = (releaseDetailRoute.pt || releaseDetailRoute.en).replace('/:id', '').replace(/^\/+|\/+$/g, '');
       console.log(`🎵 Releases: ${releaseData.releases.length} items.`);
       for (const release of releaseData.releases) {
         const enSlug = release.en || release.id;
         const ptSlug = release.pt || release.id;
-        const enUrl = getSitemapUrl('en', `${releaseBase}/${enSlug}`);
-        const ptUrl = getSitemapUrl('pt', `${releaseBase}/${ptSlug}`);
+        const enUrl = getSitemapUrl('en', `${releaseBaseEn}/${enSlug}`);
+        const ptUrl = getSitemapUrl('pt', `${releaseBasePt}/${ptSlug}`);
         pagesXml += buildUrlEntry(enUrl, date, '0.7', ptUrl, DEFAULT_IMAGE, true);
         pagesXml += buildUrlEntry(ptUrl, date, '0.7', enUrl, DEFAULT_IMAGE, false);
         pageCount += 2;
