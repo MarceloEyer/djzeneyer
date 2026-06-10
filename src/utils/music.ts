@@ -80,6 +80,7 @@ export function buildDiscographyListItems(
           '@type': 'MusicRecording',
           name: track.name,
           byArtist: { '@id': `${baseUrl}/#musicgroup` },
+          genre: ['Brazilian Zouk', 'Zouk'],
         };
         if (track.duration) trackNode.duration = track.duration;
         if (track.isrcCode) trackNode.isrcCode = track.isrcCode;

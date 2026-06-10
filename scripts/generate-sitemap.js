@@ -20,6 +20,7 @@ const REST_BASE_URL = normalizeBaseUrl(
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const ROUTES_DATA_PATH = path.resolve(__dirname, '../src/config/routes-slugs.json');
 const ENCYCLOPEDIA_TERMS_PATH = path.resolve(__dirname, '../src/config/encyclopedia-term-slugs.json');
+const RELEASE_SLUGS_PATH = path.resolve(__dirname, '../src/config/release-slugs.json');
 
 console.log('🗺️  Sitemap Generator v8.2 - AUDIT-HARDENED EVENTS + POSTS SUPPORT\n');
 
@@ -368,6 +369,28 @@ async function generateSitemaps() {
         pageCount += 2;
       }
     }
+    // Release detail pages from DISCOGRAPHY
+    const releaseDetailRoute = routesData.routes.find(route => route.key === 'release-detail');
+    let releaseData = { releases: [] };
+    try {
+      releaseData = JSON.parse(fs.readFileSync(RELEASE_SLUGS_PATH, 'utf-8'));
+    } catch (e) {
+      console.warn(`⚠️ release-slugs.json: ${e instanceof Error ? e.message : String(e)}`);
+    }
+    if (releaseDetailRoute && Array.isArray(releaseData.releases) && releaseData.releases.length > 0) {
+      const releaseBase = releaseDetailRoute.en.replace('/:id', '').replace(/^\/+|\/+$/g, '');
+      console.log(`🎵 Releases: ${releaseData.releases.length} items.`);
+      for (const release of releaseData.releases) {
+        const enSlug = release.en || release.id;
+        const ptSlug = release.pt || release.id;
+        const enUrl = getSitemapUrl('en', `${releaseBase}/${enSlug}`);
+        const ptUrl = getSitemapUrl('pt', `${releaseBase}/${ptSlug}`);
+        pagesXml += buildUrlEntry(enUrl, date, '0.7', ptUrl, DEFAULT_IMAGE, true);
+        pagesXml += buildUrlEntry(ptUrl, date, '0.7', enUrl, DEFAULT_IMAGE, false);
+        pageCount += 2;
+      }
+    }
+
     pagesXml += '\n</urlset>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), pagesXml);
     console.log(`✅ sitemap-pages.xml created (${pageCount} URLs)`);

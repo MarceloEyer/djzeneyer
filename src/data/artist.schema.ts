@@ -21,15 +21,12 @@ const SAME_AS_AUTHORITY = [
 ] as const;
 
 // Platforms in ARTIST.social whose URLs belong in sameAs.
-// sameAs = official identity profiles only (artist page = the entity).
-// Event-aggregator pages (Songkick, Bandsintown) and content platforms
-// (Mixcloud, Amazon Music) are moved to subjectOf — they list the artist
-// but are not authoritative identity anchors.
+// sameAs = official artist profile pages that unambiguously represent the entity.
 const SAME_AS_SOCIAL_KEYS = [
   'spotify', 'appleMusic', 'YouTube',
   'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
-  'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
-  'bandcamp',
+  'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal', 'bandcamp',
+  'amazonMusic', 'mixcloud', 'songkick', 'bandsintown',
 ] as const;
 
 export const ARTIST_SCHEMA_SAME_AS: string[] = [
@@ -187,12 +184,18 @@ export const ARTIST_SCHEMA_BASE = {
       '@type': 'ContactPoint',
       contactType: 'Booking',
       url: `${ARTIST.site.baseUrl}/work-with-me`,
-      email: 'booking@djzeneyer.com',
-      availableLanguage: ['English', 'Portuguese'],
+      email: ARTIST.contact.email,
+      availableLanguage: 'English',
+    },
+    {
+      '@type': 'ContactPoint',
+      contactType: 'Booking',
+      url: `${ARTIST.site.baseUrl}/pt/trabalhe-comigo/`,
+      email: ARTIST.contact.email,
+      availableLanguage: 'Portuguese',
     },
   ],
   // Provas externas: páginas oficiais de eventos reais que listam Zen Eyer como DJ
-  // Also includes catalog/streaming pages that are not primary identity anchors (moved from sameAs).
   subjectOf: [
     {
       '@type': 'WebPage',
@@ -253,26 +256,6 @@ export const ARTIST_SCHEMA_BASE = {
       '@type': 'WebPage',
       url: 'https://pt-br.ra.co/events/2297675',
       name: 'Resident Advisor - Zen Eyer Event Listing',
-    },
-    {
-      '@type': 'WebPage',
-      url: 'https://music.amazon.com/artists/B07JKCDCG8',
-      name: 'Zen Eyer — Amazon Music Artist Page',
-    },
-    {
-      '@type': 'WebPage',
-      url: 'https://www.mixcloud.com/djzeneyer',
-      name: 'DJ Zen Eyer — Mixcloud',
-    },
-    {
-      '@type': 'WebPage',
-      url: 'https://www.songkick.com/artists/8815204-zen-eyer',
-      name: 'Zen Eyer — Songkick Artist Page',
-    },
-    {
-      '@type': 'WebPage',
-      url: 'https://www.bandsintown.com/a/15619775',
-      name: 'Zen Eyer — Bandsintown Artist Page',
     },
   ],
   // Eventos reais em que Zen Eyer é performer — prova direta de atuação (bidirecional com performerIn)
@@ -785,8 +768,15 @@ export const MUSICGROUP_SCHEMA = {
       '@type': 'ContactPoint',
       contactType: 'Booking',
       url: `${ARTIST.site.baseUrl}/work-with-me`,
-      email: 'booking@djzeneyer.com',
-      availableLanguage: ['English', 'Portuguese'],
+      email: ARTIST.contact.email,
+      availableLanguage: 'English',
+    },
+    {
+      '@type': 'ContactPoint',
+      contactType: 'Booking',
+      url: `${ARTIST.site.baseUrl}/pt/trabalhe-comigo/`,
+      email: ARTIST.contact.email,
+      availableLanguage: 'Portuguese',
     },
   ],
   additionalProperty: [
