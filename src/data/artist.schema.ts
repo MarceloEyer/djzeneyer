@@ -469,6 +469,7 @@ export interface Release {
   youtubeUrl?: string;
   soundcloudUrl?: string;
   description?: string;
+  genre?: string[];
   originalSong?: OriginalSong; // populated for covers and remixes
   byArtist?: Record<string, unknown>;
   contributor?: Record<string, unknown> | Record<string, unknown>[];
@@ -491,6 +492,7 @@ export const DISCOGRAPHY: Release[] = [
     musicBrainzUrl: 'https://musicbrainz.org/release/4ca05fa2-a3c0-4de3-818c-e64cd147dca3',
     amazonMusicUrl: 'https://www.amazon.com/dp/B09M791M5V',
     youtubeUrl: 'https://www.youtube.com/watch?v=mxQ-Y_Vh_18',
+    genre: ['Brazilian Zouk', 'Zouk'],
     description: "Brazilian Zouk remix of Kaysha's \"Don't Stop\". Zen Eyer's remix transforms the original into a dance-floor ready Zouk track with his signature cremosidade flow. Part of \"Don't Stop (Remixes) - Single\" on Apple Music.",
     originalSong: {
       name: "Don't Stop",
@@ -535,6 +537,7 @@ export const DISCOGRAPHY: Release[] = [
     appleMusicUrl: 'https://music.apple.com/us/album/na-ponta-ela-fica-cover-single/1867840116',
     musicBrainzUrl: 'https://musicbrainz.org/release/7b0c16b2-24a8-4923-b3e1-f3b852e5b064',
     youtubeUrl: 'https://www.youtube.com/watch?v=ACENa4vgVcY',
+    genre: ['Brazilian Zouk', 'Zouk'],
     description: 'Brazilian Zouk cover of the funk hit by MC Delano. Zen Eyer adapts the infectious energy of the original into a smooth, dance-floor ready Zouk arrangement.',
     originalSong: {
       name: 'Na Ponta Ela Fica',
@@ -562,6 +565,7 @@ export const DISCOGRAPHY: Release[] = [
     releaseDate: '2026-01-27',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/still-loving-you-feat-walter-xavier-sax-cover-single/1872468504',
+    genre: ['Brazilian Zouk', 'Zouk'],
     description: 'Brazilian Zouk cover of the Scorpions classic "Still Loving You" (1984), featuring saxophonist Walter Xavier. The saxophone takes the lead melody over a Zouk groove, creating a deeply romantic, dance-floor arrangement.',
     originalSong: {
       name: 'Still Loving You',
@@ -611,6 +615,7 @@ export const DISCOGRAPHY: Release[] = [
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     musicBrainzUrl: 'https://musicbrainz.org/release/aaea8061-a317-4743-bf87-fad9dc3ed93c',
     amazonMusicUrl: 'https://www.amazon.co.uk/dp/B0GDRV9WF7',
+    genre: ['Brazilian Zouk', 'Zouk'],
     description: "Zen Eyer's original composition — a bilingual Spanish/Portuguese track built for the Brazilian Zouk dance floor. A playful, rhythmic piece that showcases his production style.",
     tracks: [
       {
@@ -631,6 +636,7 @@ export const DISCOGRAPHY: Release[] = [
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/porta-do-sol-cover-single/1867002457',
     musicBrainzUrl: 'https://musicbrainz.org/release/b1c9f977-3642-4c86-a66d-b7b5a4564064',
+    genre: ['Brazilian Zouk', 'Zouk'],
     description: 'Brazilian Zouk cover of the beloved Brazilian sertanejo ballad "Porta do Sol". At 5 minutes and 7 seconds, this version gives the melody space to breathe, prioritising connection and fluidity on the dance floor.',
     originalSong: {
       name: 'Porta do Sol',
