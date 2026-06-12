@@ -584,8 +584,11 @@ export const getAlternateLinks = (
   // para que hreflang nunca produza literais como "/zouk-events/:id/slug-real"
   const rawEnSlug = (Array.isArray(route.paths.en) ? (route.paths.en[0] ?? '') : route.paths.en) || '';
   const rawPtSlug = (Array.isArray(route.paths.pt) ? (route.paths.pt[0] ?? '') : route.paths.pt) || '';
-  const enSlug = rawEnSlug.split('/:')[0];
-  const ptSlug = rawPtSlug.split('/:')[0];
+  // ⚡ Bolt: Replaced String.prototype.split() with zero-allocation native string methods like indexOf() and slice() to prevent garbage collection pressure in routing hot paths.
+  const enIdx = rawEnSlug.indexOf('/:');
+  const enSlug = enIdx === -1 ? rawEnSlug : rawEnSlug.slice(0, enIdx);
+  const ptIdx = rawPtSlug.indexOf('/:');
+  const ptSlug = ptIdx === -1 ? rawPtSlug : rawPtSlug.slice(0, ptIdx);
 
   // Calcula o sufixo dinâmico (ID do evento, slug da noticia, etc)
   let suffix = '';
