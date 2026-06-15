@@ -31,10 +31,16 @@ import { ARTIST } from '../data/artistData';
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
 const EMPTY_FESTIVAL_ARRAY: { name: string; country: string; date: string; flag: string }[] = [];
 
+// ⚡ Bolt: Extract static framer-motion variants to prevent unnecessary object re-allocations on every render
+const HOVER_SCALE_UP = { scale: 1.05, y: -5 };
+const HOVER_LIFT = { y: -8 };
+const HOVER_SCALE_SM = { scale: 1.02 };
+const HOVER_SCALE_MD = { scale: 1.05 };
+
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
   ({ icon, number, label, color }) => (
     <motion.div
-      whileHover={{ scale: 1.05, y: -5 }}
+      whileHover={HOVER_SCALE_UP}
       className={`${color} rounded-2xl border border-white/20 p-6 text-center shadow-xl backdrop-blur-sm`}
       transition={{ type: 'spring', stiffness: 300 }}
     >
@@ -59,7 +65,7 @@ const MediaKitCard = memo<{
     target="_blank"
     rel="noopener noreferrer"
     className="group flex h-full flex-col rounded-2xl border border-white/10 bg-surface/50 p-8 backdrop-blur-sm transition-all hover:border-primary hover:bg-surface/80"
-    whileHover={{ y: -8 }}
+    whileHover={HOVER_LIFT}
     transition={{ type: 'spring', stiffness: 300 }}
   >
     <div className="mx-auto mb-4 inline-block rounded-full bg-primary/10 p-4 text-primary transition-transform group-hover:scale-110">
@@ -271,7 +277,7 @@ const PressKitPage: React.FC = () => {
                 <div className="relative">
                   <motion.div
                     className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl"
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={HOVER_SCALE_SM}
                   >
                     <img
                       src="/images/artist/dj-zen-eyer-smiling-at-deck.jpg"
@@ -366,7 +372,7 @@ const PressKitPage: React.FC = () => {
                 {(artist.festivals || EMPTY_FESTIVAL_ARRAY).slice(0, 9).map((festival: { name: string; country: string; date: string; flag: string }, index: number) => (
                   <motion.div
                     key={index}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={HOVER_SCALE_SM}
                     className="group flex items-center gap-4 rounded-2xl border border-white/5 bg-surface/40 p-5 transition-all hover:border-primary/30"
                   >
                     <div className="text-3xl grayscale transition-all group-hover:grayscale-0">{festival.flag}</div>
@@ -426,7 +432,7 @@ const PressKitPage: React.FC = () => {
                   <motion.div
                     key={index}
                     className="group aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl border border-white/5 transition-all hover:border-primary/50"
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={HOVER_SCALE_MD}
                   >
                     <img
                       src={photo.src}
