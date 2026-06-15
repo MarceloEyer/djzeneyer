@@ -34,6 +34,14 @@ type Product = WCProduct;
 
 // ⚡ Bolt: Define static empty array to prevent unnecessary reallocation and preserve reference equality on empty states
 const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];
+const BUY_BUTTON_HOVER = { scale: 1.05 };
+const BUY_BUTTON_TAP = { scale: 0.95 };
+const PRODUCT_CARD_HOVER = {
+  scale: 1.15,
+  zIndex: 50,
+  y: -10,
+  transition: { type: 'spring', stiffness: 300, damping: 20 },
+};
 
 // --- Componente de Carrossel Horizontal ---
 // --- Netflix-style Paging Indicator ---
@@ -117,8 +125,8 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
 
           <div className="flex items-center gap-3 md:gap-4 pt-4">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={BUY_BUTTON_HOVER}
+              whileTap={BUY_BUTTON_TAP}
               onClick={() => onAddToCart(product.id)}
               className="flex items-center gap-2 bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-white/90 transition-colors shadow-xl"
               disabled={isAddingToCart}
@@ -158,12 +166,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
       className="flex-shrink-0 w-[240px] md:w-[300px] lg:w-[350px] relative z-10 transition-all duration-300"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={{
-        scale: 1.15,
-        zIndex: 50,
-        y: -10,
-        transition: { type: 'spring', stiffness: 300, damping: 20 }
-      }}
+      whileHover={PRODUCT_CARD_HOVER}
     >
       <div className="card-outer bg-surface border border-white/5 rounded-md overflow-hidden shadow-2xl group/card h-full">
         <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">

@@ -1,0 +1,30 @@
+{
+  "comment": "Release detail sitemap slugs derived from DISCOGRAPHY.newsSlugs. Keep EN/PT slugs synchronized with src/data/artist.schema.ts.",
+  "releases": [
+    {
+      "id": "dont-stop-zen-eyer-remix",
+      "en": "dont-stop-zen-eyer-remix-kaysha",
+      "pt": "dont-stop-remix-zen-eyer-kaysha"
+    },
+    {
+      "id": "na-ponta-ela-fica-cover",
+      "en": "na-ponta-ela-fica-brazilian-zouk-cover",
+      "pt": "na-ponta-ela-fica-cover-zouk-brasileiro"
+    },
+    {
+      "id": "still-loving-you-sax-cover",
+      "en": "still-loving-you-sax-cover-walter-xavier",
+      "pt": "still-loving-you-cover-sax-walter-xavier"
+    },
+    {
+      "id": "baila-flaquita",
+      "en": "baila-flaquita-original-single",
+      "pt": "baila-flaquita-single-original"
+    },
+    {
+      "id": "porta-do-sol-cover",
+      "en": "porta-do-sol-brazilian-zouk-cover",
+      "pt": "porta-do-sol-cover-zouk-brasileiro"
+    }
+  ]
+}
