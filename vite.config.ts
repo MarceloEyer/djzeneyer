@@ -46,13 +46,12 @@ export default defineConfig(({ command, mode }) => {
       },
     },
 
-    // Keep dependency pre-bundling conservative in WebContainers/CI.
-    server: {
-      host: '0.0.0.0',
-      strictPort: true,
-    },
+    // framer-motion and lucide-react have many sub-modules that can stall the
+    // Vite pre-bundler in memory-constrained environments (containers, CI).
+    // They are already split into their own vendor chunks at build time so
+    // excluding them from optimizeDeps is safe and consistent.
     optimizeDeps: {
-      exclude: ['@tailwindcss/vite', 'framer-motion', 'lucide-react'],
+      exclude: ['framer-motion', 'lucide-react'],
     },
 
     build: {
