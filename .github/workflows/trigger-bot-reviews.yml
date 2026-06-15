@@ -13,6 +13,12 @@ name: 🤖 Trigger Bot Reviews
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to request reviews for'
+        required: true
+        type: number
 
 permissions:
   issues: write
@@ -21,7 +27,7 @@ permissions:
 # Serializa os triggers para não consumir o rate limit do CodeRabbit em burst.
 # cancel-in-progress: false → nenhum trigger é cancelado, apenas enfileirado.
 concurrency:
-  group: bot-review-trigger-${{ github.event.pull_request.base.ref }}
+  group: bot-review-trigger-${{ github.event.pull_request.base.ref || format('manual-pr-{0}', inputs.pr_number) }}
   cancel-in-progress: false
 
 jobs:
@@ -37,7 +43,12 @@ jobs:
           script: |
             const marker = '<!-- coderabbit-auto-review -->';
             const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
+            const issue_number =
+              context.payload.pull_request?.number ??
+              Number(context.payload.inputs?.pr_number);
+            if (!Number.isInteger(issue_number) || issue_number <= 0) {
+              throw new Error('Missing valid PR number.');
+            }
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
@@ -45,8 +56,14 @@ jobs:
               per_page: 100,
             });
 
-            if (comments.some((c) => c.body?.includes(marker))) {
-              core.info(`CodeRabbit prompt já existe no PR #${issue_number}; pulando.`);
+            const lastPrompt = comments
+              .filter((c) => c.body?.includes(marker))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+            const promptAgeMs = lastPrompt ? Date.now() - new Date(lastPrompt.created_at).getTime() : Infinity;
+            const minRetryAgeMs = 60 * 60 * 1000;
+
+            if (promptAgeMs < minRetryAgeMs) {
+              core.info(`CodeRabbit prompt recente já existe no PR #${issue_number}; pulando.`);
               return;
             }
 
@@ -75,7 +92,12 @@ jobs:
           script: |
             const marker = '<!-- codex-auto-review -->';
             const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
+            const issue_number =
+              context.payload.pull_request?.number ??
+              Number(context.payload.inputs?.pr_number);
+            if (!Number.isInteger(issue_number) || issue_number <= 0) {
+              throw new Error('Missing valid PR number.');
+            }
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
