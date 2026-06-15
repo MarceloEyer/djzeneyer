@@ -13,6 +13,7 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { useAddToCartMutation, useProductQuery, type WCProductDetail } from '../hooks/useQueries';
 import { ARTIST } from '../data/artistData';
 import NotFoundPage from './NotFoundPage';
+import { logger } from '../lib/logger';
 
 interface ProductGalleryProps {
   product: WCProductDetail;
@@ -35,7 +36,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
     <div>
       <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
         <img
-          src={safeUrl(mainImage)}
+          src={safeUrl(mainImage, placeholderImage)}
           alt={product.name || ''}
           className="w-full h-full object-cover"
           loading="eager"
@@ -55,7 +56,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
                 activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-white/10 hover:border-white/30'
               }`}
             >
-              <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
+              <img src={safeUrl(img.sizes?.thumbnail || img.src, '')} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
             </button>
           ))}
         </div>
@@ -95,7 +96,7 @@ const ProductPage: React.FC = () => {
     try {
       await addToCartMutation.mutateAsync({ productId: product.id, quantity: 1 });
     } catch (err) {
-      console.error('Error adding to cart:', err);
+      logger.error('PRODUCT_PAGE', 'Error adding to cart', { error: String(err) });
     }
   }, [addToCartMutation, product]);
 

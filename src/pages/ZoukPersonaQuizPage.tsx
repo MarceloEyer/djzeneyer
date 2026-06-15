@@ -6,6 +6,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import patternSvg from '../assets/images/pattern.svg';
+import { logger } from '../lib/logger';
 
 // ============================================================================
 // DATA & LOGIC
@@ -198,7 +199,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
           url: quizUrl
         });
       } catch (err) {
-        console.error('Share failed', err);
+        logger.error('ZOUK_PERSONA_QUIZ', 'Share failed', { error: String(err) });
       }
     } else {
       navigator.clipboard.writeText(text);

@@ -13,6 +13,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Toast } from '../components/common/Toast';
 import { getCurrencyFormatter } from '../utils/currency';
+import { logger } from '../lib/logger';
 import { ARTIST } from '../data/artistData';
 import {
   Loader2,
@@ -369,7 +370,7 @@ const ShopPage: React.FC = () => {
       await addToCartMutation.mutateAsync({ productId, quantity: 1 });
       setShowToast(true);
     } catch (err) {
-      console.error('Error adding to cart:', err);
+      logger.error('SHOP_PAGE', 'Error adding to cart', { error: String(err) });
     } finally {
       setAddingToCart(null);
     }

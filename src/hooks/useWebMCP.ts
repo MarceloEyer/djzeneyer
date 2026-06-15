@@ -1,5 +1,7 @@
+import { fetchEventsFn } from './usePublicQueries';
 import { useEffect } from 'react';
 import { ARTIST } from '../data/artistData';
+import { logger } from '../lib/logger';
 
 /**
  * Hook para expor ferramentas do site para agentes de IA (WebMCP).
@@ -20,13 +22,18 @@ export function useWebMCP() {
                 properties: {},
               },
               execute: async () => {
-                // TODO: No futuro, isso pode consultar a API REST do WordPress
-                return {
-                  events: [
-                    { date: '2026-07-15', location: 'São Paulo, SP', venue: 'Laroc Club' },
-                    { date: '2026-08-02', location: 'Rio de Janeiro, RJ', venue: 'Green Valley Tour' }
-                  ]
-                };
+                try {
+                  const eventsData = await fetchEventsFn({ mode: 'upcoming', limit: 5 });
+                  const formattedEvents = eventsData.map(event => ({
+                    date: event.starts_at,
+                    location: `${event.location.city}, ${event.location.region}`,
+                    venue: event.location.venue,
+                  }));
+                  return { events: formattedEvents };
+                } catch (error) {
+                  logger.error('WEB_MCP', 'Error fetching events', { error: String(error) });
+                  return { events: [] };
+                }
               }
             },
             get_bio: {
@@ -63,9 +70,9 @@ export function useWebMCP() {
             }
           }
         });
-        console.log('[WebMCP] Ferramentas de IA registradas com sucesso.');
+        logger.debug('WEB_MCP', 'AI tools registered successfully');
       } catch (error) {
-        console.error('[WebMCP] Erro ao registrar ferramentas:', error);
+        logger.error('WEB_MCP', 'Error registering tools', { error: String(error) });
       }
     }
   }, []);

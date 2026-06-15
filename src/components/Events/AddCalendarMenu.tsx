@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ARTIST } from '../../data/artistData';
 
 import { trackSelectContent } from '../../lib/analytics';
+import { logger } from '../../lib/logger';
 import type { ZenBitEventListItem } from '../../types/events';
 
 interface AddCalendarMenuProps {
@@ -50,7 +51,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
 
             return { title, start, end, location, details };
         } catch (error) {
-            console.error('[AddCalendarMenu] Error processing date:', error, event);
+            logger.error('ADD_CALENDAR_MENU', 'Error processing date', { error: String(error), event });
             return null;
         }
     };

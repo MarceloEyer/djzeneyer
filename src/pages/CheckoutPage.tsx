@@ -9,6 +9,7 @@ import { useCartQuery, useCheckoutQuery } from '../hooks/useAuthenticatedQueries
 import { useClearCartMutation, useSubmitOrderMutation } from '../hooks/useMutations';
 import { sanitizeHtml, safeRedirect } from '../utils/sanitize';
 import { getCurrencyFormatter } from '../utils/currency';
+import { logger } from '../lib/logger';
 
 const CheckoutPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -116,7 +117,7 @@ const CheckoutPage: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      logger.error('CHECKOUT_PAGE', 'Checkout error', { error: String(error) });
       alert(error instanceof Error ? error.message : t('common.checkout.generic_error'));
     }
   };

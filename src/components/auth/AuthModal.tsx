@@ -8,6 +8,7 @@ import { X, Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-r
 import { useTranslation } from 'react-i18next';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { logger } from '../../lib/logger';
 import { useUser } from '../../contexts/UserContext';
 import { getTurnstileSiteKey } from '../../config/api';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
@@ -129,7 +130,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       navigate(getLocalizedRoute('dashboard', currentLang));
     } catch (err: unknown) {
       const error = err as Error;
-      console.error('❌ [AuthModal] Erro:', error);
+      logger.error('AUTH_MODAL', 'Login failed', { error: String(error) });
       setTurnstileToken('');
       setError(error.message || t('auth.errors.auth_generic_error'));
     } finally {
@@ -152,7 +153,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       onClose();
       navigate(getLocalizedRoute('dashboard', currentLang));
     } catch (err: unknown) {
-      console.error('❌ [AuthModal] Erro no Google Login:', err);
+      logger.error('AUTH_MODAL', 'Google login failed', { error: String(err) });
       setError(t('auth.errors.google_auth_failed'));
     } finally {
       setLoading(false);

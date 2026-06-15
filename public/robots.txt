@@ -3,9 +3,10 @@
 # Standard: RFC 9309
 
 User-agent: *
-Allow: /
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
+Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
@@ -62,6 +63,7 @@ User-agent: Googlebot-Image
 User-agent: Googlebot-Video
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
@@ -106,6 +108,7 @@ User-agent: Bingbot
 User-agent: MSNBot
 Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/
@@ -143,6 +146,7 @@ Disallow: /comments/feed/
 # Crawl-delay:1
 
 User-agent: GPTBot
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 User-agent: ChatGPT-User
 User-agent: Claude-Web
 User-agent: anthropic-ai
@@ -164,9 +168,10 @@ User-agent: AI2Bot
 User-agent: BraveBot
 User-agent: Qwenbot
 User-agent: MistralBot
-Allow: /
 Content-Signal: ai-train=yes, search=yes, ai-input=yes
+Allow: /
 Allow: /wp-json/djzeneyer/v1/ai-context
+Content-Signal: ai-train=yes, search=yes, ai-input=yes
 Disallow: /wp-admin/
 Disallow: /wp-login.php
 Disallow: /wp-includes/

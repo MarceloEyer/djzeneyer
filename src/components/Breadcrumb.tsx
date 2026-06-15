@@ -31,7 +31,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' })
       animate={BREADCRUMB_ANIMATE}
       transition={BREADCRUMB_TRANSITION}
     >
-      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-white/50">
+      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-white/70">
         <li>
           <Link
             to={getLocalizedRoute('home', currentLang)}

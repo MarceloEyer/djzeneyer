@@ -46,13 +46,13 @@ export default defineConfig(({ command, mode }) => {
       },
     },
 
-    // Fix for WebContainers hanging on 'bundling dependencies'
+    // Keep dependency pre-bundling conservative in WebContainers/CI.
     server: {
       host: '0.0.0.0',
       strictPort: true,
     },
     optimizeDeps: {
-      exclude: ['@tailwindcss/vite', 'framer-motion', 'lucide-react']
+      exclude: ['@tailwindcss/vite', 'framer-motion', 'lucide-react'],
     },
 
     build: {
