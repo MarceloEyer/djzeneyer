@@ -381,7 +381,7 @@ async function generateSitemaps() {
     try {
       releaseData = JSON.parse(fs.readFileSync(RELEASE_SLUGS_PATH, 'utf-8'));
     } catch (e) {
-      console.warn(`⚠️ release-slugs.json: ${e instanceof Error ? e.message : String(e)}`);
+      throw new Error(`release-slugs.json precisa ser legível e conter JSON válido: ${e instanceof Error ? e.message : String(e)}`);
     }
 
     if (Array.isArray(releaseData.releases) && releaseData.releases.length > 0) {

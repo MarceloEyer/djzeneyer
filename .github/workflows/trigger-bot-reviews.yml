@@ -105,8 +105,14 @@ jobs:
               per_page: 100,
             });
 
-            if (comments.some((c) => c.body?.includes(marker))) {
-              core.info(`Codex prompt já existe no PR #${issue_number}; pulando.`);
+            const lastPrompt = comments
+              .filter((c) => c.body?.includes(marker))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+            const promptAgeMs = lastPrompt ? Date.now() - new Date(lastPrompt.created_at).getTime() : Infinity;
+            const minRetryAgeMs = 60 * 60 * 1000;
+
+            if (promptAgeMs < minRetryAgeMs) {
+              core.info(`Prompt recente do Codex já existe no PR #${issue_number}; pulando.`);
               return;
             }
 

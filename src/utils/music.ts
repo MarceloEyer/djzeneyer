@@ -98,7 +98,7 @@ export function buildDiscographyListItems(
       if (t0.isrcCode) releaseNode.isrcCode = t0.isrcCode;
     }
 
-    const listenUrl = release.spotifyUrl || release.appleMusicUrl || release.youtubeMusicUrl || release.youtubeUrl;
+    const listenUrl = release.spotifyUrl || release.appleMusicUrl || release.youtubeMusicUrl || release.youtubeUrl || release.soundcloudUrl;
     if (listenUrl) {
       releaseNode.potentialAction = {
         '@type': 'ListenAction',

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ExternalLink, Globe, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,18 @@ import type { Festival } from '../types';
 const HERO_VARIANTS = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
+};
+
+const getLocalDateKey = (): string => {
+  const today = new Date();
+  return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+};
+
+const getMsUntilNextLocalDay = (): number => {
+  const now = new Date();
+  const nextDay = new Date(now);
+  nextDay.setHours(24, 0, 0, 0);
+  return Math.max(1000, nextDay.getTime() - now.getTime() + 1000);
 };
 
 interface FestivalCardProps {
@@ -52,12 +64,27 @@ const ZoukFestivalsPage: React.FC = () => {
   const currentLang = normalizeLanguage(i18n.language);
   const prefersReducedMotion = useReducedMotion();
   const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('zouk-festivals', currentLang)}`;
+  const [todayKey, setTodayKey] = useState(getLocalDateKey);
+
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    const scheduleNextDayRefresh = () => {
+      timeoutId = setTimeout(() => {
+        setTodayKey(getLocalDateKey());
+        scheduleNextDayRefresh();
+      }, getMsUntilNextLocalDay());
+    };
+
+    scheduleNextDayRefresh();
+    return () => clearTimeout(timeoutId);
+  }, []);
 
   const { upcoming, past } = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const [year, month, day] = todayKey.split('-').map(Number);
+    const today = new Date(year, month - 1, day);
     return categorizeFestivals(ARTIST.festivals, today);
-  }, []);
+  }, [todayKey]);
 
   const formatYear = useCallback((date: string | undefined): string => {
     if (!date) return '';
