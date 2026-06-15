@@ -32,6 +32,9 @@ interface Question {
   }[];
 }
 
+const QUIZ_OPTION_HOVER = { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' };
+const QUIZ_OPTION_TAP = { scale: 0.98 };
+
 const PERSONAS: Record<PersonaType, PersonaResult> = {
   lambadeiro: {
     id: 'lambadeiro',
@@ -261,8 +264,8 @@ const ZoukPersonaQuizPage: React.FC = () => {
                   {QUESTIONS[currentQuestion].options.map((option, index) => (
                     <motion.button
                       key={index}
-                      whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={QUIZ_OPTION_HOVER}
+                      whileTap={QUIZ_OPTION_TAP}
                       onClick={() => handleAnswer(option.points)}
                       className="w-full p-4 text-left bg-gray-700/50 hover:bg-gray-600 rounded-xl border border-white/5 transition-colors flex items-center justify-between group"
                     >

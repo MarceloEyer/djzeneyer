@@ -20,6 +20,7 @@ const REST_BASE_URL = normalizeBaseUrl(
 const PUBLIC_DIR = path.resolve(__dirname, '../public');
 const ROUTES_DATA_PATH = path.resolve(__dirname, '../src/config/routes-slugs.json');
 const ENCYCLOPEDIA_TERMS_PATH = path.resolve(__dirname, '../src/config/encyclopedia-term-slugs.json');
+const RELEASE_SLUGS_PATH = path.resolve(__dirname, '../src/config/release-slugs.json');
 
 console.log('🗺️  Sitemap Generator v8.2 - AUDIT-HARDENED EVENTS + POSTS SUPPORT\n');
 
@@ -75,6 +76,12 @@ function buildSitemapIndexEntry(url, date) {
     <loc>${escapeXml(url)}</loc>
     <lastmod>${escapeXml(date)}</lastmod>
   </sitemap>`;
+}
+
+function getStaticRoutePriority(route) {
+  if (route.en === '' || route.en === '/') return '1.0';
+  if (['privacy', 'returns', 'terms'].includes(route.key)) return '0.3';
+  return '0.8';
 }
 
 const BANDSINTOWN_ARTIST_ID = process.env.BANDSINTOWN_ARTIST_ID || 'id_15619775';
@@ -333,7 +340,7 @@ async function generateSitemaps() {
 
       const enUrl = getSitemapUrl('en', route.en);
       const ptUrl = getSitemapUrl('pt', route.pt);
-      const priority = (route.en === '' || route.en === '/') ? '1.0' : '0.8';
+      const priority = getStaticRoutePriority(route);
 
       // EN entry: x-default points to EN
       pagesXml += buildUrlEntry(enUrl, date, priority, ptUrl, DEFAULT_IMAGE, true);
@@ -368,6 +375,42 @@ async function generateSitemaps() {
         pageCount += 2;
       }
     }
+
+    const releaseDetailRoute = routesData.routes.find(route => route.key === 'release-detail');
+    let releaseData = { releases: [] };
+    try {
+      releaseData = JSON.parse(fs.readFileSync(RELEASE_SLUGS_PATH, 'utf-8'));
+    } catch (e) {
+      console.warn(`⚠️ release-slugs.json: ${e instanceof Error ? e.message : String(e)}`);
+    }
+
+    if (Array.isArray(releaseData.releases) && releaseData.releases.length > 0) {
+      if (!releaseDetailRoute?.en || !releaseDetailRoute?.pt) {
+        throw new Error('routes-slugs.json precisa conter a rota "release-detail" com slugs EN/PT antes de gerar o sitemap.');
+      }
+
+      const releaseBaseEn = releaseDetailRoute.en.replace('/:id', '').replace(/^\/+|\/+$/g, '');
+      const releaseBasePt = releaseDetailRoute.pt.replace('/:id', '').replace(/^\/+|\/+$/g, '');
+      console.log(`🎵 Releases: ${releaseData.releases.length} items.`);
+
+      for (const release of releaseData.releases) {
+        if (!release || typeof release !== 'object') continue;
+
+        const enSlug = typeof release.en === 'string' && release.en.trim() ? release.en : release.id;
+        const ptSlug = typeof release.pt === 'string' && release.pt.trim() ? release.pt : release.id;
+        if (!enSlug || !ptSlug) {
+          console.warn(`⚠️ Release sitemap entry ignorada por falta de slug: ${JSON.stringify(release)}`);
+          continue;
+        }
+
+        const enUrl = getSitemapUrl('en', `${releaseBaseEn}/${enSlug}`);
+        const ptUrl = getSitemapUrl('pt', `${releaseBasePt}/${ptSlug}`);
+        pagesXml += buildUrlEntry(enUrl, date, '0.7', ptUrl, DEFAULT_IMAGE, true);
+        pagesXml += buildUrlEntry(ptUrl, date, '0.7', enUrl, DEFAULT_IMAGE, false);
+        pageCount += 2;
+      }
+    }
+
     pagesXml += '\n</urlset>';
     fs.writeFileSync(path.join(PUBLIC_DIR, 'sitemap-pages.xml'), pagesXml);
     console.log(`✅ sitemap-pages.xml created (${pageCount} URLs)`);

@@ -22,6 +22,7 @@ const EMPTY_ACHIEVEMENT_ARRAY: ZenGameAchievement[] = [];
 const EMPTY_LEADERBOARD_ARRAY: ZenGameLeaderboardEntry[] = [];
 
 const STAR_INDICES = [0, 1, 2];
+const HEX_BADGE_HOVER = { scale: 1.1, rotate: 5 };
 
 // ============================================================================
 // 1. SUB-COMPONENTS (PREMIUM VISUALS)
@@ -98,7 +99,7 @@ const Gauge = ({ progress, strokeWidth = 14, color = 'rgb(var(--color-primary))'
 
 const HexBadge = ({ earned, title, image, size = '14' }: { earned: boolean; title: string; image?: string; size?: string }) => (
   <motion.div 
-    whileHover={{ scale: 1.1, rotate: 5 }}
+    whileHover={HEX_BADGE_HOVER}
     className={`relative flex items-center justify-center group ${earned ? 'opacity-100' : 'opacity-30 grayscale'}`}
   >
     <div className={`clip-hex flex items-center justify-center p-[2px] ${earned ? 'bg-gradient-to-br from-primary to-secondary' : 'bg-white/10'}`} style={{ width: `${size}rem`, height: `${size}rem` }}>

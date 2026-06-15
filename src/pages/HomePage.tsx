@@ -62,6 +62,8 @@ const ITEM_VARIANTS: Variants = {
   visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
 };
 
+const STAT_CARD_HOVER = { scale: 1.05 };
+
 const LazyEventsList = React.lazy(() =>
   import('../components/EventsList').then((module) => ({ default: module.EventsList }))
 );
@@ -71,7 +73,7 @@ const LazyEventsList = React.lazy(() =>
 // ============================================================================
 
 const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
-  <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
+  <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={STAT_CARD_HOVER}>
     <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
     <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
     <div className="text-sm text-white/70 uppercase tracking-wider">{label}</div>

@@ -26,6 +26,7 @@ import type { ZenGameRankRequirement } from '../types/gamification';
 const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_REQUIREMENT_ARRAY: ZenGameRankRequirement[] = [];
 const DANCE_ROLES = ['leader', 'follower'] as const;
+const ACHIEVEMENT_CARD_HOVER = { y: -5, scale: 1.02 };
 
 // Interfaces
 interface UserStats {
@@ -299,7 +300,7 @@ const MyAccountContent: React.FC = () => {
               {allAchievements.map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
                 <motion.div
                   key={ach.id}
-                  whileHover={{ y: -5, scale: 1.02 }}
+                  whileHover={ACHIEVEMENT_CARD_HOVER}
                   className={`relative rounded-[2rem] p-8 border transition-all duration-500 overflow-hidden ${ach.earned
                     ? 'bg-surface/50 border-primary/20 shadow-xl'
                     : 'bg-black/40 border-white/5 opacity-40 grayscale hover:opacity-100 hover:grayscale-0'
