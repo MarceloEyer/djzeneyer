@@ -381,15 +381,23 @@ class DJZ_AI_Authority
             'post_status' => 'publish'
         ]);
 
+        // ⚡ Bolt: [performance improvement] Prime caches to avoid N+1 queries in the loop
+        update_post_caches($recent_posts, 'post', true, true);
+
         foreach ($recent_posts as $post) {
             $summary = !empty($post->post_excerpt) ? $post->post_excerpt : wp_trim_words($post->post_content, 50);
+
+            // ⚡ Bolt: [performance improvement] Bypass get_the_modified_date overhead by formatting the raw GMT property
+            $time = $post->post_modified_gmt;
+            $date_formatted = (empty($time) || '0000-00-00 00:00:00' === $time) ? false : substr($time, 0, 10);
+
             $fragments[] = [
                 "id" => "post-" . $post->ID,
                 "title" => $post->post_title,
                 "summary" => strip_tags($summary),
                 "content" => wp_strip_all_tags(substr($post->post_content, 0, 1500)),
                 "canonical_url" => get_permalink($post->ID),
-                "last_updated" => get_the_modified_date('Y-m-d', $post->ID),
+                "last_updated" => $date_formatted,
                 "type" => "article",
                 "keywords" => $this->extract_keywords($post->post_content)
             ];
