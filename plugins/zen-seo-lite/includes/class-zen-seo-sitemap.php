@@ -232,10 +232,6 @@ class Zen_SEO_Sitemap
     /**
      * Add sitemap to robots.txt
      *
-     * FIX: Cast $public to string before comparison to prevent
-     * "strpos(): Passing null to parameter #1" deprecation when
-     * the blog_public option has not been set yet.
-     *
      * @param string $output
      * @param string|null $public
      * @return string
