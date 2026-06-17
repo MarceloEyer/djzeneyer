@@ -14,6 +14,7 @@ Este arquivo consolida decisões operacionais que antes estavam apenas em memór
 ## Cache e Deploy
 
 - O site é WordPress headless + React/Vite com SSG. O frontend é pré-renderizado em build time; visitas públicas não dependem de fetch REST ao vivo.
+- O menu público vem de `GET /wp-json/djzeneyer/v1/menu?lang=en|pt`. Após mudar slugs, Polylang ou links customizados no WordPress Admin, salvar o menu e validar as duas respostas. Links PT devem usar o prefixo `/pt/`, inclusive `/pt/trabalhe-comigo/`.
 - `/wp-json/`, `/feed/` e `/api/` podem e devem ser cacheados. Não adicionar regras NOCACHE para essas rotas.
 - Conteúdo público pode levar horas para propagar. Cache agressivo é uma escolha consciente para desempenho e SEO.
 - Os blocos `# BEGIN LSCACHE` / `# END LSCACHE` e `# BEGIN NON_LSCACHE` / `# END NON_LSCACHE` do `.htaccess` pertencem ao LiteSpeed WP Cache. Não editar manualmente.

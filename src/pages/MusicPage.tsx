@@ -13,6 +13,7 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
 import { MUSICGROUP_SCHEMA, DISCOGRAPHY } from '../data/artist.schema';
 import { safeUrl } from '../utils/sanitize';
+import { buildReleaseCards, buildDiscographyListItems } from '../utils/music';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -80,98 +81,27 @@ const MusicPage: React.FC = () => {
   };
 
   const releaseCards = useMemo(() => {
-    const newsDetailRoute = getLocalizedRoute('news-detail', currentLang);
-    return DISCOGRAPHY.map((release) => ({
-      ...release,
-      path: generatePath(newsDetailRoute, { slug: release.newsSlugs?.[currentLang] || release.id }),
-    }));
+    const releaseDetailRoute = getLocalizedRoute('release-detail', currentLang);
+    return buildReleaseCards(DISCOGRAPHY, currentLang, (releaseId) =>
+      generatePath(releaseDetailRoute, { id: releaseId }),
+    );
   }, [currentLang]);
 
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
     const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
-    const newsDetailRoute = getLocalizedRoute('news-detail', currentLang);
-    const ARTIST_PROFILE_URLS = new Set<string>([
-      ...Object.values(ARTIST.social)
-        .map((social) => social?.url)
-        .filter((url): url is string => !!url),
-    ]);
+    const newsDetailRoute = getLocalizedRoute('release-detail', currentLang);
+    const artistSocialUrls = new Set<string>(
+      Object.values(ARTIST.social)
+        .map((s) => s?.url)
+        .filter((u): u is string => !!u),
+    );
 
-    const isReleaseSpecificUrl = (url: string | undefined): url is string =>
-      !!url && !ARTIST_PROFILE_URLS.has(url);
-
-    // ItemList: cada release vira um ListItem apontando para MusicRecording/MusicAlbum
-    const releaseListItems = DISCOGRAPHY.map((release, index) => {
-      const newsSlug = release.newsSlugs?.[currentLang] || release.id;
-      const releasePath = generatePath(newsDetailRoute, { slug: newsSlug });
-      const releaseUrl = `${baseUrl}${releasePath}`;
-
-      const schemaType = release.type === 'album' ? 'MusicAlbum'
-        : release.type === 'ep' ? 'MusicAlbum'
-        : 'MusicRecording';
-
-      const releaseNode: Record<string, unknown> = {
-        '@type': schemaType,
-        '@id': `${releaseUrl}#recording`,
-        name: release.name,
-        url: releaseUrl,
-        image: release.image,
-        byArtist: release.byArtist || { '@id': `${baseUrl}/#musicgroup` },
-      };
-
-      if (release.contributor) releaseNode.contributor = release.contributor;
-
-      // Only emit datePublished if it's NOT the 2024-01-01 placeholder
-      if (release.releaseDate && release.releaseDate !== '2024-01-01') {
-        releaseNode.datePublished = release.releaseDate;
-      }
-
-      if (release.description) releaseNode.description = release.description;
-
-      // sameAs: ONLY release-specific URLs (not artist profile pages)
-      const sameAsLinks = [
-        release.spotifyUrl,
-        release.appleMusicUrl,
-        release.musicBrainzUrl,
-        release.deezerUrl,
-        release.tidalUrl,
-        release.amazonMusicUrl,
-        release.youtubeMusicUrl,
-        release.youtubeUrl,
-        release.soundcloudUrl,
-      ].filter(isReleaseSpecificUrl);
-      if (sameAsLinks.length > 0) releaseNode.sameAs = sameAsLinks;
-
-      // Faixas (MusicRecording dentro do álbum/EP)
-      if (release.tracks.length > 0 && schemaType === 'MusicAlbum') {
-        releaseNode.track = release.tracks.map((track) => {
-          const trackNode: Record<string, unknown> = {
-            '@type': 'MusicRecording',
-            name: track.name,
-            byArtist: { '@id': `${baseUrl}/#musicgroup` },
-          };
-          // Only emit duration if it's a real value (not placeholder)
-          if (track.duration) trackNode.duration = track.duration;
-          if (track.isrcCode) trackNode.isrcCode = track.isrcCode;
-          const trackSameAs = [track.spotifyUrl, track.youtubeMusicUrl, track.youtubeUrl].filter(isReleaseSpecificUrl);
-          if (trackSameAs.length > 0) trackNode.sameAs = trackSameAs;
-          return trackNode;
-        });
-      }
-
-      // Para single: a faixa principal é o próprio nó
-      if (schemaType === 'MusicRecording' && release.tracks[0]) {
-        const t0 = release.tracks[0];
-        // Only emit duration if it's a real value
-        if (t0.duration) releaseNode.duration = t0.duration;
-        if (t0.isrcCode) releaseNode.isrcCode = t0.isrcCode;
-      }
-
-      return {
-        '@type': 'ListItem',
-        position: index + 1,
-        item: releaseNode,
-      };
+    const releaseListItems = buildDiscographyListItems(DISCOGRAPHY, {
+      baseUrl,
+      getNewsDetailPath: (id) => generatePath(newsDetailRoute, { id }),
+      lang: currentLang,
+      artistSocialUrls,
     });
 
 

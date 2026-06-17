@@ -1,54 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { waitFor } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../test/mocks/server';
 import { renderHookWithProviders } from '../../test/utils';
 import {
-  fetchMenuFn,
   fetchEventsFn,
   fetchNewsFn,
-  useMenuQuery,
   useEventsQuery,
   useNewsQuery,
 } from '../../hooks/usePublicQueries';
-import { mockMenu, mockRawEvent, mockEventsEnvelope, mockPosts, REST_BASE } from '../../test/mocks/fixtures';
+import { mockRawEvent, mockEventsEnvelope, mockPosts, REST_BASE } from '../../test/mocks/fixtures';
 
 // Mock getLocalizedRoute — avoids loading lazy page components in testes
 vi.mock('../../config/routes', () => ({
   getLocalizedRoute: () => '/events/:id',
   normalizeLanguage: (lang: string) => (lang.startsWith('pt') ? 'pt' : 'en'),
 }));
-
-// ── fetchMenuFn ──────────────────────────────────────────────────────────────
-
-describe('fetchMenuFn', () => {
-  it('returns menu items on success', async () => {
-    const result = await fetchMenuFn('en');
-    expect(result).toEqual(mockMenu);
-  });
-
-  it('throws when API responds with non-ok status', async () => {
-    server.use(
-      http.get(`${REST_BASE}/djzeneyer/v1/menu`, () =>
-        HttpResponse.json({ message: 'Not Found' }, { status: 404 })
-      )
-    );
-    await expect(fetchMenuFn('en')).rejects.toThrow('Failed to fetch menu');
-  });
-
-  it('returns prerender data without fetching when available', async () => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
-    Object.assign(window, {
-      __PRERENDER_DATA__: { menu: { en: mockMenu }, eventsLimit: 10, eventsMode: 'upcoming', eventsDays: 365 },
-    });
-    const result = await fetchMenuFn('en');
-    expect(result).toEqual(mockMenu);
-    expect(fetchSpy).not.toHaveBeenCalled();
-    // restore
-    Object.assign(window, { __PRERENDER_DATA__: undefined });
-    fetchSpy.mockRestore();
-  });
-});
 
 // ── fetchEventsFn ─────────────────────────────────────────────────────────────
 
@@ -76,22 +43,20 @@ describe('fetchEventsFn', () => {
     expect(typeof result[0]._processed?.day).toBe('number');
   });
 
-  it('returns [] when API responds with non-ok status', async () => {
+  it('throws when API responds with non-ok status', async () => {
     server.use(
       http.get(`${REST_BASE}/zen-bit/v2/events`, () =>
         HttpResponse.json({ message: 'Error' }, { status: 500 })
       )
     );
-    const result = await fetchEventsFn({ lang: 'en' });
-    expect(result).toEqual([]);
+    await expect(fetchEventsFn({ lang: 'en' })).rejects.toThrow();
   });
 
-  it('returns [] on network failure', async () => {
+  it('throws on network failure', async () => {
     server.use(
       http.get(`${REST_BASE}/zen-bit/v2/events`, () => HttpResponse.error())
     );
-    const result = await fetchEventsFn({ lang: 'en' });
-    expect(result).toEqual([]);
+    await expect(fetchEventsFn({ lang: 'en' })).rejects.toThrow();
   });
 
   it('respects the limit parameter', async () => {
@@ -135,21 +100,6 @@ describe('fetchNewsFn', () => {
   });
 });
 
-// ── useMenuQuery ─────────────────────────────────────────────────────────────
-
-describe('useMenuQuery', () => {
-  it('fetches and returns menu items', async () => {
-    const { result } = renderHookWithProviders(() => useMenuQuery('en'));
-    await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    expect(result.current.data).toEqual(mockMenu);
-  });
-
-  it('starts in loading state', () => {
-    const { result } = renderHookWithProviders(() => useMenuQuery('en'));
-    expect(result.current.isLoading).toBe(true);
-  });
-});
-
 // ── useEventsQuery ────────────────────────────────────────────────────────────
 
 describe('useEventsQuery', () => {
@@ -162,8 +112,7 @@ describe('useEventsQuery', () => {
 
   it('defaults mode to upcoming', async () => {
     server.use(
-      http.get(`${REST_BASE}/zen-bit/v2/events`, ({ request }) => {
-        const url = new URL(request.url);
+      http.get(`${REST_BASE}/zen-bit/v2/events`, () => {
         // mode not set by default — fetchEventsFn maps upcomingOnly internally
         return HttpResponse.json(mockEventsEnvelope);
       })

@@ -1,7 +1,7 @@
 # Implementation Status & TODO Map
 
-Version: 1.0.0
-Last reviewed from PR history: 2026-05-23 a 2026-05-30
+Version: 1.1.0
+Last reviewed: 2026-06-02
 
 > ⚠️ **Arquivo operacional e temporário.** Resume implementações recentes e TODOs derivados de PRs. Não é SSOT permanente — sempre validar contra o código real. Itens resolvidos devem ser removidos; regras permanentes devem ser promovidas para `.context/OPERATIONS.md`, `.agents/GUIDELINES.md` ou `LEARNINGS.md`.
 
@@ -43,6 +43,8 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 - Enciclopedia de Zouk Brasileiro foi expandida e fortalecida para AEO/Knowledge Panel.
 - H1/title/copy da Enciclopedia foram ajustados para termos como Brazilian Zouk Encyclopedia & History.
 - `llms-full.txt` passou a expor conteudo mais completo da Enciclopedia.
+- Enciclopedia passou a expor rotas individuais bilingues e prerenderizadas para cada termo, com `DefinedTerm`, pergunta/resposta visivel, `FAQPage`, canonical, hreflang, breadcrumbs e inclusao no sitemap.
+- Catalogo inicial de movimentos foi ampliado com Cambré, Boneca e Chicote; slugs publicos enumerados em `src/config/encyclopedia-term-slugs.json` mantem React, sitemap e prerender sincronizados.
 - Crawl noise do Search Console foi mitigado com redirects canonicos, 410 para probes/placeholder e robots/noindex apropriados.
 - Hreflang/canonical em rotas dinamicas foram corrigidos para evitar URLs com `:id`/`:slug`.
 - Open Graph foi padronizado com helpers route-aware e imagens 1200x630.
@@ -83,7 +85,7 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 
 - Dados estruturados Person/MusicGroup foram alinhados entre React e Zen SEO Lite.
 - MusicEvent performer passou a apontar para o node MusicGroup.
-- Campeonato foi normalizado como Zouk DJ Championship / I Campeonato Internacional de DJs, evitando confusao com Zouk Worlds.
+- Campeonato foi normalizado como Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs, evitando confusao com Zouk Worlds.
 - Contagem de paises presenciais: ver `.context/IDENTITY.md` (SSOT).
 - Zoukology article foi preparado como published work externo, com relacao `Zen Eyer -> author of -> article -> published by Zoukology`, sem entrar em `sameAs`.
 
@@ -114,13 +116,6 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 - `.human/SESSION_HANDOFF_2026-05-30.md` criado com documentacao completa de cada mudanca e seu racionocinio.
 
 ## Pendencias / TODOs recomendados
-
-### P0 — antes de mergear PRs abertos relevantes
-
-- Corrigir #611 antes de merge: remover `noindex` se a pagina de festivais ja tiver conteudo real suficiente; revisar logica `upcoming` para nao classificar eventos passados como futuros.
-- Corrigir #612 antes de merge: sincronizar `package-lock.json`, garantir `npm ci`, Vitest/MSW e Contract Tests verdes.
-- Corrigir #613 antes de merge: investigar falha em `npm run build:full` no Quality Gate; so ativar gate quando passar de forma confiavel.
-- Revisar #608 com atencao a schema: published work deve fortalecer autoria externa, mas nao virar `sameAs`.
 
 ### P1 — saneamento documental e contexto
 

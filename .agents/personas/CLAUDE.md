@@ -7,7 +7,7 @@
 
 ## Projeto
 
-Site e plataforma oficial de Zen Eyer, nome artistico publico principal de Marcelo Eyer Fernandes, bicampeao mundial de Brazilian Zouk. DJ Zen Eyer e alias importante e historico, mas nao substitui o nome principal.
+Site e plataforma oficial de Zen Eyer, nome artistico publico principal de Marcelo Eyer Fernandes, DJ e produtor de Brazilian Zouk vencedor de Best DJ Performance e Best Remix no 2022 Brazilian Zouk DJ World Championship. DJ Zen Eyer e alias importante e historico, mas nao substitui o nome principal.
 Pronuncia canonica: **`/zɛn ˈaɪər/`** (IPA) — unica pronuncia correta. Nenhuma outra forma e aceita.
 Arquitetura: WordPress headless + React SPA, com frontend pre-renderizado em build time (SSG) e implantado como tema WordPress bilingue EN/PT.
 Producao: https://djzeneyer.com
@@ -74,7 +74,6 @@ Use `npm`, nao `pnpm`. Mudancas de dependencia precisam atualizar `package-lock.
 - Em producao, assets Vite saem de `/wp-content/themes/zentheme/dist/`.
 - Arquivos em `public/` so chegam ao webroot quando o CI os copia explicitamente.
 - `scripts/prerender.js` e obrigatorio para SSG e nao deve ser removido.
-- Payloads de prerender precisam incluir `menu.en` e `menu.pt`.
 - O minificador padrao e OXC. Nunca forcar `minify: 'esbuild'`.
 
 ## Relacao com os outros arquivos de contexto

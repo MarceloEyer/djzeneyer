@@ -1,8 +1,11 @@
 import React, { Suspense } from 'react';
 import AppProviders from './providers/AppProviders';
 import AppRoutes from './components/AppRoutes'; // Importamos a lógica isolada
+import { useWebMCP } from './hooks/useWebMCP';
 
 function App() {
+  useWebMCP(); // Registra ferramentas para agentes de IA (WebMCP)
+  
   return (
     <AppProviders>
       <Suspense

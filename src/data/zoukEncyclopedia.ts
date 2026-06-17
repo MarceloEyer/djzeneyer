@@ -5,8 +5,7 @@ export interface EncyclopediaTerm {
   category: EncyclopediaCategory;
   relatedTerms?: string[];
   sources?: Array<{
-    label?: string;
-    labelKey?: string;
+    labelKey: string;
     url: string;
   }>;
 }
@@ -64,6 +63,21 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     key: 'cabecada',
     category: 'fundamentals',
     relatedTerms: ['bodyWave', 'connection', 'leading', 'following'],
+  },
+  {
+    key: 'cambre',
+    category: 'fundamentals',
+    relatedTerms: ['boneca', 'bodyWave', 'connection'],
+  },
+  {
+    key: 'boneca',
+    category: 'fundamentals',
+    relatedTerms: ['cambre', 'chicote', 'connection'],
+  },
+  {
+    key: 'chicote',
+    category: 'fundamentals',
+    relatedTerms: ['boneca', 'cabecada', 'connection'],
   },
   {
     key: 'bodyWave',
@@ -288,3 +302,12 @@ export const ZOUK_ENCYCLOPEDIA: EncyclopediaTerm[] = [
     relatedTerms: ['caribbeanVsBrazilianZouk', 'zoukMusic'],
   }
 ];
+
+
+export const toEncyclopediaTermSlug = (key: string): string =>
+  key.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+
+const TERM_BY_SLUG = new Map(ZOUK_ENCYCLOPEDIA.map((term) => [toEncyclopediaTermSlug(term.key), term]));
+
+export const findEncyclopediaTermBySlug = (slug?: string): EncyclopediaTerm | undefined =>
+  slug ? TERM_BY_SLUG.get(slug.toLowerCase()) : undefined;

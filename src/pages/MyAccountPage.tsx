@@ -19,12 +19,14 @@ import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { stripHtml } from '../utils/text';
 import ManaProgressBar from '../components/ui/ManaProgressBar';
 import { safeUrl } from '../utils/sanitize';
+import { logger } from '../lib/logger';
 import type { ZenGameRankRequirement } from '../types/gamification';
 
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
 const EMPTY_STRING_ARRAY: string[] = [];
 const EMPTY_REQUIREMENT_ARRAY: ZenGameRankRequirement[] = [];
 const DANCE_ROLES = ['leader', 'follower'] as const;
+const ACHIEVEMENT_CARD_HOVER = { y: -5, scale: 1.02 };
 
 // Interfaces
 interface UserStats {
@@ -148,7 +150,7 @@ const MyAccountContent: React.FC = () => {
       logout();
       navigate(getLocalizedRoute('', currentLang));
     } catch (error) {
-      console.error('[MyAccountPage] Erro no logout:', error);
+      logger.error('MY_ACCOUNT_PAGE', 'Logout error', { error: String(error) });
       navigate(getLocalizedRoute('', currentLang));
     }
   }, [logout, navigate, currentLang]);
@@ -172,7 +174,7 @@ const MyAccountContent: React.FC = () => {
       setProfileSaved(true);
       setTimeout(() => setProfileSaved(false), 3000);
     } catch (error) {
-      console.error('[MyAccountPage] Error saving profile:', error);
+      logger.error('MY_ACCOUNT_PAGE', 'Error saving profile', { error: String(error) });
     } finally {
       setSavingProfile(false);
     }
@@ -298,7 +300,7 @@ const MyAccountContent: React.FC = () => {
               {allAchievements.map((ach: { id: string | number; earned?: boolean; image?: string; title?: string; description?: string }) => (
                 <motion.div
                   key={ach.id}
-                  whileHover={{ y: -5, scale: 1.02 }}
+                  whileHover={ACHIEVEMENT_CARD_HOVER}
                   className={`relative rounded-[2rem] p-8 border transition-all duration-500 overflow-hidden ${ach.earned
                     ? 'bg-surface/50 border-primary/20 shadow-xl'
                     : 'bg-black/40 border-white/5 opacity-40 grayscale hover:opacity-100 hover:grayscale-0'
@@ -306,7 +308,7 @@ const MyAccountContent: React.FC = () => {
                 >
                   <div className="relative z-10 flex flex-col items-center text-center">
                     <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-white/5'}`}>
-                      {ach?.image ? <img src={safeUrl(ach.image)} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
+                      {ach?.image ? <img src={safeUrl(ach.image, '')} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
                     </div>
                     <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || t('account.achievement_unknown')}</h4>
                     <p className="text-sm text-white/40 mb-6 leading-relaxed">

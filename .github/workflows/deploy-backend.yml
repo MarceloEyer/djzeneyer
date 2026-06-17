@@ -1,4 +1,4 @@
-name: 🚀 Deploy Backend PHP
+name: 🐘 Deploy · Backend PHP
 
 on:
   push:
@@ -35,7 +35,10 @@ jobs:
     
     steps:
       - name: 📥 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 2
+          persist-credentials: false
 
       - name: 🔨 Build plugin dependencies (Composer)
         run: |
@@ -50,15 +53,18 @@ jobs:
           fi
 
       - name: 🔐 Setup SSH
-        uses: shimataro/ssh-key-action@v2
+        uses: shimataro/ssh-key-action@87a8f067114a8ce263df83e9ed5c849953548bc3 # v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: unnecessary
+          known_hosts: |
+            |1|TNUVcyD1aWr2wGYOmlQPeemFgTE=|5B1Q6wvwM69bU8G3GUrrKiRut0o= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDShI+yYwF5uYrL7PTxqcZtl3B7EouJcdgS233vGtyRePOflah2WGeZZIT5DFHKxwlMfhSC0wKjLJa4wwTKZpIT4j7bH07h5iHm8XFmeOdU6kv0pu4W+7nLmVDZzh82/0iodYw1XgRfunt1K+JhCmHIOnWDaf6C80DtOZR4YcpeJAbyKSWhQTNhUm5oN3u1b703M1iomP6KCs8Jf7hiR0FOWFCsJ4qE1AR80I0RIigpdAJPieEHjyglsxRXvR90oCYNyNbAuOMF6H7gMKY5FsQyoe3DiOJWKbyad20CqheFB0hBkqaxwTtil2xW6xG6ZT8ELTuZp5QEzp3lJUrtC/YiKyfNLoJq7tFEyTGjVzkA1FJdxE7q7CZlc4WgmGmWbPZWF/cMSIKt4VAZeizZayrFOtPZmicdCAqwZXEerTONhtLs+IEF+/mGcadNZlyqop5mgegNoM1Cs21zRqQIn06WOZEX7nr/zra/snQiODJ2d+afOED1o+NSIHHApFZNWSU=
+            |1|/fdbloAM89tpWbUllaYu487m+XE=|6vm64/rMpLGUlMAoh8eC3hF7HAY= ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBFxQCICOTF37QQ0qOp8sP5FxG9Na/euvpJY66hO14H6atxwu3wCoNXHhiY8nRUxmq4yzhDsEuklJuVWM+4vSDPY=
+            |1|j3r8EBK800IPfRXohTW0XOek1Ks=|Vp6bWwZs1aymxjlr/UZPDreSUs8= ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ3BBPDXxVSsh7zTZu2jBnm08DuW6HYGb6V4fKXFCSyD
           name: id_rsa
 
       - name: 🔌 Deploy plugins/
         if: hashFiles('plugins/**') != ''
-        uses: burnett01/rsync-deployments@8.0.5
+        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
         with:
           switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
           path: plugins/
@@ -70,7 +76,7 @@ jobs:
 
       - name: 📚 Deploy inc/
         if: hashFiles('inc/**') != ''
-        uses: burnett01/rsync-deployments@8.0.5
+        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
         with:
           switches: -avzr --delete --checksum
           path: inc/
@@ -82,7 +88,7 @@ jobs:
 
       - name: 📚 Deploy parts/
         if: hashFiles('parts/**') != ''
-        uses: burnett01/rsync-deployments@8.0.5
+        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
         with:
           switches: -avzr --delete --checksum
           path: parts/
@@ -94,7 +100,7 @@ jobs:
 
       - name: 📚 Deploy templates/
         if: hashFiles('templates/**') != ''
-        uses: burnett01/rsync-deployments@8.0.5
+        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
         with:
           switches: -avzr --delete --checksum
           path: templates/
@@ -105,7 +111,7 @@ jobs:
           remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: 📝 Deploy root theme PHP files
-        uses: appleboy/scp-action@v1.0.0
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}
@@ -117,7 +123,7 @@ jobs:
 
       - name: 🧹 Purge caches
         continue-on-error: true
-        uses: appleboy/ssh-action@v1.2.5
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         with:
           host: ${{ env.SSH_HOST }}
           port: ${{ env.SSH_PORT }}

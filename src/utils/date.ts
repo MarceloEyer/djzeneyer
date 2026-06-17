@@ -1,5 +1,7 @@
 // src/utils/date.ts
 
+import { logger } from '../lib/logger';
+
 // Module-level cache to store instantiated Intl.DateTimeFormat objects
 const formatterCache = new Map<string, Intl.DateTimeFormat>();
 
@@ -34,7 +36,7 @@ export const formatDateVal = (dateValue: string | Date, locale: string, options:
 
     return getDateTimeFormatter(locale, options).format(date);
   } catch (error) {
-    console.error('[date] Error formatting date:', error, dateValue);
+    logger.error('DATE_UTIL', 'Error formatting date', { error: String(error), dateValue: String(dateValue) });
     return typeof dateValue === 'string' ? dateValue : '';
   }
 };

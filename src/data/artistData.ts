@@ -31,14 +31,16 @@ export const ARTIST = {
 
   // 🏆 Títulos e Credenciais (informação complementar, não contradiz Wikidata)
   titles: {
-    primary: 'World Champion Brazilian Zouk DJ (Best Remix & Best Performance)',
-    event: 'Zouk DJ Championship',
+    primary: '2022 Brazilian Zouk DJ World Championship winner (Best DJ Performance & Best Remix)',
+    event: 'Brazilian Zouk DJ World Championship',
     eventUrl: 'https://alexdecarvalho.com.br/ilhadozouk/pt-br/campeonato-de-djs/',
     location: 'Ilha Grande, Rio de Janeiro, Brazil',
     year: 2022,
     categories: ['Best DJ Performance', 'Best Remix'],
+    officialRulesName: 'I Campeonato Internacional de DJs',
+    hostEvent: 'Ilha do Zouk',
     description:
-      'Winner of two world titles at the Zouk DJ Championship 2022: Best DJ Performance and Best Remix.',
+      'Winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This is not the Zouk World event.',
   },
 
   // 🧠 Diferencial (Mensa)
@@ -191,7 +193,7 @@ export const ARTIST = {
     audiomack: { url: 'https://audiomack.com/djzeneyer' },
     boomplay: { url: 'https://www.boomplay.com/artists/35157982' },
     napster: { url: 'https://us.napster.com/artist/art.626690096' },
-    qobuz: { url: 'https://www.qobuz.com/artist/7501129' },
+    qobuz: { url: 'https://play.qobuz.com/artist/4083033' },
     patreon: { url: 'https://www.patreon.com/djzeneyer' },
     medium: { url: 'https://medium.com/@djzeneyer' },
     reddit: { url: 'https://www.reddit.com/user/djzeneyer' },
@@ -226,8 +228,8 @@ export const ARTIST = {
       type: 'Event'
     },
     {
-      title: 'DJ Zen Eyer - World Champion DJ Profile',
-      description: 'Professional profile highlighting the two world titles won at the Zouk DJ Championship.',
+      title: 'Zen Eyer - Brazilian Zouk DJ Profile',
+      description: 'Professional profile highlighting the Best DJ Performance and Best Remix awards won at the 2022 Brazilian Zouk DJ World Championship.',
       url: 'https://alexdecarvalho.com.br/ilhadozouk/noticias/',
       source: 'Ilha do Zouk',
       date: '2022-12-05',
@@ -272,6 +274,14 @@ export const ARTIST = {
       source: 'PR.com',
       date: '2025-11-24',
       type: 'Press Release'
+    },
+    {
+      title: 'The Art of Staying',
+      description: 'sometimes, when nothing impressive seems to be happening — everything is happening.',
+      url: 'https://events.zoukology.com/articles/the-art-of-staying',
+      source: 'Zoukology',
+      date: '2026-05-27',
+      type: 'Article'
     }
   ],
 
@@ -381,7 +391,7 @@ export const ARTIST = {
   site: {
     baseUrl: 'https://djzeneyer.com',
     defaultDescription:
-      'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and 2× world champion at the Zouk DJ Championship.',
+      'Official website of DJ Zen Eyer, Brazilian Zouk DJ and music producer from Rio de Janeiro, member of Mensa International and winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.',
     media: {
       photosUrl: 'https://photos.djzeneyer.com',
       epkPdf: '/dj-zen-eyer-presskit.pdf',

@@ -91,7 +91,7 @@ reviews:
     - path: 'src/locales/**/*.json'
       instructions: |
         - Novos componentes com strings visíveis DEVEM adicionar chaves em AMBOS pt/translation.json e en/translation.json.
-        - Nunca usar mojibake (Ã§, Â©, ðŸ) — arquivos devem ser UTF-8 limpo.
+        - Nunca usar mojibake; arquivos devem ser UTF-8 limpo.
         - Estrutura deve ser consistente entre PT e EN (mesmas chaves nos dois arquivos).
 
     - path: 'vite.config.ts'

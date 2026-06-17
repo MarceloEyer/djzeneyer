@@ -28,10 +28,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 2
+          persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: '22'
           cache: npm
@@ -42,11 +45,23 @@ jobs:
       - name: TypeScript check
         run: npm run type-check
 
+      - name: Architecture boundary check
+        run: npm run arch:check
+
+      - name: Docs internal links check
+        run: npm run docs:links
+
+      - name: API inventory freshness check
+        run: npm run api:inventory:check
+
       - name: i18n parity check
         run: npm run i18n:check
 
       - name: UTF-8 content check
         run: npm run utf8:check
+
+      - name: SEO invariant check
+        run: npm run seo:check
 
       - name: Generate sitemaps
         run: npm run generate-sitemaps
@@ -75,7 +90,7 @@ jobs:
 
       - name: Upload dist artifact on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: failed-quality-gate-dist
           path: |

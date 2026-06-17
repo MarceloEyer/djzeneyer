@@ -6,12 +6,15 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { stripHtml } from '../utils/text';
 import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { Toast } from '../components/common/Toast';
 import { getCurrencyFormatter } from '../utils/currency';
+import { logger } from '../lib/logger';
+import { ARTIST } from '../data/artistData';
 import {
   Loader2,
   ChevronLeft,
@@ -31,6 +34,14 @@ type Product = WCProduct;
 
 // ⚡ Bolt: Define static empty array to prevent unnecessary reallocation and preserve reference equality on empty states
 const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];
+const BUY_BUTTON_HOVER = { scale: 1.05 };
+const BUY_BUTTON_TAP = { scale: 0.95 };
+const PRODUCT_CARD_HOVER = {
+  scale: 1.15,
+  zIndex: 50,
+  y: -10,
+  transition: { type: 'spring', stiffness: 300, damping: 20 },
+};
 
 // --- Componente de Carrossel Horizontal ---
 // --- Netflix-style Paging Indicator ---
@@ -114,8 +125,8 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
 
           <div className="flex items-center gap-3 md:gap-4 pt-4">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={BUY_BUTTON_HOVER}
+              whileTap={BUY_BUTTON_TAP}
               onClick={() => onAddToCart(product.id)}
               className="flex items-center gap-2 bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-white/90 transition-colors shadow-xl"
               disabled={isAddingToCart}
@@ -155,12 +166,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
       className="flex-shrink-0 w-[240px] md:w-[300px] lg:w-[350px] relative z-10 transition-all duration-300"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={{
-        scale: 1.15,
-        zIndex: 50,
-        y: -10,
-        transition: { type: 'spring', stiffness: 300, damping: 20 }
-      }}
+      whileHover={PRODUCT_CARD_HOVER}
     >
       <div className="card-outer bg-surface border border-white/5 rounded-md overflow-hidden shadow-2xl group/card h-full">
         <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
@@ -350,7 +356,7 @@ const ShopPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const isPortuguese = i18n.language.startsWith('pt');
   const canonicalUrl = useMemo(
-    () => `https://djzeneyer.com/${getLocalizedRoute('shop', currentLang).replace(/^\//, '')}`,
+    () => `${ARTIST.site.baseUrl}${getLocalizedRoute('shop', currentLang)}`,
     [currentLang]
   );
   const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
@@ -367,7 +373,7 @@ const ShopPage: React.FC = () => {
       await addToCartMutation.mutateAsync({ productId, quantity: 1 });
       setShowToast(true);
     } catch (err) {
-      console.error('Error adding to cart:', err);
+      logger.error('SHOP_PAGE', 'Error adding to cart', { error: String(err) });
     } finally {
       setAddingToCart(null);
     }
@@ -394,6 +400,78 @@ const ShopPage: React.FC = () => {
   const newReleasesIds = useMemo(() => new Set(newReleases.map(p => p.id)), [newReleases]);
   const bestSellersIds = useMemo(() => new Set(bestSellers.map(p => p.id)), [bestSellers]);
   const curatedSelectionIds = useMemo(() => new Set(curatedSelection.map(p => p.id)), [curatedSelection]);
+  const visibleProducts = useMemo(() => {
+    const productsById = new Map<number, Product>();
+
+    // ⚡ Bolt: Replaced spread operator array creation with direct iteration to avoid O(N) memory allocation per render
+    if (featuredProduct) productsById.set(featuredProduct.id, featuredProduct);
+
+    for (let i = 0; i < newReleases.length; i++) {
+      const p = newReleases[i];
+      if (p) productsById.set(p.id, p);
+    }
+
+    for (let i = 0; i < bestSellers.length; i++) {
+      const p = bestSellers[i];
+      if (p) productsById.set(p.id, p);
+    }
+
+    for (let i = 0; i < curatedSelection.length; i++) {
+      const p = curatedSelection[i];
+      if (p) productsById.set(p.id, p);
+    }
+
+    return Array.from(productsById.values());
+  }, [bestSellers, curatedSelection, featuredProduct, newReleases]);
+  const shopSchema = useMemo(() => ({
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'CollectionPage',
+        '@id': `${canonicalUrl}#webpage`,
+        url: canonicalUrl,
+        name: t('shop.page_title'),
+        description: t('shop.page_meta_desc'),
+        isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+        about: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${canonicalUrl}#products`,
+        name: t('shop.page_title'),
+        itemListElement: visibleProducts.map((product, index) => {
+          const productUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('product-detail', currentLang).replace(':slug', product.slug)}`;
+          const imageUrl = safeUrl(product.images?.[0]?.sizes?.large || product.images?.[0]?.src, '');
+          const price = product.price || product.regular_price;
+
+          return {
+            '@type': 'ListItem',
+            position: index + 1,
+            item: {
+              '@type': 'Product',
+              '@id': `${productUrl}#product`,
+              name: product.name,
+              url: productUrl,
+              sku: String(product.id),
+              ...(imageUrl ? { image: imageUrl } : {}),
+              ...(product.short_description ? { description: stripHtml(product.short_description) } : {}),
+              ...(product.categories?.length ? { category: product.categories.map((category) => category.name).join(', ') } : {}),
+              brand: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+              offers: {
+                '@type': 'Offer',
+                url: productUrl,
+                priceCurrency: 'BRL',
+                ...(price ? { price } : {}),
+                availability: product.stock_status === 'instock'
+                  ? 'https://schema.org/InStock'
+                  : 'https://schema.org/OutOfStock',
+              },
+            },
+          };
+        }),
+      },
+    ],
+  }), [canonicalUrl, currentLang, t, visibleProducts]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
@@ -415,6 +493,7 @@ const ShopPage: React.FC = () => {
         url={canonicalUrl}
         image={featuredProduct?.images?.[0]?.sizes?.large || featuredProduct?.images?.[0]?.src || '/images/og/zen-eyer-shop-og.jpg'}
         imageAlt={featuredProduct ? t('og.image_alt.product', { name: featuredProduct.name }) : t('og.image_alt.shop')}
+        schema={shopSchema}
       />
 
       <Toast

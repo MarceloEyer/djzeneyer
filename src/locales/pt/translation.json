@@ -21,7 +21,8 @@
     "main_navigation": "Navegação Principal",
     "mobile_navigation": "Menu Mobile",
     "privacy": "Política de Privacidade",
-    "terms": "Termos de Uso"
+    "terms": "Termos de Uso",
+    "faq": "FAQ"
   },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
@@ -90,7 +91,7 @@
     "zouk_production": "Música, Eventos & Cultura Zouk",
     "featured": "Destaque",
     "read_full": "Ler História Completa",
-    "latest_stories": "Últimas Histórias",
+    "latest_stories": "Últimos lançamentos",
     "latest_stories_title": "Lançamentos & <1>Notas</1> Recentes",
     "read_more": "Leia Mais",
     "end_reached": "Você chegou ao fim da lista.",
@@ -117,6 +118,8 @@
     "legal_name": "Marcelo Eyer Fernandes",
     "cnpj": "44.063.765/0001-46",
     "isni": "0000 0005 2893 1015",
+    "loading": "Carregando…",
+    "loading_page": "Carregando página",
     "copy": "Copiar",
     "retry": "Tentar novamente",
     "close": "Fechar",
@@ -138,7 +141,8 @@
       "shipping": "Frete",
       "shipping_calc": "Calculado no checkout",
       "total": "Total",
-      "checkout": "Finalizar Compra"
+      "checkout": "Finalizar Compra",
+      "load_error": "Não foi possível carregar o carrinho."
     },
     "checkout": {
       "title": "Checkout",
@@ -327,7 +331,7 @@
   "zenlink": {
     "listen_now": "Ouça Agora",
     "choose_platform": "Escolha sua plataforma",
-    "seo_description": "Conecte-se com Zen Eyer — 2x Campeão Mundial de Brazilian Zouk. Ouça, reserve e siga a cremosidade!",
+    "seo_description": "Conecte-se com Zen Eyer — DJ de Brazilian Zouk e vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Ouça, reserve e siga a cremosidade!",
     "soundcloud_subtitle": "Sets e Remixes",
     "YouTube_subtitle": "Live sets e tutoriais",
     "book_title": "Contrate-me",
@@ -337,7 +341,7 @@
     "instagram_subtitle": "Dia a dia e bastidores",
     "events_title": "Agenda de Eventos",
     "events_subtitle": "Acompanhe minha agenda mundial",
-    "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
+    "hero_subtitle": "DJ de Zouk Brasileiro e vencedor em duas categorias",
     "quiz_title": "Quiz: Qual seu Persona?",
     "quiz_subtitle": "Descubra quem é você no zouk",
     "booking_subtitle": "Festivais, congressos e eventos privados",
@@ -345,11 +349,11 @@
     "contact_direct": "Booking e contato",
     "spotify_subtitle": "Ouça minhas músicas",
     "spotify_title": "Spotify",
-    "micro_champion": "2× Campeão Mundial",
-    "micro_island": "Zouk DJ Championship (2022)",
+    "micro_champion": "Best DJ Performance + Best Remix",
+    "micro_island": "Brazilian Zouk DJ World Championship (2022)",
     "micro_years_label": "anos de pista",
     "whatsapp_message": "Olá Zen! Vi seu link na bio.",
-    "subtitle": "2× Campeão Mundial de Zouk Brasileiro"
+    "subtitle": "DJ e produtor de Zouk Brasileiro"
   },
   "events_add_google": "Adicionar à Agenda",
   "social": {
@@ -364,7 +368,9 @@
     "musicbrainz": "MusicBrainz",
     "wikidata": "Wikidata",
     "discogs": "Discogs",
-    "resident_advisor": "Resident Advisor"
+    "resident_advisor": "Resident Advisor",
+    "facebook": "Facebook",
+    "whatsapp": "WhatsApp"
   },
   "badge_featured": "Destaque",
   "badge_new": "Novo",
@@ -374,11 +380,11 @@
   "play_featured_mix": "Ouvir no SoundCloud",
   "upcoming_events": "Próximos Eventos",
   "home": {
-    "site_desc": "Site oficial de Zen Eyer, bicampeão mundial de Zouk Brasileiro e produtor musical, também conhecido como DJ Zen Eyer.",
-    "page_title": "Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
-    "page_meta_desc": "Zen Eyer, bicampeão mundial (Melhor Remix e Melhor Performance DJ) no Zouk DJ Championship 2022. Contrate para eventos internacionais.",
+    "site_desc": "Site oficial de Zen Eyer, DJ e produtor musical de Zouk Brasileiro, também conhecido como DJ Zen Eyer.",
+    "page_title": "Zen Eyer | DJ e Produtor de Zouk Brasileiro",
+    "page_meta_desc": "Zen Eyer, vencedor de Melhor Remix e Melhor Performance DJ no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Contrate para eventos internacionais.",
     "headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
-    "subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som do bicampeão mundial.",
+    "subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som de Zen Eyer.",
     "welcome": "Bem-vindo ao Zen Eyer",
     "tagline": "DJ e Produtor de Zouk Brasileiro",
     "cta": "Explorar Músicas",
@@ -392,17 +398,17 @@
     "feat_community_desc": "Conecte-se com amantes de música e Zen Eyer",
     "cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
     "cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
-    "hero_badge": "Bicampeão Mundial - Zouk DJ Championship",
+    "hero_badge": "Best DJ Performance + Best Remix - Campeonato Mundial de DJs de Zouk Brasileiro de 2022",
     "hero_title": "Zen Eyer",
-    "hero_subtitle": "Bicampeão Mundial de Zouk Brasileiro",
+    "hero_subtitle": "DJ e Produtor de Zouk Brasileiro",
     "pronunciation_summary": " (Fonética: /zɛn ˈaɪər/. Eyer soa como Buyer sem o B, ou 'Eye' seguido de 'er').",
     "hero_slogan": "A pressa é inimiga da cremosidade",
     "hero_cta_text": "Sets completos e remixes. Para mais opções de streaming e downloads, vá em <0>Músicas</0>.",
-    "stat_champion": "Bicampeão Mundial",
+    "stat_champion": "Prêmios no Campeonato",
     "stat_countries": "Países",
     "stat_events": "Eventos",
     "stat_years": "Experiência",
-    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de receber dois títulos mundiais no Zouk DJ Championship (Melhor Remix e Melhor Performance DJ), consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 14 países.",
+    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de vencer Best Remix e Best DJ Performance no Campeonato Mundial de DJs de Zouk Brasileiro, consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 14 países.",
     "bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
     "bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
     "festivals_title": "Festivais & Eventos",
@@ -425,7 +431,7 @@
     "cta_booking": "Booking / Press Kit",
     "cta_music": "Explorar Músicas",
     "bio_title": "Quem é Zen Eyer?",
-    "bio_intro": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) é <strong>DJ de Brazilian Zouk</strong> e produtor musical. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Zouk DJ Championship, sendo reconhecido pela precisão técnica e sensibilidade musical.",
+    "bio_intro": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) é <strong>DJ de Brazilian Zouk</strong> e produtor musical. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Campeonato Mundial de DJs de Zouk Brasileiro, sendo reconhecido pela precisão técnica e sensibilidade musical.",
     "bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
     "bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Frequenta palcos de peso como o Rio Zouk Congress.",
     "verified": "Perfis Verificados",
@@ -435,10 +441,10 @@
       "cta": "ENTRAR EM CONTATO"
     },
     "seo": {
-      "title": "Zen Eyer | Bicampeão Mundial de Zouk Brasileiro",
-      "description": "Zen Eyer, bicampeão mundial focado no Zouk Brasileiro.",
-      "keywords": "Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, world champion DJ, Brazilian Zouk music, dance festival DJ, Zouk producer",
-      "lead_answer": "Zen Eyer é um bicampeão mundial, DJ e produtor musical especializado em Zouk Brasileiro, reconhecido por seu estilo de 'cremosidade' e experiências de pista imersivas."
+      "title": "Zen Eyer | DJ e Produtor de Zouk Brasileiro",
+      "description": "Zen Eyer, DJ e produtor musical focado no Zouk Brasileiro.",
+      "keywords": "Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, Best DJ Performance, Best Remix, Brazilian Zouk music, dance festival DJ, Zouk producer",
+      "lead_answer": "Zen Eyer é DJ e produtor musical especializado em Zouk Brasileiro, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022."
     },
     "festivals": {
       "presence": "Presença Internacional",
@@ -453,6 +459,17 @@
       "title": "Imprensa & Mídia",
       "desc": "Acesse fotos, bio e assets.",
       "cta": "BAIXAR PRESS KIT"
+    }
+  },
+  "music_catalog_title": "Catálogo Musical",
+  "music_catalog_description": "Faixas, edits e lançamentos do Zen Eyer com metadados para DJs.",
+  "track": {
+    "bpm": "BPM",
+    "energy": "energia",
+    "energy_level": {
+      "chill": "relaxante",
+      "medium": "média",
+      "high": "alta"
     }
   },
   "music_page_title": "Hub de Música",
@@ -512,13 +529,29 @@
     "dj_tool_kit_cta": "Acessar Downloads",
     "collections_title": "Coleção Musical",
     "collections_desc": "Tracks exclusivas, mixes e playlists curadas por DJ Zen Eyer",
-    "listen_now_on": "Ouça agora em"
+    "listen_now_on": "Ouça agora em",
+    "release_detail": {
+      "back": "Voltar à Música",
+      "listen_on": "Ouvir em",
+      "credits": "Créditos",
+      "role_remixer": "Remixer",
+      "role_performer": "Artista",
+      "role_producer": "Produtor",
+      "original_artist": "Artista original",
+      "collaborator": "Colaborador",
+      "type_label": "Tipo",
+      "date_label": "Lançado em",
+      "duration_label": "Duração",
+      "not_found": "Lançamento não encontrado.",
+      "not_found_back": "Voltar ao Hub de Música"
+    },
+    "release_seo_desc_fallback": "{{name}} — {{type}} de Zen Eyer. Música Zouk Brasileiro."
   },
   "press": {
     "page_title": "Press Kit",
     "page_meta_desc": "Press kit oficial do Zen Eyer. Baixe fotos em alta resolução, bio e rider técnico.",
     "bio_title": "O Artista",
-    "bio_subtitle": "Bicampeão Mundial & Curador Musical",
+    "bio_subtitle": "DJ de Zouk Brasileiro & Curador Musical",
     "stats_title": "Estatísticas Rápidas",
     "stats_experience": "Anos de Experiência",
     "stats_tours": "Turnês Internacionais",
@@ -655,7 +688,7 @@
       "award_remix_value": "Melhor Remix, 2022",
       "award_performance": "Prêmio",
       "award_performance_value": "Melhor Performance de DJ, 2022",
-      "award_source": "Zouk DJ Championship",
+      "award_source": "Brazilian Zouk DJ World Championship",
       "residence": "Residência"
     }
   },
@@ -684,8 +717,8 @@
     "featured_video_title": "Mercy - Shawn Mendes - Dj Zen Eyer Remix (Zouk Music)",
     "featured_video_desc": "Remix de Brazilian Zouk por DJ Zen Eyer, publicado pelo canal Zouk Music.",
     "watch_on_youtube": "Assistir no YouTube",
-    "world_champion": "Bicampeão Mundial de Zouk Brasileiro",
-    "world_champion_desc": "Marcelo Eyer, conhecido como Zen Eyer, é bicampeão mundial de Zouk Brasileiro, trazendo energia única para pistas de dança ao redor do mundo.",
+    "world_champion": "Best DJ Performance + Best Remix",
+    "world_champion_desc": "Marcelo Eyer, conhecido como Zen Eyer, venceu Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.",
     "international_performances": "Performances Internacionais",
     "international_performances_desc": "Zen Eyer se apresentou em grandes festivais e eventos no Brasil, Europa e Américas, especializado em música de Zouk Brasileiro.",
     "media_assets": "Recursos de Mídia",
@@ -744,7 +777,7 @@
   "footer_contact_label": "Contato",
   "events_categories": "Categorias",
   "events_found": "eventos encontrados",
-  "events_page_title": "Agenda de Shows Zen Eyer | Bicampeão Mundial Zouk",
+  "events_page_title": "Agenda de Shows Zen Eyer | DJ de Zouk Brasileiro",
   "events_page_meta_desc": "Acompanhe a agenda mundial do Zen Eyer. Sinta a 'cremosidade' nos melhores festivais de Zouk do mundo. Garanta seu ingresso e entre para a Zen Tribe! ✓",
   "events_filter_placeholder": "Filtrar por cidade ou evento...",
   "events_back": "Voltar para Eventos",
@@ -891,7 +924,7 @@
     "bio": {
       "title": "A Jornada Sonora",
       "p1": "<strong>Zen Eyer</strong> é DJ e produtor musical de Brazilian Zouk focado em festivais, maratonas e pistas que precisam de alcance emocional, controle musical e confiança.",
-      "p2": "Ele se apresentou presencialmente em 14 países e venceu dois títulos mundiais no Zouk DJ Championship em 2022, levando um som cremoso e emocional que dá aos dançarinos tempo para respirar, conectar e permanecer na pista.",
+      "p2": "Ele se apresentou presencialmente em 14 países e venceu Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022, levando um som cremoso e emocional que dá aos dançarinos tempo para respirar, conectar e permanecer na pista.",
       "p3": "Seus sets são construídos para organizadores que precisam de um DJ capaz de ler públicos mistos, sustentar a sala com segurança e transformar um horário da programação em uma experiência lembrada na pista.",
       "quickStats": {
         "cremosidade": "Cremosidade",
@@ -902,7 +935,9 @@
         "connection_desc": "Leitura de pista impecável",
         "global": "Global",
         "global_desc": "Apresentações presenciais em 14 países"
-      }
+      },
+      "photo_label": "Troféu do Campeonato {{year}}",
+      "role": "DJ & Produtor"
     },
     "media": {
       "title": "Media & Downloads",
@@ -919,7 +954,7 @@
       "download": "Baixar Arquivo"
     },
     "gallery": {
-      "title": "Galeria de Fotos",
+      "title": "Galeria de Imprensa",
       "subtitle": "Momentos capturados em festivais ao redor do mundo.",
       "cta": "Ver Todas no Photos.djzeneyer"
     },
@@ -931,7 +966,8 @@
       "availability_value": "Mundial",
       "genre": "Gênero Principal",
       "links": "Links Úteis & Redes Sociais",
-      "whatsapp_message": "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking. Como podemos prosseguir?"
+      "whatsapp_message": "Olá Zen Eyer! Gostaria de conversar sobre uma possível colaboração ou booking. Como podemos prosseguir?",
+      "booking_label": "Booking"
     },
     "canonical_bio": {
       "title": "Bio para Festivais & Maratonas",
@@ -939,7 +975,12 @@
       "copy_button": "Copiar Bio",
       "copied": "Copiado!",
       "whatsapp_default_msg": "Olá Zen Eyer! Gostaria de conversar sobre booking.",
-      "text": "Zen Eyer é DJ e produtor musical de Brazilian Zouk de Niterói, Brasil. Também conhecido como DJ Zen Eyer, venceu dois títulos mundiais no Zouk DJ Championship em 2022: Best Remix e Best DJ Performance. Ele se apresentou presencialmente em 14 países e é conhecido por sets cremosos e emocionais, criados para festivais, maratonas e pistas sociais de Brazilian Zouk."
+      "text": "Zen Eyer é DJ e produtor musical de Brazilian Zouk de Niterói, Brasil. Também conhecido como DJ Zen Eyer, venceu Best Remix e Best DJ Performance no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Ele se apresentou presencialmente em 14 países e é conhecido por sets cremosos e emocionais, criados para festivais, maratonas e pistas sociais de Brazilian Zouk."
+    },
+    "lineups": {
+      "title": "Line-ups Internacionais",
+      "subtitle": "Alguns dos palcos onde o Brazilian Zouk encontrou flow sem pressa.",
+      "global_note": "+ a turne mundial continua cobrindo Americas, Europa e Oceania."
     }
   },
   "support": {
@@ -1006,7 +1047,9 @@
     },
     "header": {
       "title": "Apoie o DJ <1>Zen Eyer</1>",
-      "description": "Se você gosta do meu trabalho e quer ajudar a manter a cremosidade nas pistas, aqui estão algumas formas simples de apoiar:"
+      "description_p1": "Se você é do tipo de pessoa que acredita que dançar pode ser mais do que passos, se você quer mais conexão, música humana e presença de verdade, apoiar o meu trabalho custa menos que uma garrafinha de água em uma festa de zouk.",
+      "description_p2": "Para você é quase nada. Para mim, faz uma grande diferença no fim do mês.",
+      "description_p3": "Considere colaborar e ajudar esse projeto a continuar existindo, com novas músicas, sets e experiências feitas para quem não quer ficar só na superfície."
     },
     "payment": {
       "title": "Métodos de Pagamento",
@@ -1174,7 +1217,7 @@
       "events_detail": "{{eventTitle}} – evento de Zouk Brasileiro com {{artist}}",
       "music": "Zen Eyer nas pick-ups do seu catálogo de música Zouk Brasileiro",
       "press": "Imagem oficial de imprensa de Zen Eyer",
-      "facts": "Zen Eyer com seu troféu de campeão mundial de DJ de Zouk Brasileiro",
+      "facts": "Zen Eyer com seu troféu do campeonato de DJ de Zouk Brasileiro",
       "shop": "Zen Eyer celebrando com a comunidade de Zouk Brasileiro",
       "support": "Zen Eyer conectado com a comunidade de dança Zouk Brasileiro",
       "news": "Imagem oficial de imprensa de Zen Eyer para lançamentos e notícias",
@@ -1184,5 +1227,6 @@
   },
   "events_search_results": "Resultados para",
   "events_venue": "Local",
-  "quiz_you_are": "Você é..."
+  "quiz_you_are": "Você é...",
+  "share_event": "Compartilhar {{title}}"
 }

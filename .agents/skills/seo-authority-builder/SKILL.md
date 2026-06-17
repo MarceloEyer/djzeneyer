@@ -51,7 +51,7 @@ Additional high-value signals:
 ## Project-specific guardrails
 
 - Current consolidated public country count: 14 presencial countries, unless factual audit updates it.
-- Championship naming: Zouk DJ Championship / I Campeonato Internacional de DJs. Avoid confusing it with Zouk Worlds unless the source explicitly supports that naming.
+- Championship naming: 2022 Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs. It was held at Ilha do Zouk, but Zen Eyer was not "champion of Ilha do Zouk". Do not confuse it with Zouk World/Zouk Worlds; that separate event did not host this DJ championship.
 - `Zen Eyer` is the main public name. `DJ Zen Eyer` is an alias.
 - Zoukology published work is an **authorship signal** (`author` in article schema), **not** a `sameAs` identity URL. This is a critical distinction for Knowledge Panel health.
 - Press articles, reportagens and event lineup pages are citation signals — never `sameAs`.
@@ -190,7 +190,7 @@ Generative Engine Optimization (GEO) is about being cited in AI-generated answer
 - Brazilian Zouk Wikipedia article: contributing factual information (especially championship facts) strengthens topical authority without self-promotion.
 
 **Video content for GEO:**
-- YouTube videos need accurate titles, descriptions, and tags that include key entities: "Zen Eyer", "Brazilian Zouk", "DJ set", "Zouk DJ Championship".
+- YouTube videos need accurate titles, descriptions, and tags that include key entities: "Zen Eyer", "Brazilian Zouk", "DJ set", "Brazilian Zouk DJ World Championship".
 - Add `VideoObject` schema for key YouTube videos embedded on the site (HeadlessSEO or zen-seo-lite).
 - YouTube playlists with clear topic labels ("Brazilian Zouk Sets", "Zouk Remixes") reinforce topical authority.
 

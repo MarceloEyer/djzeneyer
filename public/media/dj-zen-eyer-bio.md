@@ -7,7 +7,7 @@ Marcelo Eyer, known professionally as DJ Zen Eyer, is a Brazilian Zouk DJ and pr
 Based in Niteroi, Rio de Janeiro, Brazil, he became widely known for "Cremosidade": a long-form approach to set architecture that privileges smooth transitions, emotional continuity, and deep dance-floor immersion.
 
 ## Career Highlights
-- Two world titles at the Zouk DJ Championship 2022.
+- Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.
 - Winner of Best DJ Performance.
 - Winner of Best Remix.
 - Performances and bookings across Brazil, Europe, the Americas, and Oceania.

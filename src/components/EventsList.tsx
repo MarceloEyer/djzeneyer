@@ -7,6 +7,7 @@ import { Calendar, MapPin, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useEventsQuery } from '../hooks/useQueries';
 import { sanitizeHtml } from '../utils/sanitize';
+import { logger } from '../lib/logger';
 import patternSvg from '../assets/images/pattern.svg';
 import { getDateTimeFormatter } from '../utils/date';
 import type { ZenBitEventListItem } from '../types/events';
@@ -59,7 +60,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
   });
 
   if (error) {
-    console.error('Error fetching events:', error);
+    logger.error('EVENTS_LIST', 'Error fetching events', { error: String(error) });
   }
 
   // Optimization: Pre-process and stabilize event data for rendering

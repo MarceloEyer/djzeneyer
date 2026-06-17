@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Helmet } from 'react-helmet-async';
 import { Share2, RefreshCw, ChevronRight, Music, Heart, Zap, Sparkles, Coffee } from 'lucide-react';
+import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import patternSvg from '../assets/images/pattern.svg';
+import { logger } from '../lib/logger';
 
 // ============================================================================
 // DATA & LOGIC
@@ -30,6 +31,9 @@ interface Question {
     points: Partial<Record<PersonaType, number>>;
   }[];
 }
+
+const QUIZ_OPTION_HOVER = { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' };
+const QUIZ_OPTION_TAP = { scale: 0.98 };
 
 const PERSONAS: Record<PersonaType, PersonaResult> = {
   lambadeiro: {
@@ -198,7 +202,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
           url: quizUrl
         });
       } catch (err) {
-        console.error('Share failed', err);
+        logger.error('ZOUK_PERSONA_QUIZ', 'Share failed', { error: String(err) });
       }
     } else {
       navigator.clipboard.writeText(text);
@@ -208,10 +212,14 @@ const ZoukPersonaQuizPage: React.FC = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{t('quiz.ui.meta_title', { stageName: ARTIST.identity.stageName })}</title>
-        <meta name="description" content={t('quiz.ui.meta_desc')} />
-      </Helmet>
+      <HeadlessSEO
+        title={t('quiz.ui.meta_title', { stageName: ARTIST.identity.stageName })}
+        description={t('quiz.ui.meta_desc')}
+        url={quizUrl}
+        image={`${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`}
+        imageAlt={t('og.image_alt.default')}
+        noindex
+      />
 
       <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center p-4 relative overflow-hidden font-sans">
         {/* Background */}
@@ -256,8 +264,8 @@ const ZoukPersonaQuizPage: React.FC = () => {
                   {QUESTIONS[currentQuestion].options.map((option, index) => (
                     <motion.button
                       key={index}
-                      whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={QUIZ_OPTION_HOVER}
+                      whileTap={QUIZ_OPTION_TAP}
                       onClick={() => handleAnswer(option.points)}
                       className="w-full p-4 text-left bg-gray-700/50 hover:bg-gray-600 rounded-xl border border-white/5 transition-colors flex items-center justify-between group"
                     >

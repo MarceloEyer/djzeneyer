@@ -1,6 +1,13 @@
 # Content-Type for extensionless RFC well-known files
 # Serves api-catalog, oauth-*, agent-registration without .json extension
 
+# Route OAuth discovery endpoints to PHP handlers for guaranteed Content-Type
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /.well-known/
+  RewriteRule ^(oauth-authorization-server|oauth-protected-resource)$ $1.php [L,QSA]
+</IfModule>
+
 <IfModule mod_mime.c>
   # RFC 9727 — API Catalog
   <Files "api-catalog">
@@ -10,18 +17,18 @@
     Header set Access-Control-Allow-Origin "*"
   </Files>
 
-  # OAuth 2.0 metadata (RFC 8414)
+  # OAuth 2.0 metadata (RFC 8414) — served via PHP handlers; short TTL
   <Files "oauth-authorization-server">
     ForceType "application/json"
     Header set Content-Type "application/json; charset=UTF-8"
-    Header set Cache-Control "public, max-age=3600"
+    Header set Cache-Control "public, max-age=300, stale-while-revalidate=60"
     Header set Access-Control-Allow-Origin "*"
   </Files>
 
   <Files "oauth-protected-resource">
     ForceType "application/json"
     Header set Content-Type "application/json; charset=UTF-8"
-    Header set Cache-Control "public, max-age=3600"
+    Header set Cache-Control "public, max-age=300, stale-while-revalidate=60"
     Header set Access-Control-Allow-Origin "*"
   </Files>
 

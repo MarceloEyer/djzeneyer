@@ -23,12 +23,6 @@ import { logger } from '../lib/logger';
 // TYPES
 // ----------------------------------------------------------------------------
 
-export interface MenuItem {
-  ID: number;
-  title: string;
-  url: string;
-  target: string;
-}
 
 export interface MusicTrack {
   id: number;
@@ -173,7 +167,7 @@ declare global {
   interface Window {
     __PRERENDER_DATA__?: {
       events?: { en?: ZenBitEventListItem[]; pt?: ZenBitEventListItem[] };
-      menu?: { en?: MenuItem[]; pt?: MenuItem[] };
+
       news?: { en?: WPPost[]; pt?: WPPost[] };
       eventsLimit?: number;
       eventsMode?: FetchEventsParams['mode'];
@@ -183,11 +177,14 @@ declare global {
   }
 }
 
+const getPrerenderPayload = (): Window['__PRERENDER_DATA__'] | undefined =>
+  typeof window === 'undefined' ? undefined : window.__PRERENDER_DATA__;
+
 const getPrerenderData = <T>(
   lang: string | undefined,
   field: keyof NonNullable<Window['__PRERENDER_DATA__']>
 ): T | null => {
-  const data = window.__PRERENDER_DATA__;
+  const data = getPrerenderPayload();
   if (!data || !data[field]) return null;
   const bucket = data[field];
   if (Array.isArray(bucket)) return bucket as T;
@@ -196,8 +193,15 @@ const getPrerenderData = <T>(
   return (keyedBucket.en || keyedBucket.pt || null) as T;
 };
 
+const getPrerenderUpdatedAt = (): number => {
+  const fetchedAt = getPrerenderPayload()?.fetchedAt;
+  if (!fetchedAt) return 0;
+  const timestamp = Date.parse(fetchedAt);
+  return Number.isFinite(timestamp) ? timestamp : 0;
+};
+
 const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListItem[]>(lang, 'events');
-const getPrerenderMenu = (lang?: string) => getPrerenderData<MenuItem[]>(lang, 'menu');
+
 const getPrerenderNews = (lang?: string) => getPrerenderData<WPPost[]>(lang, 'news');
 
 const withProcessedEvents = (events: ZenBitEventListItem[], lang?: string): ZenBitEventListItem[] => {
@@ -221,19 +225,34 @@ const withProcessedEvents = (events: ZenBitEventListItem[], lang?: string): ZenB
     .filter((event): event is ZenBitEventListItem => event !== null);
 };
 
+const getPrerenderEventsForParams = ({
+  mode,
+  days,
+  date,
+  limit = 10,
+  lang,
+  upcomingOnly,
+}: FetchEventsParams = {}): ZenBitEventListItem[] | undefined => {
+  const payload = getPrerenderPayload();
+  const prerenderEvents = getPrerenderEvents(lang);
+  const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
+  const requestedDays = date === undefined ? (days ?? 365) : undefined;
+  const canUsePrerenderEvents =
+    requestedMode === payload?.eventsMode &&
+    date === undefined &&
+    requestedDays === payload?.eventsDays &&
+    payload?.eventsLimit !== undefined &&
+    limit <= payload.eventsLimit;
+
+  if (!canUsePrerenderEvents || !prerenderEvents || prerenderEvents.length === 0) return undefined;
+  return withProcessedEvents(prerenderEvents.slice(0, limit), lang);
+};
+
 // ----------------------------------------------------------------------------
 // FETCH FUNCTIONS (exportadas para prefetch/SSG)
 // ----------------------------------------------------------------------------
 
-export const fetchMenuFn = async (lang: string): Promise<MenuItem[]> => {
-  const prerenderMenu = getPrerenderMenu(lang);
-  if (prerenderMenu && prerenderMenu.length > 0) return prerenderMenu;
-  const apiUrl = buildApiUrl('djzeneyer/v1/menu', { lang });
-  const res = await fetch(apiUrl);
-  if (!res.ok) throw new Error('Failed to fetch menu');
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
-};
+
 
 export const fetchArtistProfileFn = async (): Promise<ArtistProfile> => {
   const apiUrl = buildApiUrl('zen-seo/v1/profile');
@@ -251,23 +270,6 @@ export const fetchEventsFn = async ({
   lang,
   upcomingOnly,
 }: FetchEventsParams = {}): Promise<ZenBitEventListItem[]> => {
-  const prerenderEvents = getPrerenderEvents(lang);
-  const prerenderEventsLimit = window.__PRERENDER_DATA__?.eventsLimit;
-  const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
-  const requestedDays = date === undefined ? (days ?? 365) : undefined;
-  const prerenderEventsMode = window.__PRERENDER_DATA__?.eventsMode;
-  const prerenderEventsDays = window.__PRERENDER_DATA__?.eventsDays;
-  const canUsePrerenderEvents =
-    requestedMode === prerenderEventsMode &&
-    date === undefined &&
-    requestedDays === prerenderEventsDays &&
-    prerenderEventsLimit !== undefined &&
-    limit <= prerenderEventsLimit;
-
-  if (canUsePrerenderEvents && prerenderEvents && prerenderEvents.length > 0) {
-    return withProcessedEvents(prerenderEvents.slice(0, limit), lang);
-  }
-
   try {
     const params: Record<string, string> = {};
     if (limit) params.limit = String(limit);
@@ -281,29 +283,27 @@ export const fetchEventsFn = async ({
     const res = await fetch(apiUrl);
     if (!res.ok) {
       logger.error('EVENTS_API_ERROR', `Events API responded with ${res.status}`, { status: res.status });
-      return [];
+      throw new Error(`Events API responded with ${res.status}`);
     }
     const rawData = await res.json();
 
-    let events: ZenBitEventListItem[] = [];
+    let events: ZenBitEventListItem[];
     if (Array.isArray(rawData)) {
       events = z.array(ZenBitEventListItemSchema).parse(rawData);
     } else if (rawData && typeof rawData === 'object' && 'events' in rawData) {
       events = EventsApiResponseSchema.parse(rawData).events;
+    } else {
+      throw new Error('Events API returned unexpected format');
     }
 
     return withProcessedEvents(events, lang);
   } catch (err) {
     logger.error('EVENTS_FETCH_FAILED', 'Failed to fetch events', { error: String(err) });
-    return [];
+    throw err;
   }
 };
 
 export const fetchNewsFn = async (lang?: string, filters: NewsFilters = {}): Promise<WPPost[]> => {
-  const hasFilters = Boolean(filters.category || filters.tag || filters.search);
-  const prerenderNews = getPrerenderNews(lang);
-  if (!hasFilters && prerenderNews && prerenderNews.length > 0) return prerenderNews;
-
   const apiUrl = buildApiUrl('wp/v2/posts', {
     per_page: '10',
     ...(lang ? { lang } : {}),
@@ -315,7 +315,8 @@ export const fetchNewsFn = async (lang?: string, filters: NewsFilters = {}): Pro
   const res = await fetch(apiUrl);
   if (!res.ok) throw new Error('Failed to fetch news posts');
   const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  if (!Array.isArray(data)) throw new Error('News API returned unexpected format');
+  return data;
 };
 
 const fetchWpTermsFn = async (taxonomy: 'categories' | 'tags', lang?: string): Promise<WPTerm[]> => {
@@ -374,13 +375,6 @@ export const fetchProductCollectionsFn = async (
 // HOOKS
 // ----------------------------------------------------------------------------
 
-export const useMenuQuery = (lang: string) =>
-  useQuery({
-    queryKey: QUERY_KEYS.menu.list(lang),
-    queryFn: () => fetchMenuFn(lang),
-    staleTime: STALE_TIME.MENU,
-    retry: 1,
-  });
 
 export const useZenSeoSettings = () =>
   useQuery({
@@ -392,7 +386,7 @@ export const useZenSeoSettings = () =>
       const response = await res.json();
       return response.success ? response.data : {};
     },
-    staleTime: 24 * 60 * 60 * 1000,
+    staleTime: STALE_TIME.POSTS,
   });
 
 export const useEventsQuery = (
@@ -409,6 +403,8 @@ export const useEventsQuery = (
   return useQuery({
     queryKey: QUERY_KEYS.events.list(normalizedParams),
     queryFn: () => fetchEventsFn(normalizedParams),
+    initialData: () => getPrerenderEventsForParams(normalizedParams),
+    initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.EVENTS,
     retry: 2,
     ...options,
@@ -420,9 +416,12 @@ export const useNewsQuery = (
   options: { enabled?: boolean; filters?: NewsFilters } = {}
 ) => {
   const filters = options.filters || {};
+  const hasFilters = Boolean(filters.category || filters.tag || filters.search);
   return useQuery({
     queryKey: QUERY_KEYS.posts.list(lang, filters),
     queryFn: () => fetchNewsFn(lang, filters),
+    initialData: () => { if (hasFilters) return undefined; const d = getPrerenderNews(lang); return d !== null && d.length > 0 ? d : undefined; },
+    initialDataUpdatedAt: getPrerenderUpdatedAt,
     staleTime: STALE_TIME.POSTS,
     enabled: options.enabled,
   });
@@ -438,7 +437,7 @@ export const useNewsTaxonomiesQuery = (lang?: string, options: { enabled?: boole
       ]);
       return { categories, tags };
     },
-    staleTime: STALE_TIME.POSTS,
+    staleTime: STALE_TIME.EVENTS,
     enabled: options.enabled,
   });
 
@@ -483,11 +482,12 @@ export const useEventById = (
         const apiUrl = buildApiUrl(`zen-bit/v2/events/${String(eventId)}`, queryParams);
         const res = await fetch(apiUrl);
         if (!res.ok) {
+          if (res.status === 404) return null; // genuine not found — renders NotFoundPage
           logger.error('EVENT_DETAIL_API_ERROR', `Event detail API responded with ${res.status}`, {
             eventId,
             status: res.status,
           });
-          return null;
+          throw new Error(`Event detail API responded with ${res.status}`);
         }
         const json = await res.json();
         const parsed = EventDetailApiResponseSchema.safeParse(json);
@@ -495,16 +495,16 @@ export const useEventById = (
           logger.error('EVENT_DETAIL_SCHEMA_MISMATCH', 'Event detail schema validation failed', {
             issues: parsed.error.issues,
           });
-          return null;
+          throw new Error('Event detail schema validation failed');
         }
         return parsed.data.event;
       } catch (err) {
         logger.error('EVENT_DETAIL_FETCH_FAILED', 'Failed to fetch event detail', { error: String(err) });
-        return null;
+        throw err;
       }
     },
     enabled: !!eventId,
-    staleTime: 24 * 60 * 60 * 1000,
+    staleTime: STALE_TIME.EVENTS,
     ...options,
   });
 };

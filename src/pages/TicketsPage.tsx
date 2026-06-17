@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
+import { ARTIST } from '../data/artistData';
 import { safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { useProductsQuery, type WCProduct } from '../hooks/useQueries';
@@ -37,8 +38,9 @@ const TicketsPage: React.FC = () => {
       <HeadlessSEO
         title={t('common.checkout.tickets_title')}
         description={t('common.checkout.description')}
-        url={`https://djzeneyer.com/${getLocalizedRoute('tickets', currentLang).replace(/^\//, '')}`}
+        url={`${ARTIST.site.baseUrl}/${getLocalizedRoute('tickets', currentLang).replace(/^\//, '')}`}
         isHomepage={false}
+        noindex
       />
 
       <div className="min-h-screen pt-24 pb-12 bg-background text-white">

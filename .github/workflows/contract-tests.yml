@@ -13,16 +13,20 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
-  test-contracts:
-    name: API Contract Tests
-    runs-on: ubuntu-latest
-    
+  # ── Fixture-based contract tests (no network, blocks on failure) ──────────
+  contract-fixtures:
+    name: Contract Tests (fixture)
+    runs-on: ubuntu-24.04
+
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      with:
+        fetch-depth: 2
+        persist-credentials: false
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
       with:
         node-version: '22'
         cache: 'npm'
@@ -30,8 +34,33 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Run API Contract Tests
-      continue-on-error: true
+    - name: Run contract tests
+      run: npx vitest run src/__tests__/contracts/
+
+  # ── Smoke test against live production (informational, never blocks) ──────
+  smoke-production:
+    name: Smoke Production Contracts
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+      with:
+        fetch-depth: 2
+        persist-credentials: false
+
+    - name: Setup Node.js
+      uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Smoke test live endpoint
       env:
         CI_BYPASS_SECRET: ${{ secrets.CI_BYPASS_SECRET }}
       run: npx tsx scripts/test-contracts.ts

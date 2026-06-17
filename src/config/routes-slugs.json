@@ -1,5 +1,5 @@
 {
-    "comment": "SSOT — Única fonte de verdade dos slugs EN/PT. Edite APENAS este arquivo para mudar rotas.",
+    "comment": "SSOT \u2014 \u00danica fonte de verdade dos slugs EN/PT. Edite APENAS este arquivo para mudar rotas.",
     "routes": [
         {
             "key": "home",
@@ -122,7 +122,9 @@
         {
             "key": "tickets",
             "en": "tickets",
-            "pt": "ingressos"
+            "pt": "ingressos",
+            "noindex": true,
+            "excludeFromSitemap": true
         },
         {
             "key": "tickets-checkout",
@@ -193,6 +195,7 @@
             "key": "quiz",
             "en": "quiz",
             "pt": "perguntas",
+            "noindex": true,
             "excludeFromSitemap": true,
             "excludeFromPrerender": true
         },
@@ -208,9 +211,22 @@
             "en": "zouk-encyclopedia",
             "pt": "enciclopedia-zouk",
             "aliases": {
-                "en": ["zouk-terms", "zouk-wiki"],
-                "pt": ["termos-zouk", "wiki-zouk"]
+                "en": [
+                    "zouk-terms",
+                    "zouk-wiki"
+                ],
+                "pt": [
+                    "termos-zouk",
+                    "wiki-zouk"
+                ]
             }
+        },
+        {
+            "key": "encyclopedia-detail",
+            "en": "zouk-encyclopedia/:term",
+            "pt": "enciclopedia-zouk/:term",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "verified-facts",
@@ -220,12 +236,18 @@
         {
             "key": "zouk-history",
             "en": "brazilian-zouk-history",
-            "pt": "historia-zouk-brasileiro"
+            "pt": "historia-zouk-brasileiro",
+            "noindex": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "zouk-musicality",
             "en": "zouk-musicality-guide",
-            "pt": "guia-musicalidade-zouk"
+            "pt": "guia-musicalidade-zouk",
+            "noindex": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         },
         {
             "key": "zouk-festivals",
@@ -235,7 +257,17 @@
         {
             "key": "artist-collaborations",
             "en": "collaborations",
-            "pt": "colaboracoes"
+            "pt": "colaboracoes",
+            "noindex": true,
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
+        },
+        {
+            "key": "release-detail",
+            "en": "zouk-music/:id",
+            "pt": "musica-zouk/:id",
+            "excludeFromSitemap": true,
+            "excludeFromPrerender": true
         }
     ]
 }

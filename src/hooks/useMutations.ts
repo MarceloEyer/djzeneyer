@@ -79,9 +79,76 @@ export const useSubscriptionMutation = () =>
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Subscription failed');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error((data as { message?: string }).message || 'Subscription failed');
       return data;
+    },
+  });
+
+export const useRemoveCartItemMutation = () =>
+  useMutation({
+    mutationFn: async (key: string) => {
+      const apiUrl = buildApiUrl(`wc/store/v1/cart/items/${key}`);
+      const nonce = window.wpData?.nonce ?? '';
+      const res = await fetch(apiUrl, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { message?: string }).message || 'Failed to remove item');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidateQueries.cart();
+    },
+  });
+
+export const useClearCartMutation = () =>
+  useMutation({
+    mutationFn: async () => {
+      const apiUrl = buildApiUrl('wc/store/v1/cart/items');
+      const nonce = window.wpData?.nonce ?? '';
+      const res = await fetch(apiUrl, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': nonce },
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error((data as { message?: string }).message || 'Failed to clear cart');
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidateQueries.cart();
+    },
+  });
+
+interface CheckoutPayload {
+  billing_address: Record<string, string>;
+  shipping_address: Record<string, string>;
+  payment_method: string;
+}
+
+export const useSubmitOrderMutation = () =>
+  useMutation({
+    mutationFn: async (payload: CheckoutPayload) => {
+      const apiUrl = buildApiUrl('wc/store/v1/checkout');
+      const res = await fetch(apiUrl, {
+        method: 'POST',
+        headers: getAuthHeaders() as HeadersInit,
+        credentials: 'include',
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error((data as { message?: string }).message || 'Checkout failed');
+      return data as { payment_result?: { redirect_url?: string } };
+    },
+    onSuccess: () => {
+      invalidateQueries.cart();
     },
   });
 

@@ -67,11 +67,6 @@ RewriteCond %{HTTP_COOKIE} wordpress_logged_in_|woocommerce_cart_hash|woocommerc
 RewriteRule .* - [E=Cache-Control:no-cache]
 ### marker NOCACHE COOKIES end ###
 
-### marker NOCACHE USER AGENTS start ###
-RewriteCond %{HTTP_USER_AGENT} /wp\-json/\*|/feed/\*|/comments/feed/\*|/api/\* [NC]
-RewriteRule .* - [E=Cache-Control:no-cache]
-### marker NOCACHE USER AGENTS end ###
-
 ### marker WEBP start ###
 RewriteCond %{HTTP_ACCEPT} image/webp [OR]
 RewriteCond %{HTTP_USER_AGENT} iPhone\ OS\ (1[4-9]|[2-9][0-9]) [OR]
@@ -180,11 +175,11 @@ CacheKeyModify -qs:_ga
     <FilesMatch "\.(css|js|mjs|woff|woff2|ttf|otf)$">
         Header set Cache-Control "public, max-age=31536000, immutable"
     </FilesMatch>
-    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
-        Header set Cache-Control "public, max-age=15552000"
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$">
+        Header set Cache-Control "public, max-age=31536000"
     </FilesMatch>
     <FilesMatch "\.webmanifest$">
-        Header set Cache-Control "public, max-age=3600"
+        Header set Cache-Control "public, max-age=2592000, stale-while-revalidate=86400"
     </FilesMatch>
     <FilesMatch "\.md$">
         Header set X-Robots-Tag "noindex, nofollow"
@@ -276,6 +271,9 @@ RewriteRule ^pt/eventos/?$ /pt/eventos-zouk/ [R=301,L,NC]
 # Duplicate index files -> canonical home pages
 RewriteRule ^index\.html$ / [R=301,L]
 RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
+
+# Well-known OAuth discovery: PHP handlers guarantee Content-Type and bypass caching
+RewriteRule ^\.well-known/(oauth-authorization-server|oauth-protected-resource)$ /.well-known/$1.php [L,QSA]
 </IfModule>
 
 # ==============================================================================
@@ -302,10 +300,37 @@ RewriteRule ^pt/index\.html$ /pt/ [R=301,L]
   ForceType application/linkset+json
   <IfModule mod_headers.c>
     Header set Content-Type "application/linkset+json; profile=\"https://www.rfc-editor.org/info/rfc9727\""
-    Header append Link "</.well-known/api-catalog>; rel=\"api-catalog\""
+    Header append Link "</.well-known/api-catalog>; rel=api-catalog"
     Header set Cache-Control "public, max-age=86400, stale-while-revalidate=3600"
   </IfModule>
 </Files>
+
+<Files "auth.md">
+  <IfModule mod_headers.c>
+    Header set Content-Type "text/markdown; charset=UTF-8"
+    Header always set Access-Control-Allow-Origin "*"
+    Header append Link "</.well-known/oauth-authorization-server>; rel=\"oauth-authorization-server\""
+    Header append Link "</.well-known/oauth-protected-resource>; rel=\"oauth-protected-resource\""
+  </IfModule>
+</Files>
+
+<Files "http-message-signatures-directory">
+  ForceType application/jwk-set+json
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/jwk-set+json"
+    Header set Cache-Control "public, max-age=86400, stale-while-revalidate=3600"
+    Header always set Access-Control-Allow-Origin "*"
+  </IfModule>
+</Files>
+
+<FilesMatch "^(oauth-authorization-server|oauth-protected-resource)(\.php)?$">
+  ForceType application/json
+  <IfModule mod_headers.c>
+    Header set Content-Type "application/json; charset=UTF-8"
+    Header set Cache-Control "public, max-age=300, stale-while-revalidate=60"
+    Header always set Access-Control-Allow-Origin "*"
+  </IfModule>
+</FilesMatch>
 
 # BEGIN WordPress
 <IfModule mod_rewrite.c>

@@ -1,24 +1,6 @@
-/**
- * Routes Configuration - Centralized Route Management
- * * PRINCÍPIOS:
- * - DRY (Don't Repeat Yourself): Uma única definição para todas as rotas
- * - KISS (Keep It Simple): Configuração declarativa e fácil de entender
- * - Escalável: Adicionar novos idiomas é trivial
- * * ATUALIZAÇÃO v2.0:
- * - Adicionada rota de News (Notícias)
- * - Adicionada rota de Videos
- * * ATUALIZAÇÃO v3.0:
- * - Sincronizado com todas as páginas do WordPress
- * - Adicionadas rotas: Cart, Checkout, Return Policy, Support Artist, Tickets
- * - Slugs limpos e otimizados para SEO (sem sufixos -2)
- * * ATUALIZAÇÃO v4.0:
- * - Slugs definitivos aprovados pelo usuário (março 2026)
- * - About: about-dj-zen-eyer / sobre-dj-zen-eyer
- * - Music: zouk-music / musica-zouk
- * - Support: support-dj-zen-eyer / apoie-dj-zen-eyer
- * - Booking: work-with-me / trabalhe-comigo
- * - ZenLink: zenlink / links-zen
- */
+// Centralized bilingual route configuration.
+// To add a route: (1) lazy-import the page below, (2) add a RouteConfig entry
+// in ROUTES with EN and PT paths, (3) update routes-slugs.json.
 
 import { ComponentType, createElement } from 'react';
 import { lazyWithRetry } from '../utils/lazyWithRetry';
@@ -69,6 +51,7 @@ const DashboardPage = lazyWithRetry(() => import('../pages/DashboardPage'), 'rou
 const MyAccountPage = lazyWithRetry(() => import('../pages/MyAccountPage'), 'route:my-account');
 const FAQPage = lazyWithRetry(() => import('../pages/FAQPage'), 'route:faq');
 const NewsPage = lazyWithRetry(() => import('../pages/NewsPage'), 'route:news');
+const ReleaseDetailPage = lazyWithRetry(() => import('../pages/ReleaseDetailPage'), 'route:release-detail');
 const PrivacyPolicyPage = lazyWithRetry(() => import('../pages/PrivacyPolicyPage'), 'route:privacy');
 const ReturnPolicyPage = lazyWithRetry(() => import('../pages/ReturnPolicyPage'), 'route:returns');
 const TermsPage = lazyWithRetry(() => import('../pages/TermsPage'), 'route:terms');
@@ -118,6 +101,11 @@ const withParam = (paths: string | string[], param: string): string | string[] =
     : `${paths}/${param}`;
 };
 
+const stripDynamicSegment = (path: string): string => {
+  const dynamicIdx = path.indexOf('/:');
+  return dynamicIdx === -1 ? path : path.slice(0, dynamicIdx);
+};
+
 // ============================================================================
 // ROUTES CONFIGURATION
 // ============================================================================
@@ -155,6 +143,11 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     key: 'music',
     component: MusicPage,
     paths: { en: slug('music', 'en') as string, pt: slug('music', 'pt') as string },
+  },
+  {
+    key: 'release-detail',
+    component: ReleaseDetailPage,
+    paths: { en: slug('release-detail', 'en') as string, pt: slug('release-detail', 'pt') as string },
   },
   // News / Blog
   {
@@ -312,6 +305,11 @@ export const ROUTES_CONFIG: RouteConfig[] = [
     component: EncyclopediaPage,
     paths: { en: slug('encyclopedia', 'en'), pt: slug('encyclopedia', 'pt') },
   },
+  {
+    key: 'encyclopedia-detail',
+    component: EncyclopediaPage,
+    paths: { en: slug('encyclopedia-detail', 'en'), pt: slug('encyclopedia-detail', 'pt') },
+  },
 
   // Verified Facts
   {
@@ -453,14 +451,14 @@ ROUTES_CONFIG.forEach(route => {
   if (route.key === 'events') detailKey = 'events-detail';
   else if (route.key === 'news') detailKey = 'news-detail';
   else if (route.key === 'shop') detailKey = 'product-detail';
+  else if (route.key === 'encyclopedia') detailKey = 'encyclopedia-detail';
 
   const enPaths = Array.isArray(route.paths.en) ? route.paths.en : [route.paths.en];
   const ptPaths = Array.isArray(route.paths.pt) ? route.paths.pt : [route.paths.pt];
 
   for (const p of [...enPaths, ...ptPaths]) {
     if (!p) continue;
-    const dynamicIdx = p.indexOf('/:');
-    const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
+    const staticPart = stripDynamicSegment(p);
     // remove leading slash if it exists
     let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     // remove trailing slash if it exists
@@ -590,8 +588,8 @@ export const getAlternateLinks = (
   // para que hreflang nunca produza literais como "/zouk-events/:id/slug-real"
   const rawEnSlug = (Array.isArray(route.paths.en) ? (route.paths.en[0] ?? '') : route.paths.en) || '';
   const rawPtSlug = (Array.isArray(route.paths.pt) ? (route.paths.pt[0] ?? '') : route.paths.pt) || '';
-  const enSlug = rawEnSlug.split('/:')[0];
-  const ptSlug = rawPtSlug.split('/:')[0];
+  const enSlug = stripDynamicSegment(rawEnSlug);
+  const ptSlug = stripDynamicSegment(rawPtSlug);
 
   // Calcula o sufixo dinâmico (ID do evento, slug da noticia, etc)
   let suffix = '';
@@ -603,8 +601,7 @@ export const getAlternateLinks = (
   const allCurrentLangPaths = getLocalizedPaths(detailRoute, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
   for (const p of allCurrentLangPaths) {
     // Extrai apenas o prefixo estático: "zouk-events/:slug" -> "zouk-events"
-    const dynamicIdx = p.indexOf('/:');
-    const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
+    const staticPart = stripDynamicSegment(p);
     let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
 

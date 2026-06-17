@@ -24,6 +24,7 @@ function djz_agent_discovery_link_header_value(): string
         '</.well-known/mcp/server-card.json>; rel="service-desc"; type="application/json", ' .
         '</.well-known/agent-skills/index.json>; rel="service-desc"; type="application/json", ' .
         '</.well-known/oauth-protected-resource>; rel="oauth-protected-resource"; type="application/json", ' .
+        '</auth.md>; rel="service-doc"; type="text/markdown", ' .
         '</.well-known/auth.md>; rel="service-doc"; type="text/markdown", ' .
         '</llms.txt>; rel="service-doc"; type="text/plain", ' .
         '</llms-full.txt>; rel="describedby"; type="text/plain"';

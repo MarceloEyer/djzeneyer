@@ -1,43 +1,48 @@
-name: 🤖 Trigger Bot Reviews
+name: Trigger Bot Reviews
 
-# CodeRabbit e Codex precisam de um prompt explícito para revisar.
-# Este workflow garante que os reviewers recebam prompt em TODOS os PRs,
-# incluindo PRs criados por bots (Jules, Bolt).
-#
-# Estrutura:
-# - concurrency: serializa triggers por branch base → evita burst que consome
-#   o rate limit do CodeRabbit quando vários PRs são abertos em sequência.
-# - sleep entre steps: espaça as chamadas dentro de um mesmo PR.
-# - Jules: não é usado como reviewer automático. Jules cria PRs; não revisa PRs de terceiros.
+# CodeRabbit needs an explicit prompt on bot-created PRs, but repeated prompts
+# create noisy review loops. This workflow posts at most one CodeRabbit trigger
+# comment per PR. Codex is intentionally not auto-triggered here until the
+# GitHub connector is configured; otherwise it only replies with setup noise.
 
 on:
   pull_request_target:
     types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'PR number to request review for'
+        required: true
+        type: number
 
 permissions:
   issues: write
   pull-requests: write
 
-# Serializa os triggers para não consumir o rate limit do CodeRabbit em burst.
-# cancel-in-progress: false → nenhum trigger é cancelado, apenas enfileirado.
 concurrency:
-  group: bot-review-trigger-${{ github.event.pull_request.base.ref }}
+  group: bot-review-trigger-${{ github.event.pull_request.base.ref || format('manual-pr-{0}', inputs.pr_number) }}
   cancel-in-progress: false
 
 jobs:
   trigger-reviews:
-    name: Trigger CodeRabbit + Codex
+    name: Trigger CodeRabbit
     runs-on: ubuntu-latest
     steps:
-      # ── CodeRabbit ────────────────────────────────────────────────────────
-      - name: Trigger CodeRabbit review
-        uses: actions/github-script@v9
+      - name: Trigger CodeRabbit review once
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const marker = '<!-- coderabbit-auto-review -->';
             const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
+            const issue_number =
+              context.payload.pull_request?.number ??
+              Number(context.payload.inputs?.pr_number);
+
+            if (!Number.isInteger(issue_number) || issue_number <= 0) {
+              throw new Error('Missing valid PR number.');
+            }
+
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
@@ -45,8 +50,9 @@ jobs:
               per_page: 100,
             });
 
-            if (comments.some((c) => c.body?.includes(marker))) {
-              core.info(`CodeRabbit prompt já existe no PR #${issue_number}; pulando.`);
+            const alreadyPrompted = comments.some((comment) => comment.body?.includes(marker));
+            if (alreadyPrompted) {
+              core.info(`CodeRabbit prompt already exists on PR #${issue_number}; skipping.`);
               return;
             }
 
@@ -58,50 +64,6 @@ jobs:
                 marker,
                 '@coderabbitai review',
                 '',
-                'Revisar bugs, regressões, performance, SEO e aderência às regras do projeto.',
-              ].join('\n'),
-            });
-
-      # Pausa entre CodeRabbit e Codex para reduzir burst no rate limit.
-      # CodeRabbit processa em background — não precisamos esperar resposta.
-      - name: Espaçar triggers (proteção de rate limit)
-        run: sleep 90
-
-      # ── Codex ─────────────────────────────────────────────────────────────
-      - name: Trigger Codex review
-        uses: actions/github-script@v9
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const marker = '<!-- codex-auto-review -->';
-            const { owner, repo } = context.repo;
-            const issue_number = context.payload.pull_request.number;
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              owner,
-              repo,
-              issue_number,
-              per_page: 100,
-            });
-
-            if (comments.some((c) => c.body?.includes(marker))) {
-              core.info(`Codex prompt já existe no PR #${issue_number}; pulando.`);
-              return;
-            }
-
-            await github.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number,
-              body: [
-                marker,
-                '@codex review',
-                '',
-                'Contexto canônico do projeto:',
-                '- WordPress Headless + React 19 + TypeScript strict + Vite 8 + Tailwind 4',
-                '- React Query v5 como única camada de data fetching no frontend',
-                '- i18n obrigatória para strings visíveis (t("chave") via react-i18next)',
-                '- SEO por página com `<HeadlessSEO />`; rotas privadas usam `noindex`',
-                '- safeUrl(null) retorna "#" truthy — sempre passar segundo argumento',
-                '- Consulte `AGENTS.md` e `AI_CONTEXT_INDEX.md` para regras completas',
+                'Revisar bugs, regressoes, performance, SEO e aderencia as regras do projeto.',
               ].join('\n'),
             });

@@ -26,6 +26,7 @@ dist-debug/
 *.sw?
 .env
 dist-test/
+coverage/
 
 # Claude Code worktrees (gerados automaticamente, não commitar)
 .claude/worktrees/
@@ -39,6 +40,13 @@ pr_comments*.json
 check_client_error.mjs
 comments_200.txt
 tmp/
+
+# Artefatos de CI/CD — nunca commitar (logs e dumps gerados por workflows)
+pr_list*.txt
+pr_files*.txt
+prs_*.json
+ci_*.json
+ci_*.txt
 
 # Configurações locais (senhas/tokens)
 .mcp.json

@@ -1,16 +1,20 @@
 import React from 'react';
 import { CalendarPlus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { ARTIST } from '../../data/artistData';
 
+import { trackSelectContent } from '../../lib/analytics';
+import { logger } from '../../lib/logger';
 import type { ZenBitEventListItem } from '../../types/events';
 
 interface AddCalendarMenuProps {
     event: ZenBitEventListItem;
     variant?: 'primary' | 'ghost';
     className?: string;
+    eventUrl?: string;
 }
 
-const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCalendarMenuProps) => {
+const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl }: AddCalendarMenuProps) => {
     const { t } = useTranslation();
 
     const getDetails = () => {
@@ -41,12 +45,13 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
             const loc = event.location;
             const location = loc.venue ? `${loc.venue}, ${loc.city}` : (loc.city || "TBA");
 
-            const eventUrl = `${window.location.origin}${window.location.pathname}`;
-            const details = `${t('events_view_details')}: ${eventUrl}`;
+            const fallbackUrl = `${ARTIST.site.baseUrl}${typeof window !== 'undefined' ? window.location.pathname : ''}`;
+            const canonicalEventUrl = eventUrl || event.canonical_url || fallbackUrl;
+            const details = `${t('events_view_details')}: ${canonicalEventUrl}`;
 
             return { title, start, end, location, details };
         } catch (error) {
-            console.error('[AddCalendarMenu] Error processing date:', error, event);
+            logger.error('ADD_CALENDAR_MENU', 'Error processing date', { error: String(error), event });
             return null;
         }
     };
@@ -56,10 +61,19 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(details.title)}&dates=${details.start}/${details.end}&details=${encodeURIComponent(details.details)}&location=${encodeURIComponent(details.location)}`;
 
+    const openCalendar = () => {
+        trackSelectContent('event_calendar', event.event_id || details.title, {
+            item_name: details.title,
+            calendar_provider: 'google',
+            ui_variant: variant,
+        });
+        window.open(googleUrl, '_blank');
+    };
+
     if (variant === 'primary') {
         return (
             <button
-                onClick={() => window.open(googleUrl, '_blank')}
+                onClick={openCalendar}
                 className={`btn btn-outline border-primary/30 text-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm hover:bg-primary/10 transition-all ${className}`}
             >
                 <CalendarPlus size={20} />
@@ -70,9 +84,10 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '' }: AddCale
 
     return (
         <button
-            onClick={() => window.open(googleUrl, '_blank')}
+            onClick={openCalendar}
             className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
             title={t('events_add_google')}
+            aria-label={t('events_add_google')}
         >
             <CalendarPlus size={16} />
         </button>

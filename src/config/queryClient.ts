@@ -26,9 +26,6 @@ import type { FetchEventsParams } from '../types/events';
  * Após esse tempo, dados são considerados "stale" e podem ser atualizados
  */
 const STALE_TIME = {
-  /** Menu: 2 horas — estrutura muda ~1x/mês, nunca em tempo real */
-  MENU: 2 * 60 * 60 * 1000,
-
   /** Eventos: 30 minutos — agenda sincronizada via prerender; detalhe muda raramente */
   EVENTS: 30 * 60 * 1000,
 
@@ -121,12 +118,6 @@ export const queryClient = new QueryClient({
  * Exemplo: ['menu', 'list', 'pt'] ou ['events', 'detail', '123']
  */
 export const QUERY_KEYS = {
-  /** Menu de navegação */
-  menu: {
-    all: ['menu'] as const,
-    list: (lang: string) => ['menu', 'list', lang] as const,
-  },
-
   /** Eventos */
   events: {
     all: ['events'] as const,
@@ -175,6 +166,11 @@ export const QUERY_KEYS = {
   shop: {
     page: (lang?: string) => ['shop', 'page', lang] as const,
   },
+
+  /** Checkout */
+  checkout: {
+    current: ['checkout', 'current'] as const,
+  },
 } as const;
 
 // ============================================================================
@@ -186,7 +182,6 @@ export const QUERY_KEYS = {
  * Útil após mutations (criar, editar, deletar)
  */
 export const invalidateQueries = {
-  menu: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.menu.all }),
   events: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.events.all }),
   products: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.products.all }),
   posts: () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.posts.all }),
@@ -200,14 +195,6 @@ export const invalidateQueries = {
  * Útil para melhorar UX em navegação
  */
 export const prefetchQueries = {
-  menu: (lang: string, fetcher: () => Promise<unknown>) => {
-    return queryClient.prefetchQuery({
-      queryKey: QUERY_KEYS.menu.list(lang),
-      queryFn: fetcher,
-      staleTime: STALE_TIME.MENU,
-    });
-  },
-
   events: (params: FetchEventsParams, fetcher: () => Promise<unknown>) => {
     return queryClient.prefetchQuery({
       queryKey: QUERY_KEYS.events.list(params),

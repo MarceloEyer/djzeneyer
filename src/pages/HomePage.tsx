@@ -62,6 +62,8 @@ const ITEM_VARIANTS: Variants = {
   visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
 };
 
+const STAT_CARD_HOVER = { scale: 1.05 };
+
 const LazyEventsList = React.lazy(() =>
   import('../components/EventsList').then((module) => ({ default: module.EventsList }))
 );
@@ -71,7 +73,7 @@ const LazyEventsList = React.lazy(() =>
 // ============================================================================
 
 const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
-  <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={{ scale: 1.05 }}>
+  <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={STAT_CARD_HOVER}>
     <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
     <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
     <div className="text-sm text-white/70 uppercase tracking-wider">{label}</div>
@@ -104,7 +106,7 @@ const HomePage: React.FC = () => {
   const { artist } = useBranding();
 
   const currentLang = normalizeLanguage(i18n.language);
-  const currentPath = i18n.language === 'pt' ? '/pt' : '/';
+  const currentPath = currentLang === 'pt' ? '/pt' : '/';
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
@@ -184,7 +186,9 @@ const HomePage: React.FC = () => {
         keywords={t('home.seo.keywords')}
         leadAnswer={t('home.seo.lead_answer')}
         preload={[
-          { href: '/images/hero-background.webp', as: 'image' }
+          { href: '/images/hero-background-mobile.webp', as: 'image', media: '(max-width: 768px)', fetchPriority: 'high' },
+          { href: '/images/hero-background-1440.webp', as: 'image', media: '(min-width: 769px) and (max-width: 1440px)', fetchPriority: 'high' },
+          { href: '/images/hero-background.webp', as: 'image', media: '(min-width: 1441px)', fetchPriority: 'high' }
         ]}
       />
 
@@ -194,7 +198,11 @@ const HomePage: React.FC = () => {
           <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
             <picture>
               <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.webp" />
-              <source media="(min-width: 769px)" srcSet="/images/hero-background.webp" />
+              <source
+                media="(min-width: 769px)"
+                srcSet="/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
+                sizes="100vw"
+              />
               <img
                 src="/images/hero-background.webp"
                 alt="Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
@@ -244,7 +252,7 @@ const HomePage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 min-h-[44px] shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
-                aria-label="Listen to Zen Eyer on SoundCloud"
+                aria-label={t('home.cta_soundcloud')}
               >
                 <PlayCircle size={22} />
                 <span>{t('home.cta_soundcloud')}</span>
@@ -252,7 +260,7 @@ const HomePage: React.FC = () => {
               <Link
                 to={routes.booking}
                 className="btn btn-outline btn-lg flex items-center gap-2 min-h-[44px] backdrop-blur-sm"
-                aria-label="Book Zen Eyer or Get Press Kit"
+                aria-label={t('home.cta_booking')}
               >
                 <Mail size={22} />
                 <span>{t('home.cta_booking')}</span>

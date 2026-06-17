@@ -288,7 +288,7 @@ class Zen_SEO_Admin
             'zen_technical',
             [
                 'id' => 'awards_list',
-                'desc' => __('One award per line. Example: 2022 - World Champion (Remix)', 'zen-seo'),
+                'desc' => __('One award per line. Example: 2022 Brazilian Zouk DJ World Championship - Best Remix', 'zen-seo'),
                 'rows' => 5
             ]
         );

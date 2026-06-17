@@ -105,6 +105,7 @@ const TRUSTED_DOMAINS = [
     'google.com',
     'googleusercontent.com',  // Google OAuth profile photos (lh3.googleusercontent.com)
     'gravatar.com',            // WordPress/Gravatar avatars
+    'placehold.co',            // Placeholder images used in dev/fallbacks
 ];
 
 /**
@@ -195,13 +196,6 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
 
         return trimmedUrl;
     } catch {
-        // Se não for uma URL válida mas não contém esquemas perigosos, tenta como caminho interno
-        if (isDangerousUrl(trimmedUrl)) {
-            return fallback;
-        }
-        if (ALLOWED_PROTOCOLS.some(proto => trimmedUrl.toLowerCase().startsWith(proto))) {
-            return trimmedUrl;
-        }
         return isInternalPath(trimmedUrl) ? trimmedUrl : fallback;
     }
 };

@@ -7,17 +7,20 @@ import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/r
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
+import { extractRegions, filterEventsByRegion, groupEventsByMonth } from '../utils/events';
+import { logger } from '../lib/logger';
 import { ARTIST } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
 import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
+import { PageHeader } from '../components/ui/PageHeader';
 import { getDateTimeFormatter } from '../utils/date';
 import { Toast } from '../components/common/Toast';
 import NotFoundPage from './NotFoundPage';
 import type { ZenBitEventListItem, ZenBitEventDetail } from '../types/events';
 import type { EventSchemaData } from '../components/HeadlessSEO';
 
-// ⚡ Bolt: Extracted static MONTH_NAMES array to module scope to prevent reallocation on every render cycle.
+// Static month keys stay at module scope to avoid reallocation on every render.
 const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
 
 // ============================================================================
@@ -57,21 +60,19 @@ const EventDetailSkeleton = () => (
 );
 
 const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
-  const { t } = useTranslation();
-  // FIX: Use ARTIST.site.baseUrl instead of window.location.origin.
-  // During prerender, Puppeteer has window defined so the typeof check is always true,
-  // causing window.location.origin to resolve to http://localhost:5173 and producing
-  // a localhost canonical URL — a fatal SEO error.
+  const { t } = useTranslation('translation');
   const origin = ARTIST.site.baseUrl;
-  const { data: event } = useEventById(id, lang as Language);
+  const { data: event, isLoading, isFetching } = useEventById(id, lang as Language);
   const [showToast, setShowToast] = useState(false);
 
+  if ((isLoading || isFetching) && !event) return <EventDetailSkeleton />;
   if (!event) return <NotFoundPage />;
 
   const eventDate = new Date(event.starts_at);
   const isValidDate = !isNaN(eventDate.getTime());
   const loc = event.location;
   const cleanDescription = stripHtml(event.description || '');
+  const eventDetailUrl = event.canonical_url || `${origin}${getLocalizedRoute('events', lang as Language)}/${id}`;
 
   const share = () => {
     const canonical = event.canonical_url || `${ARTIST.site.baseUrl}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
@@ -116,13 +117,14 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         <div className="lg:col-span-5 relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
-            {event.image ? (
-              <img src={event.image} alt={event.title} className="w-full h-full object-cover" loading="lazy" width="600" height="800" />
-            ) : (
-              <div className="w-full h-full bg-surface flex items-center justify-center text-white/10">
-                <Music size={80} />
-              </div>
-            )}
+            <img 
+              src={event.image || '/images/default-event-poster.png'} 
+              alt={event.title} 
+              className="w-full h-full object-cover" 
+              loading="lazy" 
+              width="600" 
+              height="800" 
+            />
             <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black via-black/60 to-transparent">
               <div className="inline-block px-4 py-1 rounded-full bg-primary text-black font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
                 {t('events.featured', { defaultValue: 'Featured Event' })}
@@ -158,7 +160,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
             <div className="prose prose-invert mt-10 mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || '') }} />
 
             <div className="space-y-4">
-              <AddCalendarMenu event={event} variant="primary" />
+              <AddCalendarMenu event={event} variant="primary" eventUrl={eventDetailUrl} />
 
               <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
                 <Share2 size={18} /> {t('share')}
@@ -178,11 +180,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 };
 
 const EventListContent = ({ lang }: { lang: string }) => {
-  const { t } = useTranslation();
-  // FIX: Use ARTIST.site.baseUrl instead of window.location.origin.
-  // During prerender, Puppeteer has window defined so the typeof check is always true,
-  // causing window.location.origin to resolve to http://localhost:5173 and producing
-  // a localhost canonical URL — a fatal SEO error.
+  const { t } = useTranslation('translation');
   const origin = ARTIST.site.baseUrl;
   const { data: events = [], isLoading, error } = useEventsQuery({
     mode: 'upcoming',
@@ -197,35 +195,13 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   useEffect(() => {
     if (error) {
-      console.error('Error fetching events:', error);
+      logger.error('EVENTS_PAGE', 'Error fetching events', { error: String(error) });
     }
   }, [error]);
 
-  // Extrai regiões únicas (Estados)
-  const regions = useMemo(() => {
-    const r = new Set<string>();
-    events.forEach((e: ZenBitEventListItem) => {
-      if (e.location?.region) r.add(e.location.region);
-    });
-    return Array.from(r).sort();
-  }, [events]);
-
-  const filteredEvents = useMemo(() => {
-    if (selectedRegion === 'all') return events;
-    return events.filter((e: ZenBitEventListItem) => e.location?.region === selectedRegion);
-  }, [events, selectedRegion]);
-
-  const groupedEvents = useMemo<[string, ZenBitEventListItem[]][]>(() => {
-    const groups: Record<string, ZenBitEventListItem[]> = {};
-    filteredEvents.forEach((e: ZenBitEventListItem) => {
-      if (!e.starts_at || e.starts_at.length < 7) return;
-      // ⚡ Bolt: Replaced expensive `new Date()` allocation with O(1) string slice for ISO 8601 strings
-      const key = e.starts_at.substring(0, 7);
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(e);
-    });
-    return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [filteredEvents]);
+  const regions = useMemo(() => extractRegions(events), [events]);
+  const filteredEvents = useMemo(() => filterEventsByRegion(events, selectedRegion), [events, selectedRegion]);
+  const groupedEvents = useMemo(() => groupEventsByMonth(filteredEvents), [filteredEvents]);
 
 
   const share = (e: ZenBitEventListItem) => {
@@ -308,6 +284,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     : e.event_id;
 
                   const detailHref = e._processed?.detailHref || generatePath(eventsDetailRoute, { id: identifier });
+                  const detailUrl = e.canonical_url || `${ARTIST.site.baseUrl}${detailHref}`;
                   const loc = e.location;
 
                   return (
@@ -320,8 +297,12 @@ const EventListContent = ({ lang }: { lang: string }) => {
                         </Link>
                       </div>
                       <div className="flex gap-2">
-                        <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" />
-                        <button onClick={() => share(e)} className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all">
+                        <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" eventUrl={detailUrl} />
+                        <button
+                          onClick={() => share(e)}
+                          className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all"
+                          aria-label={t('share')}
+                        >
                           <Share2 size={16} />
                         </button>
                       </div>
@@ -349,7 +330,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
 const EventsPage: React.FC = () => {
   const { id } = useParams<{ id?: string }>();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('translation');
   const { artist } = useBranding();
   const lang = normalizeLanguage(i18n.language);
   const pressKitUrl = artist?.site?.media?.epkPdf || ARTIST.site.media.epkPdf;
@@ -366,15 +347,14 @@ const EventsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
-      <div className="max-w-6xl mx-auto">
-        <Breadcrumb items={[{ label: t('nav.events') }]} className="mb-8" />
-        <header className="text-center mb-16 px-4">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-black mb-4 font-display uppercase text-white tracking-tighter">
-            {t('events.title_part1')} <span className="text-primary">{t('events.title_part2')}</span>
-          </h1>
-        </header>
+      <div className="max-w-6xl mx-auto relative pt-8">
+        <PageHeader 
+          titlePart1={t('events.title_part1')}
+          titlePart2={t('events.title_part2')}
+          breadcrumbs={[{ label: t('nav.events') }]}
+        />
 
-        <React.Suspense fallback={<EventSkeleton />}>
+        <React.Suspense fallback={<div className="min-h-[1600px]"><EventSkeleton /></div>}>
           <EventListContent lang={lang} />
         </React.Suspense>
 

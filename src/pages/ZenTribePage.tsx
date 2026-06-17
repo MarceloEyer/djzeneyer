@@ -18,6 +18,7 @@ import { Breadcrumb } from '../components/Breadcrumb';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { Award, Star, Users, TrendingUp, Shield, Gift, Clock, Zap } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
+import { ARTIST } from '../data/artistData';
 
 // ============================================================================
 // CONSTANTES DE DADOS (FORA DO COMPONENTE)
@@ -27,25 +28,30 @@ import { useUser } from '../contexts/UserContext';
  * Schema.org Organization (Tribo Zen)
  */
 const getOrganizationSchema = (t: (key: string) => string) => ({
-  "@type": "Organization",
-  "@id": "https://djzeneyer.com/zentribe#organization",
-  "name": t('zenTribe.schema.organization_name'),
-  "alternateName": "Tribo Zen",
-  "url": "https://djzeneyer.com/zentribe",
-  "founder": {
-    "@id": "https://djzeneyer.com/#artist"
-  },
-  "description": t('zenTribe.schema.organization_desc'),
-  "areaServed": {
-    "@type": "Place",
-    "name": "Worldwide"
-  },
-  "slogan": t('zenTribe.schema.organization_slogan'),
-  "knowsAbout": ["Brazilian Zouk Community", "Zen Eyer Music", "Zouk Dance Culture"],
-  "memberOf": {
-    "@type": "Organization",
-    "name": "International Brazilian Zouk Community"
-  }
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${ARTIST.site.baseUrl}/zentribe#organization`,
+      "name": t('zenTribe.schema.organization_name'),
+      "alternateName": "Tribo Zen",
+      "url": `${ARTIST.site.baseUrl}/zentribe`,
+      "founder": {
+        "@id": `${ARTIST.site.baseUrl}/#artist`
+      },
+      "description": t('zenTribe.schema.organization_desc'),
+      "areaServed": {
+        "@type": "Place",
+        "name": "Worldwide"
+      },
+      "slogan": t('zenTribe.schema.organization_slogan'),
+      "knowsAbout": ["Brazilian Zouk Community", "Zen Eyer Music", "Zouk Dance Culture"],
+      "memberOf": {
+        "@type": "Organization",
+        "name": "International Brazilian Zouk Community"
+      }
+    }
+  ]
 });
 
 /**
@@ -258,7 +264,7 @@ const ZenTribePage: React.FC = () => {
 
   // URL canônica via SSOT — garante slug correto em EN e PT
   const currentUrl = useMemo(
-    () => `https://djzeneyer.com/${getLocalizedRoute('zentribe', currentLang).replace(/^\//, '')}`,
+    () => `${ARTIST.site.baseUrl}/${getLocalizedRoute('zentribe', currentLang).replace(/^\//, '')}`,
     [currentLang]
   );
 
@@ -273,8 +279,8 @@ const ZenTribePage: React.FC = () => {
         title={t('tribe_page_title')}
         description={t('tribe_page_meta_desc')}
         url={currentUrl}
-        image="https://djzeneyer.com/images/zen-tribe-og.jpg"
-        ogType="website"
+        image={ARTIST.site.baseUrl + "/images/zen-tribe-og.jpg"}
+        type="website"
         schema={schema}
         keywords="Zen Tribe, Tribo Zen, Brazilian Zouk community, Zen Eyer membership, Zouk exclusive content, gamification, VIP events"
       />

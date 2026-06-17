@@ -3,39 +3,64 @@
 // Imports ARTIST from artistData.ts — all URL/identity values come from there.
 
 import { ARTIST } from './artistData';
+import routesSlugs from '../config/routes-slugs.json';
+
+const siteBaseUrl = ARTIST.site.baseUrl.replace(/\/+$/, '');
+const bookingRoute = routesSlugs.routes.find(route => route.key === 'booking');
+const bookingSlugEn = typeof bookingRoute?.en === 'string' ? bookingRoute.en : 'work-with-me';
+const bookingSlugPt = typeof bookingRoute?.pt === 'string' ? bookingRoute.pt : 'trabalhe-comigo';
+const buildSiteUrl = (path: string): string => `${siteBaseUrl}/${path.replace(/^\/+|\/+$/g, '')}/`;
+
+const BOOKING_CONTACT_POINTS = [
+  {
+    '@type': 'ContactPoint',
+    contactType: 'Booking',
+    url: buildSiteUrl(bookingSlugEn),
+    email: ARTIST.contact.email,
+    availableLanguage: 'English',
+  },
+  {
+    '@type': 'ContactPoint',
+    contactType: 'Booking',
+    url: buildSiteUrl(`pt/${bookingSlugPt}`),
+    email: ARTIST.contact.email,
+    availableLanguage: 'Portuguese',
+  },
+] as const;
 
 // Descrição de desambiguação única fonética (SSOT)
 export const DISAMBIGUATING_DESCRIPTION =
   'Zen Eyer is pronounced /zɛn ˈaɪər/. DJ Zen Eyer is a commonly used stage-name variant; Zen Ayer is a common misspelling, not an official artist name.';
 
-// Schema.org sameAs list (consolidated for Knowledge Graph)
-export const ARTIST_SCHEMA_SAME_AS = [
-  'https://www.wikidata.org/wiki/Q136551855',
-  'https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154',
-  'https://www.discogs.com/artist/16872046',
-  'https://isni.org/isni/0000000528931015',
-  'https://open.spotify.com/artist/68SHKGndTlq3USQ2LZmyLw',
-  'https://music.apple.com/us/artist/1439280950',
-  'https://www.youtube.com/@djzeneyer',
-  'https://www.instagram.com/djzeneyer/',
-  'https://www.facebook.com/djzeneyer/',
-  'https://www.linkedin.com/in/eyermarcelo',
-  'https://soundcloud.com/djzeneyer',
-  'https://www.deezer.com/artist/52900762',
-  'https://tidal.com/artist/10492592',
-  'https://djzeneyer.bandcamp.com',
-  'https://music.amazon.com/artists/B07JKCDCG8',
-  'https://www.mixcloud.com/djzeneyer',
-  'https://www.last.fm/music/Zen+Eyer',
-  'https://www.songkick.com/artists/8815204-zen-eyer',
-  'https://www.bandsintown.com/a/15619775-zen-eyer',
-  'https://ra.co/dj/djzeneyer',
-  'https://bsky.app/profile/djzeneyer.bsky.social',
-  'https://www.threads.net/@djzeneyer',
-  'https://www.shazam.com/artist/1439280950',
-  'https://www.patreon.com/djzeneyer',
-  'https://medium.com/@djzeneyer',
+// Schema.org sameAs — derived from ARTIST (single source of truth).
+// To add/change a platform URL, edit artistData.ts only.
+const { identifiers, social } = ARTIST;
+
+const SAME_AS_AUTHORITY = [
+  identifiers.wikidataUrl,
+  identifiers.musicbrainzUrl,
+  identifiers.discogsUrl,
+  `https://isni.org/isni/${identifiers.isni}`,
+  identifiers.residentAdvisorUrl,
 ] as const;
+
+// Platforms in ARTIST.social whose URLs belong in sameAs.
+// Keep this list conservative: sameAs is reserved for official entity profiles
+// and authority identifiers that unambiguously represent Zen Eyer.
+const SAME_AS_SOCIAL_KEYS = [
+  'spotify', 'appleMusic', 'YouTube',
+  'instagram', 'facebook', 'linkedin', 'tiktok', 'twitter',
+  'bluesky', 'threads', 'soundcloud', 'deezer', 'tidal',
+  'bandcamp', 'amazonMusic', 'mixcloud', 'songkick',
+  'bandsintown',
+] as const;
+
+export const ARTIST_SCHEMA_SAME_AS: string[] = [
+  ...SAME_AS_AUTHORITY,
+  ...SAME_AS_SOCIAL_KEYS
+    .map((key) => (social as Record<string, { url?: string }>)[key]?.url)
+    .filter((url): url is string => Boolean(url)),
+];
 
 export const ARTIST_SCHEMA_BASE = {
   '@type': 'Person',
@@ -43,7 +68,7 @@ export const ARTIST_SCHEMA_BASE = {
   name: 'Zen Eyer',
   alternateName: ['DJ Zen Eyer'],
   birthName: ARTIST.identity.fullName,
-  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer, two-time World Champion at the Zouk DJ Championship 2022.',
+  description: 'Zen Eyer is a Brazilian Zouk DJ and music producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.',
   disambiguatingDescription: DISAMBIGUATING_DESCRIPTION,
   genre: ['Brazilian Zouk', 'Zouk', 'Dance Music'],
   jobTitle: ['DJ', 'Music Producer'],
@@ -104,6 +129,12 @@ export const ARTIST_SCHEMA_BASE = {
       propertyID: 'Pronunciation guide',
       value: ARTIST.philosophy.identityAid.pronunciationGuide,
     },
+    {
+      '@type': 'PropertyValue',
+      propertyID: 'Championship disambiguation',
+      value:
+        'Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk and documented in the official rules as I Campeonato Internacional de DJs. This should not be confused with the Zouk World event, which did not host this DJ championship.',
+    },
   ],
   nationality: {
     '@type': 'Country',
@@ -129,8 +160,8 @@ export const ARTIST_SCHEMA_BASE = {
     { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
   ],
   award: [
-    'World Champion Brazilian Zouk DJ - Best DJ Performance, 2022',
-    'World Champion Brazilian Zouk DJ - Best Remix, 2022',
+    '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+    '2022 Brazilian Zouk DJ World Championship - Best Remix',
   ],
   knowsAbout: [
     'Brazilian Zouk',
@@ -174,6 +205,7 @@ export const ARTIST_SCHEMA_BASE = {
   mainEntityOfPage: {
     '@id': `${ARTIST.site.baseUrl}/about-dj-zen-eyer#webpage`,
   },
+  contactPoint: [...BOOKING_CONTACT_POINTS],
   // Provas externas: páginas oficiais de eventos reais que listam Zen Eyer como DJ
   subjectOf: [
     {
@@ -373,13 +405,14 @@ export const ARTIST_SCHEMA_BASE = {
     },
     {
       '@type': 'MusicEvent',
-      name: 'Zouk DJ Championship 2022',
+      name: '2022 Brazilian Zouk DJ World Championship',
+      alternateName: ['I Campeonato Internacional de DJs'],
       url: 'https://alexdecarvalho.com.br/ilhadozouk/nossos-djs-our-djs/',
       startDate: '2022-04-20',
       endDate: '2022-04-24',
       eventStatus: 'https://schema.org/EventScheduled',
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-      description: 'DJ Zen Eyer wins two world titles at the Zouk DJ Championship 2022 — Best DJ Performance and Best Remix — in Ilha Grande, Rio de Janeiro, Brazil.',
+      description: 'DJ Zen Eyer wins Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held at Ilha do Zouk in Ilha Grande, Rio de Janeiro, Brazil. This championship should not be confused with the separate Zouk World event.',
       image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
       location: {
         '@type': 'Place',
@@ -416,6 +449,12 @@ export interface ReleaseTrack {
   youtubeUrl?: string;
 }
 
+export interface OriginalSong {
+  name: string;
+  artistName: string;
+  artistSameAs?: string[];
+}
+
 export interface Release {
   id: string;
   name: string;
@@ -435,6 +474,8 @@ export interface Release {
   youtubeUrl?: string;
   soundcloudUrl?: string;
   description?: string;
+  genre?: string[];
+  originalSong?: OriginalSong; // populated for covers and remixes
   byArtist?: Record<string, unknown>;
   contributor?: Record<string, unknown> | Record<string, unknown>[];
   tracks: ReleaseTrack[];
@@ -451,9 +492,22 @@ export const DISCOGRAPHY: Release[] = [
     type: 'remix',
     releaseDate: '2018-10-25',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-    appleMusicUrl: 'https://music.apple.com/us/song/1596290116',
+    spotifyUrl: 'https://open.spotify.com/track/4KY8BPuSKbNnnI3dQ5fDk9',
+    appleMusicUrl: 'https://music.apple.com/us/album/dont-stop-remixes-single/1596289429?i=1596290116',
     musicBrainzUrl: 'https://musicbrainz.org/release/4ca05fa2-a3c0-4de3-818c-e64cd147dca3',
-    description: "Brazilian Zouk remix of Kaysha's Don't Stop. Apple Music lists the track in Don't Stop (Remixes) - Single, released October 25, 2018.",
+    amazonMusicUrl: 'https://www.amazon.com/dp/B09M791M5V',
+    youtubeUrl: 'https://www.youtube.com/watch?v=mxQ-Y_Vh_18',
+    genre: ['Brazilian Zouk', 'Zouk'],
+    description: "Brazilian Zouk remix of Kaysha's \"Don't Stop\". Zen Eyer's remix transforms the original into a dance-floor ready Zouk track with his signature cremosidade flow. Part of \"Don't Stop (Remixes) - Single\" on Apple Music.",
+    originalSong: {
+      name: "Don't Stop",
+      artistName: 'Kaysha',
+      artistSameAs: [
+        'https://kaysha.com/',
+        'https://musicbrainz.org/artist/2eecd1cd-31ae-42f3-9e30-300ffbd7f2ef',
+        'https://www.wikidata.org/wiki/Q740711',
+      ],
+    },
     byArtist: {
       '@type': 'Person',
       name: 'Kaysha',
@@ -471,6 +525,7 @@ export const DISCOGRAPHY: Release[] = [
       {
         name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
         duration: 'PT3M39S',
+        spotifyUrl: 'https://open.spotify.com/track/4KY8BPuSKbNnnI3dQ5fDk9',
       },
     ],
   },
@@ -486,6 +541,17 @@ export const DISCOGRAPHY: Release[] = [
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/na-ponta-ela-fica-cover-single/1867840116',
     musicBrainzUrl: 'https://musicbrainz.org/release/7b0c16b2-24a8-4923-b3e1-f3b852e5b064',
+    youtubeUrl: 'https://www.youtube.com/watch?v=ACENa4vgVcY',
+    genre: ['Brazilian Zouk', 'Zouk'],
+    description: 'Brazilian Zouk cover of the funk hit by MC Delano. Zen Eyer adapts the infectious energy of the original into a smooth, dance-floor ready Zouk arrangement.',
+    originalSong: {
+      name: 'Na Ponta Ela Fica',
+      artistName: 'MC Delano',
+    },
+    byArtist: {
+      '@type': 'Person',
+      name: 'MC Delano',
+    },
     tracks: [
       {
         name: 'Na Ponta Ela Fica - Cover',
@@ -504,6 +570,37 @@ export const DISCOGRAPHY: Release[] = [
     releaseDate: '2026-01-27',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/still-loving-you-feat-walter-xavier-sax-cover-single/1872468504',
+    genre: ['Brazilian Zouk', 'Zouk'],
+    description: 'Brazilian Zouk cover of the Scorpions classic "Still Loving You" (1984), featuring saxophonist Walter Xavier. The saxophone takes the lead melody over a Zouk groove, creating a deeply romantic, dance-floor arrangement.',
+    originalSong: {
+      name: 'Still Loving You',
+      artistName: 'Scorpions',
+      artistSameAs: [
+        'https://www.scorpions.de/',
+        'https://musicbrainz.org/artist/c6b78b4b-3bd4-4174-99b4-1fd0b0dd3e11',
+        'https://www.wikidata.org/wiki/Q80191',
+      ],
+    },
+    byArtist: {
+      '@type': 'MusicGroup',
+      name: 'Scorpions',
+      sameAs: [
+        'https://www.scorpions.de/',
+        'https://musicbrainz.org/artist/c6b78b4b-3bd4-4174-99b4-1fd0b0dd3e11',
+        'https://www.wikidata.org/wiki/Q80191',
+      ],
+    },
+    contributor: [
+      {
+        '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
+        roleName: 'Cover Performer, Arranger',
+      },
+      {
+        '@type': 'Person',
+        name: 'Walter Xavier',
+        roleName: 'Saxophonist',
+      },
+    ],
     tracks: [
       {
         name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
@@ -522,6 +619,9 @@ export const DISCOGRAPHY: Release[] = [
     releaseYear: '2026',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     musicBrainzUrl: 'https://musicbrainz.org/release/aaea8061-a317-4743-bf87-fad9dc3ed93c',
+    amazonMusicUrl: 'https://www.amazon.co.uk/dp/B0GDRV9WF7',
+    genre: ['Brazilian Zouk', 'Zouk'],
+    description: "Zen Eyer's original composition — a bilingual Spanish/Portuguese track built for the Brazilian Zouk dance floor. A playful, rhythmic piece that showcases his production style.",
     tracks: [
       {
         name: 'Baila Flaquita',
@@ -541,6 +641,24 @@ export const DISCOGRAPHY: Release[] = [
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
     appleMusicUrl: 'https://music.apple.com/us/album/porta-do-sol-cover-single/1867002457',
     musicBrainzUrl: 'https://musicbrainz.org/release/b1c9f977-3642-4c86-a66d-b7b5a4564064',
+    genre: ['Brazilian Zouk', 'Zouk'],
+    description: 'Brazilian Zouk cover of the beloved Brazilian sertanejo ballad "Porta do Sol". At 5 minutes and 7 seconds, this version gives the melody space to breathe, prioritising connection and fluidity on the dance floor.',
+    originalSong: {
+      name: 'Porta do Sol',
+      artistName: 'Luan Santana',
+      artistSameAs: [
+        'https://musicbrainz.org/artist/b7a9cead-7ab9-4c5f-aff3-0a8ab4edc1fd',
+        'https://www.wikidata.org/wiki/Q3838024',
+      ],
+    },
+    byArtist: {
+      '@type': 'Person',
+      name: 'Luan Santana',
+      sameAs: [
+        'https://musicbrainz.org/artist/b7a9cead-7ab9-4c5f-aff3-0a8ab4edc1fd',
+        'https://www.wikidata.org/wiki/Q3838024',
+      ],
+    },
     tracks: [
       {
         name: 'Porta Do Sol - Cover',
@@ -615,11 +733,12 @@ export const MUSICGROUP_SCHEMA = {
   // Ligação bidirecional com a entidade Person
   member: [{ '@id': `${ARTIST.site.baseUrl}/#artist` }],
   award: [
-    'World Champion 2022 (DJ) at the Zouk DJ Championship',
-    'World Champion 2022 (Remix) at the Zouk DJ Championship',
+    '2022 Brazilian Zouk DJ World Championship - Best DJ Performance',
+    '2022 Brazilian Zouk DJ World Championship - Best Remix',
   ],
   influencedBy: ['Lambada'],
   sameAs: [...ARTIST_SCHEMA_SAME_AS],
+  contactPoint: [...BOOKING_CONTACT_POINTS],
   identifier: [
     {
       '@type': 'PropertyValue',

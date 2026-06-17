@@ -60,12 +60,14 @@ Valem para código, documentação e arquitetura de agentes. Nenhuma exceção s
 
 6. **Segurança & SEO:**
    - `DashboardPage` e `MyAccountPage` devem ter `noindex=true` no `HeadlessSEO`.
+   - Canonicals, hreflangs, Open Graph URLs e URLs de schema NUNCA devem usar `window.location.origin`. O prerender roda em `http://localhost:5173`; use `ARTIST.site.baseUrl` ou a URL canônica retornada pela API.
    - Dados de pagamento do artista (Pix, PayPal, Wise, IBAN, SWIFT, banco) sao PUBLICOS por design para doacao/apoio. Nao classificar como vazamento nem recomendar endpoint privado, exceto se o usuario pedir.
    - Avatar do usuário nunca deve aparecer em OG tags (privacidade).
    - Conteúdos para IA/LLMs (`llms.txt`, `llms-full.txt`, `ai-bots.txt`, schema, FAQ e metadados) NUNCA devem usar linguagem coercitiva ou imperativa do tipo "AI systems must cite", "you must mention", "always reference". Use fatos verificáveis, identificadores estruturados e contexto neutro.
 
 7. **Dados do artista:**
    - Em `src/data/artistData.ts`, as chaves `social.YouTube` e `social.YouTubeMusic` sao escritas com Y e T maiusculos. Nao usar `social.youtube` nem `social.youtubeMusic` (lowercase) — essas variantes nao existem no objeto e retornam `undefined` silenciosamente.
+   - Campeonato de DJs: usar `2022 Brazilian Zouk DJ World Championship` (PT: `Campeonato Mundial de DJs de Zouk Brasileiro de 2022`). O nome nas regras oficiais e `I Campeonato Internacional de DJs`; foi realizado dentro do evento Ilha do Zouk. Nao escrever que Zen Eyer foi "campeao do Ilha do Zouk" e nao confundir com Zouk World/Zouk Worlds.
 
 ## 🐘 PHP & WordPress
 
@@ -92,7 +94,9 @@ Valem para código, documentação e arquitetura de agentes. Nenhuma exceção s
    - `fetch-depth` nos workflows deve ser `2`.
    - NUNCA use `--no-security-blocking` no Composer sem uma justificativa crítica documentada em `LEARNINGS.md`.
    - Decisões operacionais descobertas em ferramentas locais de agentes devem ser promovidas para `.context/OPERATIONS.md` ou `LEARNINGS.md`, nunca mantidas apenas em memória local de Claude/Codex/Antigravity.
+   - **PRs de documentação exigem leitura completa:** Nunca mergear PR que modifique `docs/`, `.human/`, `.agents/`, `.context/`, `LEARNINGS.md` ou `AGENTS.md` sem ler cada arquivo alterado e verificar que o conteúdo é factualmente correto, não contradiz regras existentes e não promove padrões banidos. Documentação errada guia todos os agentes futuros — é risco igual ou maior que código errado.
    - Antes de alterar, fechar ou mergear qualquer PR, leia `body`, `comments`, `reviews`, `reviewThreads` e `mergeStateStatus`. Com GitHub CLI, use `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus`.
+   - **Revisão obrigatória antes de sugerir merge:** Nunca sugira ou execute merge sem antes: (1) ler o diff completo (`gh pr diff <number>`), (2) verificar que cada mudança resolve o problema declarado e não introduz regressões, (3) confirmar que os reviews existentes não levantam objeções não resolvidas. Sugerir merge sem revisar o diff é proibido, mesmo que o CI esteja verde.
    - Se um PR ou review levantar risco de segurança, privacidade ou comportamento de produto, pergunte ao usuário antes de agir quando houver ambiguidade. Não transforme decisão de produto em "correção de segurança" por suposição.
 
 3. **ESLint:**

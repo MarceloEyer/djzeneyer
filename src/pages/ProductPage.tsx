@@ -4,13 +4,16 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
+import { stripHtml } from '../utils/text';
 import { useTranslation } from 'react-i18next';
 import { Loader2, ShoppingCart, ArrowLeft } from 'lucide-react';
 import { getCurrencyFormatter } from '../utils/currency';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { useAddToCartMutation, useProductQuery, type WCProductDetail } from '../hooks/useQueries';
+import { ARTIST } from '../data/artistData';
 import NotFoundPage from './NotFoundPage';
+import { logger } from '../lib/logger';
 
 interface ProductGalleryProps {
   product: WCProductDetail;
@@ -33,7 +36,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
     <div>
       <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
         <img
-          src={safeUrl(mainImage)}
+          src={safeUrl(mainImage, placeholderImage)}
           alt={product.name || ''}
           className="w-full h-full object-cover"
           loading="eager"
@@ -53,7 +56,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
                 activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-white/10 hover:border-white/30'
               }`}
             >
-              <img src={safeUrl(img.sizes?.thumbnail || img.src)} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
+              <img src={safeUrl(img.sizes?.thumbnail || img.src, '')} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
             </button>
           ))}
         </div>
@@ -70,7 +73,7 @@ const ProductPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const shopPath = getLocalizedRoute('shop', currentLang);
   const canonicalUrl = useMemo(
-    () => slug ? `https://djzeneyer.com/${getLocalizedRoute('shop', currentLang).replace(/^\//, '')}/${slug}` : undefined,
+    () => slug ? `${ARTIST.site.baseUrl}${getLocalizedRoute('product-detail', currentLang).replace(':slug', slug)}` : undefined,
     [currentLang, slug]
   );
   const placeholderImage = 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer';
@@ -93,9 +96,54 @@ const ProductPage: React.FC = () => {
     try {
       await addToCartMutation.mutateAsync({ productId: product.id, quantity: 1 });
     } catch (err) {
-      console.error('Error adding to cart:', err);
+      logger.error('PRODUCT_PAGE', 'Error adding to cart', { error: String(err) });
     }
   }, [addToCartMutation, product]);
+
+  const productSchema = useMemo(() => {
+    if (!product || !canonicalUrl) return undefined;
+
+    const imageUrls = product.images
+      ?.map((image) => safeUrl(image.sizes?.large || image.src, ''))
+      .filter(Boolean);
+    const rawDescription = product.short_description || product.description || product.name;
+    const price = product.price || product.regular_price;
+
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Product',
+          '@id': `${canonicalUrl}#product`,
+          name: product.name,
+          description: stripHtml(rawDescription),
+          url: canonicalUrl,
+          ...(imageUrls?.length ? { image: imageUrls } : {}),
+          sku: String(product.id),
+          ...(product.categories?.length ? { category: product.categories.map((category) => category.name).join(', ') } : {}),
+          brand: { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
+          offers: {
+            '@type': 'Offer',
+            url: canonicalUrl,
+            priceCurrency: 'BRL',
+            ...(price ? { price } : {}),
+            availability: product.stock_status === 'instock'
+              ? 'https://schema.org/InStock'
+              : 'https://schema.org/OutOfStock',
+          },
+        },
+        {
+          '@type': 'WebPage',
+          '@id': `${canonicalUrl}#webpage`,
+          url: canonicalUrl,
+          name: product.name,
+          description: stripHtml(rawDescription),
+          isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
+          mainEntity: { '@id': `${canonicalUrl}#product` },
+        },
+      ],
+    };
+  }, [canonicalUrl, product]);
 
   if (isLoading) {
     return (
@@ -118,6 +166,7 @@ const ProductPage: React.FC = () => {
         image={product.images?.[0]?.sizes?.large || product.images?.[0]?.src}
         imageAlt={product.images?.[0]?.alt || t('og.image_alt.product', { name: product.name })}
         type="product"
+        schema={productSchema}
       />
 
       <div className="min-h-screen bg-background text-white pb-20">

@@ -116,7 +116,7 @@ export const useGamiPress = (userId: number) => {
 export const siteConfig = {
     siteName: 'DJ Zen Eyer',
     siteUrl: 'https://djzeneyer.com',
-    description: 'Bicampeão Mundial de Brazilian Zouk',
+    description: 'Vencedor de Best DJ Performance e Best Remix no 2022 Brazilian Zouk DJ World Championship',
 
     // Branding
     primaryColor: '#1f2937',

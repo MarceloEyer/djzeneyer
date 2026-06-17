@@ -13,9 +13,9 @@ if (!defined('ABSPATH'))
  * Constants
  * --------------------------------------------------
  */
-define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS);
-define('DJZ_CACHE_PRODUCTS', 24 * HOUR_IN_SECONDS);
+define('DJZ_CACHE_PRODUCTS', 24 * HOUR_IN_SECONDS); // kept for back-compat; zen-commerce uses its own TTL
 define('DJZ_CACHE_GAMIPRESS', 48 * HOUR_IN_SECONDS);
+define('DJZ_CACHE_MENU', 6 * HOUR_IN_SECONDS); // was missing — djz_get_menu silently cached with TTL=0
 
 
 /**
@@ -230,10 +230,7 @@ function djz_remove_query_strings($src)
     return remove_query_arg('ver', $src);
 }
 
-add_action('wp_head', function () {
-    echo '<link rel="dns-prefetch" href="//fonts.googleapis.com">' . PHP_EOL;
-    echo '<link rel="dns-prefetch" href="//fonts.gstatic.com">' . PHP_EOL;
-}, 0);
+// preconnect já está em header.php antes do wp_head(); dns-prefetch seria redundante e mais fraco.
 
 add_filter('wp_lazy_loading_enabled', '__return_true');
 

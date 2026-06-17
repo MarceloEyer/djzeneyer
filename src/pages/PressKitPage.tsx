@@ -30,11 +30,15 @@ import { ARTIST } from '../data/artistData';
 
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
 const EMPTY_FESTIVAL_ARRAY: { name: string; country: string; date: string; flag: string }[] = [];
+const STAT_CARD_HOVER = { scale: 1.05, y: -5 };
+const MEDIA_CARD_HOVER = { y: -8 };
+const SUBTLE_SCALE_HOVER = { scale: 1.02 };
+const GALLERY_ITEM_HOVER = { scale: 1.05 };
 
 const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; color: string }>(
   ({ icon, number, label, color }) => (
     <motion.div
-      whileHover={{ scale: 1.05, y: -5 }}
+      whileHover={STAT_CARD_HOVER}
       className={`${color} rounded-2xl border border-white/20 p-6 text-center shadow-xl backdrop-blur-sm`}
       transition={{ type: 'spring', stiffness: 300 }}
     >
@@ -59,7 +63,7 @@ const MediaKitCard = memo<{
     target="_blank"
     rel="noopener noreferrer"
     className="group flex h-full flex-col rounded-2xl border border-white/10 bg-surface/50 p-8 backdrop-blur-sm transition-all hover:border-primary hover:bg-surface/80"
-    whileHover={{ y: -8 }}
+    whileHover={MEDIA_CARD_HOVER}
     transition={{ type: 'spring', stiffness: 300 }}
   >
     <div className="mx-auto mb-4 inline-block rounded-full bg-primary/10 p-4 text-primary transition-transform group-hover:scale-110">
@@ -271,7 +275,7 @@ const PressKitPage: React.FC = () => {
                 <div className="relative">
                   <motion.div
                     className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl"
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={SUBTLE_SCALE_HOVER}
                   >
                     <img
                       src="/images/artist/dj-zen-eyer-smiling-at-deck.jpg"
@@ -283,8 +287,8 @@ const PressKitPage: React.FC = () => {
                     />
                     <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
                     <div className="absolute bottom-6 left-6 right-6">
-                      <span className="text-xs font-bold uppercase tracking-widest text-primary">World Champion 2022</span>
-                      <h3 className="text-2xl font-bold">DJ & Producer</h3>
+                      <span className="text-xs font-bold uppercase tracking-widest text-primary">{t('presskit.bio.photo_label', { year: ARTIST.titles.year })}</span>
+                      <h3 className="text-2xl font-bold">{t('presskit.bio.role')}</h3>
                     </div>
                   </motion.div>
                 </div>
@@ -355,10 +359,10 @@ const PressKitPage: React.FC = () => {
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 px-4 text-center">
                 <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
-                  Line-ups <span className="text-primary">Internacionais</span>
+                  {t('presskit.lineups.title')}
                 </h2>
                 <p className="mx-auto max-w-2xl text-xl text-white/50">
-                  Alguns dos palcos onde o Brazilian Zouk encontrou flow sem pressa.
+                  {t('presskit.lineups.subtitle')}
                 </p>
               </div>
 
@@ -366,7 +370,7 @@ const PressKitPage: React.FC = () => {
                 {(artist.festivals || EMPTY_FESTIVAL_ARRAY).slice(0, 9).map((festival: { name: string; country: string; date: string; flag: string }, index: number) => (
                   <motion.div
                     key={index}
-                    whileHover={{ scale: 1.02 }}
+                    whileHover={SUBTLE_SCALE_HOVER}
                     className="group flex items-center gap-4 rounded-2xl border border-white/5 bg-surface/40 p-5 transition-all hover:border-primary/30"
                   >
                     <div className="text-3xl grayscale transition-all group-hover:grayscale-0">{festival.flag}</div>
@@ -381,7 +385,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="mt-12 px-4 text-center">
-                <p className="text-lg italic text-white/30">+ tour mundial contínua cobrindo Américas, Europa e Oceania.</p>
+                <p className="text-lg italic text-white/30">{t('presskit.lineups.global_note')}</p>
               </div>
             </motion.div>
           </div>
@@ -409,7 +413,7 @@ const PressKitPage: React.FC = () => {
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-10 sm:mb-16 text-center">
                 <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
-                  Galeria de <span className="text-primary">Imprensa</span>
+                  {t('presskit.gallery.title')}
                 </h2>
                 <p className="text-xl text-white/50">{t('presskit.gallery.subtitle')}</p>
               </div>
@@ -426,7 +430,7 @@ const PressKitPage: React.FC = () => {
                   <motion.div
                     key={index}
                     className="group aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl border border-white/5 transition-all hover:border-primary/50"
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={GALLERY_ITEM_HOVER}
                   >
                     <img
                       src={photo.src}
@@ -506,8 +510,8 @@ const PressKitPage: React.FC = () => {
                         <Globe className="text-primary" size={24} />
                       </div>
                       <div>
-                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">Booking</div>
-                        <div className="text-white/60">Worldwide</div>
+                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">{t('presskit.contact.booking_label')}</div>
+                        <div className="text-white/60">{t('presskit.contact.availability_value')}</div>
                       </div>
                     </div>
                   </div>

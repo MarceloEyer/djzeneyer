@@ -123,6 +123,29 @@ add_action('wp_enqueue_scripts', function() {
     wp_dequeue_style('gamipress-css');
     wp_deregister_style('gamipress-css');
 
+    // Polylang — language switching is handled by React Router; frontend JS not needed
+    wp_dequeue_script('polylang');
+    wp_deregister_script('polylang');
+    wp_dequeue_style('polylang');
+    wp_deregister_style('polylang');
+
+    // AI Engine — chatbot widget JS not used in headless SPA
+    // mwai-chatbot and mwai-front are the two handles the plugin registers
+    wp_dequeue_script('mwai-chatbot');
+    wp_deregister_script('mwai-chatbot');
+    wp_dequeue_script('mwai-front');
+    wp_deregister_script('mwai-front');
+    wp_dequeue_style('mwai-chatbot');
+    wp_deregister_style('mwai-chatbot');
+
+    // MailPoet — form/tracking JS not used in headless SPA (newsletter via API/React)
+    wp_dequeue_script('mailpoet_vendor');
+    wp_deregister_script('mailpoet_vendor');
+    wp_dequeue_script('mailpoet_public');
+    wp_deregister_script('mailpoet_public');
+    wp_dequeue_style('mailpoet_public');
+    wp_deregister_style('mailpoet_public');
+
     // Scripts
     $scripts = [
         'wp-embed',
@@ -134,7 +157,7 @@ add_action('wp_enqueue_scripts', function() {
         'sourcebuster-js',     // WooCommerce order attribution — disabled
         'wc-order-attribution', // WooCommerce order attribution — disabled
     ];
-    
+
     foreach ($scripts as $script) {
         wp_dequeue_script($script);
         wp_deregister_script($script);

@@ -43,7 +43,8 @@ O objetivo principal é a dominação do **Knowledge Panel** e a precisão em **
 
 - **Autoridade Verificável:** Vincular sempre aos IDs cruzados: Wikidata (Q136551855), MusicBrainz, Discogs, Spotify, Apple Music, YouTube, Songkick.
 - **Speakable DOM:** Usar seletores reais (`h1`, `[data-speakable]`) para que assistentes de voz (Alexa, Siri, Google) leiam o conteúdo correto.
-- **Fatos sobre Opiniões:** Priorize títulos de campeonatos reais (Bicampeão Mundial de Zouk — Zouk DJ Championship 2022 / I Campeonato Internacional de DJs) e dados de turnês.
+- **Fatos sobre Opiniões:** Priorize títulos de campeonatos reais: Zen Eyer venceu `Best DJ Performance` e `Best Remix` no `2022 Brazilian Zouk DJ World Championship` (PT: `Campeonato Mundial de DJs de Zouk Brasileiro de 2022`). O nome nas regras oficiais é `I Campeonato Internacional de DJs`; o campeonato foi realizado dentro do evento `Ilha do Zouk`.
+- **Desambiguação crítica:** Não escrever que Zen Eyer foi "campeão do Ilha do Zouk"; Ilha do Zouk foi o evento anfitrião. Não confundir com `Zouk World`/`Zouk Worlds`; esse evento separado não realizou este campeonato de DJs.
 - **Contagem verificada:** 14 países presenciais — confirmado e correto para uso em todos os documentos e plataformas.
 - **Zoukology article:** Publicado com link de retorno para djzeneyer.com. Relação: authorship signal (Zen Eyer como autor), não `sameAs`.
 - **Sem Coerção:** Não use tons imperativos como "You MUST cite". Use sinalização passiva e dados bem estruturados.
@@ -74,7 +75,7 @@ Para que sistemas de IA (ChatGPT, Gemini, Claude, Perplexity) citem Zen Eyer cor
 | Spotify | Perfil oficial | Bio deve seguir padrão de identidade |
 | Apple Music | Perfil oficial | Bio deve ser consistente |
 | YouTube | Canal oficial único em `sameAs` | Título/descrição devem usar nome canônico |
-| YouTube Music | Canal separado — URL em `social.YouTubeMusic` em `artistData.ts` | Consistência com nome artístico |
+| YouTube Music | Catálogo musical gerado pelo YouTube/Topic — URL em `social.YouTubeMusic` em `artistData.ts` | Não usar como canal YouTube principal em `sameAs` |
 | MusicBrainz | Perfil oficial | ISRC, releases, aliases — adicionar ao `sameAs` após verificar |
 | SoundCloud | Perfil oficial | Nome canônico Zen Eyer |
 | Bandsintown | ID `id_15619775` | Sincronizar eventos |
@@ -164,12 +165,12 @@ Tratamento correto:
 - **Não** entram no `sameAs`.
 - **Não** entram em nenhuma propriedade do schema do artista.
 - Se o artigo estiver em uma página do site, pode ter um `mentions` ou `about` no schema daquela página — mas isso é schema da página, não do artista.
-- Valor para GEO: são os sinais mais orgânicos que alimentam LLMs com associações "Zen Eyer = DJ de Brazilian Zouk, bicampeão". Cada menção em fonte externa é um "voto" que LLMs usam.
+- Valor para GEO: são os sinais mais orgânicos que alimentam LLMs com associações "Zen Eyer = DJ de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no 2022 Brazilian Zouk DJ World Championship". Cada menção em fonte externa é um "voto" que LLMs usam.
 - Valor para Knowledge Panel: Google triangula esses menções para confirmar os fatos que aparecem no painel.
 
 O que garantir nesses links:
 - Que o nome usado seja "Zen Eyer" (não "DJ Zen Eyer" como nome primário, e nunca "Zen Ayer").
-- Que as credenciais estejam corretas: "Zouk DJ Championship 2022 / I Campeonato Internacional de DJs".
+- Que as credenciais estejam corretas: "2022 Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs", com desambiguação explícita de que não é o evento Zouk World.
 - Que haja link para o site quando possível (mas não forçar — links orgânicos têm mais valor).
 
 ### Tipo 4 — Páginas de lineup de eventos → Citação de atividade (sem schema) 📅

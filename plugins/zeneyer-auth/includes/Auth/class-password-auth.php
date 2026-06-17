@@ -95,7 +95,7 @@ class Password_Auth {
         // Apenas valida se for uma requisição via API REST (protege contra bots, mas libera admins no painel)
         if ( defined('REST_REQUEST') && REST_REQUEST ) {
             
-            $turnstile_token = sanitize_text_field($turnstile_token);
+            $turnstile_token = is_string($turnstile_token) ? sanitize_text_field($turnstile_token) : '';
 
             // Pega a chave secreta do wp-config.php (Segurança Máxima)
             $secret_key = defined('ZEN_TURNSTILE_SECRET_KEY') ? ZEN_TURNSTILE_SECRET_KEY : '';
@@ -109,12 +109,23 @@ class Password_Auth {
                 return new WP_Error( 'missing_captcha', 'Verificação de segurança obrigatória.', [ 'status' => 403 ] );
             }
             
+            $client_ip = '';
+            if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']) && is_string($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+                $client_ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP']));
+            } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) && is_string($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                $forwarded_ips = explode(',', wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
+                $client_ip = sanitize_text_field(trim((string) ($forwarded_ips[0] ?? '')));
+            } elseif (!empty($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) {
+                $client_ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
+            }
+            $client_ip = filter_var($client_ip, FILTER_VALIDATE_IP) ? $client_ip : '';
+
             // Valida com o Cloudflare
             $response = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
                 'body' => [
                     'secret'   => $secret_key,
                     'response' => $turnstile_token,
-                    'remoteip' => isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '',
+                    'remoteip' => $client_ip,
                 ]
             ]);
             

@@ -1,5 +1,6 @@
 {
   "resource": "https://djzeneyer.com",
+  "resource_name": "DJ Zen Eyer",
   "authorization_servers": [
     "https://djzeneyer.com"
   ],
@@ -9,5 +10,5 @@
   "scopes_supported": [
     "public:read"
   ],
-  "resource_documentation": "https://djzeneyer.com/.well-known/auth.md"
+  "resource_documentation": "https://djzeneyer.com/auth.md"
 }

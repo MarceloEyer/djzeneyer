@@ -8,9 +8,11 @@ import { X, Mail, Lock, User, Loader2, AlertCircle, Eye, EyeOff } from 'lucide-r
 import { useTranslation } from 'react-i18next';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { Turnstile } from '@marsidev/react-turnstile';
+import { logger } from '../../lib/logger';
 import { useUser } from '../../contexts/UserContext';
 import { getTurnstileSiteKey } from '../../config/api';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
+import { useAuthSettings } from '../../hooks/useAuthSettings';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -31,10 +33,25 @@ interface GoogleCredentialResponse {
   select_by?: string;
 }
 
+const OVERLAY_INITIAL = { opacity: 0 };
+const OVERLAY_ANIMATE = { opacity: 1 };
+const OVERLAY_EXIT = { opacity: 0 };
+
+const MODAL_INITIAL = { opacity: 0, scale: 0.95, y: 20 };
+const MODAL_ANIMATE = { opacity: 1, scale: 1, y: 0 };
+const MODAL_EXIT = { opacity: 0, scale: 0.95, y: 20 };
+const MODAL_TRANSITION = { type: 'spring', duration: 0.5, bounce: 0.3 };
+
+const ERROR_INITIAL = { opacity: 0, height: 0 };
+const ERROR_ANIMATE = { opacity: 1, height: 'auto' };
+
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
+
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { login, register, googleLogin, googleClientId } = useUser();
+  const { login, register, googleLogin } = useUser();
+  const { data: authSettings, isLoading: isLoadingSettings, error: _settingsError } = useAuthSettings(isOpen);
+  const googleClientId = authSettings?.data?.google_client_id;
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
   // Estados do Formulário
@@ -113,7 +130,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       navigate(getLocalizedRoute('dashboard', currentLang));
     } catch (err: unknown) {
       const error = err as Error;
-      console.error('❌ [AuthModal] Erro:', error);
+      logger.error('AUTH_MODAL', 'Login failed', { error: String(error) });
       setTurnstileToken('');
       setError(error.message || t('auth.errors.auth_generic_error'));
     } finally {
@@ -136,7 +153,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       onClose();
       navigate(getLocalizedRoute('dashboard', currentLang));
     } catch (err: unknown) {
-      console.error('❌ [AuthModal] Erro no Google Login:', err);
+      logger.error('AUTH_MODAL', 'Google login failed', { error: String(err) });
       setError(t('auth.errors.google_auth_failed'));
     } finally {
       setLoading(false);
@@ -170,17 +187,17 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         onClick={handleOverlayClick}
       >
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          initial={OVERLAY_INITIAL}
+          animate={OVERLAY_ANIMATE}
+          exit={OVERLAY_EXIT}
           className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         />
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: 'spring', duration: 0.5, bounce: 0.3 }}
+          initial={MODAL_INITIAL}
+          animate={MODAL_ANIMATE}
+          exit={MODAL_EXIT}
+          transition={MODAL_TRANSITION}
           className="relative w-full max-w-md"
           onClick={(e) => e.stopPropagation()}
         >
@@ -207,8 +224,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
             <div className="px-8 pb-8">
               {error && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                  initial={ERROR_INITIAL}
+                  animate={ERROR_ANIMATE}
                   className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm flex items-start gap-3"
                 >
                   <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
@@ -216,36 +233,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </motion.div>
               )}
 
-              {googleClientId ? (
-                <div className="mb-6">
-                  <GoogleOAuthProvider clientId={googleClientId}>
-                    <div className="w-full flex justify-center">
-                      <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={() => setError(t('auth.errors.google_connect_error'))}
-                        theme="filled_black"
-                        size="large"
-                        text={mode === 'login' ? 'signin_with' : 'signup_with'}
-                        width={368}
-                        logo_alignment="center"
-                      />
-                    </div>
-                  </GoogleOAuthProvider>
-                </div>
-              ) : (
+              {isLoadingSettings ? (
                 <div className="mb-6 h-12 bg-white/5 animate-pulse rounded-lg flex items-center justify-center border border-white/5">
                   <Loader2 size={20} className="animate-spin text-white/40" />
                 </div>
-              )}
-
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-white/10"></div>
-                </div>
-                <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
-                  <span className="px-3 bg-[#1a1a1a] text-white/40">{t('auth.or_continue_with_email')}</span>
-                </div>
-              </div>
+              ) : googleClientId ? (
+                <>
+                  <div className="mb-6">
+                    <GoogleOAuthProvider clientId={googleClientId}>
+                      <div className="w-full flex justify-center">
+                        <GoogleLogin
+                          onSuccess={handleGoogleSuccess}
+                          onError={() => setError(t('auth.errors.google_connect_error'))}
+                          theme="filled_black"
+                          size="large"
+                          text={mode === 'login' ? 'signin_with' : 'signup_with'}
+                          width={368}
+                          logo_alignment="center"
+                        />
+                      </div>
+                    </GoogleOAuthProvider>
+                  </div>
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-white/10"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
+                      <span className="px-3 bg-[#1a1a1a] text-white/40">{t('auth.or_continue_with_email')}</span>
+                    </div>
+                  </div>
+                </>
+              ) : null}
 
               <form onSubmit={handleLogin} className="space-y-4">
                 <div style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0 }} aria-hidden="true">

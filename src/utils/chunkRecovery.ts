@@ -1,3 +1,5 @@
+import { logger } from '../lib/logger';
+
 const CHUNK_RECOVERY_KEY = 'djz:chunk-recovery';
 
 const CHUNK_ERROR_PATTERNS = [
@@ -77,7 +79,7 @@ export const recoverFromChunkLoadError = (
     window.location.reload();
     return true;
   } catch (reloadError) {
-    console.error('Chunk recovery reload failed', reloadError);
+    logger.error('CHUNK_RECOVERY', 'Reload failed', { error: String(reloadError) });
     return false;
   }
 };
