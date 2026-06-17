@@ -1051,7 +1051,9 @@
     },
     "header": {
       "title": "Support DJ <1>Zen Eyer</1>",
-      "description": "If you enjoy my work and want to help keep the cremosidade alive on the dance floor, here are a few simple ways to support it."
+      "description_p1": "If you're the kind of person who believes dancing can be more than steps — if you want more connection, human music, and real presence — supporting my work costs less than a water bottle at a zouk party.",
+      "description_p2": "For you, it's almost nothing. For me, it makes a big difference at the end of the month.",
+      "description_p3": "Consider contributing and helping this project keep existing, with new music, sets, and experiences made for those who don't want to stay on the surface."
     },
     "payment": {
       "title": "Payment Methods",
