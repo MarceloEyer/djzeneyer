@@ -101,6 +101,11 @@ const withParam = (paths: string | string[], param: string): string | string[] =
     : `${paths}/${param}`;
 };
 
+const stripDynamicSegment = (path: string): string => {
+  const dynamicIdx = path.indexOf('/:');
+  return dynamicIdx === -1 ? path : path.slice(0, dynamicIdx);
+};
+
 // ============================================================================
 // ROUTES CONFIGURATION
 // ============================================================================
@@ -453,8 +458,7 @@ ROUTES_CONFIG.forEach(route => {
 
   for (const p of [...enPaths, ...ptPaths]) {
     if (!p) continue;
-    const dynamicIdx = p.indexOf('/:');
-    const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
+    const staticPart = stripDynamicSegment(p);
     // remove leading slash if it exists
     let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     // remove trailing slash if it exists
@@ -584,8 +588,8 @@ export const getAlternateLinks = (
   // para que hreflang nunca produza literais como "/zouk-events/:id/slug-real"
   const rawEnSlug = (Array.isArray(route.paths.en) ? (route.paths.en[0] ?? '') : route.paths.en) || '';
   const rawPtSlug = (Array.isArray(route.paths.pt) ? (route.paths.pt[0] ?? '') : route.paths.pt) || '';
-  const enSlug = rawEnSlug.split('/:')[0];
-  const ptSlug = rawPtSlug.split('/:')[0];
+  const enSlug = stripDynamicSegment(rawEnSlug);
+  const ptSlug = stripDynamicSegment(rawPtSlug);
 
   // Calcula o sufixo dinâmico (ID do evento, slug da noticia, etc)
   let suffix = '';
@@ -597,8 +601,7 @@ export const getAlternateLinks = (
   const allCurrentLangPaths = getLocalizedPaths(detailRoute, currentLang || (currentPath.startsWith('/pt') ? 'pt' : 'en'));
   for (const p of allCurrentLangPaths) {
     // Extrai apenas o prefixo estático: "zouk-events/:slug" -> "zouk-events"
-    const dynamicIdx = p.indexOf('/:');
-    const staticPart = dynamicIdx === -1 ? p : p.slice(0, dynamicIdx);
+    const staticPart = stripDynamicSegment(p);
     let cleanP = staticPart.startsWith('/') ? staticPart.slice(1) : staticPart;
     cleanP = cleanP.endsWith('/') ? cleanP.slice(0, -1) : cleanP;
 
