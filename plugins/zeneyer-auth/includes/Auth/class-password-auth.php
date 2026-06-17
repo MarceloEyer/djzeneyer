@@ -86,19 +86,17 @@ class Password_Auth {
      * @param string $email
      * @param string $password
      * @param string $name
+     * @param string $turnstile_token
      * @return \WP_User|WP_Error
      */
-    public static function register($email, $password, $name = '') {
+    public static function register($email, $password, $name = '', $turnstile_token = '') {
         // --- 1. SEGURANÇA ANTI-BOT (TURNSTILE) ---
         
         // Apenas valida se for uma requisição via API REST (protege contra bots, mas libera admins no painel)
         if ( defined('REST_REQUEST') && REST_REQUEST ) {
             
-            // Pega o corpo da requisição JSON
-            $request_body = file_get_contents('php://input');
-            $params = json_decode($request_body, true);
-            $token = isset($params['turnstileToken']) ? $params['turnstileToken'] : '';
-            
+            $turnstile_token = sanitize_text_field($turnstile_token);
+
             // Pega a chave secreta do wp-config.php (Segurança Máxima)
             $secret_key = defined('ZEN_TURNSTILE_SECRET_KEY') ? ZEN_TURNSTILE_SECRET_KEY : '';
             
@@ -107,7 +105,7 @@ class Password_Auth {
                 return new WP_Error('config_error', 'Erro de configuração de segurança no servidor (Chave ausente).', ['status' => 500]);
             }
 
-            if ( empty( $token ) ) {
+            if ( empty( $turnstile_token ) ) {
                 return new WP_Error( 'missing_captcha', 'Verificação de segurança obrigatória.', [ 'status' => 403 ] );
             }
             
@@ -115,8 +113,8 @@ class Password_Auth {
             $response = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
                 'body' => [
                     'secret'   => $secret_key,
-                    'response' => $token,
-                    'remoteip' => $_SERVER['REMOTE_ADDR']
+                    'response' => $turnstile_token,
+                    'remoteip' => isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '',
                 ]
             ]);
             
@@ -126,7 +124,7 @@ class Password_Auth {
             
             $result = json_decode( wp_remote_retrieve_body( $response ) );
             
-            if ( ! $result->success ) {
+            if ( ! is_object($result) || empty($result->success) ) {
                 return new WP_Error( 'invalid_captcha', 'Falha na verificação de segurança. Tente novamente.', [ 'status' => 403 ] );
             }
 

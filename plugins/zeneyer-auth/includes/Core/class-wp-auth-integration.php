@@ -61,6 +61,7 @@ class WP_Auth_Integration
             'zeneyer-auth/v1',
             'wc/v3',       // WooCommerce Headless
             'mailpoet/v1', // MailPoet Headless
+            'zengame/v1',  // GamiPress Headless
         ]);
 
         $current_route = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';

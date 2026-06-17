@@ -247,8 +247,9 @@ class Rest_Routes
         $email = $request->get_param('email');
         $password = $request->get_param('password');
         $name = $request->get_param('name');
+        $turnstile_token = $request->get_param('turnstileToken');
 
-        $user = Password_Auth::register($email, $password, $name);
+        $user = Password_Auth::register($email, $password, $name, $turnstile_token);
 
         if (is_wp_error($user)) {
             Rate_Limiter::increment('register');
@@ -532,15 +533,27 @@ class Rest_Routes
             return new WP_Error('unauthorized', 'Unauthorized', ['status' => 401]);
         }
 
-        // Sanitize and save each field
-        $fields = [
-            'zen_real_name' => sanitize_text_field($request->get_param('real_name')),
-            'zen_preferred_name' => sanitize_text_field($request->get_param('preferred_name')),
-            'zen_facebook_url' => esc_url_raw($request->get_param('facebook_url')),
-            'zen_instagram_url' => esc_url_raw($request->get_param('instagram_url')),
-            'zen_dance_role' => self::sanitize_dance_role($request->get_param('dance_role')),
-            'zen_gender' => self::sanitize_gender($request->get_param('gender')),
-        ];
+        // Only mutate fields explicitly sent by the client so partial updates preserve existing profile data.
+        $fields = [];
+
+        if ($request->has_param('real_name')) {
+            $fields['zen_real_name'] = sanitize_text_field($request->get_param('real_name'));
+        }
+        if ($request->has_param('preferred_name')) {
+            $fields['zen_preferred_name'] = sanitize_text_field($request->get_param('preferred_name'));
+        }
+        if ($request->has_param('facebook_url')) {
+            $fields['zen_facebook_url'] = esc_url_raw($request->get_param('facebook_url'));
+        }
+        if ($request->has_param('instagram_url')) {
+            $fields['zen_instagram_url'] = esc_url_raw($request->get_param('instagram_url'));
+        }
+        if ($request->has_param('dance_role')) {
+            $fields['zen_dance_role'] = self::sanitize_dance_role($request->get_param('dance_role'));
+        }
+        if ($request->has_param('gender')) {
+            $fields['zen_gender'] = self::sanitize_gender($request->get_param('gender'));
+        }
 
         foreach ($fields as $meta_key => $value) {
             if ($value !== null && $value !== '') {
@@ -613,45 +626,20 @@ class Rest_Routes
             'return' => 'objects',
         ]);
 
-        global $wpdb;
-        $order_ids = array_map(function ($o) { return $o->get_id(); }, $orders);
-        $items_by_order = [];
-
-        if (!empty($order_ids)) {
-            $placeholders = implode(',', array_fill(0, count($order_ids), '%d'));
-            $query = $wpdb->prepare("
-                SELECT i.order_id, i.order_item_name as name,
-                       MAX(CASE WHEN im.meta_key = '_qty' THEN im.meta_value END) as quantity,
-                       MAX(CASE WHEN im.meta_key = '_line_total' THEN im.meta_value END) as total
-                FROM {$wpdb->prefix}woocommerce_order_items i
-                LEFT JOIN {$wpdb->prefix}woocommerce_order_itemmeta im
-                    ON i.order_item_id = im.order_item_id
-                   AND im.meta_key IN ('_qty', '_line_total')
-                WHERE i.order_id IN ($placeholders)
-                  AND i.order_item_type = 'line_item'
-                GROUP BY i.order_item_id, i.order_id, i.order_item_name
-            ", ...$order_ids);
-
-            $results = $wpdb->get_results($query);
-            if ($results) {
-                foreach ($results as $row) {
-                    $items_by_order[$row->order_id][] = [
-                        'name' => (string) $row->name,
-                        'quantity' => (int) $row->quantity,
-                        'total' => (string) $row->total,
-                    ];
-                }
-            }
-        }
-
         $payload = [];
         foreach ($orders as $order) {
-            $order_id = $order->get_id();
-            $line_items = isset($items_by_order[$order_id]) ? $items_by_order[$order_id] : [];
+            $line_items = [];
+            foreach ($order->get_items() as $item) {
+                $line_items[] = [
+                    'name' => (string) $item->get_name(),
+                    'quantity' => (int) $item->get_quantity(),
+                    'total' => (string) $item->get_total(),
+                ];
+            }
 
             $date = $order->get_date_created();
             $payload[] = [
-                'id' => (int) $order_id,
+                'id' => (int) $order->get_id(),
                 'status' => (string) $order->get_status(),
                 'date_created' => $date ? $date->date('c') : '',
                 'total' => (string) $order->get_total(),

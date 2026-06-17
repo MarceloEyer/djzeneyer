@@ -70,3 +70,7 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **Zona Humana:** Agentes podem e devem sugerir ações em `.human/TASK_LIST.md`, mas nunca devem "inventar" credenciais ou configurações de servidor.
 - **Tone of Voice:** Amigável, profissional, focado em fatos, sem arrogância.
 - **Gemini/Jules em arquivos de contexto:** Tende a fazer "resumo executivo" agressivo, removendo conteúdo técnico crítico. Sempre revisar commits de outros agentes em `AGENTS.md`, `AI_CONTEXT_INDEX.md`, `LEARNINGS.md`.
+
+- **REST profile PATCH semantics:** Endpoints de atualização parcial devem chamar `$request->has_param()` antes de sanitizar ou persistir cada campo. Sanitizar parâmetro ausente pode convertê-lo em vazio e apagar metadados existentes silenciosamente.
+- **WooCommerce order items e HPOS:** Em BFFs autenticados de pedidos, usar o CRUD do WooCommerce (`wc_get_orders()` + `$order->get_items()`) para cabeçalhos e itens. Não contornar a camada de dados com SQL direto nas tabelas internas do WooCommerce.
+- **Turnstile em REST:** A camada de rota deve extrair `turnstileToken` de `WP_REST_Request` e repassá-lo à autenticação. Não reler `php://input` dentro do provider, pois isso acopla a regra de negócio ao transporte HTTP e pode falhar dependendo do servidor.
