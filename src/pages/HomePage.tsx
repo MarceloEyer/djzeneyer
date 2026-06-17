@@ -186,9 +186,13 @@ const HomePage: React.FC = () => {
         keywords={t('home.seo.keywords')}
         leadAnswer={t('home.seo.lead_answer')}
         preload={[
-          { href: '/images/hero-background-mobile.webp', as: 'image', media: '(max-width: 768px)', fetchPriority: 'high' },
-          { href: '/images/hero-background-1440.webp', as: 'image', media: '(min-width: 769px) and (max-width: 1440px)', fetchPriority: 'high' },
-          { href: '/images/hero-background.webp', as: 'image', media: '(min-width: 1441px)', fetchPriority: 'high' }
+          {
+            href: '/images/hero-background-1440.webp',
+            as: 'image',
+            imageSrcSet: '/images/hero-background-mobile.webp 768w, /images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w',
+            imageSizes: '100vw',
+            fetchPriority: 'high',
+          },
         ]}
       />
 

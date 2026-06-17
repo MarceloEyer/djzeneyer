@@ -60,6 +60,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
     if (!details) return null;
 
     const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(details.title)}&dates=${details.start}/${details.end}&details=${encodeURIComponent(details.details)}&location=${encodeURIComponent(details.location)}`;
+    const calendarLabel = `${t('events_add_google')}: ${details.title}`;
 
     const openCalendar = () => {
         trackSelectContent('event_calendar', event.event_id || details.title, {
@@ -75,6 +76,8 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
             <button
                 onClick={openCalendar}
                 className={`btn btn-outline border-primary/30 text-primary w-full py-5 rounded-2xl flex items-center justify-center gap-3 font-black uppercase tracking-widest text-sm hover:bg-primary/10 transition-all ${className}`}
+                title={calendarLabel}
+                aria-label={calendarLabel}
             >
                 <CalendarPlus size={20} />
                 {t('events_add_google')}
@@ -86,8 +89,8 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
         <button
             onClick={openCalendar}
             className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
-            title={t('events_add_google')}
-            aria-label={t('events_add_google')}
+            title={calendarLabel}
+            aria-label={calendarLabel}
         >
             <CalendarPlus size={16} />
         </button>

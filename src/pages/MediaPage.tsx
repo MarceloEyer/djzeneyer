@@ -52,7 +52,15 @@ const MediaPage: React.FC = () => {
       ...((artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[]),
     ];
 
-    return [...new Map(items.map((item) => [item.url, item])).values()];
+    const byIdentity = new Map<string, MediaClippingItem>();
+    items.forEach((item, index) => {
+      const key = item.url || `${item.source}:${item.title}:${item.date}:${index}`;
+      if (!byIdentity.has(key)) {
+        byIdentity.set(key, item);
+      }
+    });
+
+    return [...byIdentity.values()];
   }, [artist.mediaClipping, t]);
 
   const mediaGroups = useMemo(() => [
@@ -237,7 +245,7 @@ const MediaPage: React.FC = () => {
                   <div className="grid gap-6">
                     {group.items.map((item, index: number) => (
                       <motion.div
-                        key={`${group.title}-${item.url}`}
+                        key={`${group.title}-${item.url || `${item.source}-${item.title}-${index}`}`}
                         initial={GROUP_ITEM_INITIAL}
                         whileInView={GROUP_ITEM_WHILE_IN_VIEW}
                         viewport={GROUP_ITEM_VIEWPORT}
