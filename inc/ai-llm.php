@@ -381,8 +381,12 @@ class DJZ_AI_Authority
             'post_status' => 'publish'
         ]);
 
+        // ⚡ Bolt: [performance improvement] Prime caches to avoid N+1 queries in the loop
+        update_post_caches($recent_posts, 'post', true, true);
+
         foreach ($recent_posts as $post) {
             $summary = !empty($post->post_excerpt) ? $post->post_excerpt : wp_trim_words($post->post_content, 50);
+
             $fragments[] = [
                 "id" => "post-" . $post->ID,
                 "title" => $post->post_title,
