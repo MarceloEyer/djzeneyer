@@ -5,6 +5,11 @@ import { FileText, AlertCircle, Scale, Ban, CheckCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
+
+// ⚡ Bolt: Extract static framer-motion variants to preserve object references and prevent unnecessary reallocations
+const FADE_IN_UP_INITIAL = { opacity: 0, y: 20 };
+const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
+
 const TermsPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'legal']);
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
@@ -104,8 +109,8 @@ const TermsPage: React.FC = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
@@ -122,8 +127,8 @@ const TermsPage: React.FC = () => {
 
           {/* Introduction */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card p-8 mb-8 border-l-4 border-primary"
           >
@@ -139,8 +144,8 @@ const TermsPage: React.FC = () => {
           {sections.map((section, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={FADE_IN_UP_INITIAL}
+              animate={FADE_IN_UP_ANIMATE}
               transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
               className="card p-8 mb-6"
             >
@@ -158,8 +163,8 @@ const TermsPage: React.FC = () => {
           {additionalTerms.map((term, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={FADE_IN_UP_INITIAL}
+              animate={FADE_IN_UP_ANIMATE}
               transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
               className="card p-8 mb-6"
             >
@@ -177,8 +182,8 @@ const TermsPage: React.FC = () => {
 
           {/* Governing Law */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.1 }}
             className="card p-8 mb-6"
           >
@@ -193,8 +198,8 @@ const TermsPage: React.FC = () => {
 
           {/* Modifications */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.2 }}
             className="card p-8 mb-6"
           >
@@ -206,8 +211,8 @@ const TermsPage: React.FC = () => {
 
           {/* Contact */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.3 }}
             className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
           >
@@ -231,8 +236,8 @@ const TermsPage: React.FC = () => {
 
           {/* Acceptance */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={FADE_IN_UP_INITIAL}
+            animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.4 }}
             className="text-center text-white/50 text-sm mt-8"
           >
