@@ -19,10 +19,13 @@ const visit = (directory) => {
     if (!/\.(?:ts|tsx)$/.test(entry.name)) continue;
 
     const source = fs.readFileSync(absolutePath, 'utf8');
-    if (source.includes('HeadlessSEO') && source.includes('window.location.origin')) {
-      failures.push(
-        `${path.relative(ROOT, absolutePath)}: HeadlessSEO is used alongside window.location.origin; use ARTIST.site.baseUrl or an API canonical URL`
-      );
+    if (source.includes('window.location.origin')) {
+      const isNearSEO = source.includes('HeadlessSEO') || source.includes('canonical') || source.includes('url=');
+      if (isNearSEO) {
+        failures.push(
+          `${path.relative(ROOT, absolutePath)}: window.location.origin is used near SEO or canonical URL logic; use ARTIST.site.baseUrl or an API canonical URL instead to avoid SSR hydration mismatch.`
+        );
+      }
     }
   }
 };
