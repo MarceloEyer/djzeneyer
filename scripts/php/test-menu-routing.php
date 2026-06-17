@@ -43,11 +43,14 @@ $cases = [
     ['/does-not-exist?x=1#frag', 'pt', '/does-not-exist/?x=1#frag', 'preserved unknown same-origin custom path'],
     ['https://external.example/path?x=1#frag', 'pt', 'https://external.example/path?x=1#frag', 'left external URL untouched'],
     ['/../private', 'en', '/', 'normalized traversal attempt to home'],
+    ['/', 'pt', '/pt/', 'localized EN home path to PT home path'],
+    ['/pt', 'en', '/', 'localized PT home path to EN home path'],
+    ['/pt/', 'en', '/', 'localized PT home path with trailing slash to EN home path'],
 ];
 
 $failures = [];
 foreach ($cases as [$url, $lang, $expected, $label]) {
-    $actual = djz_localize_menu_url($url, $lang, 'https://djzeneyer.com');
+    $actual = djz_localize_menu_url($url, $lang, home_url());
     if ($actual !== $expected) {
         $failures[] = sprintf("%s\n  expected: %s\n  actual:   %s", $label, $expected, $actual);
     }
