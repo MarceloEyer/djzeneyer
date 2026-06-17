@@ -204,26 +204,39 @@ function djz_menu_routes(): array
 
 function djz_menu_route_by_path(string $path): ?array
 {
-    $normalized = djz_normalize_menu_path($path);
+    static $map = null;
 
-    foreach (djz_menu_routes() as $route) {
-        foreach (['en', 'pt'] as $lang) {
-            $slug       = isset($route[$lang]) ? trim((string) $route[$lang], '/') : '';
-            $route_path = $lang === 'pt' ? '/pt' . ($slug === '' ? '' : '/' . $slug) : '/' . $slug;
-            if (djz_normalize_menu_path($route_path) === $normalized) return $route;
+    if ($map === null) {
+        $map = [];
+        foreach (djz_menu_routes() as $route) {
+            foreach (['en', 'pt'] as $lang) {
+                $slug       = isset($route[$lang]) ? trim((string) $route[$lang], '/') : '';
+                $route_path = $lang === 'pt' ? '/pt' . ($slug === '' ? '' : '/' . $slug) : '/' . $slug;
+                $norm       = djz_normalize_menu_path($route_path);
 
-            if (empty($route['aliases'][$lang]) || !is_array($route['aliases'][$lang])) continue;
+                if (!isset($map[$norm])) {
+                    $map[$norm] = $route;
+                }
 
-            foreach ($route['aliases'][$lang] as $alias) {
-                $alias_slug = trim((string) $alias, '/');
-                if ($alias_slug === '') continue;
-                $alias_path = $lang === 'pt' ? '/pt/' . $alias_slug : '/' . $alias_slug;
-                if (djz_normalize_menu_path($alias_path) === $normalized) return $route;
+                if (!empty($route['aliases'][$lang]) && is_array($route['aliases'][$lang])) {
+                    foreach ($route['aliases'][$lang] as $alias) {
+                        $alias_slug = trim((string) $alias, '/');
+                        if ($alias_slug === '') continue;
+                        $alias_path = $lang === 'pt' ? '/pt/' . $alias_slug : '/' . $alias_slug;
+                        $norm_alias = djz_normalize_menu_path($alias_path);
+
+                        if (!isset($map[$norm_alias])) {
+                            $map[$norm_alias] = $route;
+                        }
+                    }
+                }
             }
         }
     }
 
-    return null;
+    $normalized = djz_normalize_menu_path($path);
+    // ⚡ Bolt: Using a pre-computed map for O(1) route lookup instead of O(N) nested loops
+    return $map[$normalized] ?? null;
 }
 
 function djz_menu_route_path(array $route, string $lang): string
