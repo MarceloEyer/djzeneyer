@@ -1,6 +1,6 @@
 # Audit of the 10 most recent closed PRs - 2026-06-17
 
-This audit was prepared from the local Git history because the container does not have the GitHub CLI installed and the repository checkout has no configured `origin` remote. The reviewed window is the 10 most recent merge commits visible locally with PR numbers: #752, #751, #750, #749, #748, #747, #746, #745, #744 and #729.
+This audit was initially prepared from local Git history and then cross-checked against GitHub PR metadata, comments, reviews, review threads and merge state using `gh`. The reviewed window is the 10 most recent merge commits visible locally with PR numbers: #752, #751, #750, #749, #748, #747, #746, #745, #744 and #729.
 
 ## Executive answer
 
@@ -21,7 +21,7 @@ No, not everything was perfect. The shipped code is generally healthy: lint pass
 | #748 | `08647c1` | Terms page Framer Motion references | Good | Static motion objects match the project performance guideline. |
 | #747 | `2ad25e9` | npm dependency bump | Good after checks | Lint and invariant checks passed locally; full Vitest run was not completed in this environment because the runner produced no results before timeout. |
 | #746 | `2bf4610` | PHP dependency lock bump | Good after checks | PHP syntax checks passed. Composer security status was not checked because no Composer command was run in this audit. |
-| #745 | `233d188` | GitHub workflow dependency/action changes | Needs GitHub-side validation | Local checkout cannot verify workflow run behavior without GitHub CLI/API access. Review on GitHub should confirm bot-review triggers still comment as expected. |
+| #745 | `233d188` | GitHub workflow dependency/action changes | Validated after follow-up | GitHub-side validation confirmed the workflow now triggers bot reviews more selectively and required checks run on PRs. This reduces bot noise while keeping the real test gates required. |
 | #744 | `f50d5f4` | npm audit/security updates | Good after checks | Dependency lock-only change. Local lint/invariant checks passed. |
 | #729 | `1116593` | robots.txt Content-Signal restore | Corrective PR | This fixed the earlier mistake from #728. The policy is product-critical: keep `ai-train=yes, search=yes, ai-input=yes`. |
 
@@ -56,17 +56,18 @@ Correction included in this PR:
 - Add a dedicated PHP regression script for `djz_localize_menu_url()` and the O(1) route map behavior.
 - Cover EN/PT aliases, query/fragment preservation, unknown path fallback, external links and path traversal normalization.
 
-### 3. Bot-review workflow cannot be fully validated locally
+### 3. Bot-review workflow needed GitHub-side validation
 
-PR #745 touches GitHub Actions behavior. Local static checks cannot prove the workflow still comments on PRs or evaluates other agents' suggestions correctly.
+PR #745 touches GitHub Actions behavior. Local static checks alone cannot prove the workflow still comments on PRs or evaluates other agents' suggestions correctly, so this was cross-checked on GitHub after the local audit.
 
 Correction:
 
-- Verify #745 on GitHub by reading the PR body, comments, reviews, review threads and merge state when GitHub access is available.
+- Keep bot-review triggering selective: avoid repeated automated comments on every push when an agent is not connected or is rate-limited.
+- Keep the real required checks focused on tests/build/contract gates instead of requiring an AI-review status that may not be emitted during rate limits.
 - Ensure future reviews use `gh pr view <number> --json body,comments,reviews,reviewThreads,mergeStateStatus` and `gh pr diff <number>` before merge decisions, as required by `.agents/GUIDELINES.md`.
 
 ## Follow-up checklist for the human reviewer
 
-- Confirm the GitHub-side comments/reviews for #745, #750, #751 and #752 because this local environment could not access PR review threads.
+- For future audit PRs, keep local Git findings and GitHub review-thread findings in the same report so the document does not become stale when agent comments arrive later.
 - Run the new menu regression script after any future change to `inc/api.php` or `src/config/routes-slugs.json`.
 - If performance matters for #750/#751, measure endpoint timings before/after on a staging WordPress instance with object cache state explicitly documented.
