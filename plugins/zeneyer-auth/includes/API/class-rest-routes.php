@@ -248,6 +248,7 @@ class Rest_Routes
         $password = $request->get_param('password');
         $name = $request->get_param('name');
         $turnstile_token = $request->get_param('turnstileToken');
+        $turnstile_token = is_string($turnstile_token) ? sanitize_text_field($turnstile_token) : '';
 
         $user = Password_Auth::register($email, $password, $name, $turnstile_token);
 
@@ -563,11 +564,18 @@ class Rest_Routes
             }
         }
 
-        // Update display_name if preferred_name is set
-        if (!empty($fields['zen_preferred_name'])) {
+        // Keep display_name aligned when preferred_name is changed or explicitly cleared.
+        if (isset($fields['zen_preferred_name'])) {
+            $display_name = $fields['zen_preferred_name'];
+            if ($display_name === '') {
+                $user = get_userdata($user_id);
+                $display_name = $fields['zen_real_name'] ?? get_user_meta($user_id, 'zen_real_name', true);
+                $display_name = $display_name ?: ($user ? $user->user_login : '');
+            }
+
             wp_update_user([
                 'ID' => $user_id,
-                'display_name' => $fields['zen_preferred_name'],
+                'display_name' => $display_name,
             ]);
         }
 
