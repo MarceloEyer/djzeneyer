@@ -150,9 +150,11 @@ const SupportArtistPage: React.FC = () => {
               Support DJ <span className="text-primary">Zen Eyer</span>
             </Trans>
           </h1>
-          <p className="text-base sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-            {t('support.header.description')}
-          </p>
+          <div className="text-base sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed space-y-4">
+            <p>{t('support.header.description_p1')}</p>
+            <p>{t('support.header.description_p2')}</p>
+            <p>{t('support.header.description_p3')}</p>
+          </div>
         </motion.div>
 
         <section className="mx-auto mb-16 max-w-4xl rounded-2xl border border-white/10 bg-surface/40 p-5 sm:p-8">
