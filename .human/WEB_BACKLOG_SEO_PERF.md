@@ -1,4 +1,4 @@
-# Web backlog — SEO, AEO, Knowledge Graph, performance e mobile
+> [!WARNING]\n> **[SUPERSEDED]** - Este documento foi revisado e suas pendencias foram integradas ao codigo ou promovidas para .context/IMPLEMENTATION_STATUS.md.\n\n# Web backlog — SEO, AEO, Knowledge Graph, performance e mobile
 
 Este arquivo consolida o plano de melhorias sugeridas para o site djzeneyer.com em um único PR.
 

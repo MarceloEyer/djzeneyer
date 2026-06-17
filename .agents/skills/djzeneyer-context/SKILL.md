@@ -63,7 +63,7 @@ Leia apenas os arquivos adicionais necessarios para a tarefa. Nao carregar todos
 
 ## Anti-padroes
 
-- Nao ler `CLAUDE.md`, `GEMINI.md`, `CONTEXT.md` ou `docs/AI_LEARNINGS.md` na raiz; esses caminhos sao legados ou ponteiros.
+- Nao ler `CLAUDE.md`, `GEMINI.md`, `CONTEXT.md` ou `LEARNINGS.md` na raiz; esses caminhos sao legados ou ponteiros.
 - Nao transformar uma decisao de produto em "vazamento" ou "bug de seguranca" sem perguntar.
 - Nao reduzir arquivos de contexto tecnicos a resumos executivos que perdem armadilhas.
 - Nao criar regras diferentes para Claude, Gemini, Jules, Codex ou OpenClaw quando a regra e global.

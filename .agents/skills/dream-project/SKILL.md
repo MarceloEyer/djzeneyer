@@ -96,7 +96,7 @@ Leia o minimo necessario, seguindo a hierarquia:
 - `.agents/skills/*/SKILL.md` apenas quando a tarefa tocar aquela habilidade
 - `.human/*.md` apenas quando a tarefa tocar backlog, auditoria, handoff ou acao humana
 
-Nao use caminhos legados como `CONTEXT.md`, `GEMINI.md`, `docs/AI_LEARNINGS.md` ou `docs/AI_GOVERNANCE.md` como fonte atual, salvo se eles voltarem a existir e forem registrados no indice canonico.
+Nao use caminhos legados como `CONTEXT.md`, `GEMINI.md`, `LEARNINGS.md` ou `.agents/GUIDELINES.md` como fonte atual, salvo se eles voltarem a existir e forem registrados no indice canonico.
 
 ---
 
@@ -254,4 +254,4 @@ Arquivo de contexto ficou stale?
 - Nao commitar sem ler o diff.
 - Nao atualizar o que nao mudou.
 - Nao criar novos arquivos de contexto sem atualizar `AI_CONTEXT_INDEX.md`.
-- Nao usar `CLAUDE.md`, `GEMINI.md`, `CONTEXT.md` ou `docs/AI_LEARNINGS.md` como caminhos atuais se eles nao existirem ou forem apenas ponteiros.
+- Nao usar `CLAUDE.md`, `GEMINI.md`, `CONTEXT.md` ou `LEARNINGS.md` como caminhos atuais se eles nao existirem ou forem apenas ponteiros.

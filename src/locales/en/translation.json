@@ -99,7 +99,7 @@
     },
     "cart": {
       "title": "Shopping Cart",
-      "description": "Review your selected items.",
+      "description": "Carefully review your selected items in the shopping cart before proceeding to checkout. Ensure the quantity, products, and variations are correct to guarantee a smooth delivery and perfect experience.",
       "empty": "Your cart is empty",
       "empty_desc": "Looks like you haven't added any items yet.",
       "continue_shopping": "Continue Shopping",
@@ -115,7 +115,7 @@
     },
     "checkout": {
       "title": "Checkout",
-      "description": "Securely complete your purchase.",
+      "description": "Securely complete your purchase in our encrypted environment. Choose your preferred payment method and get your exclusive Zen Tribe merchandise and event tickets with no hassle and immediate processing.",
       "billing": "Billing Details",
       "payment": "Payment Method",
       "summary": "Your Order",
@@ -412,7 +412,7 @@
       "keywords": "Zen Eyer, Brazilian Zouk DJ, Zouk Music Producer, Best DJ Performance, Best Remix, Zen Tribe",
       "lead_answer": "Zen Eyer is a Brazilian Zouk DJ and music producer who won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.",
       "title": "Zen Eyer | Brazilian Zouk DJ & Music Producer",
-      "description": "Zen Eyer, Brazilian Zouk DJ and music producer."
+      "description": "Meet Zen Eyer, an award-winning Brazilian Zouk DJ and music producer. Explore his international tour schedule, exclusive remixes, music releases, and join the global Zen Tribe community today."
     },
     "shows": {
       "title": "Upcoming Events",
@@ -898,7 +898,7 @@
   },
   "not_found": {
     "title": "Beat Not Found",
-    "description": "The page you are looking for does not exist.",
+    "description": "The page you are looking for does not exist or has been moved. Return to the homepage to discover the latest Brazilian Zouk releases, upcoming tour dates, exclusive merchandise, and Zen Tribe tickets.",
     "text": "The track you're looking for seems to have been remixed or moved to another frequency.",
     "home": "Home",
     "music": "Music",
@@ -990,7 +990,7 @@
   "support": {
     "inter": {
       "title": "Inter Global Account (Preferred)",
-      "description": "US and Brazil bank accounts for international and local payments",
+      "description": "We offer secure US and Brazil bank accounts for seamless international and local payments. Easily settle booking fees, event tickets, and official DJ Zen Eyer merchandise transactions without geographical barriers.",
       "usd": "US Bank Account (USD)",
       "eur": "Euro Bank Account (EUR)",
       "gbp": "Pound Bank Account (GBP)",
@@ -1013,12 +1013,12 @@
     "pixKey": "PIX Key",
     "wise": {
       "title": "Wise (TransferWise)",
-      "description": "Low-fee international transfers to multiple currencies",
+      "description": "Execute low-fee international transfers across multiple currencies via our trusted global payment integrations, ensuring your booking or international purchase with DJ Zen Eyer is flawless and cost-effective.",
       "eur": "Euro Bank Account (EUR - Wise)"
     },
     "paypal": {
       "title": "PayPal",
-      "description": "Quick and easy payments worldwide"
+      "description": "We support quick, easy, and fully secure payment options worldwide to ensure your peace of mind. Complete global transactions for DJ bookings, event tickets, and exclusive shop items with maximum convenience."
     },
     "actions": {
       "streaming": {
@@ -1036,12 +1036,12 @@
       },
       "organizer": {
         "title": "Talk to your local organizer",
-        "description": "Tell the organizer in your city or region about bringing Zen Eyer to a congress, festival, social, or party.",
+        "description": "Tell the event organizer in your city or region about bringing DJ Zen Eyer to their congress, festival, social, or party. Your direct recommendation is one of the best ways to support the growth of our Zouk community.",
         "cta": "Open booking information"
       },
       "engagement": {
         "title": "Your engagement already helps",
-        "description": "Following, liking, commenting, sharing, and saving posts already makes a real difference."
+        "description": "Following, liking, commenting, sharing, and saving our posts regularly already makes a real difference for our organic engagement. Join our digital community and help spread the magic of Brazilian Zouk worldwide."
       }
     },
     "seo": {
@@ -1172,7 +1172,7 @@
   "price_free": "Free",
   "error_boundary": {
     "title": "Something went wrong",
-    "description": "An unexpected error occurred while loading this page.",
+    "description": "An unexpected error occurred while loading this page. Our technical team has been notified. Please try refreshing the page or come back later to access exclusive Brazilian Zouk content from the Zen Tribe.",
     "reload": "Reload page"
   },
   "hub_pages": {

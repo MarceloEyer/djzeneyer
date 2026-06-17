@@ -120,7 +120,7 @@ Quando uma pendencia virar regra permanente, promover para o arquivo owner corre
 ### P1 — saneamento documental e contexto
 
 - Completar varredura linha a linha das skills especificas em `.agents/skills/*/SKILL.md`.
-- Procurar caminhos legados nas skills: `CLAUDE.md`, `GEMINI.md`, `CONTEXT.md`, `docs/AI_LEARNINGS.md`, `docs/AI_GOVERNANCE.md`, `.context/ENGINEERING.md`.
+- Procurar caminhos legados nas skills: `CLAUDE.md`, `GEMINI.md`, `CONTEXT.md`, `LEARNINGS.md`, `.agents/GUIDELINES.md`, `.context/ENGINEERING.md`.
 - Atualizar ou arquivar referencias antigas em READMEs de plugins, especialmente se apontarem para `CONTEXT.md` ou `docs/*` inexistentes.
 - Marcar auditorias/handoffs em `.human/` como active, resolved ou superseded para evitar que agentes tratem historico como backlog atual.
 - Criar ou ajustar um check simples de docs para detectar links internos quebrados em MDs criticos.

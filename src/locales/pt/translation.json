@@ -130,7 +130,7 @@
     },
     "cart": {
       "title": "Carrinho de Compras",
-      "description": "Revise seus itens selecionados.",
+      "description": "Revise cuidadosamente seus itens selecionados no carrinho de compras antes de finalizar. Certifique-se de que a quantidade, os produtos e as variações estão corretas para evitar problemas no envio.",
       "empty": "Seu carrinho está vazio",
       "empty_desc": "Parece que você ainda não adicionou nenhum item.",
       "continue_shopping": "Continuar Comprando",
@@ -146,7 +146,7 @@
     },
     "checkout": {
       "title": "Checkout",
-      "description": "Finalize sua compra com segurança.",
+      "description": "Finalize sua compra com total segurança em nosso ambiente criptografado. Escolha sua forma de pagamento preferida e garanta seus produtos e ingressos exclusivos da Zen Tribe sem burocracia e com envio imediato.",
       "billing": "Detalhes de Faturamento",
       "payment": "Método de Pagamento",
       "summary": "Seu Pedido",
@@ -442,7 +442,7 @@
     },
     "seo": {
       "title": "Zen Eyer | DJ e Produtor de Zouk Brasileiro",
-      "description": "Zen Eyer, DJ e produtor musical focado no Zouk Brasileiro.",
+      "description": "Conheça Zen Eyer, DJ e produtor musical focado no Zouk Brasileiro e vencedor do Campeonato Mundial de DJs. Descubra sua agenda de eventos internacionais, remixes exclusivos e junte-se à comunidade Zen Tribe hoje.",
       "keywords": "Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, Best DJ Performance, Best Remix, Brazilian Zouk music, dance festival DJ, Zouk producer",
       "lead_answer": "Zen Eyer é DJ e produtor musical especializado em Zouk Brasileiro, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022."
     },
@@ -895,7 +895,7 @@
   },
   "not_found": {
     "title": "Batida Não Encontrada",
-    "description": "A página que você está procurando não existe.",
+    "description": "A página que você está procurando não existe ou foi movida. Volte para a página inicial para encontrar os melhores lançamentos de Zouk Brasileiro, agenda de shows, merchandise e ingressos da Zen Tribe.",
     "text": "A faixa que você está procurando parece ter sido remixada ou movida para outra frequência.",
     "home": "Início",
     "music": "Música",
@@ -986,7 +986,7 @@
   "support": {
     "inter": {
       "title": "Conta Inter Global (Preferencial)",
-      "description": "Contas bancárias nos EUA e Brasil para pagamentos internacionais e locais",
+      "description": "Disponibilizamos contas bancárias seguras nos Estados Unidos e no Brasil para facilitar seus pagamentos internacionais e locais de cachês, ingressos e merchandise oficial do DJ Zen Eyer de forma rápida.",
       "usd": "Conta Bancária EUA (USD)",
       "eur": "Conta Bancária Euro (EUR)",
       "gbp": "Conta Bancária Libra (GBP)",
@@ -1009,12 +1009,12 @@
     "pixKey": "Chave PIX",
     "wise": {
       "title": "Wise (TransferWise)",
-      "description": "Transferências internacionais com baixas taxas para múltiplas moedas",
+      "description": "Realize transferências internacionais com as menores taxas do mercado e suporte a múltiplas moedas através das nossas integrações globais, garantindo que seu booking ou compra internacional com o DJ Zen Eyer seja perfeito.",
       "eur": "Conta Bancária Euro (EUR - Wise)"
     },
     "paypal": {
       "title": "PayPal",
-      "description": "Pagamentos rápidos e fáceis em todo o mundo"
+      "description": "Aceitamos opções de pagamentos rápidos, fáceis e seguros em todo o mundo para garantir sua tranquilidade. Realize transações globais para contratação de DJ, ingressos e itens exclusivos da loja com máxima facilidade."
     },
     "actions": {
       "streaming": {
@@ -1032,12 +1032,12 @@
       },
       "organizer": {
         "title": "Converse com o organizador da sua região",
-        "description": "Fale do Zen Eyer para tocar no congresso, festival ou festa da sua cidade ou região.",
+        "description": "Fale com os organizadores e peça para o DJ Zen Eyer tocar no congresso, festival ou festa da sua cidade ou região. Sua indicação direta para o evento é uma das melhores formas de apoiar o crescimento da nossa comunidade.",
         "cta": "Abrir informações de booking"
       },
       "engagement": {
         "title": "Seu engajamento já ajuda demais",
-        "description": "Curtir, compartilhar, seguir nas redes sociais, salvar e comentar nos posts já faz toda a diferença."
+        "description": "Curtir, compartilhar, seguir nas redes sociais, salvar e comentar constantemente nos nossos posts já faz toda a diferença para o engajamento orgânico. Junte-se à nossa comunidade digital e ajude a espalhar o Zouk Brasileiro."
       }
     },
     "seo": {
@@ -1169,7 +1169,7 @@
   "price_free": "Grátis",
   "error_boundary": {
     "title": "Algo deu errado",
-    "description": "Ocorreu um erro inesperado ao carregar esta página.",
+    "description": "Ocorreu um erro inesperado ao carregar esta página. Nossa equipe técnica já foi notificada. Por favor, tente recarregar a página ou retorne mais tarde para acessar os conteúdos exclusivos de Zouk Brasileiro da Zen Tribe.",
     "reload": "Recarregar página"
   },
   "hub_pages": {
