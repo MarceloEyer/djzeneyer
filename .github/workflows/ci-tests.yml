@@ -2,18 +2,9 @@ name: 🧪 Tests
 
 on:
   push:
-    paths:
-      - 'src/**'
-      - 'vitest.config.ts'
-      - 'package.json'
-      - 'package-lock.json'
+    branches: [main]
   pull_request:
     branches: [main]
-    paths:
-      - 'src/**'
-      - 'vitest.config.ts'
-      - 'package.json'
-      - 'package-lock.json'
 
 permissions:
   contents: read
