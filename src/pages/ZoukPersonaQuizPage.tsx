@@ -32,6 +32,21 @@ interface Question {
   }[];
 }
 
+// ⚡ Bolt: Extract static framer-motion variants to preserve object references and prevent unnecessary reallocations
+const QUESTION_INITIAL = { opacity: 0, x: 20 };
+const QUESTION_ANIMATE = { opacity: 1, x: 0 };
+const QUESTION_EXIT = { opacity: 0, x: -20 };
+const QUESTION_TRANSITION = { duration: 0.3 };
+
+const PROGRESS_INITIAL = { width: 0 };
+
+const RESULT_INITIAL = { opacity: 0, scale: 0.9 };
+const RESULT_ANIMATE = { opacity: 1, scale: 1 };
+
+const ICON_INITIAL = { scale: 0 };
+const ICON_ANIMATE = { scale: 1, rotate: 360 };
+const ICON_TRANSITION = { type: 'spring', stiffness: 260, damping: 20 };
+
 const QUIZ_OPTION_HOVER = { scale: 1.02, backgroundColor: 'rgba(255,255,255,0.1)' };
 const QUIZ_OPTION_TAP = { scale: 0.98 };
 
@@ -236,10 +251,10 @@ const ZoukPersonaQuizPage: React.FC = () => {
               // QUESTION VIEW
               <motion.div
                 key={currentQuestion}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
+                initial={QUESTION_INITIAL}
+                animate={QUESTION_ANIMATE}
+                exit={QUESTION_EXIT}
+                transition={QUESTION_TRANSITION}
                 className="bg-gray-800/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-2xl border border-white/10"
               >
                 <div className="flex justify-between items-center mb-6 text-sm text-gray-400 font-mono">
@@ -251,7 +266,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                 <div className="w-full bg-gray-700 h-2 rounded-full mb-8 overflow-hidden">
                   <motion.div
                     className="bg-primary h-full rounded-full"
-                    initial={{ width: 0 }}
+                    initial={PROGRESS_INITIAL}
                     animate={{ width: `${((currentQuestion) / QUESTIONS.length) * 100}%` }}
                   />
                 </div>
@@ -279,15 +294,15 @@ const ZoukPersonaQuizPage: React.FC = () => {
               // RESULT VIEW
               <motion.div
                 key="result"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
+                initial={RESULT_INITIAL}
+                animate={RESULT_ANIMATE}
                 className={`bg-gradient-to-br ${result.color} p-1 rounded-2xl shadow-2xl`}
               >
                 <div className="bg-gray-900 rounded-xl p-5 sm:p-8 md:p-12 text-center h-full">
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1, rotate: 360 }}
-                    transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+                    initial={ICON_INITIAL}
+                    animate={ICON_ANIMATE}
+                    transition={ICON_TRANSITION}
                     className={`w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-tr ${result.color} flex items-center justify-center text-white`}
                   >
                     {result.icon}
