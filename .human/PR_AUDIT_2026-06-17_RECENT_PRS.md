@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> Status: superseded by implementation PRs #757 and #758.
+>
+> This file is retained as historical audit evidence. Do not treat the actionable
+> follow-ups below as open backlog without first checking the implementation PRs:
+> #757 covers the PR #658 audit follow-ups, and #758 covers the MusicEvent
+> address-region schema follow-up.
+
 # 🧾 Auditoria de PRs recentes — 2026-05-23 a 2026-06-02
 
 > **Status do relatório:** inventário operacional para desenvolvedores humanos e agentes. Atualizado com a verificação de que o PR #658 foi mergeado em 2026-06-03.

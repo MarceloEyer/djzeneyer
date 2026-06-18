@@ -1,3 +1,11 @@
+> [!IMPORTANT]
+> Status: partially superseded by implementation PRs #757 and #758.
+>
+> This file is retained as historical audit evidence. Its corrective checklist
+> should not be treated as fresh backlog without first checking the newer PRs:
+> #757 addresses the accessibility, preload and media clipping follow-ups, and
+> #758 addresses the MusicEvent address-region follow-up.
+
 # Audit of the 10 most recent closed PRs - 2026-06-17
 
 This audit was initially prepared from local Git history and then cross-checked against GitHub PR metadata, comments, reviews, review threads and merge state using `gh`. The reviewed window is the 10 most recent merge commits visible locally with PR numbers: #752, #751, #750, #749, #748, #747, #746, #745, #744 and #729.
