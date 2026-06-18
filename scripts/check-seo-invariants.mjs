@@ -79,6 +79,7 @@ if (!llmsFull.includes('This championship should not be confused with the separa
 }
 
 const routesConfig = JSON.parse(read('src/config/routes-slugs.json'));
+const htaccess = read('public/.htaccess');
 const matureIndexableRouteKeys = ['zouk-festivals'];
 for (const routeKey of matureIndexableRouteKeys) {
   const route = routesConfig.routes.find((entry) => entry.key === routeKey);
@@ -90,6 +91,63 @@ for (const routeKey of matureIndexableRouteKeys) {
     if (route[flag]) {
       failures.push(`src/config/routes-slugs.json: mature route ${routeKey} must not set ${flag}`);
     }
+  }
+}
+
+const retiredRouteAliases = new Set([
+  'events',
+  'eventos',
+  'music',
+  'musica',
+  'news',
+  'zouk-dance-news',
+  'noticias',
+  'noticias-zouk',
+  'tribe',
+  'zen-tribe',
+  'tribo',
+  'links',
+  'zouk-terms',
+  'zouk-wiki',
+  'termos-zouk',
+  'wiki-zouk',
+]);
+
+for (const route of routesConfig.routes) {
+  const aliases = route.aliases && typeof route.aliases === 'object' ? route.aliases : {};
+  for (const [lang, values] of Object.entries(aliases)) {
+    if (!Array.isArray(values)) continue;
+    for (const alias of values) {
+      if (retiredRouteAliases.has(alias)) {
+        failures.push(
+          `src/config/routes-slugs.json: retired ${lang} alias "${alias}" must not be a live SPA route; use the canonical slug and let public/.htaccess return 410 for retired URLs.`
+        );
+      }
+    }
+  }
+}
+
+const retiredRedirectTargets = [
+  'support-dj-zen-eyer',
+  'apoie-dj-zen-eyer',
+  'about-dj-zen-eyer',
+  'sobre-dj-zen-eyer',
+  'zouk-music',
+  'musica-zouk',
+  'releases',
+  'lancamentos',
+  'media-clipping',
+  'na-midia',
+  'zouk-events',
+  'eventos-zouk',
+];
+
+for (const target of retiredRedirectTargets) {
+  const legacyRedirectPattern = new RegExp(`\\[R=301,L(?:,NC)?\\].*${target}|${target}.*\\[R=301,L(?:,NC)?\\]`);
+  if (legacyRedirectPattern.test(htaccess)) {
+    failures.push(
+      `public/.htaccess: retired legacy URL strategy should not reintroduce 301 redirects to ${target}; return 410 for retired aliases and keep sitemap/canonical on the primary slug.`
+    );
   }
 }
 

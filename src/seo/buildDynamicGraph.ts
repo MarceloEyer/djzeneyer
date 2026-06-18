@@ -133,10 +133,12 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
       }
 
       const eventCity = event.location?.city || '';
+      const eventRegion = event.location?.region || '';
       const eventCountry = event.location?.country || '';
       const isOnline = locName.toLowerCase().includes('online');
       const addressObj: Record<string, string> = { '@type': 'PostalAddress' };
       if (eventCity) addressObj['addressLocality'] = eventCity;
+      if (eventRegion) addressObj['addressRegion'] = eventRegion;
       if (eventCountry) addressObj['addressCountry'] = eventCountry;
 
       const eventDescription =
