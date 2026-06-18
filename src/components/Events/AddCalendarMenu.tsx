@@ -5,6 +5,7 @@ import { ARTIST } from '../../data/artistData';
 
 import { trackSelectContent } from '../../lib/analytics';
 import { logger } from '../../lib/logger';
+import { getPlainTitle } from '../../utils/events';
 import type { ZenBitEventListItem } from '../../types/events';
 
 interface AddCalendarMenuProps {
@@ -14,22 +15,13 @@ interface AddCalendarMenuProps {
     eventUrl?: string;
 }
 
-const getPlainEventTitle = (title: unknown) => {
-    const rawTitle = typeof title === 'string'
-        ? title
-        : typeof title === 'object' && title !== null && 'rendered' in title
-            ? String((title as { rendered?: unknown }).rendered || '')
-            : '';
-
-    return rawTitle.replace(/<\/?[^>]+(>|$)/g, "");
-};
 
 const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl }: AddCalendarMenuProps) => {
     const { t } = useTranslation();
 
     const getDetails = () => {
         try {
-            const title = getPlainEventTitle(event.title) || t('event_default_title');
+            const title = getPlainTitle(event.title) || t('event_default_title');
 
             // Validação de data v2 (starts_at)
             const rawDate = event.starts_at || '';
