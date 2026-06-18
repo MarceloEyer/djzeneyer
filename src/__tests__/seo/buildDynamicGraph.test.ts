@@ -127,6 +127,35 @@ describe('buildDynamicGraph — MusicEvent', () => {
     const ev = graph.find((n) => n['@type'] === 'MusicEvent')!;
     expect(ev.eventAttendanceMode).toBe('https://schema.org/OnlineEventAttendanceMode');
   });
+
+  it('uses a stripped plain-text title for MusicEvent name', () => {
+    const graph = buildDynamicGraph({
+      ...baseOpts,
+      events: [
+        {
+          ...futureEvent,
+          title: { rendered: '<strong>Zen Eyer</strong> &amp; Friends' },
+        },
+      ],
+    });
+    const ev = graph.find((n) => n['@type'] === 'MusicEvent')!;
+    expect(ev.name).toBe('Zen Eyer & Friends');
+  });
+
+  it('does not stringify non-string rendered titles in MusicEvent name', () => {
+    const graph = buildDynamicGraph({
+      ...baseOpts,
+      events: [
+        {
+          ...futureEvent,
+          title: { rendered: { value: 'Bad title' } },
+          name: 'Fallback Event Name',
+        },
+      ],
+    });
+    const ev = graph.find((n) => n['@type'] === 'MusicEvent')!;
+    expect(ev.name).toBe('Fallback Event Name');
+  });
 });
 
 // ── VideoObject ────────────────────────────────────────────────────────────────

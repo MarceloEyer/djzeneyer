@@ -1,4 +1,22 @@
 import type { ZenBitEventListItem } from '../types/events';
+import { stripHtml } from './text';
+
+/**
+ * Extracts a plain-text title from a WordPress-style title field.
+ * Handles both raw strings and `{ rendered: string }` objects, then strips HTML.
+ */
+export function getPlainTitle(title: unknown): string {
+  if (typeof title === 'string') {
+    return stripHtml(title);
+  }
+  if (typeof title === 'object' && title !== null && 'rendered' in title) {
+    const rendered = (title as { rendered?: unknown }).rendered;
+    if (typeof rendered === 'string') {
+      return stripHtml(rendered);
+    }
+  }
+  return '';
+}
 
 /**
  * Returns unique region names from the event list, sorted alphabetically.

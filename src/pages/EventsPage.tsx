@@ -7,7 +7,7 @@ import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/r
 import { useEventsQuery, useEventById } from '../hooks/useQueries';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
-import { extractRegions, filterEventsByRegion, groupEventsByMonth } from '../utils/events';
+import { extractRegions, filterEventsByRegion, groupEventsByMonth, getPlainTitle } from '../utils/events';
 import { logger } from '../lib/logger';
 import { ARTIST } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
@@ -23,15 +23,6 @@ import type { EventSchemaData } from '../components/HeadlessSEO';
 // Static month keys stay at module scope to avoid reallocation on every render.
 const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
 
-const getEventTitleText = (title: unknown) => {
-  const rawTitle = typeof title === 'string'
-    ? title
-    : typeof title === 'object' && title !== null && 'rendered' in title
-      ? String((title as { rendered?: unknown }).rendered || '')
-      : '';
-
-  return stripHtml(rawTitle);
-};
 
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
@@ -82,7 +73,8 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const isValidDate = !isNaN(eventDate.getTime());
   const loc = event.location;
   const cleanDescription = stripHtml(event.description || '');
-  const cleanEventTitle = getEventTitleText(event.title);
+  const cleanEventTitle = getPlainTitle(event.title);
+  const eventSeoTitle = cleanEventTitle || t('event_default_title');
   const eventDetailUrl = event.canonical_url || `${origin}${getLocalizedRoute('events', lang as Language)}/${id}`;
 
   const share = () => {
@@ -98,11 +90,11 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   return (
     <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
       <HeadlessSEO
-        title={event.title}
+        title={eventSeoTitle}
         description={cleanDescription.substring(0, 160)}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
-        imageAlt={t('og.image_alt.events_detail', { eventTitle: event.title, artist: ARTIST.identity.stageName })}
+        imageAlt={t('og.image_alt.events_detail', { eventTitle: eventSeoTitle, artist: ARTIST.identity.stageName })}
         type="event"
         events={[event]}
         leadAnswer={cleanDescription ? cleanDescription.substring(0, 300) : undefined}
@@ -221,7 +213,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   const share = (e: ZenBitEventListItem) => {
     const canonical = e.canonical_url || `${ARTIST.site.baseUrl}${getLocalizedRoute('events', lang as Language)}/${e.event_id}`;
-    const cleanEventTitle = getEventTitleText(e.title);
+    const cleanEventTitle = getPlainTitle(e.title);
     if (navigator.share) {
       navigator.share({ title: cleanEventTitle || ARTIST.identity.stageName, url: canonical });
     } else {
@@ -302,7 +294,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                   const detailHref = e._processed?.detailHref || generatePath(eventsDetailRoute, { id: identifier });
                   const detailUrl = e.canonical_url || `${ARTIST.site.baseUrl}${detailHref}`;
                   const loc = e.location;
-                  const cleanEventTitle = getEventTitleText(e.title);
+                  const cleanEventTitle = getPlainTitle(e.title);
 
                   return (
                     <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
