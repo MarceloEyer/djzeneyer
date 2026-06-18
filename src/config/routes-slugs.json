@@ -14,43 +14,17 @@
         {
             "key": "events",
             "en": "zouk-events",
-            "pt": "eventos-zouk",
-            "aliases": {
-                "en": [
-                    "events"
-                ],
-                "pt": [
-                    "eventos"
-                ]
-            }
+            "pt": "eventos-zouk"
         },
         {
             "key": "music",
             "en": "zouk-music",
-            "pt": "musica-zouk",
-            "aliases": {
-                "en": [
-                    "music"
-                ],
-                "pt": [
-                    "musica"
-                ]
-            }
+            "pt": "musica-zouk"
         },
         {
             "key": "news",
             "en": "releases",
-            "pt": "lancamentos",
-            "aliases": {
-                "en": [
-                    "news",
-                    "zouk-dance-news"
-                ],
-                "pt": [
-                    "noticias",
-                    "noticias-zouk"
-                ]
-            }
+            "pt": "lancamentos"
         },
         {
             "key": "philosophy",
@@ -62,16 +36,7 @@
         {
             "key": "zentribe",
             "en": "zentribe",
-            "pt": "tribo-zen",
-            "aliases": {
-                "en": [
-                    "tribe",
-                    "zen-tribe"
-                ],
-                "pt": [
-                    "tribo"
-                ]
-            }
+            "pt": "tribo-zen"
         },
         {
             "key": "booking",
@@ -98,12 +63,7 @@
             "en": "zenlink",
             "pt": "links-zen",
             "noindex": true,
-            "excludeFromSitemap": true,
-            "aliases": {
-                "en": [
-                    "links"
-                ]
-            }
+            "excludeFromSitemap": true
         },
         {
             "key": "cart",
@@ -209,17 +169,7 @@
         {
             "key": "encyclopedia",
             "en": "zouk-encyclopedia",
-            "pt": "enciclopedia-zouk",
-            "aliases": {
-                "en": [
-                    "zouk-terms",
-                    "zouk-wiki"
-                ],
-                "pt": [
-                    "termos-zouk",
-                    "wiki-zouk"
-                ]
-            }
+            "pt": "enciclopedia-zouk"
         },
         {
             "key": "encyclopedia-detail",
