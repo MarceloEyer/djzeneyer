@@ -20,6 +20,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { HeadlessSEO } from '../../components/HeadlessSEO';
 import { BrandingProvider } from '../../contexts/BrandingContext';
 import { ARTIST } from '../../data/artistData';
+import { getPlainTitle } from '../../utils/events';
+import { stripHtml } from '../../utils/text';
 import type { EventSchemaData, VideoSchemaData } from '../../components/HeadlessSEO';
 
 vi.mock('react-i18next', () => ({
@@ -83,8 +85,8 @@ function buildMusicEventGraph(events: EventSchemaData[]): Array<Record<string, u
     if (!startDate) continue;
 
     const eventTitle =
-      (typeof event.title === 'object' ? event.title.rendered : event.title) ||
-      event.name ||
+      getPlainTitle(event.title) ||
+      (typeof event.name === 'string' ? stripHtml(event.name) : '') ||
       'Zouk Event';
 
     const parsedStartDate = Date.parse(startDate as string);

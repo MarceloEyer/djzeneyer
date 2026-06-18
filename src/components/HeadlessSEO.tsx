@@ -62,7 +62,7 @@ export interface PreloadItem {
 }
 
 export interface EventSchemaData {
-  title?: string | { rendered?: string };
+  title?: string | { rendered?: unknown };
   name?: string;
   starts_at?: string;
   event_date?: string;

@@ -74,6 +74,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const loc = event.location;
   const cleanDescription = stripHtml(event.description || '');
   const cleanEventTitle = getPlainTitle(event.title);
+  const eventSeoTitle = cleanEventTitle || t('event_default_title');
   const eventDetailUrl = event.canonical_url || `${origin}${getLocalizedRoute('events', lang as Language)}/${id}`;
 
   const share = () => {
@@ -89,11 +90,11 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   return (
     <div className="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
       <HeadlessSEO
-        title={cleanEventTitle || event.title}
+        title={eventSeoTitle}
         description={cleanDescription.substring(0, 160)}
         url={`${origin}${getLocalizedRoute('events', lang as Language)}/${id}`}
         image={event.image || undefined}
-        imageAlt={t('og.image_alt.events_detail', { eventTitle: cleanEventTitle || event.title, artist: ARTIST.identity.stageName })}
+        imageAlt={t('og.image_alt.events_detail', { eventTitle: eventSeoTitle, artist: ARTIST.identity.stageName })}
         type="event"
         events={[event]}
         leadAnswer={cleanDescription ? cleanDescription.substring(0, 300) : undefined}

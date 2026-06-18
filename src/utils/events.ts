@@ -11,7 +11,9 @@ export function getPlainTitle(title: unknown): string {
   }
   if (typeof title === 'object' && title !== null && 'rendered' in title) {
     const rendered = (title as { rendered?: unknown }).rendered;
-    return stripHtml(typeof rendered === 'string' ? rendered : String(rendered ?? ''));
+    if (typeof rendered === 'string') {
+      return stripHtml(rendered);
+    }
   }
   return '';
 }

@@ -2,6 +2,7 @@
 // No React dependency — fully testable without rendering.
 import { ARTIST_SCHEMA_SAME_AS } from '../data/artist.schema';
 import { safeUrl } from '../utils/sanitize';
+import { getPlainTitle } from '../utils/events';
 import { stripHtml } from '../utils/text';
 import type { EventSchemaData, VideoSchemaData } from '../components/HeadlessSEO';
 
@@ -88,8 +89,8 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
       if (!startDate) continue;
 
       const eventTitle =
-        (typeof event.title === 'object' ? event.title.rendered : event.title) ||
-        event.name ||
+        getPlainTitle(event.title) ||
+        (typeof event.name === 'string' ? stripHtml(event.name) : '') ||
         'Zouk Event';
       const canonicalUrl = (event.canonical_url as string) || (event.url as string) || undefined;
       const endDateRaw = (event.ends_at as string) || (event.end_date as string);
