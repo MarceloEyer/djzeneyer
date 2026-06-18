@@ -186,21 +186,36 @@ const HomePage: React.FC = () => {
         keywords={t('home.seo.keywords')}
         leadAnswer={t('home.seo.lead_answer')}
         preload={[
-          { href: '/images/hero-background-mobile.webp', as: 'image', media: '(max-width: 768px)', fetchPriority: 'high' },
-          { href: '/images/hero-background-1440.webp', as: 'image', media: '(min-width: 769px) and (max-width: 1440px)', fetchPriority: 'high' },
-          { href: '/images/hero-background.webp', as: 'image', media: '(min-width: 1441px)', fetchPriority: 'high' }
+          {
+            href: '/images/hero-background-mobile.webp',
+            as: 'image',
+            media: '(max-width: 768px)',
+            fetchPriority: 'high',
+          },
+          {
+            href: '/images/hero-background-1440.webp',
+            as: 'image',
+            media: '(min-width: 769px)',
+            imageSrcSet: '/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w',
+            imageSizes: '100vw',
+            fetchPriority: 'high',
+          },
         ]}
       />
 
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-20 pb-12" aria-label="Introduction">
         <div className="absolute inset-0 z-0 bg-black">
-          <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
-            <picture>
-              <source media="(max-width: 768px)" srcSet="/images/hero-background-mobile.webp" />
-              <source
-                media="(min-width: 769px)"
-                srcSet="/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
+            <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
+              <picture>
+                <source
+                  media="(max-width: 768px)"
+                  srcSet="/images/hero-background-mobile.webp"
+                  sizes="100vw"
+                />
+                <source
+                  media="(min-width: 769px)"
+                  srcSet="/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
                 sizes="100vw"
               />
               <img

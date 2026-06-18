@@ -19,9 +19,9 @@ const visit = (directory) => {
     if (!/\.(?:ts|tsx)$/.test(entry.name)) continue;
 
     const source = fs.readFileSync(absolutePath, 'utf8');
-    if (source.includes('HeadlessSEO') && source.includes('window.location.origin')) {
+    if (source.includes('window.location.origin')) {
       failures.push(
-        `${path.relative(ROOT, absolutePath)}: HeadlessSEO is used alongside window.location.origin; use ARTIST.site.baseUrl or an API canonical URL`
+        `${path.relative(ROOT, absolutePath)}: window.location.origin must not define public SEO URLs; use ARTIST.site.baseUrl or an API canonical URL`
       );
     }
   }

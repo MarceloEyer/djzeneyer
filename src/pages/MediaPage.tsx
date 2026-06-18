@@ -19,6 +19,10 @@ type MediaClippingItem = {
   date: string;
 };
 
+type MediaClippingListItem = MediaClippingItem & {
+  dedupeKey: string;
+};
+
 const EMPTY_CLIPPING_ARRAY: MediaClippingItem[] = [];
 
 const GROUP_ITEM_INITIAL = { opacity: 0, x: -20 };
@@ -40,7 +44,7 @@ const MediaPage: React.FC = () => {
   const featuredVideoTitle = t('media_page.featured_video_title');
   const featuredVideoDescription = t('media_page.featured_video_desc');
   const currentPath = getLocalizedRoute('media', currentLang);
-  const currentUrl = `${artist.site.baseUrl || ARTIST.site.baseUrl}/${currentPath.replace(/^\//, '')}/`;
+  const currentUrl = `${artist?.site?.baseUrl || ARTIST.site.baseUrl}/${currentPath.replace(/^\//, '')}/`;
 
   const clippingData = useMemo(() => {
     const items = [
@@ -49,11 +53,19 @@ const MediaPage: React.FC = () => {
         title: t(`published_works.${work.translationKey}.title`),
         description: t(`published_works.${work.translationKey}.description`),
       })),
-      ...((artist.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[]),
+      ...((artist?.mediaClipping || ARTIST.mediaClipping || EMPTY_CLIPPING_ARRAY) as MediaClippingItem[]),
     ];
 
-    return [...new Map(items.map((item) => [item.url, item])).values()];
-  }, [artist.mediaClipping, t]);
+    const byIdentity = new Map<string, MediaClippingListItem>();
+    items.forEach((item, index) => {
+      const key = item.url || `${item.source}:${item.title}:${item.date}:${index}`;
+      if (!byIdentity.has(key)) {
+        byIdentity.set(key, { ...item, dedupeKey: key });
+      }
+    });
+
+    return [...byIdentity.values()];
+  }, [artist?.mediaClipping, t]);
 
   const mediaGroups = useMemo(() => [
     {
@@ -87,7 +99,7 @@ const MediaPage: React.FC = () => {
         '@type': 'CollectionPage',
         '@id': `${currentUrl}#webpage`,
         url: currentUrl,
-        name: `${t('media_page.title')} | ${artist.identity.stageName || ARTIST.identity.stageName}`,
+        name: `${t('media_page.title')} | ${artist?.identity?.stageName || ARTIST.identity.stageName}`,
         description: t('media_page.subtitle'),
         isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
         about: { '@id': `${ARTIST.site.baseUrl}/#artist` },
@@ -144,7 +156,7 @@ const MediaPage: React.FC = () => {
         mainEntityOfPage: work.url,
       })),
     ],
-  }), [artist.identity.stageName, currentLang, currentUrl, featuredVideoDescription, featuredVideoTitle, t]);
+  }), [artist?.identity?.stageName, currentLang, currentUrl, featuredVideoDescription, featuredVideoTitle, t]);
 
   // ⚡ Bolt: Wrapped static array allocation in useMemo to reduce garbage collection overhead during render loops.
   // ⚡ Bolt: Extracted static media facts array from inline render loop map
@@ -182,7 +194,7 @@ const MediaPage: React.FC = () => {
   return (
     <>
       <HeadlessSEO
-        title={`${t('media_page.title')} | ${artist.identity.stageName || ARTIST.identity.stageName}`}
+        title={`${t('media_page.title')} | ${artist?.identity?.stageName || ARTIST.identity.stageName}`}
         description={t('media_page.subtitle')}
         url={currentUrl}
         image="/images/og/zen-eyer-press-og.jpg"
@@ -237,7 +249,7 @@ const MediaPage: React.FC = () => {
                   <div className="grid gap-6">
                     {group.items.map((item, index: number) => (
                       <motion.div
-                        key={`${group.title}-${item.url}`}
+                        key={`${group.title}-${item.dedupeKey}`}
                         initial={GROUP_ITEM_INITIAL}
                         whileInView={GROUP_ITEM_WHILE_IN_VIEW}
                         viewport={GROUP_ITEM_VIEWPORT}
