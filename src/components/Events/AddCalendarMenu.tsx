@@ -14,12 +14,22 @@ interface AddCalendarMenuProps {
     eventUrl?: string;
 }
 
+const getPlainEventTitle = (title: unknown) => {
+    const rawTitle = typeof title === 'string'
+        ? title
+        : typeof title === 'object' && title !== null && 'rendered' in title
+            ? String((title as { rendered?: unknown }).rendered || '')
+            : '';
+
+    return rawTitle.replace(/<\/?[^>]+(>|$)/g, "");
+};
+
 const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl }: AddCalendarMenuProps) => {
     const { t } = useTranslation();
 
     const getDetails = () => {
         try {
-            const title = event.title ? event.title.replace(/<\/?[^>]+(>|$)/g, "") : 'Zen Eyer Event';
+            const title = getPlainEventTitle(event.title) || 'Zen Eyer Event';
 
             // Validação de data v2 (starts_at)
             const rawDate = event.starts_at || '';

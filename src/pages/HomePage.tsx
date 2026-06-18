@@ -187,9 +187,16 @@ const HomePage: React.FC = () => {
         leadAnswer={t('home.seo.lead_answer')}
         preload={[
           {
+            href: '/images/hero-background-mobile.webp',
+            as: 'image',
+            media: '(max-width: 768px)',
+            fetchPriority: 'high',
+          },
+          {
             href: '/images/hero-background-1440.webp',
             as: 'image',
-            imageSrcSet: '/images/hero-background-mobile.webp 768w, /images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w',
+            media: '(min-width: 769px)',
+            imageSrcSet: '/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w',
             imageSizes: '100vw',
             fetchPriority: 'high',
           },
@@ -203,7 +210,7 @@ const HomePage: React.FC = () => {
               <picture>
                 <source
                   media="(max-width: 768px)"
-                  srcSet="/images/hero-background-mobile.webp 768w, /images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
+                  srcSet="/images/hero-background-mobile.webp"
                   sizes="100vw"
                 />
                 <source
