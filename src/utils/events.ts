@@ -6,13 +6,14 @@ import { stripHtml } from './text';
  * Handles both raw strings and `{ rendered: string }` objects, then strips HTML.
  */
 export function getPlainTitle(title: unknown): string {
-  const raw =
-    typeof title === 'string'
-      ? title
-      : typeof title === 'object' && title !== null && 'rendered' in title
-        ? String((title as { rendered?: unknown }).rendered ?? '')
-        : '';
-  return stripHtml(raw);
+  if (typeof title === 'string') {
+    return stripHtml(title);
+  }
+  if (typeof title === 'object' && title !== null && 'rendered' in title) {
+    const rendered = (title as { rendered?: unknown }).rendered;
+    return stripHtml(typeof rendered === 'string' ? rendered : String(rendered ?? ''));
+  }
+  return '';
 }
 
 /**
