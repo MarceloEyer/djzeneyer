@@ -1228,5 +1228,6 @@
       "zenlink": "Official Zen Eyer links for music, booking and support"
     }
   },
-  "share_event": "Share {{title}}"
+  "share_event": "Share {{title}}",
+  "event_default_title": "Zen Eyer Event"
 }

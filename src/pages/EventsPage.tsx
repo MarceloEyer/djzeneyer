@@ -23,6 +23,16 @@ import type { EventSchemaData } from '../components/HeadlessSEO';
 // Static month keys stay at module scope to avoid reallocation on every render.
 const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
 
+const getEventTitleText = (title: unknown) => {
+  const rawTitle = typeof title === 'string'
+    ? title
+    : typeof title === 'object' && title !== null && 'rendered' in title
+      ? String((title as { rendered?: unknown }).rendered || '')
+      : '';
+
+  return stripHtml(rawTitle);
+};
+
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
 // ============================================================================
@@ -72,12 +82,13 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
   const isValidDate = !isNaN(eventDate.getTime());
   const loc = event.location;
   const cleanDescription = stripHtml(event.description || '');
+  const cleanEventTitle = getEventTitleText(event.title);
   const eventDetailUrl = event.canonical_url || `${origin}${getLocalizedRoute('events', lang as Language)}/${id}`;
 
   const share = () => {
     const canonical = event.canonical_url || `${ARTIST.site.baseUrl}${getLocalizedRoute('events', lang as Language)}/${event.event_id}`;
     if (navigator.share) {
-      navigator.share({ title: event.title, url: canonical });
+      navigator.share({ title: cleanEventTitle || ARTIST.identity.stageName, url: canonical });
     } else {
       navigator.clipboard.writeText(canonical);
       setShowToast(true);
@@ -162,7 +173,11 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
             <div className="space-y-4">
               <AddCalendarMenu event={event} variant="primary" eventUrl={eventDetailUrl} />
 
-              <button onClick={share} className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs">
+              <button
+                onClick={share}
+                className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs"
+                aria-label={t('share_event', { title: cleanEventTitle || t('event_default_title') })}
+              >
                 <Share2 size={18} /> {t('share')}
               </button>
             </div>
@@ -206,8 +221,9 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   const share = (e: ZenBitEventListItem) => {
     const canonical = e.canonical_url || `${ARTIST.site.baseUrl}${getLocalizedRoute('events', lang as Language)}/${e.event_id}`;
+    const cleanEventTitle = getEventTitleText(e.title);
     if (navigator.share) {
-      navigator.share({ title: e.title, url: canonical });
+      navigator.share({ title: cleanEventTitle || ARTIST.identity.stageName, url: canonical });
     } else {
       navigator.clipboard.writeText(canonical);
       setShowToast(true);
@@ -286,6 +302,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                   const detailHref = e._processed?.detailHref || generatePath(eventsDetailRoute, { id: identifier });
                   const detailUrl = e.canonical_url || `${ARTIST.site.baseUrl}${detailHref}`;
                   const loc = e.location;
+                  const cleanEventTitle = getEventTitleText(e.title);
 
                   return (
                     <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
@@ -301,7 +318,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                         <button
                           onClick={() => share(e)}
                           className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all"
-                          aria-label={t('share')}
+                          aria-label={t('share_event', { title: cleanEventTitle || t('event_default_title') })}
                         >
                           <Share2 size={16} />
                         </button>
