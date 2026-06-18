@@ -69,7 +69,7 @@ export interface EventSchemaData {
   start_date?: string;
   ends_at?: string;
   end_date?: string;
-  location?: { venue?: string; city?: string; country?: string };
+  location?: { venue?: string; city?: string; region?: string; country?: string };
   event_location?: string;
   event_ticket?: string;
   tickets?: string[];
