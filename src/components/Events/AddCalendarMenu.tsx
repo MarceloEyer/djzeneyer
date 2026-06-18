@@ -29,7 +29,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
 
     const getDetails = () => {
         try {
-            const title = getPlainEventTitle(event.title) || 'Zen Eyer Event';
+            const title = getPlainEventTitle(event.title) || t('event_default_title');
 
             // Validação de data v2 (starts_at)
             const rawDate = event.starts_at || '';
