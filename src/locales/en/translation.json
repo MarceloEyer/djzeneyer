@@ -732,8 +732,8 @@
     "coming_soon": "Coming Soon",
     "download": "Download",
     "press_inquiries": "Press Inquiries",
-    "press_inquiries_desc": "For press inquiries, interviews, or media requests, please contact our press office:",
-    "contact_press_office": "Contact Press Office",
+    "press_inquiries_desc": "For interviews, media requests, corrections, or official material, contact Zen Eyer directly:",
+    "contact_press_office": "Email Zen Eyer",
     "verified_profiles": "Verified Profiles",
     "source_official_bio": "Official Bio",
     "source_performance_history": "Performance History",
@@ -1026,10 +1026,6 @@
         "description": "Every play on Spotify or any streaming platform helps a lot and costs you nothing.",
         "cta": "Open the music page"
       },
-      "amazon": {
-        "title": "Buy through my links",
-        "description": "If you are already buying something on Amazon, use my affiliate link when I share it. You pay the same price and I receive a small commission."
-      },
       "pix": {
         "title": "Send a PIX or direct support",
         "description": "Want to send that positive energy directly? Send me a PIX or choose any payment method on this page. Any amount helps, and you can send a message with it."
@@ -1046,7 +1042,7 @@
     },
     "seo": {
       "title": "Support Zen Eyer | Payment Information",
-      "description": "Official payment information for supporting Zen Eyer or paying booking-related fees in BRL, USD, EUR, GBP, Wise, and PayPal.",
+      "description": "Official payment information for supporting Zen Eyer or paying booking-related fees in BRL, USD, Wise, and PayPal.",
       "keywords": "support artist, hire dj, payment methods, international payments, brazilian zouk dj"
     },
     "header": {
@@ -1060,8 +1056,8 @@
       "by_currency": "Choose your Currency",
       "brl_title": "Real (BRL/PIX)",
       "usd_title": "US Dollar (USD)",
-      "eur_title": "Euro (EUR)",
-      "gbp_title": "British Pound (GBP)"
+      "global_title": "Global (Wise/PayPal)",
+      "global_note": "For other currencies, Wise and PayPal are usually the simplest options. Before sending high amounts, confirm the details directly with me."
     },
     "preferred": "Preferred",
     "email": "Email",
