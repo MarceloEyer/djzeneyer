@@ -36,12 +36,6 @@ type Product = WCProduct;
 const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];
 const BUY_BUTTON_HOVER = { scale: 1.05 };
 const BUY_BUTTON_TAP = { scale: 0.95 };
-const PRODUCT_CARD_HOVER = {
-  scale: 1.04,
-  zIndex: 50,
-  y: -4,
-  transition: { type: 'spring', stiffness: 300, damping: 20 },
-};
 
 // --- Componente de Carrossel Horizontal ---
 // --- Netflix-style Paging Indicator ---
@@ -149,7 +143,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }:
   );
 });
 
-// --- ProductCard (Expandable on Hover) ---
+// --- ProductCard ---
 interface ProductCardProps {
   product: Product;
   formatPrice: (price: string) => string;
@@ -161,15 +155,16 @@ interface ProductCardProps {
 const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, getProductPath }: ProductCardProps) => {
   const { t } = useTranslation();
   const productPath = getProductPath(product.slug);
+  const productDescription = product.short_description || product.description || '';
+  const isInStock = product.stock_status === 'instock';
 
   return (
-    <motion.div
-      className="flex-shrink-0 w-[240px] md:w-[300px] lg:w-[350px] relative z-10 transition-all duration-300"
+    <motion.article
+      className="flex-shrink-0 w-[260px] md:w-[320px] lg:w-[360px] relative z-10"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={PRODUCT_CARD_HOVER}
     >
-      <div className="card-outer bg-surface border border-white/5 rounded-md overflow-hidden shadow-2xl group/card h-full">
+      <div className="card-outer flex h-full flex-col bg-surface border border-white/10 rounded-md overflow-hidden shadow-2xl transition-colors hover:border-primary/40">
         <Link to={productPath} className="block relative aspect-[16/9] overflow-hidden">
           <img
             src={safeUrl(product.images[0]?.sizes?.medium || product.images[0]?.sizes?.medium_large || product.images[0]?.src, 'https://placehold.co/640x360/0D96FF/FFFFFF')}
@@ -180,7 +175,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
             width="640"
             height="360"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent group-hover/card:from-black/35 transition-colors" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
           {product.on_sale && (
             <div className="absolute top-2 right-2 bg-error text-white px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter">
               {t('badge_sale')}
@@ -196,10 +191,10 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
                   e.preventDefault();
                   if (!isAddingToCart) onAddToCart(product.id);
                 }}
-                disabled={isAddingToCart}
+                disabled={isAddingToCart || !isInStock}
                 aria-busy={isAddingToCart}
                 aria-label={t('shop.add_to_cart')}
-                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
+                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
                   }`}
                 title={t('shop.add_to_cart')}
               >
@@ -207,10 +202,11 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
               </button>
               <Link
                 to={productPath}
-                className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
+                className="h-8 rounded-full bg-white/10 text-white flex items-center justify-center gap-1.5 px-3 hover:bg-white/20 transition-colors border border-white/20 text-[10px] font-bold uppercase tracking-widest"
                 title={t('shop.product_details')}
               >
                 <Plus size={16} />
+                <span>{t('shop.product_details')}</span>
               </Link>
             </div>
             <div className="flex items-center gap-1 text-xs font-bold text-primary">
@@ -218,12 +214,21 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
             </div>
           </div>
 
-          <h3 className="text-sm md:text-base font-bold text-white mb-2 line-clamp-1">
+          <h3 className="text-sm md:text-base font-bold text-white mb-2 line-clamp-2">
             {product.name}
           </h3>
 
+          {productDescription && (
+            <div
+              className="text-xs md:text-sm leading-relaxed text-white/70 line-clamp-3 mb-3"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(productDescription) }}
+            />
+          )}
+
           <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs text-white/60">
-            <span className="text-green-500 font-bold">{t('shop.match_score')}</span>
+            <span className={isInStock ? 'text-green-400 font-bold' : 'text-error font-bold'}>
+              {isInStock ? t('shop.in_stock') : t('shop.out_of_stock')}
+            </span>
             <span className="border border-white/30 px-1.5 rounded-sm uppercase tracking-tighter">
               {t('shop.cremosidade_level')}
             </span>
@@ -238,7 +243,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
           </div>
         </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 });
 
@@ -332,7 +337,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
         <div
           ref={carouselRef}
           onScroll={checkScroll}
-          className="flex gap-2 overflow-x-auto scrollbar-hide px-6 md:px-12 lg:px-20 py-10 -my-10 scroll-smooth items-stretch"
+          className="flex gap-4 overflow-x-auto scrollbar-hide px-6 md:px-12 lg:px-20 py-4 scroll-smooth items-stretch"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {products.map((product) => (
