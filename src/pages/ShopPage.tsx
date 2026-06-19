@@ -2,7 +2,7 @@
 // Visual inspirado em Netflix para venda de ingressos de eventos
 
 import React, { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, generatePath } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
@@ -36,12 +36,6 @@ type Product = WCProduct;
 const EMPTY_PRODUCT_ARRAY: WCProduct[] = [];
 const BUY_BUTTON_HOVER = { scale: 1.05 };
 const BUY_BUTTON_TAP = { scale: 0.95 };
-const PRODUCT_CARD_HOVER = {
-  scale: 1.15,
-  zIndex: 50,
-  y: -10,
-  transition: { type: 'spring', stiffness: 300, damping: 20 },
-};
 
 // --- Componente de Carrossel Horizontal ---
 // --- Netflix-style Paging Indicator ---
@@ -66,10 +60,10 @@ interface ShopHeroProps {
   product: Product;
   onAddToCart: (id: number) => void;
   isAddingToCart: boolean; // OPTIMIZATION: Use boolean instead of ID
-  productBasePath: string;
+  getProductPath: (slug: string) => string;
 }
 
-const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }: ShopHeroProps) => {
+const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }: ShopHeroProps) => {
   const { t } = useTranslation();
 
   return (
@@ -136,7 +130,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
             </motion.button>
 
             <Link
-              to={`${productBasePath}/${product.slug}`}
+              to={getProductPath(product.slug)}
               className="flex items-center gap-2 bg-white/20 text-white px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg backdrop-blur-md hover:bg-white/30 transition-colors border border-white/10"
             >
               <Info size={24} />
@@ -149,27 +143,29 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, productBasePath }
   );
 });
 
-// --- ProductCard (Expandable on Hover) ---
+// --- ProductCard ---
 interface ProductCardProps {
   product: Product;
   formatPrice: (price: string) => string;
   onAddToCart: (id: number) => void;
   isAddingToCart: boolean;
-  productBasePath: string;
+  getProductPath: (slug: string) => string;
 }
 
-const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, productBasePath }: ProductCardProps) => {
+const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, getProductPath }: ProductCardProps) => {
   const { t } = useTranslation();
+  const productPath = getProductPath(product.slug);
+  const productDescription = product.short_description || product.description || '';
+  const isInStock = product.stock_status === 'instock';
 
   return (
-    <motion.div
-      className="flex-shrink-0 w-[240px] md:w-[300px] lg:w-[350px] relative z-10 transition-all duration-300"
+    <motion.article
+      className="flex-shrink-0 w-[260px] md:w-[320px] lg:w-[360px] relative z-10"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      whileHover={PRODUCT_CARD_HOVER}
     >
-      <div className="card-outer bg-surface border border-white/5 rounded-md overflow-hidden shadow-2xl group/card h-full">
-        <Link to={`${productBasePath}/${product.slug}`} className="block relative aspect-[16/9] overflow-hidden">
+      <div className="card-outer flex h-full flex-col bg-surface border border-white/10 rounded-md overflow-hidden shadow-2xl transition-colors hover:border-primary/40">
+        <Link to={productPath} className="block relative aspect-[16/9] overflow-hidden">
           <img
             src={safeUrl(product.images[0]?.sizes?.medium || product.images[0]?.sizes?.medium_large || product.images[0]?.src, 'https://placehold.co/640x360/0D96FF/FFFFFF')}
             alt={product.name}
@@ -179,7 +175,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
             width="640"
             height="360"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent group-hover/card:from-black/35 transition-colors" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
           {product.on_sale && (
             <div className="absolute top-2 right-2 bg-error text-white px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter">
               {t('badge_sale')}
@@ -187,7 +183,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
           )}
         </Link>
 
-        <div className="p-4 bg-surface/95 md:opacity-0 md:group-hover/card:opacity-100 transition-opacity duration-300 delay-100 border-t border-white/5">
+        <div className="p-4 bg-surface/95 border-t border-white/5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2">
               <button
@@ -195,21 +191,22 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
                   e.preventDefault();
                   if (!isAddingToCart) onAddToCart(product.id);
                 }}
-                disabled={isAddingToCart}
+                disabled={isAddingToCart || !isInStock}
                 aria-busy={isAddingToCart}
                 aria-label={t('shop.add_to_cart')}
-                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
+                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
                   }`}
                 title={t('shop.add_to_cart')}
               >
                 {isAddingToCart ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} className="fill-black" />}
               </button>
               <Link
-                to={`${productBasePath}/${product.slug}`}
-                className="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center hover:bg-white/20 transition-colors border border-white/20"
+                to={productPath}
+                className="h-8 rounded-full bg-white/10 text-white flex items-center justify-center gap-1.5 px-3 hover:bg-white/20 transition-colors border border-white/20 text-[10px] font-bold uppercase tracking-widest"
                 title={t('shop.product_details')}
               >
                 <Plus size={16} />
+                <span>{t('shop.product_details')}</span>
               </Link>
             </div>
             <div className="flex items-center gap-1 text-xs font-bold text-primary">
@@ -217,12 +214,21 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
             </div>
           </div>
 
-          <h3 className="text-sm md:text-base font-bold text-white mb-2 line-clamp-1">
+          <h3 className="text-sm md:text-base font-bold text-white mb-2 line-clamp-2">
             {product.name}
           </h3>
 
+          {productDescription && (
+            <div
+              className="text-xs md:text-sm leading-relaxed text-white/70 line-clamp-3 mb-3"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(productDescription) }}
+            />
+          )}
+
           <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs text-white/60">
-            <span className="text-green-500 font-bold">{t('shop.match_score')}</span>
+            <span className={isInStock ? 'text-green-400 font-bold' : 'text-error font-bold'}>
+              {isInStock ? t('shop.in_stock') : t('shop.out_of_stock')}
+            </span>
             <span className="border border-white/30 px-1.5 rounded-sm uppercase tracking-tighter">
               {t('shop.cremosidade_level')}
             </span>
@@ -237,7 +243,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, p
           </div>
         </div>
       </div>
-    </motion.div>
+    </motion.article>
   );
 });
 
@@ -249,10 +255,10 @@ interface ProductRowProps {
   isAdding: boolean; // OPTIMIZATION: Use boolean to prevent all rows re-rendering
   activeProductId: number | null;
   formatPrice: (price: string) => string;
-  productBasePath: string;
+  getProductPath: (slug: string) => string;
 }
 
-const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProductId, formatPrice, productBasePath }: ProductRowProps) => {
+const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProductId, formatPrice, getProductPath }: ProductRowProps) => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -331,7 +337,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
         <div
           ref={carouselRef}
           onScroll={checkScroll}
-          className="flex gap-2 overflow-x-auto scrollbar-hide px-6 md:px-12 lg:px-20 py-10 -my-10 scroll-smooth items-stretch"
+          className="flex gap-4 overflow-x-auto scrollbar-hide px-6 md:px-12 lg:px-20 py-4 scroll-smooth items-stretch"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {products.map((product) => (
@@ -341,7 +347,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
               formatPrice={formatPrice}
               onAddToCart={onAddToCart}
               isAddingToCart={isAdding && activeProductId === product.id} // OPTIMIZATION: Only compute if row is loading
-              productBasePath={productBasePath}
+              getProductPath={getProductPath}
             />
           ))}
         </div>
@@ -359,7 +365,11 @@ const ShopPage: React.FC = () => {
     () => `${ARTIST.site.baseUrl}${getLocalizedRoute('shop', currentLang)}`,
     [currentLang]
   );
-  const productBasePath = isPortuguese ? '/pt/loja/produto' : '/shop/product';
+  const productDetailRoute = useMemo(() => getLocalizedRoute('product-detail', currentLang), [currentLang]);
+  const getProductPath = useCallback(
+    (slug: string) => generatePath(productDetailRoute, { slug }),
+    [productDetailRoute]
+  );
 
   const { data: shopData, isLoading: loading } = useShopPageQuery(currentLang);
   const addToCartMutation = useAddToCartMutation();
@@ -440,7 +450,7 @@ const ShopPage: React.FC = () => {
         '@id': `${canonicalUrl}#products`,
         name: t('shop.page_title'),
         itemListElement: visibleProducts.map((product, index) => {
-          const productUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('product-detail', currentLang).replace(':slug', product.slug)}`;
+          const productUrl = `${ARTIST.site.baseUrl}${getProductPath(product.slug)}`;
           const imageUrl = safeUrl(product.images?.[0]?.sizes?.large || product.images?.[0]?.src, '');
           const price = product.price || product.regular_price;
 
@@ -471,7 +481,7 @@ const ShopPage: React.FC = () => {
         }),
       },
     ],
-  }), [canonicalUrl, currentLang, t, visibleProducts]);
+  }), [canonicalUrl, getProductPath, t, visibleProducts]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
@@ -515,7 +525,7 @@ const ShopPage: React.FC = () => {
           product={featuredProduct}
           onAddToCart={handleAddToCart}
           isAddingToCart={addingToCart === featuredProduct.id}
-          productBasePath={productBasePath}
+          getProductPath={getProductPath}
         />
       ) : (
         <div className="relative h-[60vh] w-full flex items-center justify-center overflow-hidden">
@@ -548,7 +558,7 @@ const ShopPage: React.FC = () => {
               isAdding={addingToCart !== null && newReleasesIds.has(addingToCart)}
               activeProductId={addingToCart}
               formatPrice={formatPrice}
-              productBasePath={productBasePath}
+              getProductPath={getProductPath}
             />
 
             <ProductRow
@@ -558,7 +568,7 @@ const ShopPage: React.FC = () => {
               isAdding={addingToCart !== null && bestSellersIds.has(addingToCart)}
               activeProductId={addingToCart}
               formatPrice={formatPrice}
-              productBasePath={productBasePath}
+              getProductPath={getProductPath}
             />
 
             <ProductRow
@@ -568,7 +578,7 @@ const ShopPage: React.FC = () => {
               isAdding={addingToCart !== null && curatedSelectionIds.has(addingToCart)}
               activeProductId={addingToCart}
               formatPrice={formatPrice}
-              productBasePath={productBasePath}
+              getProductPath={getProductPath}
             />
           </>
         ) : (

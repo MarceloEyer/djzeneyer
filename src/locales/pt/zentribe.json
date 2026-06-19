@@ -11,13 +11,13 @@
       "organization_desc": "Zen Tribe é um movimento e comunidade de Zouk Brasileiro criado por Zen Eyer para dançarinos que valorizam presença, conexão, dança lenta e música como experiência emocional compartilhada.",
       "organization_slogan": "Presença em vez de performance"
     },
-    "joinNow": "Entrar no Movimento",
+    "joinNow": "Entrar de graça",
     "learnMore": "Ler a Filosofia",
     "unlockAtLevel": "Desbloquear no nível {{level}}",
-    "mostPopular": "Apoio Simbólico",
-    "upgradeNow": "Apoiar a Tribe",
+    "mostPopular": "Bom próximo passo",
+    "upgradeNow": "Continuar participando",
     "unlocked": "Desbloqueado",
-    "viewMemberships": "Explorar a Tribe",
+    "viewMemberships": "Como pertencer",
     "whyJoin": "O Que a Zen Tribe Defende",
     "philosophy": {
       "badge": "A Filosofia",
@@ -26,8 +26,8 @@
       "p2": "A Zen Tribe existe para quem cansou de tratar o corpo como conteúdo, prova, produto ou performance. Em uma cultura que continua pedindo aceleração, o corpo lento vira um pequeno ato de resistência: ele escolhe sensação em vez de exibição, atenção em vez de métrica, e presença em vez da obrigação de ser visto.",
       "quote": "A dança nem sempre precisa virar conteúdo. Às vezes, a coisa mais radical que um corpo pode fazer é desacelerar com outro corpo e prestar atenção."
     },
-    "chooseMembership": "Escolha Como Pertencer",
-    "selectTier": "Comece grátis, fique perto da música e apoie o movimento só se fizer sentido para você.",
+    "chooseMembership": "Como Pertencer",
+    "selectTier": "Você pode pertencer sem pagar nada: estando na pista, ficando por perto ou ajudando o movimento circular do seu jeito.",
     "levelUpTitle": "Um Jeito Mais Lento de Pertencer",
     "levelUpDesc": "A Zen Tribe usa badges e conquistas como pequenos rituais de participação, não como pressão para performar. A ideia é perceber, compartilhar, dançar e ajudar a comunidade a continuar viva sem transformar cada momento em conteúdo.",
     "xpTitle": "Pontos de Presença",
@@ -126,36 +126,36 @@
     },
     "tiers": {
       "novice": {
-        "name": "Convidado da Tribe",
+        "name": "Estar Junto",
         "price": "Grátis",
-        "feature1": "Acesso a lançamentos públicos e notas selecionadas",
-        "feature2": "Entrar no movimento sem pressão",
-        "feature3": "Acompanhar atualizações da comunidade",
-        "feature4": "Começar a colecionar badges básicos"
+        "feature1": "Ir às festas, dançar, ouvir e viver bons momentos sem precisar provar nada",
+        "feature2": "Pertencer mesmo sem postar, comprar, doar ou se inscrever",
+        "feature3": "Levar a filosofia da cremosidade para a pista com presença e respeito",
+        "feature4": "Começar pela forma mais simples: aparecer e curtir"
       },
       "voyager": {
-        "name": "Apoiador da Tribe",
-        "price": "Simbólico",
-        "feature1": "Todos os recursos gratuitos",
-        "feature2": "Acesso antecipado a lançamentos selecionados",
-        "feature3": "Notas privadas de sets e festivais",
-        "feature4": "Sistema avançado de badges",
-        "feature5": "Pequenos descontos em itens oficiais"
+        "name": "Ficar por Perto",
+        "price": "Grátis",
+        "feature1": "Assinar a newsletter para receber lançamentos, eventos, promoções e novidades com calma",
+        "feature2": "Seguir nas redes sociais e salvar músicas para encontrar tudo de novo depois",
+        "feature3": "Entrar numa futura lista ou grupo do WhatsApp com regras claras contra spam",
+        "feature4": "Receber sinais mais atualizados sem depender do algoritmo",
+        "feature5": "Continuar livre para participar no seu ritmo"
       },
       "master": {
-        "name": "Guardião da Tribe",
-        "price": "Apoio maior",
-        "feature1": "Todos os recursos de apoiador",
-        "feature2": "Prioridade quando houver vagas limitadas",
-        "feature3": "Sessões privadas ocasionais de escuta",
-        "feature4": "Playlists curadas por Zen Eyer",
-        "feature5": "Coleção de badges digitais Guardião da Tribe",
-        "feature6": "Participação mais próxima em experimentos da comunidade"
+        "name": "Fazer Circular",
+        "price": "Grátis",
+        "feature1": "Filmar momentos bonitos, marcar Zen Eyer e compartilhar com cuidado quando fizer sentido",
+        "feature2": "Usar as músicas em vídeos, enviar para amigos e pedir para DJs ou eventos tocarem",
+        "feature3": "Mandar sugestões diretas, ideias de música, eventos ou melhorias para o projeto",
+        "feature4": "Comprar, doar ou apoiar financeiramente apenas se você quiser e puder",
+        "feature5": "Ajudar a Zen Tribe chegar em mais dançarinos sem transformar presença em obrigação",
+        "feature6": "Ser parte ativa do movimento sem virar assinatura paga"
       }
     },
     "aria": {
       "learnMore": "Ler a filosofia da Zen Tribe",
-      "viewMemberships": "Explorar opções de participação"
+      "viewMemberships": "Ver formas gratuitas de pertencer à Zen Tribe"
     }
   }
 }

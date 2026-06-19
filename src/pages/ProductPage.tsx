@@ -2,7 +2,7 @@
 // Product detail page for WooCommerce products
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, generatePath, useParams } from 'react-router-dom';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { useTranslation } from 'react-i18next';
@@ -73,7 +73,7 @@ const ProductPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const shopPath = getLocalizedRoute('shop', currentLang);
   const canonicalUrl = useMemo(
-    () => slug ? `${ARTIST.site.baseUrl}${getLocalizedRoute('product-detail', currentLang).replace(':slug', slug)}` : undefined,
+    () => slug ? `${ARTIST.site.baseUrl}${generatePath(getLocalizedRoute('product-detail', currentLang), { slug })}` : undefined,
     [currentLang, slug]
   );
   const placeholderImage = 'https://placehold.co/1200x675/0D96FF/FFFFFF?text=DJ+Zen+Eyer';

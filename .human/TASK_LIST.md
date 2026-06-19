@@ -146,6 +146,16 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 
 ## 🟢 Baixa Prioridade / Longo Prazo
 
+### Auditorias pendentes das páginas públicas e área logada
+
+- [ ] Fazer análise detalhada da página **Work With Me / Trabalhe Comigo** em uma rodada própria.
+- [ ] Auditar **Enciclopédia**, **FAQ**, **About Me**, **Lançamentos** e **Notas** depois da revisão específica dessas páginas.
+- [ ] Auditar a **área logada**: dashboard, conta, pedidos, badges, newsletter e fluxos de autenticação.
+- [ ] Conferir o **botão de newsletter do rodapé**: destino, inscrição, lista correta, copy, consentimento e feedback visual.
+- [ ] Revisar manualmente o PR atual de ajustes de loja, Zen Tribe, imprensa e apoio depois dos reviews dos agentes e checks do GitHub.
+- [ ] Decidir o modelo do WhatsApp da Zen Tribe antes de publicar link aberto: grupo, comunidade, canal de avisos ou lista de espera, com regras claras contra spam.
+- [ ] Confirmar dados de pagamento nos apps oficiais do Inter, Wise e PayPal antes de depender deles para pagamentos maiores.
+
 ### VideoObject schema — Tarefa de código (para agentes)
 
 **O que:** Adicionar schema `VideoObject` para vídeos do YouTube embutidos nas páginas do site.

@@ -358,6 +358,17 @@ export const fetchProductFn = async (lang?: string, slug?: string): Promise<WCPr
   return Array.isArray(data) ? (data[0] as WCProductDetail | undefined) ?? null : null;
 };
 
+export const fetchProductWithFallbackFn = async (lang?: string, slug?: string): Promise<WCProductDetail | null> => {
+  try {
+    const localizedProduct = await fetchProductFn(lang, slug);
+    if (localizedProduct || !lang?.toLowerCase().startsWith('pt')) return localizedProduct;
+  } catch (error) {
+    if (!lang?.toLowerCase().startsWith('pt')) throw error;
+  }
+
+  return fetchProductFn('en', slug);
+};
+
 export const fetchProductCollectionsFn = async (
   lang?: string,
   limit = 10
@@ -531,7 +542,7 @@ export const useProductsQuery = (lang?: string, filters: Record<string, string> 
 export const useProductQuery = (lang?: string, slug?: string) =>
   useQuery({
     queryKey: [...QUERY_KEYS.products.detail(slug || ''), lang],
-    queryFn: () => fetchProductFn(lang, slug),
+    queryFn: () => fetchProductWithFallbackFn(lang, slug),
     staleTime: STALE_TIME.PRODUCTS,
     enabled: Boolean(slug),
   });

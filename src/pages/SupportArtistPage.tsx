@@ -10,8 +10,6 @@ import {
   Globe, 
   Building2, 
   ChevronDown,
-  Euro,
-  PoundSterling,
   QrCode,
   Sparkles
 } from 'lucide-react';
@@ -100,11 +98,6 @@ const SupportArtistPage: React.FC = () => {
       description: t('support.actions.streaming.description'),
       to: getLocalizedRoute('music', currentLang),
       cta: t('support.actions.streaming.cta'),
-    },
-    {
-      emoji: '🛒',
-      title: t('support.actions.amazon.title'),
-      description: t('support.actions.amazon.description'),
     },
     {
       emoji: '☕',
@@ -231,82 +224,80 @@ const SupportArtistPage: React.FC = () => {
                     <DetailCard label={t('support.accountNumber')} value={ARTIST.payment.interGlobal.usd.accountNumber} />
                     <DetailCard label={t('support.achRouting')} value={ARTIST.payment.interGlobal.usd.achRouting} />
                     <DetailCard label={t('support.wireRouting')} value={ARTIST.payment.interGlobal.usd.wireRouting} />
+                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.interGlobal.usd.swiftCode} />
+                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.interGlobal.usd.bankAddress} />
                   </div>
-                </div>
-                
-                <div className="p-6 bg-blue-500/5 rounded-2xl border border-blue-500/20">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-blue-400 uppercase text-sm tracking-widest">
-                    <CreditCard size={18} /> PayPal (Global)
-                  </h4>
-                  <a 
-                    href={ARTIST.payment.paypal.me} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="btn btn-primary w-full justify-center py-4 text-lg font-bold"
-                  >
-                    {t('support.sendPayment')} PayPal
-                  </a>
                 </div>
               </div>
             </CurrencyAccordion>
 
-            {/* EUR / EURO */}
+            {/* GLOBAL / WISE + PAYPAL */}
             <CurrencyAccordion
-              title={t('support.payment.eur_title')}
-              icon={Euro}
-              isOpen={openCurrency === 'EUR'}
-              onToggle={() => handleToggle('EUR')}
+              title={t('support.payment.global_title')}
+              icon={Globe}
+              isOpen={openCurrency === 'GLOBAL'}
+              onToggle={() => handleToggle('GLOBAL')}
             >
               <div className="space-y-6">
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-white uppercase text-sm tracking-widest">
-                    <Building2 size={18} /> {t('support.inter.eur')}
+                <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
+                    <Globe size={18} /> {t('support.payment.wise_eur_title')}
                   </h4>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.interGlobal.eur.accountName} />
-                    <DetailCard label={t('support.iban')} value={ARTIST.payment.interGlobal.eur.iban} />
-                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.interGlobal.eur.swiftCode} />
-                    <DetailCard label={t('support.beneficiaryBank')} value={ARTIST.payment.interGlobal.eur.beneficiaryBank} />
+                  <p className="mb-4 text-sm leading-relaxed text-white/65">
+                    {t('support.payment.global_note')}
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.eur.accountName} />
+                    <DetailCard label={t('support.iban')} value={ARTIST.payment.wise.eur.iban} />
+                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.wise.eur.swiftCode} />
+                    <DetailCard label={t('support.bank')} value={ARTIST.payment.wise.eur.bankName} />
+                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.wise.eur.bankAddress} />
                   </div>
                 </div>
 
                 <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
                   <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
-                    <Globe size={18} /> Wise (TransferWise)
+                    <Globe size={18} /> {t('support.payment.wise_aud_payid_title')}
                   </h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.eur.accountName} />
-                    <DetailCard label={t('support.iban')} value={ARTIST.payment.wise.eur.iban} />
+                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.aud.accountName} />
+                    <DetailCard label={t('support.payIdPhone')} value={ARTIST.payment.wise.aud.payIdPhone} />
+                    <DetailCard label={t('support.bsbCode')} value={ARTIST.payment.wise.aud.bsbCode} />
+                    <DetailCard label={t('support.accountNumber')} value={ARTIST.payment.wise.aud.accountNumber} />
+                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.wise.aud.swiftCode} />
+                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.wise.aud.bankAddress} />
                   </div>
-                  <a 
-                    href={ARTIST.payment.wise.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={ARTIST.payment.wise.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="btn border-green-500/50 hover:bg-green-500/10 w-full justify-center py-4 text-lg text-green-400 font-bold"
                   >
-                    {t('support.sendPayment')} Wise
+                    {t('support.sendPaymentProvider', { provider: t('support.payment.wise_title') })}
                   </a>
                 </div>
-              </div>
-            </CurrencyAccordion>
 
-            {/* GBP / POUND */}
-            <CurrencyAccordion
-              title={t('support.payment.gbp_title')}
-              icon={PoundSterling}
-              isOpen={openCurrency === 'GBP'}
-              onToggle={() => handleToggle('GBP')}
-            >
-              <div className="space-y-6">
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-white uppercase text-sm tracking-widest">
-                    <Building2 size={18} /> {t('support.inter.gbp')}
+                <div className="p-6 bg-blue-500/5 rounded-2xl border border-blue-500/20">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-blue-400 uppercase text-sm tracking-widest">
+                    <CreditCard size={18} /> {t('support.payment.paypal_title')}
                   </h4>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.interGlobal.gbp.accountName} />
-                    <DetailCard label={t('support.iban')} value={ARTIST.payment.interGlobal.gbp.iban} />
-                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.interGlobal.gbp.swiftCode} />
-                    <DetailCard label={t('support.beneficiaryBank')} value={ARTIST.payment.interGlobal.gbp.beneficiaryBank} />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <a
+                      href={ARTIST.payment.paypal.me}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-primary justify-center py-4 text-lg font-bold"
+                    >
+                      {t('support.payment.paypal_me_title')}
+                    </a>
+                    <a
+                      href={ARTIST.payment.paypal.donateUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-outline justify-center py-4 text-lg font-bold"
+                    >
+                      {t('support.sendPaymentProvider', { provider: t('support.payment.paypal_title') })}
+                    </a>
                   </div>
                 </div>
               </div>
@@ -325,5 +316,5 @@ const SupportArtistPage: React.FC = () => {
   );
 };
 
-// ⚡ Bolt: Wrapped with React.memo to prevent unnecessary React reconciliation loops when parent layout components (like routers) trigger render cycles.
+// Bolt: Wrapped with React.memo to prevent unnecessary React reconciliation loops when parent layout components trigger render cycles.
 export default React.memo(SupportArtistPage);

@@ -586,7 +586,7 @@
   "shop": {
     "artist_badge": "Zen Eyer",
     "page_title": "Loja",
-    "page_meta_desc": "Ingressos para eventos, merchandise exclusivo e muito mais",
+    "page_meta_desc": "Loja oficial de Zen Eyer com produtos, ingressos e itens selecionados da Zen Tribe.",
     "title": "Loja Zen Tribe",
     "subtitle": "Merchandise exclusivo e ingressos para eventos",
     "all_products": "Todos os Produtos",
@@ -618,9 +618,9 @@
     "fast_delivery": "Entrega Rápida",
     "fast_delivery_desc": "2-3 Dias Úteis",
     "hot_near_you": "Bombando perto de você",
-    "coming_soon_msg": "Itens exclusivos estão sendo preparados.",
-    "empty_title": "A coleção está sendo preparada",
-    "join_tribe_waitlist": "Entrar na lista VIP",
+    "coming_soon_msg": "Itens, ingressos e novidades oficiais da Zen Tribe.",
+    "empty_title": "A loja está sendo preparada",
+    "join_tribe_waitlist": "Entrar na Zen Tribe",
     "benefits": {
       "instant_delivery": "Entrega Instantânea",
       "instant_delivery_desc": "Tickets e acessos digitais enviados na hora",
@@ -628,8 +628,8 @@
       "secure_payment_desc": "Segurança total no processamento",
       "tribe_perks": "Vantagens Tribe",
       "tribe_perks_desc": "Descontos exclusivos para membros",
-      "vip_support": "Suporte VIP",
-      "vip_support_desc": "Atendimento direto via WhatsApp 24/7"
+      "vip_support": "Contato direto",
+      "vip_support_desc": "Se algo não funcionar, fale comigo e eu resolvo sem enrolação."
     },
     "generic_error": "shop.generic_error"
   },
@@ -746,8 +746,8 @@
     "coming_soon": "Em Breve",
     "download": "Baixar",
     "press_inquiries": "Consultas de Imprensa",
-    "press_inquiries_desc": "Para consultas de imprensa, entrevistas ou solicitações de mídia, entre em contato com nosso escritório de imprensa:",
-    "contact_press_office": "Contatar Escritório de Imprensa",
+    "press_inquiries_desc": "Para entrevistas, pedidos de mídia, correções ou material oficial, fale diretamente com Zen Eyer:",
+    "contact_press_office": "Enviar e-mail para Zen Eyer",
     "verified_profiles": "Perfis Verificados",
     "source_official_bio": "Bio Oficial",
     "source_performance_history": "Histórico de Performances",
@@ -1037,10 +1037,6 @@
         "description": "Cada play no Spotify ou em qualquer plataforma de streaming ajuda muito e não custa nada para você.",
         "cta": "Abrir página de música"
       },
-      "amazon": {
-        "title": "Compre através dos meus links",
-        "description": "Se você já vai comprar qualquer coisa na Amazon, use meu link de afiliado quando eu compartilhar. Você paga o mesmo preço e eu recebo uma pequena comissão."
-      },
       "pix": {
         "title": "Mande um PIX ou apoio direto",
         "description": "Quer mandar aquela energia positiva diretamente? Me manda um PIX ou escolha qualquer forma de envio desta página. Pode ser qualquer valor. E mande uma mensagem junto, adoro conversar!"
@@ -1057,7 +1053,7 @@
     },
     "seo": {
       "title": "Apoie Zen Eyer | Informações de Pagamento",
-      "description": "Informações oficiais de pagamento para apoiar Zen Eyer ou pagar valores relacionados a booking em BRL, USD, EUR, GBP, Wise e PayPal.",
+      "description": "Informações oficiais de pagamento para apoiar Zen Eyer ou pagar valores relacionados a booking em BRL, USD, Wise e PayPal.",
       "keywords": "apoiar artista, contratar dj, métodos de pagamento, pagamentos internacionais, brazilian zouk dj"
     },
     "header": {
@@ -1071,14 +1067,22 @@
       "by_currency": "Escolha sua Moeda",
       "brl_title": "Real (BRL/PIX)",
       "usd_title": "Dólar (USD)",
-      "eur_title": "Euro (EUR)",
-      "gbp_title": "Libra (GBP)"
+      "global_title": "Global (Wise/PayPal)",
+      "global_note": "Use Wise para EUR, AUD, PayID e outras moedas quando o pagador preferir dados locais, link ou QR code. Para USD, o Inter continua sendo o caminho preferencial.",
+      "wise_title": "Wise",
+      "wise_eur_title": "Wise EUR",
+      "wise_aud_payid_title": "Wise AUD / PayID",
+      "paypal_title": "PayPal",
+      "paypal_me_title": "PayPal.me"
     },
     "preferred": "Preferencial",
     "email": "E-mail",
     "phone": "Telefone / Chave",
     "sendPayment": "Enviar Pagamento via",
-    "thankYou": "Valeu demais pelo apoio! É isso que permite que eu continue produzindo novas músicas e levando a cremosidade do Brazilian Zouk pelo mundo. 🙏"
+    "sendPaymentProvider": "Enviar Pagamento via {{provider}}",
+    "thankYou": "Valeu demais pelo apoio! É isso que permite que eu continue produzindo novas músicas e levando a cremosidade do Brazilian Zouk pelo mundo. 🙏",
+    "bsbCode": "Código BSB",
+    "payIdPhone": "PayID / telefone"
   },
   "events_no_results_filter": "Puxa, não encontrei nenhum evento nesse estado. Que tal olhar a agenda completa?",
   "quiz": {
