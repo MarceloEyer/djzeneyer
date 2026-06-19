@@ -54,12 +54,21 @@ export function buildDiscographyListItems(
     };
 
     if (release.contributor) releaseNode.contributor = release.contributor;
+    if (release.barcode) {
+      releaseNode.identifier = {
+        '@type': 'PropertyValue',
+        propertyID: 'Barcode',
+        value: release.barcode,
+      };
+    }
 
     if (release.releaseDate && release.releaseDate !== '2024-01-01') {
       releaseNode.datePublished = release.releaseDate;
     }
 
-    if (release.description) releaseNode.description = release.description;
+    const description =
+      release.localizedDescription?.[lang.slice(0, 2) as 'en' | 'pt'] || release.description;
+    if (description) releaseNode.description = description;
 
     const sameAsLinks = [
       release.spotifyUrl,

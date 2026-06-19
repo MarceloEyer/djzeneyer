@@ -282,7 +282,10 @@ const MusicPage: React.FC = () => {
                   <p className="mt-1 text-sm text-white/50">{t('music.releases_subtitle')}</p>
                 </div>
                 <Link to={getLocalizedRoute('news', currentLang)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
-                  {t('news.title')} <ExternalLink size={14} />
+                  <Trans i18nKey="news.title">
+                    Releases &amp; <span>Notes</span>
+                  </Trans>
+                  <ExternalLink size={14} />
                 </Link>
               </div>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

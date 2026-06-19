@@ -455,6 +455,8 @@ export interface OriginalSong {
   artistSameAs?: string[];
 }
 
+export type LocalizedReleaseText = Partial<Record<'en' | 'pt', string>>;
+
 export interface Release {
   id: string;
   name: string;
@@ -474,7 +476,11 @@ export interface Release {
   youtubeUrl?: string;
   soundcloudUrl?: string;
   description?: string;
+  localizedDescription?: LocalizedReleaseText;
   genre?: string[];
+  releaseCountry?: string;
+  releaseStatus?: 'Official' | 'Promotion' | 'Bootleg' | 'Pseudo-Release';
+  barcode?: string;
   originalSong?: OriginalSong; // populated for covers and remixes
   byArtist?: Record<string, unknown>;
   contributor?: Record<string, unknown> | Record<string, unknown>[];
@@ -499,6 +505,10 @@ export const DISCOGRAPHY: Release[] = [
     youtubeUrl: 'https://www.youtube.com/watch?v=mxQ-Y_Vh_18',
     genre: ['Brazilian Zouk', 'Zouk'],
     description: "Brazilian Zouk remix of Kaysha's \"Don't Stop\". Zen Eyer's remix transforms the original into a dance-floor ready Zouk track with his signature cremosidade flow. Part of \"Don't Stop (Remixes) - Single\" on Apple Music.",
+    localizedDescription: {
+      en: "Brazilian Zouk remix of Kaysha's \"Don't Stop\". Zen Eyer's version turns the original into a smoother, partner-dance oriented track with a cremosidade flow.",
+      pt: 'Remix em Zouk Brasileiro de "Don\'t Stop", de Kaysha. A versao de Zen Eyer leva a musica para uma leitura mais fluida, feita para a pista de danca a dois.',
+    },
     originalSong: {
       name: "Don't Stop",
       artistName: 'Kaysha',
@@ -539,11 +549,19 @@ export const DISCOGRAPHY: Release[] = [
     type: 'single',
     releaseDate: '2026-01-09',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    spotifyUrl: 'https://open.spotify.com/track/2iycClzZfIrwZCMp01oHVt',
     appleMusicUrl: 'https://music.apple.com/us/album/na-ponta-ela-fica-cover-single/1867840116',
     musicBrainzUrl: 'https://musicbrainz.org/release/7b0c16b2-24a8-4923-b3e1-f3b852e5b064',
     youtubeUrl: 'https://www.youtube.com/watch?v=ACENa4vgVcY',
     genre: ['Brazilian Zouk', 'Zouk'],
     description: 'Brazilian Zouk cover of the funk hit by MC Delano. Zen Eyer adapts the infectious energy of the original into a smooth, dance-floor ready Zouk arrangement.',
+    localizedDescription: {
+      en: 'Brazilian Zouk cover of the funk hit by MC Delano. Zen Eyer keeps the recognizable hook while reshaping the track into a smoother arrangement for partner dancing.',
+      pt: 'Cover em Zouk Brasileiro do funk de MC Delano. Zen Eyer preserva o gancho reconhecivel da musica e adapta a energia original para uma leitura mais suave para dancar a dois.',
+    },
+    releaseCountry: 'BR',
+    releaseStatus: 'Official',
+    barcode: '199999530909',
     originalSong: {
       name: 'Na Ponta Ela Fica',
       artistName: 'MC Delano',
@@ -556,6 +574,7 @@ export const DISCOGRAPHY: Release[] = [
       {
         name: 'Na Ponta Ela Fica - Cover',
         duration: 'PT2M22S',
+        spotifyUrl: 'https://open.spotify.com/track/2iycClzZfIrwZCMp01oHVt',
       },
     ],
   },
@@ -569,9 +588,14 @@ export const DISCOGRAPHY: Release[] = [
     type: 'single',
     releaseDate: '2026-01-27',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    spotifyUrl: 'https://open.spotify.com/track/0VypRkrCaIsCJh4KeOeVEE',
     appleMusicUrl: 'https://music.apple.com/us/album/still-loving-you-feat-walter-xavier-sax-cover-single/1872468504',
     genre: ['Brazilian Zouk', 'Zouk'],
     description: 'Brazilian Zouk cover of the Scorpions classic "Still Loving You" (1984), featuring saxophonist Walter Xavier. The saxophone takes the lead melody over a Zouk groove, creating a deeply romantic, dance-floor arrangement.',
+    localizedDescription: {
+      en: 'Brazilian Zouk cover of the Scorpions classic "Still Loving You", featuring Walter Xavier on saxophone. The arrangement gives the lead melody a romantic sax line over a Zouk groove.',
+      pt: 'Cover em Zouk Brasileiro do classico "Still Loving You", do Scorpions, com Walter Xavier no saxofone. O arranjo coloca a melodia principal no sax sobre uma base de Zouk romantica.',
+    },
     originalSong: {
       name: 'Still Loving You',
       artistName: 'Scorpions',
@@ -605,6 +629,7 @@ export const DISCOGRAPHY: Release[] = [
       {
         name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
         duration: 'PT4M24S',
+        spotifyUrl: 'https://open.spotify.com/track/0VypRkrCaIsCJh4KeOeVEE',
       },
     ],
   },
@@ -616,16 +641,25 @@ export const DISCOGRAPHY: Release[] = [
       pt: 'baila-flaquita-single-original',
     },
     type: 'single',
-    releaseYear: '2026',
+    releaseDate: '2026-01-02',
     image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
+    spotifyUrl: 'https://open.spotify.com/track/6gPVyc6JpMjS8zvN1PVAnb',
     musicBrainzUrl: 'https://musicbrainz.org/release/aaea8061-a317-4743-bf87-fad9dc3ed93c',
     amazonMusicUrl: 'https://www.amazon.co.uk/dp/B0GDRV9WF7',
     genre: ['Brazilian Zouk', 'Zouk'],
     description: "Zen Eyer's original composition — a bilingual Spanish/Portuguese track built for the Brazilian Zouk dance floor. A playful, rhythmic piece that showcases his production style.",
+    localizedDescription: {
+      en: "Zen Eyer's first original composition: a bilingual Spanish/Portuguese track built for the Brazilian Zouk dance floor. It marks a personal milestone as a composer and producer.",
+      pt: 'Primeira composicao original de Zen Eyer: uma faixa bilingue em espanhol/portugues feita para a pista de Zouk Brasileiro. Marca um passo importante da fase de compositor e produtor.',
+    },
+    releaseCountry: 'BR',
+    releaseStatus: 'Official',
+    barcode: '199999525394',
     tracks: [
       {
         name: 'Baila Flaquita',
         duration: 'PT1M44S',
+        spotifyUrl: 'https://open.spotify.com/track/6gPVyc6JpMjS8zvN1PVAnb',
       },
     ],
   },
@@ -643,6 +677,13 @@ export const DISCOGRAPHY: Release[] = [
     musicBrainzUrl: 'https://musicbrainz.org/release/b1c9f977-3642-4c86-a66d-b7b5a4564064',
     genre: ['Brazilian Zouk', 'Zouk'],
     description: 'Brazilian Zouk cover of the beloved Brazilian sertanejo ballad "Porta do Sol". At 5 minutes and 7 seconds, this version gives the melody space to breathe, prioritising connection and fluidity on the dance floor.',
+    localizedDescription: {
+      en: 'Brazilian Zouk cover of the Brazilian ballad "Porta do Sol", originally popularized by Luan Santana. This longer arrangement gives the melody space to breathe and prioritizes connection on the dance floor.',
+      pt: 'Cover em Zouk Brasileiro de "Porta do Sol", cancao conhecida na voz de Luan Santana. A versao mais longa da espaco para a melodia respirar e prioriza conexao na pista.',
+    },
+    releaseCountry: 'BR',
+    releaseStatus: 'Official',
+    barcode: '199999526018',
     originalSong: {
       name: 'Porta do Sol',
       artistName: 'Luan Santana',
