@@ -1057,12 +1057,18 @@
       "brl_title": "Real (BRL/PIX)",
       "usd_title": "US Dollar (USD)",
       "global_title": "Global (Wise/PayPal)",
-      "global_note": "Use Wise for EUR, AUD, PayID, and other currencies when the payer prefers local details, a link, or a QR code. For USD, Inter remains the preferred path."
+      "global_note": "Use Wise for EUR, AUD, PayID, and other currencies when the payer prefers local details, a link, or a QR code. For USD, Inter remains the preferred path.",
+      "wise_title": "Wise",
+      "wise_eur_title": "Wise EUR",
+      "wise_aud_payid_title": "Wise AUD / PayID",
+      "paypal_title": "PayPal",
+      "paypal_me_title": "PayPal.me"
     },
     "preferred": "Preferred",
     "email": "Email",
     "phone": "Phone / Key",
     "sendPayment": "Send Payment via",
+    "sendPaymentProvider": "Send Payment via {{provider}}",
     "thankYou": "Thank you so much for the support. This is what helps me keep producing new music and bringing Brazilian Zouk cremosidade around the world. 🙏",
     "bsbCode": "BSB Code",
     "payIdPhone": "PayID / phone"

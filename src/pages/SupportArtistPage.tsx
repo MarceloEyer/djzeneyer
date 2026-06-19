@@ -241,7 +241,7 @@ const SupportArtistPage: React.FC = () => {
               <div className="space-y-6">
                 <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
                   <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
-                    <Globe size={18} /> Wise EUR
+                    <Globe size={18} /> {t('support.payment.wise_eur_title')}
                   </h4>
                   <p className="mb-4 text-sm leading-relaxed text-white/65">
                     {t('support.payment.global_note')}
@@ -257,7 +257,7 @@ const SupportArtistPage: React.FC = () => {
 
                 <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
                   <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
-                    <Globe size={18} /> Wise AUD / PayID
+                    <Globe size={18} /> {t('support.payment.wise_aud_payid_title')}
                   </h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.aud.accountName} />
@@ -273,13 +273,13 @@ const SupportArtistPage: React.FC = () => {
                     rel="noopener noreferrer"
                     className="btn border-green-500/50 hover:bg-green-500/10 w-full justify-center py-4 text-lg text-green-400 font-bold"
                   >
-                    {t('support.sendPayment')} Wise
+                    {t('support.sendPaymentProvider', { provider: t('support.payment.wise_title') })}
                   </a>
                 </div>
 
                 <div className="p-6 bg-blue-500/5 rounded-2xl border border-blue-500/20">
                   <h4 className="flex items-center gap-2 font-bold mb-4 text-blue-400 uppercase text-sm tracking-widest">
-                    <CreditCard size={18} /> PayPal
+                    <CreditCard size={18} /> {t('support.payment.paypal_title')}
                   </h4>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <a
@@ -288,7 +288,7 @@ const SupportArtistPage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="btn btn-primary justify-center py-4 text-lg font-bold"
                     >
-                      PayPal.me
+                      {t('support.payment.paypal_me_title')}
                     </a>
                     <a
                       href={ARTIST.payment.paypal.donateUrl}
@@ -296,7 +296,7 @@ const SupportArtistPage: React.FC = () => {
                       rel="noopener noreferrer"
                       className="btn btn-outline justify-center py-4 text-lg font-bold"
                     >
-                      {t('support.sendPayment')} PayPal
+                      {t('support.sendPaymentProvider', { provider: t('support.payment.paypal_title') })}
                     </a>
                   </div>
                 </div>
