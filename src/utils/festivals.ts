@@ -11,17 +11,21 @@ export interface CategorizedFestivals {
  * so a festival happening today is still upcoming.
  */
 export function categorizeFestivals(festivals: Festival[], today: Date): CategorizedFestivals {
+  const pad = (n: number) => n.toString().padStart(2, '0');
+  const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+
+  // ⚡ Bolt: Use string comparison for YYYY-MM-DD dates to avoid O(N) Date allocations
   const upcoming = [...festivals]
-    .filter((f) => f.date && new Date(f.date) >= today)
-    .sort((a, b) => new Date(a.date!).getTime() - new Date(b.date!).getTime());
+    .filter((f) => f.date && f.date >= todayStr)
+    .sort((a, b) => a.date!.localeCompare(b.date!));
 
   const past = [...festivals]
-    .filter((f) => !f.date || new Date(f.date) < today)
+    .filter((f) => !f.date || f.date < todayStr)
     .sort((a, b) => {
       if (!a.date && !b.date) return 0;
       if (!a.date) return 1;
       if (!b.date) return -1;
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
+      return b.date!.localeCompare(a.date!);
     });
 
   return { upcoming, past };
