@@ -141,4 +141,31 @@ describe('buildDiscographyListItems', () => {
     const node = items[0].item as Record<string, unknown>;
     expect(node.duration).toBe('PT4M00S');
   });
+
+  it('uses localized descriptions when available', () => {
+    const items = buildDiscographyListItems(
+      [
+        makeRelease({
+          description: 'English fallback',
+          localizedDescription: { pt: 'Descricao localizada' },
+        }),
+      ],
+      { ...opts, lang: 'pt' },
+    );
+    const node = items[0].item as Record<string, unknown>;
+    expect(node.description).toBe('Descricao localizada');
+  });
+
+  it('emits barcode as a schema identifier when available', () => {
+    const items = buildDiscographyListItems(
+      [makeRelease({ barcode: '199999525394' })],
+      opts,
+    );
+    const node = items[0].item as Record<string, unknown>;
+    expect(node.identifier).toEqual({
+      '@type': 'PropertyValue',
+      propertyID: 'Barcode',
+      value: '199999525394',
+    });
+  });
 });
