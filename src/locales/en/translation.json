@@ -1057,13 +1057,15 @@
       "brl_title": "Real (BRL/PIX)",
       "usd_title": "US Dollar (USD)",
       "global_title": "Global (Wise/PayPal)",
-      "global_note": "For other currencies, Wise and PayPal are usually the simplest options. Before sending high amounts, confirm the details directly with me."
+      "global_note": "Use Wise for EUR, AUD, PayID, and other currencies when the payer prefers local details, a link, or a QR code. For USD, Inter remains the preferred path."
     },
     "preferred": "Preferred",
     "email": "Email",
     "phone": "Phone / Key",
     "sendPayment": "Send Payment via",
-    "thankYou": "Thank you so much for the support. This is what helps me keep producing new music and bringing Brazilian Zouk cremosidade around the world. 🙏"
+    "thankYou": "Thank you so much for the support. This is what helps me keep producing new music and bringing Brazilian Zouk cremosidade around the world. 🙏",
+    "bsbCode": "BSB Code",
+    "payIdPhone": "PayID / phone"
   },
   "events_no_results_filter": "Sorry, I couldn't find any events in this state. Maybe check the full schedule?",
   "quiz": {

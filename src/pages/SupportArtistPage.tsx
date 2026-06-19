@@ -224,6 +224,8 @@ const SupportArtistPage: React.FC = () => {
                     <DetailCard label={t('support.accountNumber')} value={ARTIST.payment.interGlobal.usd.accountNumber} />
                     <DetailCard label={t('support.achRouting')} value={ARTIST.payment.interGlobal.usd.achRouting} />
                     <DetailCard label={t('support.wireRouting')} value={ARTIST.payment.interGlobal.usd.wireRouting} />
+                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.interGlobal.usd.swiftCode} />
+                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.interGlobal.usd.bankAddress} />
                   </div>
                 </div>
               </div>
@@ -239,7 +241,7 @@ const SupportArtistPage: React.FC = () => {
               <div className="space-y-6">
                 <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
                   <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
-                    <Globe size={18} /> Wise (TransferWise)
+                    <Globe size={18} /> Wise EUR
                   </h4>
                   <p className="mb-4 text-sm leading-relaxed text-white/65">
                     {t('support.payment.global_note')}
@@ -249,6 +251,21 @@ const SupportArtistPage: React.FC = () => {
                     <DetailCard label={t('support.iban')} value={ARTIST.payment.wise.eur.iban} />
                     <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.wise.eur.swiftCode} />
                     <DetailCard label={t('support.bank')} value={ARTIST.payment.wise.eur.bankName} />
+                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.wise.eur.bankAddress} />
+                  </div>
+                </div>
+
+                <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
+                    <Globe size={18} /> Wise AUD / PayID
+                  </h4>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.aud.accountName} />
+                    <DetailCard label={t('support.payIdPhone')} value={ARTIST.payment.wise.aud.payIdPhone} />
+                    <DetailCard label={t('support.bsbCode')} value={ARTIST.payment.wise.aud.bsbCode} />
+                    <DetailCard label={t('support.accountNumber')} value={ARTIST.payment.wise.aud.accountNumber} />
+                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.wise.aud.swiftCode} />
+                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.wise.aud.bankAddress} />
                   </div>
                   <a
                     href={ARTIST.payment.wise.url}

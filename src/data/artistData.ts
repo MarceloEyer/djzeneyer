@@ -306,13 +306,13 @@ export const ARTIST = {
     interGlobal: {
       usd: {
         accountName: 'MARCELO EYER FERNANDES',
-        accountNumber: '889693163-5',
+        accountNumber: '8896931635',
         achRouting: '026073150',
         wireRouting: '026073008',
         bankName: 'Community Federal Savings Bank',
-        bankAddress: '5 Penn Plaza, New York, NY 10001',
-        beneficiaryBank: 'Banco Inter SA',
-        swiftCode: 'ITEMBRSP',
+        bankAddress: '5 Penn Plz FL 14, New York, NY 10001-1810',
+        beneficiaryBank: 'Community Federal Savings Bank',
+        swiftCode: 'CMFGUS33',
         intermediaryBank: {
           name: 'JP Morgan Chase N.A.',
           swift: 'CHASUS33',
@@ -358,7 +358,16 @@ export const ARTIST = {
         iban: 'BE09967420872757',
         swiftCode: 'TRWIBEB1XXX',
         bankName: 'Wise (Brussels, Belgium)',
-        bankAddress: 'Rue du Trône 100, 3rd floor, Brussels, 1050, Belgium',
+        bankAddress: 'Wise, Rue du Trone 100, 3rd floor, Brussels, 1050, Belgium',
+      },
+      aud: {
+        accountName: 'Marcelo Eyer Fernandes',
+        bsbCode: '774-001',
+        accountNumber: '204604253',
+        payIdPhone: '+5521987413091',
+        swiftCode: 'TRWIAUS1XXX',
+        bankName: 'Wise Australia Pty Ltd',
+        bankAddress: 'Suite 1, Level 11, 66 Goulburn Street, Sydney, NSW, 2000, Australia',
       },
     },
     paypal: {
