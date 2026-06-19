@@ -7,7 +7,7 @@ import { ArrowLeft, ExternalLink, Music2, Calendar, Clock, Mic2, Info, ListMusic
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { ARTIST } from '../data/artistData';
-import { DISCOGRAPHY } from '../data/artist.schema';
+import { DISCOGRAPHY } from '../data/artist.discography';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { getDateTimeFormatter } from '../utils/date';
 import NotFoundPage from './NotFoundPage';
@@ -186,10 +186,11 @@ const ReleaseDetailPage: React.FC = () => {
   const displayPlatforms = PLATFORMS.filter((p) => !!release[p.key as keyof typeof release]);
   const releaseTypeLabel = t(`music.release_type.${release.type}`);
   const dateDisplay = release.releaseDate
-    ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate))
+    ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(new Date(release.releaseDate))
     : release.releaseYear ?? '';
   const releaseYearDisplay = release.releaseDate ? new Date(release.releaseDate).getUTCFullYear().toString() : release.releaseYear;
   const firstTrack = release.tracks[0];
+  const artistCredit = release.artistCredit || t('common.artist_name');
   const metadataRows = [
     { label: t('music.release_detail.type_label'), value: releaseTypeLabel },
     { label: t('music.release_detail.date_label'), value: dateDisplay },
@@ -432,7 +433,7 @@ const ReleaseDetailPage: React.FC = () => {
                 </div>
                 <div>
                   <dt className="text-muted-foreground">{t('music.release_detail.artist_credit_label')}</dt>
-                  <dd className="mt-1 text-foreground">{release.name.includes('Don\'t Stop') ? 'Kaysha feat. Zen Eyer' : 'Zen Eyer'}</dd>
+                  <dd className="mt-1 text-foreground">{artistCredit}</dd>
                 </div>
                 {releaseYearDisplay && (
                   <div>

@@ -1,5 +1,5 @@
 {
-  "comment": "Release detail sitemap slugs derived from DISCOGRAPHY.newsSlugs. Keep EN/PT slugs synchronized with src/data/artist.schema.ts.",
+  "comment": "Release detail sitemap slugs derived from DISCOGRAPHY.newsSlugs. Keep EN/PT slugs synchronized with src/data/artist.discography.ts.",
   "releases": [
     {
       "id": "dont-stop-zen-eyer-remix",

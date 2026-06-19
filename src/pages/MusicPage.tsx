@@ -11,7 +11,8 @@ import { useUser } from '../contexts/UserContext';
 import { useTrackInteraction } from '../hooks/useQueries';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { ARTIST } from '../data/artistData';
-import { MUSICGROUP_SCHEMA, DISCOGRAPHY } from '../data/artist.schema';
+import { MUSICGROUP_SCHEMA } from '../data/artist.schema';
+import { DISCOGRAPHY } from '../data/artist.discography';
 import { safeUrl } from '../utils/sanitize';
 import { buildReleaseCards, buildDiscographyListItems } from '../utils/music';
 
