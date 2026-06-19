@@ -359,8 +359,12 @@ export const fetchProductFn = async (lang?: string, slug?: string): Promise<WCPr
 };
 
 export const fetchProductWithFallbackFn = async (lang?: string, slug?: string): Promise<WCProductDetail | null> => {
-  const localizedProduct = await fetchProductFn(lang, slug);
-  if (localizedProduct || !lang?.toLowerCase().startsWith('pt')) return localizedProduct;
+  try {
+    const localizedProduct = await fetchProductFn(lang, slug);
+    if (localizedProduct || !lang?.toLowerCase().startsWith('pt')) return localizedProduct;
+  } catch (error) {
+    if (!lang?.toLowerCase().startsWith('pt')) throw error;
+  }
 
   return fetchProductFn('en', slug);
 };
