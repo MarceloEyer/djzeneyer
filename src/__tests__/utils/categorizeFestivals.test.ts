@@ -34,6 +34,13 @@ describe('categorizeFestivals', () => {
     expect(past).toHaveLength(0);
   });
 
+  it('normalizes ISO date-time strings before comparing', () => {
+    const festivals = [f('TodayWithTime', '2025-06-15T23:30:00.000Z')];
+    const { upcoming, past } = categorizeFestivals(festivals, TODAY);
+    expect(upcoming.map((x) => x.name)).toEqual(['TodayWithTime']);
+    expect(past).toHaveLength(0);
+  });
+
   it('sorts upcoming ascending (nearest first)', () => {
     const festivals = [
       f('Far', '2025-12-01'),

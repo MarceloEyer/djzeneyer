@@ -13,19 +13,20 @@ export interface CategorizedFestivals {
 export function categorizeFestivals(festivals: Festival[], today: Date): CategorizedFestivals {
   const pad = (n: number) => n.toString().padStart(2, '0');
   const todayStr = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+  const dateKey = (date?: string) => date?.slice(0, 10) || '';
 
   // ⚡ Bolt: Use string comparison for YYYY-MM-DD dates to avoid O(N) Date allocations
   const upcoming = [...festivals]
-    .filter((f) => f.date && f.date >= todayStr)
-    .sort((a, b) => a.date!.localeCompare(b.date!));
+    .filter((f) => f.date && dateKey(f.date) >= todayStr)
+    .sort((a, b) => dateKey(a.date).localeCompare(dateKey(b.date)));
 
   const past = [...festivals]
-    .filter((f) => !f.date || f.date < todayStr)
+    .filter((f) => !f.date || dateKey(f.date) < todayStr)
     .sort((a, b) => {
       if (!a.date && !b.date) return 0;
       if (!a.date) return 1;
       if (!b.date) return -1;
-      return b.date!.localeCompare(a.date!);
+      return dateKey(b.date).localeCompare(dateKey(a.date));
     });
 
   return { upcoming, past };
