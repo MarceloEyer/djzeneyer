@@ -140,3 +140,7 @@
 ## 2026-05-27 - Render Loop Purity with Date Objects
 **Learning:** Instantiating `new Date()` or using `Date.now()` within the component render body can trigger React purity linting errors (react-hooks/purity) and cause unnecessary object allocation during each render cycle.
 **Action:** Extracted these instances into module-scoped constants like `CURRENT_YEAR` or replaced them with safer, statically evaluated variants to preserve pure renders and reduce GC overhead.
+## 2026-06-19 - O(N log N) Date allocations in Array Sorts
+
+**Learning:** Instantiating `new Date(string)` inside an `Array.prototype.sort()` comparator function (e.g. `festivals.sort((a,b) => new Date(a).getTime() - new Date(b).getTime())`) is exceptionally slow. Since sort callbacks execute $O(N \log N)$ times, this repeatedly allocates and garbage-collects objects for the exact same values, severely degrading frontend performance.
+**Action:** When filtering or sorting lists by dates in ISO 8601 format (like `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm:ssZ`), completely eliminate `new Date()` from the loop. Standardize the target comparison threshold to a matching string format and use lightweight string operators (`<`, `>=`) and `String.prototype.localeCompare()` to guarantee zero-allocation chronological ordering.
