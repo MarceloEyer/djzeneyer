@@ -3,11 +3,11 @@ import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ExternalLink, Music2, Calendar, Clock, Mic2 } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Music2, Calendar, Clock, Mic2, Info, ListMusic } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { ARTIST } from '../data/artistData';
-import { DISCOGRAPHY } from '../data/artist.schema';
+import { DISCOGRAPHY } from '../data/artist.discography';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { getDateTimeFormatter } from '../utils/date';
 import NotFoundPage from './NotFoundPage';
@@ -42,6 +42,12 @@ const getAppleMusicEmbedUrl = (url?: string): string | null => {
 };
 
 // ─── Platform config ─────────────────────────────────────────────────────────
+
+const getMusicBrainzReleaseId = (url?: string): string | null => {
+  if (!url) return null;
+  const match = url.match(/musicbrainz\.org\/release\/([0-9a-f-]+)/i);
+  return match?.[1] ?? null;
+};
 
 const PLATFORMS = [
   { key: 'spotifyUrl', label: 'Spotify', color: '#1DB954' },
@@ -97,6 +103,16 @@ const ReleaseDetailPage: React.FC = () => {
     return !getSpotifyEmbedUrl(release.spotifyUrl) && !!getAppleMusicEmbedUrl(release.appleMusicUrl);
   }, [release, embedUrl]);
 
+  const releaseDescription = useMemo(() => {
+    if (!release) return '';
+    return release.localizedDescription?.[lang] || release.description || '';
+  }, [release, lang]);
+
+  const musicBrainzReleaseId = useMemo(
+    () => getMusicBrainzReleaseId(release?.musicBrainzUrl),
+    [release],
+  );
+
   const schema = useMemo(() => {
     if (!release) return null;
 
@@ -119,9 +135,11 @@ const ReleaseDetailPage: React.FC = () => {
           ...(release.releaseDate ? { datePublished: release.releaseDate } : {}),
           ...(release.releaseYear && !release.releaseDate ? { datePublished: release.releaseYear } : {}),
           image: release.image,
-          ...(release.description ? { description: release.description } : {}),
+          ...(releaseDescription ? { description: releaseDescription } : {}),
+          inLanguage: lang === 'pt' ? 'pt-BR' : 'en',
           byArtist: release.byArtist ?? { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
           ...(release.contributor ? { contributor: release.contributor } : {}),
+          ...(release.barcode ? { identifier: { '@type': 'PropertyValue', propertyID: 'Barcode', value: release.barcode } } : {}),
           ...(streamingLinks.length > 0 ? { sameAs: streamingLinks } : {}),
           ...(release.tracks.length > 0 ? {
             track: release.tracks.map((tr) => ({
@@ -147,14 +165,15 @@ const ReleaseDetailPage: React.FC = () => {
           '@id': `${pageUrl}#webpage`,
           url: pageUrl,
           name: release.name,
-          ...(release.description ? { description: release.description } : {}),
+          ...(releaseDescription ? { description: releaseDescription } : {}),
+          inLanguage: lang === 'pt' ? 'pt-BR' : 'en',
           isPartOf: { '@id': `${ARTIST.site.baseUrl}/#website` },
           about: { '@id': `${pageUrl}#release` },
           primaryImageOfPage: release.image,
         },
       ],
     };
-  }, [release, pageUrl, musicHubRoute, t]);
+  }, [release, pageUrl, musicHubRoute, t, releaseDescription, lang]);
 
   const contributorList = useMemo(() => {
     if (!release?.contributor) return [];
@@ -167,14 +186,26 @@ const ReleaseDetailPage: React.FC = () => {
   const displayPlatforms = PLATFORMS.filter((p) => !!release[p.key as keyof typeof release]);
   const releaseTypeLabel = t(`music.release_type.${release.type}`);
   const dateDisplay = release.releaseDate
-    ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(release.releaseDate))
+    ? getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' }).format(new Date(release.releaseDate))
     : release.releaseYear ?? '';
+  const releaseYearDisplay = release.releaseDate ? new Date(release.releaseDate).getUTCFullYear().toString() : release.releaseYear;
+  const firstTrack = release.tracks[0];
+  const artistCredit = release.artistCredit || t('common.artist_name');
+  const metadataRows = [
+    { label: t('music.release_detail.type_label'), value: releaseTypeLabel },
+    { label: t('music.release_detail.date_label'), value: dateDisplay },
+    { label: t('music.release_detail.duration_label'), value: firstTrack?.duration ? formatDuration(firstTrack.duration) : '' },
+    { label: t('music.release_detail.country_label'), value: release.releaseCountry },
+    { label: t('music.release_detail.status_label'), value: release.releaseStatus },
+    { label: t('music.release_detail.barcode_label'), value: release.barcode },
+    { label: t('music.release_detail.musicbrainz_id_label'), value: musicBrainzReleaseId },
+  ].filter((row) => row.value);
 
   return (
     <>
       <HeadlessSEO
         title={`${release.name} — Zen Eyer`}
-        description={release.description ?? `${release.name} — ${releaseTypeLabel} by Zen Eyer. Brazilian Zouk music.`}
+        description={releaseDescription || t('music.release_seo_desc_fallback', { name: release.name, type: releaseTypeLabel })}
         image={release.image}
         imageAlt={`${release.name} cover art`}
         type="music.song"
@@ -228,11 +259,11 @@ const ReleaseDetailPage: React.FC = () => {
               {release.originalSong && (
                 <p className="mt-2 text-sm text-muted-foreground flex items-center gap-1.5">
                   <Mic2 size={13} className="flex-shrink-0" />
-                  {lang === 'pt' ? 'Versão de' : 'Cover of'}{' '}
+                  {t('music.release_detail.cover_of')}{' '}
                   <span className="font-medium text-foreground">
                     &ldquo;{release.originalSong.name}&rdquo;
                   </span>{' '}
-                  {lang === 'pt' ? 'por' : 'by'}{' '}
+                  {t('music.release_detail.by')}{' '}
                   <span className="font-medium text-foreground">
                     {release.originalSong.artistName}
                   </span>
@@ -246,21 +277,38 @@ const ReleaseDetailPage: React.FC = () => {
                     {dateDisplay}
                   </span>
                 )}
-                {release.tracks[0]?.duration && (
+                {firstTrack?.duration && (
                   <span className="flex items-center gap-1">
                     <Clock size={14} />
-                    {formatDuration(release.tracks[0].duration)}
+                    {formatDuration(firstTrack.duration)}
                   </span>
                 )}
               </div>
 
-              {release.description && (
-                <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                  {release.description}
+              {releaseDescription && (
+                <p className="mt-4 text-sm text-muted-foreground leading-relaxed" data-speakable>
+                  {releaseDescription}
                 </p>
               )}
             </div>
           </motion.div>
+
+          {metadataRows.length > 0 && (
+            <section className="mt-8 rounded-2xl border border-white/10 bg-surface/35 p-4">
+              <h2 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                <Info size={14} />
+                {t('music.release_detail.facts_title')}
+              </h2>
+              <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                {metadataRows.map((row) => (
+                  <div key={row.label}>
+                    <dt className="text-muted-foreground">{row.label}</dt>
+                    <dd className="mt-1 break-words text-foreground">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          )}
 
           {/* Embed player */}
           {embedUrl && (
@@ -277,7 +325,7 @@ const ReleaseDetailPage: React.FC = () => {
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
                 className="rounded-xl border border-white/5"
-                title={`Listen to ${release.name}`}
+                title={t('music.release_detail.embed_title', { name: release.name })}
               />
             </motion.div>
           )}
@@ -314,7 +362,7 @@ const ReleaseDetailPage: React.FC = () => {
           {release.tracks.length > 1 && (
             <section className="mt-10">
               <h2 className="text-xs uppercase tracking-widest text-muted-foreground mb-3">
-                Tracks
+                {t('music.release_detail.tracks')}
               </h2>
               <ol className="space-y-2">
                 {release.tracks.map((tr, i) => (
@@ -371,6 +419,40 @@ const ReleaseDetailPage: React.FC = () => {
               </dl>
             </section>
           )}
+
+          <section className="mt-10">
+            <h2 className="mb-3 flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground">
+              <ListMusic size={14} />
+              {t('music.release_detail.musicbrainz_ready_title')}
+            </h2>
+            <div className="rounded-2xl border border-white/10 bg-surface/30 p-4">
+              <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                <div>
+                  <dt className="text-muted-foreground">{t('music.release_detail.recording_title_label')}</dt>
+                  <dd className="mt-1 text-foreground">{firstTrack?.name || release.name}</dd>
+                </div>
+                <div>
+                  <dt className="text-muted-foreground">{t('music.release_detail.artist_credit_label')}</dt>
+                  <dd className="mt-1 text-foreground">{artistCredit}</dd>
+                </div>
+                {releaseYearDisplay && (
+                  <div>
+                    <dt className="text-muted-foreground">{t('music.release_detail.year_label')}</dt>
+                    <dd className="mt-1 text-foreground">{releaseYearDisplay}</dd>
+                  </div>
+                )}
+                {release.genre && (
+                  <div>
+                    <dt className="text-muted-foreground">{t('music.release_detail.genre_label')}</dt>
+                    <dd className="mt-1 text-foreground">{release.genre.join(', ')}</dd>
+                  </div>
+                )}
+              </dl>
+              <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+                {t('music.release_detail.musicbrainz_ready_note')}
+              </p>
+            </div>
+          </section>
 
         </div>
       </main>

@@ -1,5 +1,4 @@
 import { ARTIST } from '../data/artistData';
-import { DISCOGRAPHY } from '../data/artist.schema';
 import type { Language } from '../config/routes';
 
 export const OG_IMAGE_WIDTH = 1200;
@@ -148,17 +147,6 @@ export const getOpenGraphDescription = (value: string, maxLength = 200): string 
 
 export const getMetaDescription = (value: string, maxLength = 160): string =>
   truncateAtWord(value, maxLength);
-
-export const findReleaseByNewsSlug = (slug: string | undefined, lang: Language) => {
-  if (!slug) return undefined;
-  return DISCOGRAPHY.find((release) => {
-    const localizedSlug = release.newsSlugs?.[lang];
-    return localizedSlug === slug || release.id === slug;
-  });
-};
-
-export const getReleaseOpenGraphType = (releaseType: string | undefined): string =>
-  releaseType === 'album' || releaseType === 'ep' ? 'music.album' : 'music.song';
 
 /** Returns a localized "<releaseName> by/por <artist>" alt text. */
 export const getReleaseOpenGraphAlt = (releaseName: string, lang: Language = 'en'): string => {

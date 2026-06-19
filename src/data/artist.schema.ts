@@ -455,9 +455,12 @@ export interface OriginalSong {
   artistSameAs?: string[];
 }
 
+export type LocalizedReleaseText = Partial<Record<'en' | 'pt', string>>;
+
 export interface Release {
   id: string;
   name: string;
+  artistCredit?: string;
   newsSlugs?: Partial<Record<'en' | 'pt', string>>;
   type: 'single' | 'ep' | 'album' | 'remix';
   releaseDate?: string; // YYYY-MM-DD; omit if not verified.
@@ -474,211 +477,16 @@ export interface Release {
   youtubeUrl?: string;
   soundcloudUrl?: string;
   description?: string;
+  localizedDescription?: LocalizedReleaseText;
   genre?: string[];
+  releaseCountry?: string;
+  releaseStatus?: 'Official' | 'Promotion' | 'Bootleg' | 'Pseudo-Release';
+  barcode?: string;
   originalSong?: OriginalSong; // populated for covers and remixes
   byArtist?: Record<string, unknown>;
   contributor?: Record<string, unknown> | Record<string, unknown>[];
   tracks: ReleaseTrack[];
 }
-
-export const DISCOGRAPHY: Release[] = [
-  {
-    id: 'dont-stop-zen-eyer-remix',
-    name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
-    newsSlugs: {
-      en: 'dont-stop-zen-eyer-remix-kaysha',
-      pt: 'dont-stop-remix-zen-eyer-kaysha',
-    },
-    type: 'remix',
-    releaseDate: '2018-10-25',
-    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-    spotifyUrl: 'https://open.spotify.com/track/4KY8BPuSKbNnnI3dQ5fDk9',
-    appleMusicUrl: 'https://music.apple.com/us/album/dont-stop-remixes-single/1596289429?i=1596290116',
-    musicBrainzUrl: 'https://musicbrainz.org/release/4ca05fa2-a3c0-4de3-818c-e64cd147dca3',
-    amazonMusicUrl: 'https://www.amazon.com/dp/B09M791M5V',
-    youtubeUrl: 'https://www.youtube.com/watch?v=mxQ-Y_Vh_18',
-    genre: ['Brazilian Zouk', 'Zouk'],
-    description: "Brazilian Zouk remix of Kaysha's \"Don't Stop\". Zen Eyer's remix transforms the original into a dance-floor ready Zouk track with his signature cremosidade flow. Part of \"Don't Stop (Remixes) - Single\" on Apple Music.",
-    originalSong: {
-      name: "Don't Stop",
-      artistName: 'Kaysha',
-      artistSameAs: [
-        'https://kaysha.com/',
-        'https://musicbrainz.org/artist/2eecd1cd-31ae-42f3-9e30-300ffbd7f2ef',
-        'https://www.wikidata.org/wiki/Q740711',
-      ],
-    },
-    byArtist: {
-      '@type': 'Person',
-      name: 'Kaysha',
-      sameAs: [
-        'https://kaysha.com/',
-        'https://musicbrainz.org/artist/2eecd1cd-31ae-42f3-9e30-300ffbd7f2ef',
-        'https://www.wikidata.org/wiki/Q740711',
-      ],
-    },
-    contributor: {
-      '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
-      roleName: 'Remixer',
-    },
-    tracks: [
-      {
-        name: "Don't Stop (feat. Zen Eyer) [Zen Eyer Remix]",
-        duration: 'PT3M39S',
-        spotifyUrl: 'https://open.spotify.com/track/4KY8BPuSKbNnnI3dQ5fDk9',
-      },
-    ],
-  },
-  {
-    id: 'na-ponta-ela-fica-cover',
-    name: 'Na Ponta Ela Fica - Cover',
-    newsSlugs: {
-      en: 'na-ponta-ela-fica-brazilian-zouk-cover',
-      pt: 'na-ponta-ela-fica-cover-zouk-brasileiro',
-    },
-    type: 'single',
-    releaseDate: '2026-01-09',
-    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-    appleMusicUrl: 'https://music.apple.com/us/album/na-ponta-ela-fica-cover-single/1867840116',
-    musicBrainzUrl: 'https://musicbrainz.org/release/7b0c16b2-24a8-4923-b3e1-f3b852e5b064',
-    youtubeUrl: 'https://www.youtube.com/watch?v=ACENa4vgVcY',
-    genre: ['Brazilian Zouk', 'Zouk'],
-    description: 'Brazilian Zouk cover of the funk hit by MC Delano. Zen Eyer adapts the infectious energy of the original into a smooth, dance-floor ready Zouk arrangement.',
-    originalSong: {
-      name: 'Na Ponta Ela Fica',
-      artistName: 'MC Delano',
-    },
-    byArtist: {
-      '@type': 'Person',
-      name: 'MC Delano',
-    },
-    tracks: [
-      {
-        name: 'Na Ponta Ela Fica - Cover',
-        duration: 'PT2M22S',
-      },
-    ],
-  },
-  {
-    id: 'still-loving-you-sax-cover',
-    name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
-    newsSlugs: {
-      en: 'still-loving-you-sax-cover-walter-xavier',
-      pt: 'still-loving-you-cover-sax-walter-xavier',
-    },
-    type: 'single',
-    releaseDate: '2026-01-27',
-    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-    appleMusicUrl: 'https://music.apple.com/us/album/still-loving-you-feat-walter-xavier-sax-cover-single/1872468504',
-    genre: ['Brazilian Zouk', 'Zouk'],
-    description: 'Brazilian Zouk cover of the Scorpions classic "Still Loving You" (1984), featuring saxophonist Walter Xavier. The saxophone takes the lead melody over a Zouk groove, creating a deeply romantic, dance-floor arrangement.',
-    originalSong: {
-      name: 'Still Loving You',
-      artistName: 'Scorpions',
-      artistSameAs: [
-        'https://www.scorpions.de/',
-        'https://musicbrainz.org/artist/c6b78b4b-3bd4-4174-99b4-1fd0b0dd3e11',
-        'https://www.wikidata.org/wiki/Q80191',
-      ],
-    },
-    byArtist: {
-      '@type': 'MusicGroup',
-      name: 'Scorpions',
-      sameAs: [
-        'https://www.scorpions.de/',
-        'https://musicbrainz.org/artist/c6b78b4b-3bd4-4174-99b4-1fd0b0dd3e11',
-        'https://www.wikidata.org/wiki/Q80191',
-      ],
-    },
-    contributor: [
-      {
-        '@id': `${ARTIST.site.baseUrl}/#musicgroup`,
-        roleName: 'Cover Performer, Arranger',
-      },
-      {
-        '@type': 'Person',
-        name: 'Walter Xavier',
-        roleName: 'Saxophonist',
-      },
-    ],
-    tracks: [
-      {
-        name: 'Still Loving You (feat. Walter Xavier) [Sax Cover]',
-        duration: 'PT4M24S',
-      },
-    ],
-  },
-  {
-    id: 'baila-flaquita',
-    name: 'Baila Flaquita',
-    newsSlugs: {
-      en: 'baila-flaquita-original-single',
-      pt: 'baila-flaquita-single-original',
-    },
-    type: 'single',
-    releaseYear: '2026',
-    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-    musicBrainzUrl: 'https://musicbrainz.org/release/aaea8061-a317-4743-bf87-fad9dc3ed93c',
-    amazonMusicUrl: 'https://www.amazon.co.uk/dp/B0GDRV9WF7',
-    genre: ['Brazilian Zouk', 'Zouk'],
-    description: "Zen Eyer's original composition — a bilingual Spanish/Portuguese track built for the Brazilian Zouk dance floor. A playful, rhythmic piece that showcases his production style.",
-    tracks: [
-      {
-        name: 'Baila Flaquita',
-        duration: 'PT1M44S',
-      },
-    ],
-  },
-  {
-    id: 'porta-do-sol-cover',
-    name: 'Porta Do Sol - Cover',
-    newsSlugs: {
-      en: 'porta-do-sol-brazilian-zouk-cover',
-      pt: 'porta-do-sol-cover-zouk-brasileiro',
-    },
-    type: 'single',
-    releaseDate: '2026-01-06',
-    image: `${ARTIST.site.baseUrl}/images/zen-eyer-og-image.png`,
-    appleMusicUrl: 'https://music.apple.com/us/album/porta-do-sol-cover-single/1867002457',
-    musicBrainzUrl: 'https://musicbrainz.org/release/b1c9f977-3642-4c86-a66d-b7b5a4564064',
-    genre: ['Brazilian Zouk', 'Zouk'],
-    description: 'Brazilian Zouk cover of the beloved Brazilian sertanejo ballad "Porta do Sol". At 5 minutes and 7 seconds, this version gives the melody space to breathe, prioritising connection and fluidity on the dance floor.',
-    originalSong: {
-      name: 'Porta do Sol',
-      artistName: 'Luan Santana',
-      artistSameAs: [
-        'https://musicbrainz.org/artist/b7a9cead-7ab9-4c5f-aff3-0a8ab4edc1fd',
-        'https://www.wikidata.org/wiki/Q3838024',
-      ],
-    },
-    byArtist: {
-      '@type': 'Person',
-      name: 'Luan Santana',
-      sameAs: [
-        'https://musicbrainz.org/artist/b7a9cead-7ab9-4c5f-aff3-0a8ab4edc1fd',
-        'https://www.wikidata.org/wiki/Q3838024',
-      ],
-    },
-    tracks: [
-      {
-        name: 'Porta Do Sol - Cover',
-        duration: 'PT5M7S',
-      },
-    ],
-  },
-];
-
-// ============================================================================
-// 🎸 MUSICGROUP — nó separado do grafo Knowledge Graph
-// Representa o projeto artístico "Zen Eyer" como entidade musical.
-// Coexiste com ARTIST_SCHEMA_BASE (Person) — ligados por member/memberOf.
-// @id: /#musicgroup  (distinto de /#artist que é a Person)
-// ============================================================================
-
-// ============================================================================
-// Related organization node for the secondary Google Knowledge Graph entity.
-// The primary artist KGMID remains on Person/MusicGroup; this avoids conflation.
-// ============================================================================
 
 export const ARTIST_BUSINESS_SCHEMA = {
   '@type': 'Organization',
