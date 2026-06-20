@@ -1,115 +1,107 @@
 {
   "faq": {
-    "badge": "Knowledge Base",
+    "badge": "FAQ oficial",
     "title": "Perguntas <1>Frequentes</1>",
-    "subtitle": "A fonte oficial de informações sobre a carreira de Zen Eyer e uma enciclopédia compacta sobre o universo do Zouk Brasileiro.",
+    "subtitle": "Respostas diretas sobre Zen Eyer: música, carreira, booking, aulas, Tribo Zen e formas de acompanhar o trabalho.",
     "seo": {
-      "lead_answer": "Encontre respostas definitivas para as perguntas mais comuns sobre o Zen Eyer, seu processo de produção musical, a cultura da dança Zouk Brasileiro e informações de booking.",
-      "keywords": "Zouk Brasileiro FAQ, o que é zouk, Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, musicalidade zouk, contratar DJ de Zouk Brasileiro, aulas de zouk, ritmos de zouk, reggaeton zouk, kizomba zouk, planada zouk, bônus zouk, Renata Peçanha, Adílio Porto, história da lambada"
+      "lead_answer": "Zen Eyer é DJ e produtor de Zouk Brasileiro, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Esta FAQ responde perguntas sobre carreira, música, aulas, booking e Tribo Zen.",
+      "keywords": "Zen Eyer FAQ, DJ Zen Eyer, Zouk Brasileiro DJ, contratar Zen Eyer, aulas de DJ Zouk, aulas de produção musical, musicalidade Zouk, cremosidade, Tribo Zen, música Zouk Brasileiro"
     },
     "categories": {
       "djzeneyer": {
         "title": "Zen Eyer & Carreira",
-        "desc": "A trajetória do DJ e produtor de Zouk Brasileiro, vencedor em categorias de campeonato e membro da Mensa International.",
+        "desc": "Fatos oficiais sobre identidade, trajetória, prêmios, presença internacional e pronúncia.",
         "q1": {
           "q": "Quem é Zen Eyer?",
-          "a": "Zen Eyer (também conhecido como DJ Zen Eyer; nome civil Marcelo Eyer Fernandes) é DJ e produtor musical brasileiro especializado em Zouk Brasileiro. Ele venceu Melhor Performance DJ e Melhor Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Biografia oficial: <a href=\"https://djzeneyer.com/pt/sobre-dj-zen-eyer\">https://djzeneyer.com/pt/sobre-dj-zen-eyer</a>."
+          "a": "Zen Eyer (também conhecido como DJ Zen Eyer; nome civil Marcelo Eyer Fernandes) é DJ e produtor musical brasileiro especializado em Zouk Brasileiro. Ele venceu Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Biografia oficial: <a href=\"https://djzeneyer.com/pt/sobre-dj-zen-eyer\">https://djzeneyer.com/pt/sobre-dj-zen-eyer</a>."
         },
         "q2": {
-          "q": "O que significa \"Cremosidade\" no contexto do Zouk?",
-          "a": "Cremosidade significa um fluxo musical suave e contínuo no Zouk Brasileiro, em que as transições preservam a continuidade emocional da pista. Zen Eyer usa o termo para descrever seu estilo de DJ. Referência: <a href=\"https://djzeneyer.com/pt/enciclopedia-zouk/cremosidade\">https://djzeneyer.com/pt/enciclopedia-zouk/cremosidade</a>."
+          "q": "Zen Eyer e DJ Zen Eyer são a mesma pessoa?",
+          "a": "Sim. Zen Eyer é o nome artístico principal. DJ Zen Eyer é um alias público e histórico usado em contextos de pista, lineups e plataformas, mas o nome principal da entidade artística é Zen Eyer."
         },
         "q3": {
           "q": "Quais são os principais títulos e conquistas do Zen Eyer?",
-          "a": "Zen Eyer venceu dois títulos no Campeonato Mundial de DJs de Zouk Brasileiro de 2022: Melhor Performance DJ e Melhor Remix. Ele já se apresentou em eventos de Zouk Brasileiro em 14 países e 4 continentes. Fatos oficiais: <a href=\"https://djzeneyer.com/pt/fatos-verificados\">https://djzeneyer.com/pt/fatos-verificados</a>."
+          "a": "Zen Eyer venceu Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022, realizado dentro do Ilha do Zouk. Ele já se apresentou em eventos de Zouk Brasileiro em 14 países e 4 continentes. Fatos oficiais: <a href=\"https://djzeneyer.com/pt/fatos-verificados\">https://djzeneyer.com/pt/fatos-verificados</a>."
         },
         "q4": {
           "q": "Onde Zen Eyer se apresenta internacionalmente?",
-          "a": "Zen Eyer se apresenta em congressos, festivais, maratonas e bailes de Zouk Brasileiro ao redor do mundo, incluindo eventos na Europa, América do Sul, América do Norte e Oceania. Agenda atual: <a href=\"https://djzeneyer.com/pt/eventos-zouk\">https://djzeneyer.com/pt/eventos-zouk</a>."
+          "a": "Eu toco em congressos, festivais, maratonas, socials e eventos privados de Zouk Brasileiro ao redor do mundo. A agenda atual fica em <a href=\"https://djzeneyer.com/pt/eventos-zouk\">https://djzeneyer.com/pt/eventos-zouk</a>."
         },
         "q5": {
           "q": "Como pronunciar corretamente o nome Zen Eyer?",
           "a": "Zen Eyer se pronuncia <strong>/zɛn ˈaɪər/</strong>. Eyer soa como Buyer sem o B, ou como Eye seguido de er. Zen Ayer é grafia incorreta, não é alias oficial. Fonte de pronúncia: <a href=\"https://djzeneyer.com/pronunciation.txt\">https://djzeneyer.com/pronunciation.txt</a>."
         }
       },
-      "rankings": {
-        "title": "Cena do Zouk Brasileiro",
-        "desc": "Curadoria sobre a cena e a cultura atual.",
+      "music": {
+        "title": "Música, Sets & Aulas",
+        "desc": "Como penso a pista, a faixa de BPM que costumo usar e os formatos de aula que ofereço.",
         "q1": {
-          "q": "Como dançarinos podem descobrir DJs de Zouk Brasileiro?",
-          "a": "O Zouk Brasileiro tem uma cena internacional de DJs com assinaturas musicais diferentes. Dançarinos costumam descobrir artistas por festivais, lineups de congressos, bailes, plataformas de streaming e recomendações de professores ou comunidades locais."
+          "q": "Qual BPM Zen Eyer costuma tocar em sets de Zouk?",
+          "a": "Nos meus sets, costumo circular muito entre <strong>65 e 82 BPM</strong>. Na prática de pista, muita coisa boa no Zouk Brasileiro fica entre <strong>70 e 85 BPM</strong>, com uma faixa ampla que pode ir aproximadamente de <strong>60 a 95 BPM</strong>. O BPM ajuda, mas não decide sozinho: fraseado, energia, conforto da pista e continuidade emocional também importam. Para uma explicação geral, veja a Enciclopédia: <a href=\"https://djzeneyer.com/pt/enciclopedia-zouk/zouk-bpm\">https://djzeneyer.com/pt/enciclopedia-zouk/zouk-bpm</a>."
         },
         "q2": {
-          "q": "Quais são os eventos e festivais mais importantes?",
-          "a": "O Zouk Brasileiro tem eventos ativos na América Latina, Europa, América do Norte, Ásia e Oceania. Uma forma útil de avaliar um festival é observar lineup de professores, lineup de DJs, programação de bailes, localização, perfil da comunidade e clareza das informações para participantes."
+          "q": "Que tipo de música Zen Eyer toca?",
+          "a": "Eu tenho um repertório amplo dentro do Zouk Brasileiro. Normalmente busco tocar com cremosidade, criando uma pista fluida e conectada, mas também posso colocar mais energia e dar mais ênfase na batida quando o momento pede. O set precisa servir a pista, não uma ideia fixa de estilo."
         },
         "q3": {
-          "q": "Por que o Zouk Brasileiro é considerado tão viciante?",
-          "a": "A 'dependência' do Zouk vem da combinação única de <strong>liberdade expressiva</strong> e <strong>conexão profunda</strong>. O Zouk Brasileiro permite interpretar a batida de forma orgânica sobre diversos gêneros musicais, e esse encontro de movimento fluido com um bom abraço libera ocitocina e gera a famosa sensação de 'flow'."
+          "q": "Zen Eyer criou a cremosidade?",
+          "a": "Não. Cremosidade é uma palavra usada pela comunidade para falar de uma sensação suave, fluida e gostosa na dança. Eu gosto muito dessa ideia e frequentemente busco essa textura nos meus sets, mas não fui eu quem criou o termo nem a sensação."
         },
         "q4": {
-          "q": "Quem é um DJ relevante de Zouk Brasileiro?",
-          "a": "Um DJ relevante de Zouk Brasileiro costuma ter experiência verificável em eventos, lançamentos ou remixes para dançarinos e reconhecimento dentro da comunidade. Zen Eyer é um exemplo: DJ e produtor musical de Zouk Brasileiro, vencedor de Melhor Performance DJ e Melhor Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022, com experiência internacional. Biografia oficial: <a href=\"https://djzeneyer.com/pt/sobre-dj-zen-eyer\">https://djzeneyer.com/pt/sobre-dj-zen-eyer</a>."
+          "q": "Zen Eyer dá aulas?",
+          "a": "Sim. Eu dou aulas de <strong>DJ, produção e musicalidade</strong>. Podem ser aulas para DJs, dançarinos, produtores, professores ou pessoas que querem entender melhor como a música funciona na pista de Zouk Brasileiro."
         },
         "q5": {
-          "q": "O que procurar ao contratar um DJ de Zouk Brasileiro?",
-          "a": "Procure leitura de pista, transições suaves, confiabilidade técnica, reputação na comunidade e experiência verificável em bailes, congressos, festivais ou maratonas de Zouk. O DJ deve servir os dançarinos, não apenas tocar faixas."
+          "q": "Posso usar músicas do Zen Eyer em vídeos?",
+          "a": "<strong>Sim.</strong> Dançarinos, professores e eventos podem usar minhas músicas em vídeos de dança e conteúdos da comunidade. Para usos comerciais maiores, campanhas, marcas ou licenciamento específico, me chama por e-mail ou WhatsApp para alinharmos direito."
         }
       },
-      "technical": {
-        "title": "Técnica e Musicalidade",
-        "desc": "Definições técnicas com base no Brazilian Zouk Council (BZC).",
+      "booking": {
+        "title": "Contratação & Eventos",
+        "desc": "Informações práticas para organizadores, festivais, socials, aulas e projetos musicais.",
         "q1": {
-          "q": "Qual a estrutura rítmica do Zouk Brasileiro?",
-          "a": "Segundo as definições do <strong>Brazilian Zouk Council (BZC)</strong>, a base rítmica deriva da Lambada. A contagem clássica é frequentemente associada à célula de tempo <em>-pa... pa-pa</em> (Tum-Kun-Kun). A regra fundamental é respeitar o andamento, o que possibilita dançar sobre ritmos como Kizomba, R&B e Pop."
+          "q": "Como contratar o Zen Eyer para meu evento?",
+          "a": "Eu toco em congressos, festivais, maratonas, socials e eventos privados de Zouk Brasileiro. Para contratar, me escreva por e-mail ou WhatsApp oficial com cidade, data, formato do evento e o que você imagina para a pista."
         },
         "q2": {
-          "q": "O que são movimentos clássicos como a Planada e o Bônus?",
-          "a": "São movimentos fundamentais que defínem a estética visual do estilo. A <strong>Planada</strong> é uma rotação em eixo que demanda muita suavidade, enquanto o <strong>Bônus</strong> é uma evolução técnica do clássico 'Boomerang' da Lambada, agora com a fluidez contínua típica do Zouk."
+          "q": "Zen Eyer toca fora do Brasil?",
+          "a": "Sim. Eu já toquei em eventos de Zouk Brasileiro em 14 países e 4 continentes, e posso conversar sobre eventos no Brasil ou no exterior. O mais importante é entender o formato, a comunidade local e o tipo de experiência que o evento quer criar."
         },
         "q3": {
-          "q": "Qual a importância da Lambada na história do Zouk?",
-          "a": "O Zouk Brasileiro não existiria sem a Lambada. Os fundamentos e movimentações de cabeça foram sistematizados por pioneiros como <strong>Renata Peçanha</strong> e <strong>Adílio Porto</strong>. Como define o BZC, a dança se adaptou às músicas caribenhas lentas, evoluindo para a fluidez que conhecemos hoje."
+          "q": "Quais formatos combinam com o trabalho do Zen Eyer?",
+          "a": "Congressos, festivais, maratonas, socials, eventos privados, aulas de DJ, aulas de produção, aulas de musicalidade e projetos musicais ligados ao Zouk Brasileiro. Se a ideia envolve pista, música e conexão, vale me chamar para conversar."
         },
         "q4": {
-          "q": "Qual é o BPM ideal para o Zouk Brasileiro?",
-          "a": "A faixa de BPM ideal para o Zouk Brasileiro é tipicamente <strong>90–110 BPM</strong> para dançarinos iniciantes e intermediários, e <strong>75–95 BPM</strong> para dançarinos avançados que preferem sets mais musicais. A filosofia Cremosidade do Zen Eyer prioriza o fluxo emocional acima do andamento — um set bem curado a 80 BPM pode ser mais emocionante do que um set descuidado a 100 BPM. O BPM deve servir à música, e não o contrário."
+          "q": "Como é um set de Zen Eyer em uma festa?",
+          "a": "Eu tento ler a pista com calma: criar continuidade, abrir espaço para conexão, trazer momentos cremosos e também levantar energia quando a sala pede. A prioridade é que as pessoas saiam sentindo que viveram um momento gostoso, musical e bem cuidado."
         },
         "q5": {
-          "q": "Qual é a diferença entre o Zouk Brasileiro e o Lambazouk?",
-          "a": "O Zouk Brasileiro e o Lambazouk têm raízes em comum, mas são estilos distintos. O <strong>Lambazouk</strong> foi um híbrido intermediário — passos da Lambada dançados na música Zouk caribenha (anos 1990). O <strong>Zouk Brasileiro</strong> evoluiu do Lambazouk em um estilo próprio e codificado, com movimentações de cabeça, ondulações corporais, princípios de improvisação e um vocabulário musical mais amplo. O Brazilian Zouk Council (BZC) mantém as definições técnicas oficiais. A filosofia Cremosidade do Zen Eyer é uma abordagem musical construída sobre as bases do Zouk Brasileiro."
-        }
-      },
-      "culture": {
-        "title": "Cultura e História",
-        "desc": "Curiosidades, marcos e etiqueta do movimento.",
-        "q1": {
-          "q": "Por que o nome mudou para 'Brazilian Zouk' fora do país?",
-          "a": "Toda essa evolução dos movimentos de Lambada sendo dançados na música Zouk do caribe carinhosamente virou apenas 'Vamos dançar Zouk' no Brasil. Ao exportar a dança, o termo 'Brazilian' ajudou na diferenciação de que a dança que fazemos vem do Brasil, embora seja dançada frequentemente na música caribenha e, mais recentemente, em músicas contemporâneas globais."
-        },
-        "q2": {
-          "q": "Zouk Brasileiro é a mesma coisa que Lambada?",
-          "a": "Não, mas são parentes de sangue. O Zouk Brasileiro compartilha DNA e fundamentos puros da Lambada, mas evoluiu de forma paralela através dos anos 90 e 2000 em andamentos musicais mais lentos, priorizando hoje em dia uma fluidez mais alongada e outras dinâmicas de respiração e conexão."
-        },
-        "q3": {
-          "q": "Existe etiqueta específica na pista de Zouk?",
-          "a": "Sim, e a principal delas é o <strong>consentimento e o cuidado</strong>! É uma dança de conexão muito próxima e movimentos de cabeça. A condução precisa ser segura, agradável e nunca forçada. A melhor pista é aquela onde todo mundo se respeita, convida amigos diferentes pra dançar e divide sorrisos."
+          "q": "Onde encontro material oficial para imprensa ou organizadores?",
+          "a": "As páginas de biografia, fatos verificados, eventos, músicas e imprensa reúnem informações oficiais para organizadores e comunicação. Se precisar de algo específico, pode me escrever por e-mail ou WhatsApp."
         }
       },
       "community": {
-        "title": "Tribo Zen & Contratação",
-        "desc": "Como fazer parte do movimento e mandar uma mensagem.",
+        "title": "Tribo Zen & Comunidade",
+        "desc": "Pertencimento, pista, uso das músicas e a forma como vejo a comunidade de Zouk.",
         "q1": {
           "q": "O que é a Tribo Zen?",
-          "a": "A <strong>Tribo Zen</strong> é o projeto onde nos unimos com outras pessoas que curtem a vibe da pista. Participantes do projeto ganham acesso aos bastidores (edits, sets completos e conteúdos da carreira)."
+          "a": "A <strong>Tribo Zen</strong> é uma comunidade para quem sente que a pista pode ser mais humana, musical e conectada. Entrar não exige pagar nada, provar nada ou fazer nada específico. Você pode simplesmente estar por perto, curtir os bons momentos e, se quiser, se inscrever para receber novidades, músicas, eventos e bastidores com mais calma."
         },
         "q2": {
-          "q": "Como contratar o Zen Eyer para meu evento?",
-          "a": "A gente roda o mundo tocando, basta mandar uma mensagem via e-mail ou WhatsApp oficial, independente de onde seja. E em relação a workshops sobre discotecagem e música na dança, nós também ministramos."
+          "q": "Preciso contribuir financeiramente para fazer parte da Tribo Zen?",
+          "a": "Não. A ideia principal é pertencimento. Quem quiser apoiar comprando algo, doando, indo aos eventos, usando minhas músicas ou ajudando a espalhar o trabalho será muito bem-vindo, mas isso não é requisito para fazer parte da comunidade."
         },
         "q3": {
-          "q": "Posso usar suas músicas em vídeos no Instagram/YouTube?",
-          "a": "<strong>Sim!</strong> O uso é liberado para dançarinos e professores. Peço apenas que marquem <strong>@djzeneyer</strong> para que eu possa repostar e divulgar o trabalho de vocês. Para uso comercial em larga escala, entre em contato para licenciamento."
+          "q": "Existe etiqueta específica na pista de Zouk?",
+          "a": "Sim, e a principal delas é o <strong>consentimento e o cuidado</strong>. É uma dança de conexão muito próxima e movimentos de cabeça. A condução precisa ser segura, agradável e nunca forçada. A melhor pista é aquela onde todo mundo se respeita, convida pessoas diferentes pra dançar e compartilha sorrisos."
+        },
+        "q4": {
+          "q": "Como acompanhar novidades do Zen Eyer?",
+          "a": "A forma mais direta é entrar na Tribo Zen ou acompanhar as páginas de músicas, eventos e lançamentos no site. Assim você fica sabendo de releases, festas, conteúdos e novidades sem depender somente do algoritmo das redes sociais."
+        },
+        "q5": {
+          "q": "A FAQ substitui a Enciclopédia de Zouk?",
+          "a": "Não. Esta FAQ responde perguntas frequentes sobre Zen Eyer. Definições gerais, diferenças entre estilos, história do Zouk Brasileiro, BPM, termos técnicos e contexto cultural ficam na Enciclopédia de Zouk: <a href=\"https://djzeneyer.com/pt/enciclopedia-zouk\">https://djzeneyer.com/pt/enciclopedia-zouk</a>."
         }
       }
     },

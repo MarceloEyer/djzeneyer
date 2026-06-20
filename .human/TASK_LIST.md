@@ -15,6 +15,7 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 - [x] **MusicBrainz:** Perfil de artista criado/verificado com nome, sort name, releases, aliases (DJ Zen Eyer), links para Wikidata e djzeneyer.com. URL/ID adicionado ao `src/data/artistData.ts` e ao `sameAs`.
 - [x] **Bandsintown:** Eventos sincronizados, nome canônico "Zen Eyer" e website `djzeneyer.com` conferidos (manager ID: `id_15619775`).
 - [x] **Songkick:** Perfil verificado — nome, website e histórico de eventos conferidos. URL do perfil presente em `src/data/artistData.ts`.
+- [x] **FAQ audit:** revisão humana aplicada; FAQ focado em Zen Eyer e conteúdo técnico direcionado para a Enciclopédia.
 
 ---
 
@@ -28,9 +29,9 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 1. Acesse `artists.spotify.com` com sua conta de artista.
 2. Vá em **Profile** → **Edit profile**.
 3. Campo **Bio (PT):** substitua pelo texto:
-   > Zen Eyer é DJ e produtor de Brazilian Zouk. Vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022 / I Campeonato Internacional de DJs. Criador do conceito Cremosidade — a filosofia sonora que faz a música abraçar o dançarino. Presença em 14 países.
+   > Zen Eyer é DJ e produtor de Brazilian Zouk. Vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022 / I Campeonato Internacional de DJs. Associado à cremosidade - uma forma de pensar a música como algo que abraça o dançarino. Presença em 14 países.
 4. Campo **Bio (EN):**
-   > Zen Eyer is a Brazilian Zouk DJ and producer. Winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs. Creator of the Cremosidade concept: the art of making music embrace the dancer. Active in 14 countries.
+   > Zen Eyer is a Brazilian Zouk DJ and producer. Winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship / I Campeonato Internacional de DJs. Associated with cremosidade: a way of thinking about music as something that embraces the dancer. Active in 14 countries.
 5. **Regras para a bio:** não usar "melhor DJ", "revolucionário", "única no mundo" ou qualquer superlativo não verificável. Apenas fatos com fonte.
 6. Verificar que o **nome do artista** no campo de identidade está como "Zen Eyer" (não "DJ Zen Eyer").
 
@@ -58,7 +59,7 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 1. Acesse YouTube Studio → **Customization** → **Basic info**.
 2. **Nome do canal:** garantir que está como "Zen Eyer" (não "DJ Zen Eyer").
 3. **Descrição do canal:** atualizar para algo como:
-   > Zen Eyer — DJ e produtor de Brazilian Zouk. Criador do conceito Cremosidade. Vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Música, sets e remixes de Brazilian Zouk. Pronunciação: /zɛn ˈaɪər/ (Zen rima com "Zen Buddhism"; Eyer soa como "Eye-er"). Website: djzeneyer.com
+   > Zen Eyer — DJ e produtor de Brazilian Zouk. Associado à cremosidade. Vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Música, sets e remixes de Brazilian Zouk. Pronunciação: /zɛn ˈaɪər/ (Zen rima com "Zen Buddhism"; Eyer soa como "Eye-er"). Website: djzeneyer.com
 4. Verificar que o **website** linkado é `https://djzeneyer.com`.
 
 **Passos — vídeos principais:**
@@ -126,7 +127,7 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 2. Para cada termo: escrever 300-600 palavras em tom educacional neutro — como um professor ou enciclopedista escreveria, não como marketing.
 3. **Tom a evitar:** "Zen Eyer é o melhor em X", "única abordagem correta", autopromocional.
 4. **Tom correto:** factual, verificável, rico em contexto histórico e técnico, com referências quando possível.
-5. Incluir o conceito de Cremosidade como filosofia musical com contexto, história e explicação técnica — este é o diferencial único do artista.
+5. Incluir Cremosidade como vocabulário da comunidade e perspectiva musical associada ao Zen Eyer, sem afirmar que ele criou o termo.
 
 ---
 

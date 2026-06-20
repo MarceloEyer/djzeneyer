@@ -51,7 +51,7 @@
     "zoukMusic": {
       "term": "Música para Zouk Brasileiro",
       "short": "A música para Zouk Brasileiro não se limita a um único gênero; ela é escolhida ou editada por fluxo, fraseado, elasticidade e pela forma como os dançarinos conseguem interpretá-la.",
-      "body": "Um DJ de Zouk Brasileiro pode usar Zouk caribenho, faixas com influência de Kizomba, remixes de pop, músicas líricas, R&B, música eletrônica, covers e produções originais. O importante não é apenas o BPM, mas se a faixa oferece estrutura, arco emocional e continuidade suficientes para a dança."
+      "body": "O Zouk caribenho e o Zouk Love foram historicamente importantes para a formação do Zouk Brasileiro e ainda podem aparecer em algumas pistas. Hoje, porém, muitas festas usam com mais frequência um repertório contemporâneo global: R&B, pop editado, músicas com influência de Kizomba, eletrônica, covers, remixes e produções originais. O importante não é apenas o rótulo de gênero ou o BPM, mas se a faixa oferece estrutura, arco emocional, clareza e continuidade suficientes para a dança."
     },
     "zoukRemix": {
       "term": "Remix de Zouk",
@@ -80,8 +80,8 @@
     },
     "cremosidade": {
       "term": "Cremosidade",
-      "short": "Cremosidade é o termo de Zen Eyer para uma sensação musical e corporal suave e contínua, em que as transições protegem o fluxo em vez de interrompê-lo.",
-      "body": "O conceito ajuda a descrever uma forma de escolher e mixar músicas de Zouk que favorece elasticidade, continuidade emocional e conforto para os dançarinos. Ele faz parte do vocabulário artístico de Zen Eyer, mas não resume toda a identidade dele nem toda a definição de Zouk Brasileiro."
+      "short": "Cremosidade é uma palavra usada na comunidade para descrever uma sensação musical e corporal suave, fluida e conectada na pista de Zouk Brasileiro.",
+      "body": "O conceito ajuda a falar de uma forma de escolher e mixar músicas que favorece elasticidade, continuidade emocional e conforto para os dançarinos. Zen Eyer costuma buscar essa sensação em muitos sets, mas não criou o termo nem reduz sua identidade musical a isso: ele também pode trabalhar momentos de mais energia, batida e contraste quando a pista pede."
     },
     "zoukCongress": {
       "term": "Congresso de Zouk",
@@ -175,8 +175,8 @@
     },
     "zoukBpm": {
       "term": "BPM no Zouk Brasileiro",
-      "short": "O Zouk Brasileiro pode ser dançado em uma faixa flexível de andamento, muitas vezes entre 75 e 110 BPM, dependendo do estilo, do nível e da energia da pista.",
-      "body": "BPM é útil, mas não é o único fator. Dançarinos também precisam de fraseado claro, tempo elástico, acentos musicais e espaço suficiente para se mover com segurança. Músicas lentas podem ser fortes quando têm estrutura e direção emocional; músicas mais rápidas funcionam quando o ritmo continua legível."
+      "short": "O Zouk Brasileiro pode ser dançado em uma faixa ampla de andamento, aproximadamente de 60 a 95 BPM; na prática de pista, muitas músicas funcionam especialmente bem entre 70 e 85 BPM.",
+      "body": "BPM é útil, mas não decide sozinho se uma música funciona para Zouk Brasileiro. Dançarinos também precisam de fraseado claro, tempo elástico, acentos musicais, conforto e espaço suficiente para se mover com segurança. Nos sets de Zen Eyer, uma região comum fica entre 65 e 82 BPM, porque esse intervalo costuma favorecer cremosidade e conexão. Momentos mais lentos ou mais energéticos podem funcionar quando a música tem estrutura e quando o DJ entende a pista. Em competições, cada evento pode definir suas próprias regras de andamento; por isso, a referência oficial deve ser sempre o regulamento daquele evento."
     },
     "jackAndJill": {
       "term": "Jack and Jill",
@@ -200,13 +200,13 @@
     },
     "historyOfZouk": {
       "term": "História do Zouk Brasileiro",
-      "short": "O Zouk Brasileiro evoluiu no Brasil durante o final dos anos 1980 e 1990 à medida que a febre da Lambada diminuiu, adaptando-se à música Zouk Caribenha.",
-      "body": "Dançarinos e pioneiros adaptaram os movimentos da Lambada à música Zouk Caribenha, que era mais lenta e estruturalmente diferente, formando a base do que hoje é o Zouk Brasileiro. Ao longo das décadas, incorporou influências da dança contemporânea e de outros estilos, espalhando-se globalmente."
+      "short": "O Zouk Brasileiro evoluiu no Brasil durante o final dos anos 1980 e 1990 a partir das raízes da Lambada e da adaptação a músicas mais lentas, incluindo o Zouk caribenho.",
+      "body": "Dançarinos e pioneiros adaptaram movimentos da Lambada para músicas mais lentas e estruturalmente diferentes, formando a base do que hoje é o Zouk Brasileiro. A música caribenha foi importante nessa história e ajuda a explicar o nome, mas a pista moderna de Zouk Brasileiro costuma usar um repertório muito mais amplo, incluindo músicas contemporâneas globais, R&B, pop, eletrônica, remixes e produções criadas para a dança."
     },
     "zoukOrigin": {
       "term": "Origem do Zouk Brasileiro",
       "short": "O Zouk Brasileiro se originou no Brasil, particularmente no Rio de Janeiro, São Paulo e Porto Seguro, evoluindo a partir da Lambada.",
-      "body": "Embora use música que se originou no Caribe Francês, a dança em si foi criada por brasileiros. Pioneiros como Adílio Porto e Renata Peçanha foram fundamentais no seu desenvolvimento e sistematização."
+      "body": "Embora o nome tenha ligação histórica com a música do Caribe francês, a dança em si foi criada e sistematizada por brasileiros. Pioneiros como Adílio Porto e Renata Peçanha foram fundamentais no seu desenvolvimento. Hoje, a prática musical do Zouk Brasileiro é mais ampla do que a música caribenha e frequentemente inclui faixas contemporâneas globais adaptadas para o baile."
     },
     "zoukPioneers": {
       "term": "Pioneiros do Zouk Brasileiro",
@@ -286,7 +286,7 @@
     "brazilianZoukVsLambada": {
       "term": "Zouk Brasileiro vs Lambada",
       "short": "A Lambada é mais rápida e mais diretamente ligada ao seu contexto musical brasileiro histórico, enquanto o Zouk Brasileiro é geralmente mais lento, mais fluido e dançado com um vocabulário musical moderno mais amplo.",
-      "body": "As duas danças compartilham raízes, mas não são intercambiáveis. A Lambada enfatiza energia contínua, pulso rítmico próximo e giros rápidos. O Zouk Brasileiro preserva parte dessa história enquanto adiciona pausas, tempo elástico, ondas corporais, movimentos de cabeça controlados e interpretação em frases musicais mais longas."
+      "body": "As duas danças compartilham raízes, mas não são intercambiáveis. A Lambada enfatiza energia contínua, pulso rítmico próximo e giros rápidos. O Zouk Brasileiro preserva parte dessa história enquanto adiciona pausas, tempo elástico, ondas corporais, movimentos de cabeça controlados e interpretação em frases musicais mais longas. A música caribenha foi importante na transição histórica, mas hoje aparece com menos frequência em muitas pistas modernas de Zouk Brasileiro do que repertórios contemporâneos, edits e remixes."
     },
     "brazilianZoukVsKizomba": {
       "term": "Zouk Brasileiro vs Kizomba",
@@ -307,11 +307,11 @@
   "intro": {
     "what_is": {
       "q": "O que é o Zouk Brasileiro?",
-      "a": "O Zouk Brasileiro é uma dança a dois brasileira moderna, conhecida por movimento fluido, expressão da parte superior do corpo, tempo elástico e conexão musical profunda. Ele se desenvolveu a partir das raízes da Lambada quando dançarinos adaptaram esse vocabulário para músicas mais lentas de Zouk Caribenho e, depois, para uma variedade maior de faixas zoukáveis."
+      "a": "O Zouk Brasileiro é uma dança a dois brasileira moderna, conhecida por movimento fluido, expressão da parte superior do corpo, tempo elástico e conexão musical profunda. Ele se desenvolveu a partir das raízes da Lambada quando dançarinos adaptaram esse vocabulário para músicas mais lentas, incluindo o Zouk caribenho, e depois para uma variedade maior de faixas zoukáveis."
     },
     "dance_or_music": {
       "q": "Zouk Brasileiro é dança, gênero musical ou os dois?",
-      "a": "No comportamento de busca, a expressão aponta para os dois contextos. Estritamente, Zouk Brasileiro é a dança; musicalmente, dançarinos usam Zouk Caribenho, Zouk Love, R&B, edits de pop, faixas com influência de Kizomba, música eletrônica e remixes próprios para a pista."
+      "a": "No comportamento de busca, a expressão aponta para os dois contextos. Estritamente, Zouk Brasileiro é a dança; musicalmente, dançarinos podem usar Zouk caribenho, Zouk Love, R&B, edits de pop, faixas com influência de Kizomba, música eletrônica e remixes próprios para a pista. Em muitas festas atuais, o repertório contemporâneo aparece mais do que a música caribenha tradicional."
     },
     "differences": {
       "q": "Como ele difere do Zouk Caribenho, da Lambada e da Kizomba?",
