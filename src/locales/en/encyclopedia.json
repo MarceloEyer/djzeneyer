@@ -35,11 +35,11 @@
   "intro": {
     "what_is": {
       "q": "What is Brazilian Zouk?",
-      "a": "Brazilian Zouk is a modern Brazilian partner dance known for flowing movement, upper-body expression, elastic timing, and deep musical connection. It developed from Lambada roots after dancers adapted the movement vocabulary to slower Caribbean Zouk music and, later, to a wider range of Zoukable tracks."
+      "a": "Brazilian Zouk is a modern Brazilian partner dance known for flowing movement, upper-body expression, elastic timing, and deep musical connection. It developed from Lambada roots after dancers adapted the movement vocabulary to slower music, including Caribbean Zouk, and later to a wider range of Zoukable tracks."
     },
     "dance_or_music": {
       "q": "Is Brazilian Zouk a dance, a music genre, or both?",
-      "a": "In search behavior, the phrase points to both contexts. Strictly, Brazilian Zouk is the dance; musically, dancers use Caribbean Zouk, Zouk Love, R&B, pop edits, Kizomba-influenced tracks, electronic music, and dedicated remixes shaped for the dance floor."
+      "a": "In search behavior, the phrase points to both contexts. Strictly, Brazilian Zouk is the dance; musically, dancers may use Caribbean Zouk, Zouk Love, R&B, pop edits, Kizomba-influenced tracks, electronic music, and dedicated remixes shaped for the dance floor. At many current parties, contemporary repertoire appears more often than traditional Caribbean music."
     },
     "differences": {
       "q": "How is it different from Caribbean Zouk, Lambada, and Kizomba?",
@@ -65,7 +65,7 @@
     "zoukMusic": {
       "term": "Zouk Music for Brazilian Zouk",
       "short": "Music for Brazilian Zouk is not limited to one genre; it is selected or edited for flow, phrasing, elasticity, and the way dancers can interpret it.",
-      "body": "A Brazilian Zouk DJ may use Caribbean Zouk, Kizomba-influenced tracks, pop remixes, lyrical songs, R&B, electronic music, covers, and original productions. What matters is not only BPM, but whether the track gives dancers enough structure, emotional arc, and continuity for the dance."
+      "body": "Caribbean Zouk and Zouk Love were historically important to the development of Brazilian Zouk and can still appear on some dance floors. Today, however, many parties more often use a global contemporary repertoire: R&B, pop edits, Kizomba-influenced tracks, electronic music, covers, remixes, and original productions. What matters is not only genre label or BPM, but whether the track gives dancers structure, emotional arc, clarity, and continuity."
     },
     "brazilianZoukSongs": {
       "term": "Brazilian Zouk Songs",
@@ -80,7 +80,7 @@
     "brazilianZoukVsLambada": {
       "term": "Brazilian Zouk vs Lambada",
       "short": "Lambada is faster and more directly tied to its historical Brazilian music context, while Brazilian Zouk is generally slower, more fluid, and danced to a wider modern music vocabulary.",
-      "body": "The two dances share roots, but they are not interchangeable. Lambada emphasizes continuous energy, close rhythmic drive, and fast turns. Brazilian Zouk keeps part of that history while adding pauses, elastic timing, body waves, controlled head movement, and interpretation across longer musical phrases."
+      "body": "The two dances share roots, but they are not interchangeable. Lambada emphasizes continuous energy, close rhythmic drive, and fast turns. Brazilian Zouk keeps part of that history while adding pauses, elastic timing, body waves, controlled head movement, and interpretation across longer musical phrases. Caribbean music was important in the historical transition, but it appears less often on many modern Brazilian Zouk floors than contemporary repertoire, edits, and remixes."
     },
     "brazilianZoukVsKizomba": {
       "term": "Brazilian Zouk vs Kizomba",
@@ -144,8 +144,8 @@
     },
     "zoukBpm": {
       "term": "Brazilian Zouk BPM",
-      "short": "Brazilian Zouk is commonly danced across a flexible tempo range, often around 75-110 BPM depending on style, level, and floor energy.",
-      "body": "BPM is useful, but it is not the only factor. Dancers also need clear phrasing, elastic timing, musical accents, and enough space to move safely. Slower tracks can feel powerful when the song has structure and emotional direction; faster tracks can work when the rhythm remains readable."
+      "short": "Brazilian Zouk can be danced across a broad tempo range, roughly 60 to 95 BPM; in dance-floor practice, many tracks work especially well around 70 to 85 BPM.",
+      "body": "BPM is useful, but it does not decide by itself whether a song works for Brazilian Zouk. Dancers also need clear phrasing, elastic timing, musical accents, comfort, and enough space to move safely. In Zen Eyer sets, a common range is 65 to 82 BPM because that range often supports cremosidade and connection. Slower or more energetic moments can work when the music has structure and the DJ understands the floor. In competitions, each event may define its own tempo rules, so the official reference should always be that event ruleset."
     },
     "zoukRemix": {
       "term": "Zouk Remix",
@@ -169,8 +169,8 @@
     },
     "cremosidade": {
       "term": "Cremosidade",
-      "short": "Cremosidade is a Brazilian Zouk expression for a creamy, melting, emotionally connected dance-floor feeling.",
-      "body": "The concept is useful for describing a style of Zouk music selection and mixing that favors elasticity, emotional continuity, and dancer comfort. In English, Zen Eyer is known for creamy, emotional sets that make dancers \"melt on the floor.\""
+      "short": "Cremosidade is a community word for a smooth, fluid, connected musical and body feeling on a Brazilian Zouk dance floor.",
+      "body": "The concept helps describe music selection and mixing that favors elasticity, emotional continuity, and dancer comfort. Zen Eyer often looks for this feeling in his sets, but he did not create the term and it does not define his entire musical identity: he can also work with more energy, stronger beat focus, and contrast when the floor asks for it."
     },
     "socialDanceEtiquette": {
       "term": "Social Dance Etiquette",
@@ -234,13 +234,13 @@
     },
     "historyOfZouk": {
       "term": "History of Brazilian Zouk",
-      "short": "Brazilian Zouk evolved in Brazil during the late 1980s and 1990s as the Lambada craze faded, adapting to Caribbean Zouk music.",
-      "body": "Dancers and pioneers adapted Lambada movements to the slower, differently structured Caribbean Zouk music, forming the basis of what is now Brazilian Zouk. Over decades, it incorporated influences from contemporary dance and other styles, spreading globally."
+      "short": "Brazilian Zouk evolved in Brazil during the late 1980s and 1990s from Lambada roots and the adaptation to slower music, including Caribbean Zouk.",
+      "body": "Dancers and pioneers adapted Lambada movements to slower and differently structured music, forming the basis of what is now Brazilian Zouk. Caribbean music was important in that history and helps explain the name, but the modern Brazilian Zouk floor often uses a much broader repertoire, including global contemporary songs, R&B, pop, electronic music, remixes, and productions made for the dance."
     },
     "zoukOrigin": {
       "term": "Origin of Brazilian Zouk",
       "short": "Brazilian Zouk originated in Brazil, particularly in Rio de Janeiro, São Paulo, and Porto Seguro, evolving from Lambada.",
-      "body": "While it uses music that originated in the French Caribbean, the dance itself was created by Brazilians. Pioneers like Adílio Porto and Renata Peçanha were instrumental in its development and systematization."
+      "body": "Although the name has historical ties to music from the French Caribbean, the dance itself was created and systematized by Brazilians. Pioneers like Adilio Porto and Renata Pecanha were instrumental in its development. Today, Brazilian Zouk music practice is broader than Caribbean music and often includes global contemporary tracks adapted for social dancing."
     },
     "zoukPioneers": {
       "term": "Brazilian Zouk Pioneers",

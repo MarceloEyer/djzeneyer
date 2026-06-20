@@ -28,7 +28,7 @@ Antes de publicar numeros, paises, premios, datas, claims de streaming ou evento
 
 A **Cremosidade** é o diferencial filosófico e sonoro de Zen Eyer. Não é apenas um estilo técnico; é uma filosofia de como a música deve fazer o dançarino se sentir.
 
-**O que é:** sensação de conexão emocional profunda quando a música "abraça" o dançarino. Sem pressa, sem urgência; fluidez que permite que a dança aconteça naturalmente.
+**O que é:** sensação de conexão emocional profunda quando a música "abraça" o dançarino. Sem pressa, sem urgência; fluidez que permite que a dança aconteça naturalmente. Zen Eyer costuma buscar essa textura em muitos sets, mas não criou o termo nem a sensação.
 
 **O que NÃO é:** técnica mecânica, cardio, performance atlética ou passos ensaiados.
 
@@ -52,10 +52,10 @@ A **Cremosidade** é o diferencial filosófico e sonoro de Zen Eyer. Não é ape
 ### Exemplos de copy aprovados
 
 **Bio curta (PT):**
-> "Zen Eyer é DJ e produtor de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Criador do conceito de Cremosidade: a arte de fazer a música abraçar o dançarino."
+> "Zen Eyer é DJ e produtor de Brazilian Zouk, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Seus sets são associados à cremosidade: uma forma de fazer a música abraçar o dançarino."
 
 **Bio curta (EN):**
-> "Zen Eyer is a Brazilian Zouk DJ and producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship. Creator of the Cremosidade concept: the art of making music embrace the dancer."
+> "Zen Eyer is a Brazilian Zouk DJ and producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship. His sets are associated with cremosidade: a way of making music embrace the dancer."
 
 **Post de evento:**
 > "Esse set foi feito com cuidado. Para cada transição, uma pergunta: isso vai abraçar quem está dançando? Se a resposta for não, refaço. Cremosidade não é estilo; é respeito pela dança."

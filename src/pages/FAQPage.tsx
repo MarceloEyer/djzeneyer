@@ -4,7 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
-import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen, HeartPulse } from 'lucide-react';
+import { ChevronDown, Users, Award, Globe, Brain, Mic2, BookOpen } from 'lucide-react';
 import { ARTIST } from '../data/artistData';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
@@ -60,7 +60,7 @@ const FAQItem = memo<{
 ));
 FAQItem.displayName = 'FAQItem';
 
-const CATEGORIES = ['djzeneyer', 'rankings', 'technical', 'culture', 'community'];
+const CATEGORIES = ['djzeneyer', 'music', 'booking', 'community'];
 const FAQ_QUESTIONS = ['q1', 'q2', 'q3', 'q4', 'q5'];
 
 // ============================================================================
@@ -83,10 +83,9 @@ const FAQPage: React.FC = () => {
     title: t(`faq.categories.${cat}.title`),
     description: t(`faq.categories.${cat}.desc`),
     icon: cat === 'djzeneyer' ? <Award size={24} /> :
-      cat === 'rankings' ? <Globe size={24} /> :
-        cat === 'technical' ? <Brain size={24} /> :
-          cat === 'culture' ? <HeartPulse size={24} /> :
-            <Users size={24} />,
+      cat === 'music' ? <Brain size={24} /> :
+        cat === 'booking' ? <Globe size={24} /> :
+          <Users size={24} />,
     questions: FAQ_QUESTIONS
       .filter(qKey =>
         i18n.exists(`faq.categories.${cat}.${qKey}.q`, { ns: 'faq' }) &&

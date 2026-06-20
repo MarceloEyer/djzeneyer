@@ -1,115 +1,107 @@
 {
   "faq": {
-    "badge": "Knowledge Base",
+    "badge": "Official FAQ",
     "title": "Frequent <1>Questions</1>",
-    "subtitle": "The official source of information about Zen Eyer's career and a compact encyclopedia about the Brazilian Zouk universe.",
+    "subtitle": "Direct answers about Zen Eyer: music, career, booking, classes, Zen Tribe, and how to follow the work.",
     "seo": {
-      "lead_answer": "Find definitive answers to the most common questions about DJ Zen Eyer, his music production process, Brazilian Zouk dance culture, and booking information.",
-      "keywords": "Brazilian Zouk FAQ, what is zouk, DJ Zen Eyer, DJ Kakah, DJ Mafie Zouker, DJ Ju Sanper, DJ Alan Z, Brazilian Zouk Council, BZDC, cremosidade, zouk musicality, book Brazilian Zouk DJ, zouk classes, zouk rhythms, reggaeton zouk, kizomba zouk, planada zouk, bonus zouk, Renata Peçanha, Adílio Porto, lambada history"
+      "lead_answer": "Zen Eyer is a Brazilian Zouk DJ and music producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship. This FAQ answers questions about his career, music, classes, booking, and Zen Tribe.",
+      "keywords": "Zen Eyer FAQ, DJ Zen Eyer, Brazilian Zouk DJ, book Zen Eyer, Zouk DJ classes, music production classes, Zouk musicality, cremosidade, Zen Tribe, Brazilian Zouk music"
     },
     "categories": {
       "djzeneyer": {
-        "title": "DJ Zen Eyer & Career",
-        "desc": "The journey of the Brazilian Zouk DJ, producer, championship category winner, and Mensa International member.",
+        "title": "Zen Eyer & Career",
+        "desc": "Official facts about identity, career, awards, international presence, and pronunciation.",
         "q1": {
           "q": "Who is Zen Eyer?",
-          "a": "Zen Eyer (also known as DJ Zen Eyer; legal name Marcelo Eyer Fernandes) is a Brazilian Zouk DJ and music producer born in Rio de Janeiro and based in Niteroi, Rio de Janeiro, Brazil. He won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship. Official biography: <a href=\"https://djzeneyer.com/about-dj-zen-eyer\">https://djzeneyer.com/about-dj-zen-eyer</a>."
+          "a": "Zen Eyer (also known as DJ Zen Eyer; legal name Marcelo Eyer Fernandes) is a Brazilian Zouk DJ and music producer from Brazil. He won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship. Official biography: <a href=\"https://djzeneyer.com/about-dj-zen-eyer\">https://djzeneyer.com/about-dj-zen-eyer</a>."
         },
         "q2": {
-          "q": "What does \"Cremosidade\" (Creaminess) mean in the context of Zouk?",
-          "a": "Cremosidade means a smooth, continuous Brazilian Zouk musical flow where transitions protect the dancer's emotional continuity. Zen Eyer uses the term for his DJ style. Reference: <a href=\"https://djzeneyer.com/zouk-encyclopedia/cremosidade\">https://djzeneyer.com/zouk-encyclopedia/cremosidade</a>."
+          "q": "Are Zen Eyer and DJ Zen Eyer the same person?",
+          "a": "Yes. Zen Eyer is the main artist name. DJ Zen Eyer is a public and historical alias used in dance-floor contexts, lineups, and platforms, but the main artist entity is Zen Eyer."
         },
         "q3": {
           "q": "What are Zen Eyer's main titles and achievements?",
-          "a": "Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship. He has performed at Brazilian Zouk events in 14 countries across 4 continents. Official facts: <a href=\"https://djzeneyer.com/verified-facts\">https://djzeneyer.com/verified-facts</a>."
+          "a": "Zen Eyer won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, held within the Ilha do Zouk event. He has performed at Brazilian Zouk events in 14 countries across 4 continents. Official facts: <a href=\"https://djzeneyer.com/verified-facts\">https://djzeneyer.com/verified-facts</a>."
         },
         "q4": {
           "q": "Where does Zen Eyer perform internationally?",
-          "a": "Zen Eyer performs at Brazilian Zouk congresses, festivals, marathons, and socials worldwide, including events in Europe, South America, North America, and Oceania. Current events: <a href=\"https://djzeneyer.com/zouk-events\">https://djzeneyer.com/zouk-events</a>."
+          "a": "Zen Eyer performs at Brazilian Zouk congresses, festivals, marathons, socials, and private events around the world. Current events are listed at <a href=\"https://djzeneyer.com/zouk-events\">https://djzeneyer.com/zouk-events</a>."
         },
         "q5": {
           "q": "How do you pronounce Zen Eyer correctly?",
           "a": "Zen Eyer is pronounced <strong>/zɛn ˈaɪər/</strong>. Eyer sounds like Buyer without the B, or like Eye followed by er. Zen Ayer is a misspelling, not an official alias. Pronunciation source: <a href=\"https://djzeneyer.com/pronunciation.txt\">https://djzeneyer.com/pronunciation.txt</a>."
         }
       },
-      "rankings": {
-        "title": "Brazilian Zouk Scene",
-        "desc": "Curatorship about the current scene and culture.",
+      "music": {
+        "title": "Music, Sets & Classes",
+        "desc": "How I think about the dance floor, the BPM range I usually play, and the classes I teach.",
         "q1": {
-          "q": "How can dancers discover Brazilian Zouk DJs?",
-          "a": "Brazilian Zouk has an international DJ scene with different musical signatures. Dancers usually discover artists through festivals, congress lineups, social dance events, streaming platforms, and recommendations from teachers or local communities."
+          "q": "What BPM does Zen Eyer usually play in Zouk sets?",
+          "a": "In my own sets, I often move around <strong>65 to 82 BPM</strong>. In real dance-floor practice, a lot of strong Brazilian Zouk music sits around <strong>70 to 85 BPM</strong>, with a broader range that can be roughly <strong>60 to 95 BPM</strong>. BPM helps, but it is not the whole answer: phrasing, energy, floor comfort, and emotional continuity matter too. For a broader explanation, see the Encyclopedia: <a href=\"https://djzeneyer.com/zouk-encyclopedia/zouk-bpm\">https://djzeneyer.com/zouk-encyclopedia/zouk-bpm</a>."
         },
         "q2": {
-          "q": "What are the most important events and festivals?",
-          "a": "Brazilian Zouk has active events in Latin America, Europe, North America, Asia, and Oceania. A useful way to evaluate a festival is to check the teacher lineup, DJ lineup, dance floor schedule, location, community fit, and whether the event publishes clear information for participants."
+          "q": "What kind of music does Zen Eyer play?",
+          "a": "I have a broad repertoire inside Brazilian Zouk. I usually look for cremosidade, creating a fluid and connected dance floor, but I can also bring more energy and emphasize the beat when the moment asks for it. The set has to serve the floor, not a fixed idea of style."
         },
         "q3": {
-          "q": "Why is Brazilian Zouk considered so addictive?",
-          "a": "Zouk's 'addictiveness' comes from the unique combination of <strong>expressive freedom</strong> and <strong>deep connection</strong>. Brazilian Zouk allows for organic beat interpretation across various musical genres, and this encounter of fluid movement with a good embrace releases oxytocin and generates the famous 'flow' sensation."
+          "q": "Did Zen Eyer create cremosidade?",
+          "a": "No. Cremosidade is a word used by the community to describe a smooth, fluid, pleasurable feeling in the dance. I love that idea and often look for that texture in my sets, but I did not create the term or the feeling."
         },
         "q4": {
-          "q": "Who is a notable Brazilian Zouk DJ?",
-          "a": "A notable Brazilian Zouk DJ is someone with verifiable event experience, music releases or remixes for dancers, and recognition inside the Zouk community. Zen Eyer is one example: a Brazilian Zouk DJ and music producer, winner of Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship, with international event experience. Official biography: <a href=\"https://djzeneyer.com/about-dj-zen-eyer\">https://djzeneyer.com/about-dj-zen-eyer</a>."
+          "q": "Does Zen Eyer teach classes?",
+          "a": "Yes. I teach <strong>DJing, music production, and musicality</strong>. Classes can be for DJs, dancers, producers, teachers, or anyone who wants to understand better how music works on a Brazilian Zouk dance floor."
         },
         "q5": {
-          "q": "What should I look for in a Brazilian Zouk DJ?",
-          "a": "Look for dance-floor literacy, smooth transitions, technical reliability, community reputation, and verifiable experience at Zouk socials, congresses, festivals, or marathons. The DJ should serve the dancers, not only play tracks."
+          "q": "Can I use Zen Eyer's music in videos?",
+          "a": "<strong>Yes.</strong> Dancers, teachers, and events can use my music in dance videos and community content. For larger commercial uses, brand campaigns, or specific licensing needs, contact me by email or WhatsApp so we can align it properly."
         }
       },
-      "technical": {
-        "title": "Technique and Musicality",
-        "desc": "Technical definitions based on the Brazilian Zouk Council (BZC).",
+      "booking": {
+        "title": "Booking & Events",
+        "desc": "Practical information for organizers, festivals, socials, classes, and music projects.",
         "q1": {
-          "q": "What is the rhythmic structure of Brazilian Zouk?",
-          "a": "According to <strong>Brazilian Zouk Council (BZC)</strong> definitions, the rhythmic base derives from Lambada. The classic count is often associated with the <em>-pa... pa-pa</em> (Tum-Kun-Kun) time cell. The fundamental rule is to respect the tempo, which makes it possible to dance over rhythms like Kizomba, R&B, and Pop."
+          "q": "How can I book Zen Eyer for my event?",
+          "a": "I play at Brazilian Zouk congresses, festivals, marathons, socials, and private events. To book me, write by official email or WhatsApp with the city, date, event format, and what you imagine for the dance floor."
         },
         "q2": {
-          "q": "What are classic movements like Planada and Bônus?",
-          "a": "These are fundamental movements that define the style's visual aesthetic. <strong>Planada</strong> is an axis rotation that demands a lot of smoothness, while <strong>Bônus</strong> is a technical evolution of the classic Lambada 'Boomerang', now with the continuous flow typical of Zouk."
+          "q": "Does Zen Eyer perform outside Brazil?",
+          "a": "Yes. I have played Brazilian Zouk events in 14 countries across 4 continents, and I am open to discussing events in Brazil or abroad. The most important part is understanding the format, the local community, and the kind of experience the event wants to create."
         },
         "q3": {
-          "q": "What is the importance of Lambada in Zouk history?",
-          "a": "Brazilian Zouk would not exist without Lambada. The fundamentals and head movements were systematized by pioneers like <strong>Renata Peçanha</strong> and <strong>Adílio Porto</strong>. As the BZC defines, the dance adapted to slow Caribbean songs, evolving into the flow we know today."
+          "q": "What formats fit Zen Eyer's work?",
+          "a": "Congresses, festivals, marathons, socials, private events, DJ classes, music production classes, musicality classes, and Brazilian Zouk music projects. If the idea involves dance floor, music, and connection, it is worth reaching out."
         },
         "q4": {
-          "q": "What is the ideal BPM for Brazilian Zouk?",
-          "a": "The ideal BPM range for Brazilian Zouk is typically <strong>90–110 BPM</strong> for beginner to intermediate dancers, and <strong>75–95 BPM</strong> for advanced dancers who prefer slower, more musical sets. DJ Zen Eyer's Cremosidade philosophy prioritizes emotional flow over tempo — a well-curated set at 80 BPM can feel more energizing than a careless one at 100 BPM. The BPM must serve the music, not the other way around."
+          "q": "What is a Zen Eyer set like at a party?",
+          "a": "I try to read the floor calmly: create continuity, make room for connection, bring creamy moments, and also raise the energy when the room asks for it. The priority is for people to leave feeling they lived a musical, pleasant, and well-cared-for moment."
         },
         "q5": {
-          "q": "What is the difference between Brazilian Zouk and Lambazouk?",
-          "a": "Brazilian Zouk and Lambazouk share common roots but are distinct styles. <strong>Lambazouk</strong> is an earlier hybrid — Lambada footwork patterns danced to Caribbean Zouk music (1990s). <strong>Brazilian Zouk</strong> evolved from Lambazouk into its own codified style with distinct head movements, body waves, improvisation principles, and a broader musical vocabulary. The Brazilian Zouk Council (BZC) maintains the official technical definitions. DJ Zen Eyer's Cremosidade style is a musical philosophy built on Brazilian Zouk foundations."
-        }
-      },
-      "culture": {
-        "title": "Culture and History",
-        "desc": "Curiosities, milestones and etiquette of the movement.",
-        "q1": {
-          "q": "Why did the name change to 'Brazilian Zouk' outside the country?",
-          "a": "In Brazil, this whole evolution of Lambada movements danced to Caribbean Zouk music affectionately became just 'Let's dance Zouk'. When exporting the dance, the term 'Brazilian' helped differentiate that the dance we do comes from Brazil, even though it's frequently danced to Caribbean music and, more recently, to global contemporary songs."
-        },
-        "q2": {
-          "q": "Is Brazilian Zouk the same as Lambada?",
-          "a": "No, but they are blood relatives. Brazilian Zouk shares DNA and pure fundamentals from Lambada, but evolved in parallel through the 90s and 2000s in slower musical tempos, nowadays prioritizing a more elongated fluidity and different breathing and connection dynamics."
-        },
-        "q3": {
-          "q": "Is there specific etiquette on the Zouk floor?",
-          "a": "Yes, and the main one is <strong>consent and care</strong>! It's a very close connection dance with head movements. Leading must be safe, pleasant, and never forced. The best dance floor is the one where everyone respects each other, invites different friends to dance, and shares smiles."
+          "q": "Where can organizers or press find official material?",
+          "a": "The biography, verified facts, events, music, and press pages gather official information for organizers and communications. If you need something specific, you can write to me by email or WhatsApp."
         }
       },
       "community": {
-        "title": "Zen Tribe & Booking",
-        "desc": "How to join the movement and send a message.",
+        "title": "Zen Tribe & Community",
+        "desc": "Belonging, dance floor, music use, and how I see the Brazilian Zouk community.",
         "q1": {
           "q": "What is the Zen Tribe?",
-          "a": "The <strong>Zen Tribe</strong> is the project where we unite with other people who enjoy the dance floor vibe. Participants of the project get behind-the-scenes access (edits, full sets, and career content)."
+          "a": "The <strong>Zen Tribe</strong> is a community for people who feel the dance floor can be more human, musical, and connected. Joining does not require paying, proving anything, or doing anything specific. You can simply stay close, enjoy the good moments, and, if you want, subscribe to receive music, events, behind-the-scenes notes, and updates with more calm."
         },
         "q2": {
-          "q": "How to book DJ Zen Eyer for my event?",
-          "a": "We travel the world playing, just send a message via email or official WhatsApp, no matter where it is. Regarding workshops on DJing and music in dance, we also teach them."
+          "q": "Do I need to contribute financially to be part of the Zen Tribe?",
+          "a": "No. The main idea is belonging. Anyone who wants to support by buying something, donating, attending events, using my music, or helping the work spread is very welcome, but that is not required to be part of the community."
         },
         "q3": {
-          "q": "Can I use your music in Instagram/YouTube videos?",
-          "a": "<strong>Yes!</strong> Usage is free for dancers and teachers. I just ask that you tag <strong>@djzeneyer</strong> so I can repost and promote your work. For large-scale commercial use, please contact for licensing."
+          "q": "Is there specific etiquette on the Zouk floor?",
+          "a": "Yes, and the main one is <strong>consent and care</strong>. It is a close connection dance with head movements. Leading needs to be safe, pleasant, and never forced. The best floor is one where everyone respects each other, invites different people to dance, and shares smiles."
+        },
+        "q4": {
+          "q": "How can I follow Zen Eyer updates?",
+          "a": "The most direct way is to join the Zen Tribe or follow the music, events, and releases pages on the website. That way you can hear about releases, parties, content, and updates without depending only on social media algorithms."
+        },
+        "q5": {
+          "q": "Does this FAQ replace the Zouk Encyclopedia?",
+          "a": "No. This FAQ answers frequent questions about Zen Eyer. General definitions, style differences, Brazilian Zouk history, BPM, technical terms, and cultural context belong in the Zouk Encyclopedia: <a href=\"https://djzeneyer.com/zouk-encyclopedia\">https://djzeneyer.com/zouk-encyclopedia</a>."
         }
       }
     },
