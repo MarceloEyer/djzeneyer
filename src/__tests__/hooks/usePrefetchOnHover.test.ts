@@ -11,13 +11,14 @@ vi.mock('../../config/queryClient', () => ({
     events: { list: (params: unknown) => ['events', params] },
     posts: { list: (lang: string) => ['posts', lang] },
     products: { list: (lang: string) => ['products', lang] },
+    shop: { page: (lang: string) => ['shop', lang] },
   },
 }));
 
 vi.mock('../../hooks/useQueries', () => ({
   fetchEventsFn: vi.fn(),
   fetchNewsFn: vi.fn(),
-  fetchProductsFn: vi.fn(),
+  fetchShopPageFn: vi.fn(),
 }));
 
 describe('usePrefetchOnHover', () => {
@@ -55,7 +56,7 @@ describe('usePrefetchOnHover', () => {
     result.current('/en/shop');
     expect(queryClient.prefetchQuery).toHaveBeenCalledWith(
       expect.objectContaining({
-        queryKey: ['products', 'en'],
+        queryKey: ['shop', 'en'],
       })
     );
   });
