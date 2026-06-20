@@ -338,6 +338,11 @@ export const fetchProductsFn = async (
   lang?: string,
   filters: Record<string, string> = {}
 ): Promise<WCProduct[]> => {
+  if (Object.keys(filters).length === 0) {
+    const shopPage = await fetchShopPageFn(lang);
+    return flattenShopPageProducts(shopPage);
+  }
+
   try {
     const params: Record<string, string> = { per_page: '100', ...filters };
     if (lang) params.lang = lang;
@@ -365,6 +370,15 @@ export const fetchProductFn = async (lang?: string, slug?: string): Promise<WCPr
 };
 
 export const fetchProductWithFallbackFn = async (lang?: string, slug?: string): Promise<WCProductDetail | null> => {
+  if (!slug) return null;
+
+  try {
+    const shopPageProduct = findProductInShopPage(await fetchShopPageFn(lang), slug);
+    if (shopPageProduct) return shopPageProduct as WCProductDetail;
+  } catch (error) {
+    logger.error('PRODUCT_DETAIL_SHOP_PAGE_FALLBACK_FAILED', 'Failed to fetch product from shop page data', { error: String(error), slug, lang });
+  }
+
   try {
     const localizedProduct = await fetchProductFn(lang, slug);
     if (localizedProduct || !lang?.toLowerCase().startsWith('pt')) return localizedProduct;
@@ -380,7 +394,7 @@ export const fetchProductWithFallbackFn = async (lang?: string, slug?: string): 
   }
 
   const shopPage = await fetchShopPageFn(lang);
-  return flattenShopPageProducts(shopPage).find(product => product.slug === slug) as WCProductDetail | undefined ?? null;
+  return findProductInShopPage(shopPage, slug) as WCProductDetail | null;
 };
 
 export const fetchProductCollectionsFn = async (
@@ -557,6 +571,9 @@ const flattenShopPageProducts = (shopPage: ShopPageViewModel): WCProduct[] => {
 
   return Array.from(productsById.values());
 };
+
+const findProductInShopPage = (shopPage: ShopPageViewModel, slug: string): WCProduct | null =>
+  flattenShopPageProducts(shopPage).find(product => product.slug === slug) ?? null;
 
 export const useShopPageQuery = (lang?: string) =>
   useQuery<ShopPageViewModel>({

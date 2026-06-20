@@ -54,7 +54,9 @@ describe('usePublicQueries extended fetchers', () => {
 
   it('fetchProductsFn', async () => {
     server.use(
-      http.get('*/djzeneyer/v1/products', () => HttpResponse.json([{ id: 100 }]))
+      http.get('*/djzeneyer/v1/shop/page', () => HttpResponse.json({
+        new_releases: [{ id: 100, slug: 'shop-product' }],
+      }))
     );
     const data = await fetchProductsFn('en');
     expect(data[0].id).toBe(100);
@@ -68,9 +70,9 @@ describe('usePublicQueries extended fetchers', () => {
     expect(data?.id).toBe(101);
   });
 
-  it('fetchProductsFn falls back to shop page products when product list fails', async () => {
+  it('fetchProductsFn uses shop page products without calling the unstable product list', async () => {
     server.use(
-      http.get('*/djzeneyer/v1/products', () => HttpResponse.text('critical error', { status: 500 })),
+      http.get('*/djzeneyer/v1/products', () => HttpResponse.text('should not be called', { status: 500 })),
       http.get('*/djzeneyer/v1/shop/page', () => HttpResponse.json({
         new_releases: [{ id: 102, slug: 'fallback-product' }],
         best_sellers: [{ id: 102, slug: 'fallback-product' }],
@@ -80,9 +82,9 @@ describe('usePublicQueries extended fetchers', () => {
     expect(data).toEqual([{ id: 102, slug: 'fallback-product' }]);
   });
 
-  it('fetchProductWithFallbackFn falls back to shop page product data', async () => {
+  it('fetchProductWithFallbackFn uses shop page product data before the unstable product detail endpoint', async () => {
     server.use(
-      http.get('*/djzeneyer/v1/products', () => HttpResponse.text('critical error', { status: 500 })),
+      http.get('*/djzeneyer/v1/products', () => HttpResponse.text('should not be called', { status: 500 })),
       http.get('*/djzeneyer/v1/shop/page', () => HttpResponse.json({
         new_releases: [{ id: 103, slug: 'fallback-detail' }],
       }))
