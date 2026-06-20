@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { queryClient, QUERY_KEYS } from '../config/queryClient';
-import { fetchEventsFn, fetchNewsFn, fetchProductsFn } from './useQueries';
+import { fetchEventsFn, fetchNewsFn, fetchShopPageFn } from './useQueries';
 
 /**
  * Custom hook to prefetch data on hover based on the URL.
@@ -30,8 +30,8 @@ export const usePrefetchOnHover = () => {
         // 3. Shop Page
         else if (lowerUrl.includes('shop') || lowerUrl.includes('loja')) {
             queryClient.prefetchQuery({
-                queryKey: QUERY_KEYS.products.list(lang),
-                queryFn: () => fetchProductsFn(lang)
+                queryKey: QUERY_KEYS.shop.page(lang),
+                queryFn: () => fetchShopPageFn(lang)
             });
         }
     }, []);

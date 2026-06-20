@@ -338,13 +338,19 @@ export const fetchProductsFn = async (
   lang?: string,
   filters: Record<string, string> = {}
 ): Promise<WCProduct[]> => {
-  const params: Record<string, string> = { per_page: '100', ...filters };
-  if (lang) params.lang = lang;
-  const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
-  const res = await fetch(apiUrl);
-  if (!res.ok) throw new Error('Failed to fetch products');
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
+  try {
+    const params: Record<string, string> = { per_page: '100', ...filters };
+    if (lang) params.lang = lang;
+    const apiUrl = buildApiUrl('djzeneyer/v1/products', params);
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error('Failed to fetch products');
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (error) {
+    logger.error('PRODUCTS_FETCH_FAILED', 'Falling back to shop page products', { error: String(error) });
+    const shopPage = await fetchShopPageFn(lang);
+    return flattenShopPageProducts(shopPage);
+  }
 };
 
 export const fetchProductFn = async (lang?: string, slug?: string): Promise<WCProductDetail | null> => {
@@ -363,10 +369,18 @@ export const fetchProductWithFallbackFn = async (lang?: string, slug?: string): 
     const localizedProduct = await fetchProductFn(lang, slug);
     if (localizedProduct || !lang?.toLowerCase().startsWith('pt')) return localizedProduct;
   } catch (error) {
-    if (!lang?.toLowerCase().startsWith('pt')) throw error;
+    logger.error('PRODUCT_DETAIL_FETCH_FAILED', 'Failed to fetch localized product data', { error: String(error), slug, lang });
   }
 
-  return fetchProductFn('en', slug);
+  try {
+    const fallbackProduct = await fetchProductFn('en', slug);
+    if (fallbackProduct) return fallbackProduct;
+  } catch (error) {
+    logger.error('PRODUCT_DETAIL_FETCH_FAILED', 'Falling back to shop page product data', { error: String(error), slug });
+  }
+
+  const shopPage = await fetchShopPageFn(lang);
+  return flattenShopPageProducts(shopPage).find(product => product.slug === slug) as WCProductDetail | undefined ?? null;
 };
 
 export const fetchProductCollectionsFn = async (
@@ -520,15 +534,34 @@ export const useEventById = (
   });
 };
 
+export const fetchShopPageFn = async (lang?: string): Promise<ShopPageViewModel> => {
+  const apiUrl = buildApiUrl('djzeneyer/v1/shop/page', { lang: lang || 'en' });
+  const res = await fetch(apiUrl);
+  if (!res.ok) throw new Error('Failed to fetch shop page view-model');
+  return res.json();
+};
+
+const flattenShopPageProducts = (shopPage: ShopPageViewModel): WCProduct[] => {
+  const productsById = new Map<number, WCProduct>();
+
+  const addProduct = (product?: WCProduct | null) => {
+    if (product?.id) productsById.set(product.id, product);
+  };
+
+  addProduct(shopPage.featured as WCProduct | null | undefined);
+  shopPage.products?.forEach(addProduct);
+  shopPage.new_releases?.forEach(addProduct);
+  shopPage.best_sellers?.forEach(addProduct);
+  shopPage.curated?.forEach(addProduct);
+  shopPage.collections?.forEach(collection => collection.products?.forEach(addProduct));
+
+  return Array.from(productsById.values());
+};
+
 export const useShopPageQuery = (lang?: string) =>
   useQuery<ShopPageViewModel>({
     queryKey: QUERY_KEYS.shop.page(lang),
-    queryFn: async (): Promise<ShopPageViewModel> => {
-      const apiUrl = buildApiUrl('djzeneyer/v1/shop/page', { lang: lang || 'en' });
-      const res = await fetch(apiUrl);
-      if (!res.ok) throw new Error('Failed to fetch shop page view-model');
-      return res.json();
-    },
+    queryFn: () => fetchShopPageFn(lang),
     staleTime: STALE_TIME.PRODUCTS,
   });
 

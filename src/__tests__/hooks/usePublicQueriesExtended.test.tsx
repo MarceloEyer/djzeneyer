@@ -8,7 +8,9 @@ import {
   fetchNewsFn,
   fetchProductsFn,
   fetchProductFn,
+  fetchProductWithFallbackFn,
   fetchProductCollectionsFn,
+  fetchShopPageFn,
   useZenSeoSettings,
   useNewsBySlug,
   useShopPageQuery,
@@ -66,12 +68,43 @@ describe('usePublicQueries extended fetchers', () => {
     expect(data?.id).toBe(101);
   });
 
+  it('fetchProductsFn falls back to shop page products when product list fails', async () => {
+    server.use(
+      http.get('*/djzeneyer/v1/products', () => HttpResponse.text('critical error', { status: 500 })),
+      http.get('*/djzeneyer/v1/shop/page', () => HttpResponse.json({
+        new_releases: [{ id: 102, slug: 'fallback-product' }],
+        best_sellers: [{ id: 102, slug: 'fallback-product' }],
+      }))
+    );
+    const data = await fetchProductsFn('pt');
+    expect(data).toEqual([{ id: 102, slug: 'fallback-product' }]);
+  });
+
+  it('fetchProductWithFallbackFn falls back to shop page product data', async () => {
+    server.use(
+      http.get('*/djzeneyer/v1/products', () => HttpResponse.text('critical error', { status: 500 })),
+      http.get('*/djzeneyer/v1/shop/page', () => HttpResponse.json({
+        new_releases: [{ id: 103, slug: 'fallback-detail' }],
+      }))
+    );
+    const data = await fetchProductWithFallbackFn('pt', 'fallback-detail');
+    expect(data?.id).toBe(103);
+  });
+
   it('fetchProductCollectionsFn', async () => {
     server.use(
       http.get('*/djzeneyer/v1/products/collections', () => HttpResponse.json([{ id: 1 }]))
     );
     const data = await fetchProductCollectionsFn('en');
     expect(data).toHaveLength(1);
+  });
+
+  it('fetchShopPageFn', async () => {
+    server.use(
+      http.get('*/djzeneyer/v1/shop/page', () => HttpResponse.json({ new_releases: [{ id: 3 }] }))
+    );
+    const data = await fetchShopPageFn('pt');
+    expect(data.new_releases?.[0].id).toBe(3);
   });
 });
 
