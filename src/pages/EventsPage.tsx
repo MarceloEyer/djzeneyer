@@ -4,7 +4,7 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { useParams, Link, generatePath } from 'react-router-dom';
 import { normalizeLanguage, getLocalizedRoute, type Language } from '../config/routes';
-import { useEventsQuery, useEventById } from '../hooks/useQueries';
+import { extractLastPathSegment, useEventsQuery, useEventById } from '../hooks/useQueries';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { extractRegions, filterEventsByRegion, groupEventsByMonth, getPlainTitle } from '../utils/events';
@@ -271,7 +271,6 @@ const EventListContent = ({ lang }: { lang: string }) => {
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
-          // ⚡ Bolt: Prevented Array allocation inside render loop, utilizing O(1) string slices
           const y = key.slice(0, 4);
           const m = key.slice(5, 7);
 
@@ -285,10 +284,9 @@ const EventListContent = ({ lang }: { lang: string }) => {
               </h2>
               <div className="space-y-3">
                 {monthEvents.map((e) => {
-                  // ⚡ Bolt: Prevented Date instantiation inside rendering loop, utilizing O(1) string slice
                   const dayStr = e.starts_at && e.starts_at.length >= 10 ? e.starts_at.substring(8, 10) : '??';
                   const identifier = e.canonical_path
-                    ? (e.canonical_path.lastIndexOf('/') !== -1 ? e.canonical_path.substring(e.canonical_path.lastIndexOf('/') + 1) : e.canonical_path) || e.event_id
+                    ? extractLastPathSegment(e.canonical_path) || e.event_id
                     : e.event_id;
 
                   const detailHref = e._processed?.detailHref || generatePath(eventsDetailRoute, { id: identifier });
