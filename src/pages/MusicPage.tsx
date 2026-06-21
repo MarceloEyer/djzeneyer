@@ -15,6 +15,7 @@ import { MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { DISCOGRAPHY } from '../data/artist.discography';
 import { safeUrl } from '../utils/sanitize';
 import { buildReleaseCards, buildDiscographyListItems } from '../utils/music';
+import { getDateTimeFormatter } from '../utils/date';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -66,6 +67,16 @@ const SECONDARY_PLATFORMS = [
     color: 'hover:bg-[#FF0000]/20 border-[#FF0000]/20 hover:border-[#FF0000]/50',
   },
 ];
+
+const formatReleaseListDate = (releaseDate: string | undefined, lang: string): string => {
+  if (!releaseDate) return '';
+  return getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  }).format(new Date(releaseDate));
+};
 
 const MusicPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -283,36 +294,33 @@ const MusicPage: React.FC = () => {
                   <p className="mt-1 text-sm text-white/50">{t('music.releases_subtitle')}</p>
                 </div>
                 <Link to={getLocalizedRoute('news', currentLang)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
-                  <Trans i18nKey="news.title">
-                    Releases &amp; <span>Notes</span>
-                  </Trans>
+                  {t('music.releases_archive_link')}
                   <ExternalLink size={14} />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="overflow-hidden rounded-2xl border border-white/10 bg-surface/25">
                 {releaseCards.map((release) => (
                   <Link
                     key={release.id}
                     to={release.path}
-                    className="group flex min-h-[132px] gap-4 rounded-2xl border border-white/10 bg-surface/35 p-4 transition-colors hover:border-primary/50 hover:bg-surface/60"
+                    className="group flex items-center justify-between gap-4 border-b border-white/10 px-4 py-4 transition-colors last:border-b-0 hover:bg-surface/55 sm:px-5"
                   >
-                    <img
-                      src={safeUrl(release.image, '/images/zen-eyer-og-image.png')}
-                      alt={release.name}
-                      className="h-24 w-24 flex-none rounded-xl object-cover"
-                      width="96"
-                      height="96"
-                      loading="lazy"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-primary/10 px-2 py-1 text-[11px] font-bold uppercase tracking-wider text-primary">
-                        {t(`music.release_type.${release.type}`, { defaultValue: release.type })}
+                    <div className="min-w-0">
+                      <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold uppercase tracking-wider text-primary">
+                        <span>{t(`music.release_type.${release.type}`, { defaultValue: release.type })}</span>
+                        {release.releaseDate && (
+                          <span className="text-white/40">
+                            {formatReleaseListDate(release.releaseDate, currentLang)}
+                          </span>
+                        )}
                       </div>
-                      <h3 className="line-clamp-2 text-lg font-black text-white transition-colors group-hover:text-primary">
+                      <h3 className="truncate text-base font-black text-white transition-colors group-hover:text-primary sm:text-lg">
                         {release.name}
                       </h3>
-                      <p className="mt-2 text-sm text-white/50">{t('music.read_release')}</p>
                     </div>
+                    <span className="hidden shrink-0 text-sm font-bold text-white/35 transition-colors group-hover:text-primary sm:inline">
+                      {t('music.read_release')}
+                    </span>
                   </Link>
                 ))}
               </div>

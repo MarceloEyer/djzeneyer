@@ -129,13 +129,13 @@ describe('MusicPage — render', () => {
     expect(names.some((n) => n.includes('YouTube'))).toBe(true);
   });
 
-  it('renders release cards as links for each DISCOGRAPHY entry', () => {
+  it('renders release list items as links for each DISCOGRAPHY entry', () => {
     renderPage();
     const links = screen.getAllByRole('link');
     expect(links.length).toBeGreaterThanOrEqual(DISCOGRAPHY.length);
   });
 
-  it('renders release card with name of first DISCOGRAPHY entry', () => {
+  it('renders release list item with name of first DISCOGRAPHY entry', () => {
     renderPage();
     expect(screen.getByText(DISCOGRAPHY[0].name)).toBeDefined();
   });
