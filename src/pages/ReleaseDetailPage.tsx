@@ -49,6 +49,19 @@ const getMusicBrainzReleaseId = (url?: string): string | null => {
   return match?.[1] ?? null;
 };
 
+const getReleaseLanguageCode = (language: string | undefined, fallbackLang: 'en' | 'pt'): string => {
+  if (!language) return fallbackLang === 'pt' ? 'pt-BR' : 'en';
+
+  const normalized = language.trim().toLowerCase();
+  const languageCodes: Record<string, string> = {
+    english: 'en',
+    portuguese: 'pt-BR',
+    spanish: 'es',
+  };
+
+  return languageCodes[normalized] ?? language;
+};
+
 const PLATFORMS = [
   { key: 'spotifyUrl', label: 'Spotify', color: '#1DB954' },
   { key: 'appleMusicUrl', label: 'Apple Music', color: '#FA243C' },
@@ -123,6 +136,11 @@ const ReleaseDetailPage: React.FC = () => {
     const streamingLinks = PLATFORMS
       .map((p) => release[p.key as keyof typeof release])
       .filter((v): v is string => typeof v === 'string');
+    const identifiers = [
+      release.barcode ? { '@type': 'PropertyValue', propertyID: 'UPC', value: release.barcode } : null,
+      release.catalogNumber ? { '@type': 'PropertyValue', propertyID: 'Catalog number', value: release.catalogNumber } : null,
+    ].filter(Boolean);
+    const releaseLanguageCode = getReleaseLanguageCode(release.language, lang);
 
     return {
       '@context': 'https://schema.org',
@@ -136,10 +154,11 @@ const ReleaseDetailPage: React.FC = () => {
           ...(release.releaseYear && !release.releaseDate ? { datePublished: release.releaseYear } : {}),
           image: release.image,
           ...(releaseDescription ? { description: releaseDescription } : {}),
-          inLanguage: lang === 'pt' ? 'pt-BR' : 'en',
+          inLanguage: releaseLanguageCode,
           byArtist: release.byArtist ?? { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
           ...(release.contributor ? { contributor: release.contributor } : {}),
-          ...(release.barcode ? { identifier: { '@type': 'PropertyValue', propertyID: 'Barcode', value: release.barcode } } : {}),
+          ...(release.labelName ? { recordLabel: release.labelName } : {}),
+          ...(identifiers.length > 0 ? { identifier: identifiers } : {}),
           ...(streamingLinks.length > 0 ? { sameAs: streamingLinks } : {}),
           ...(release.tracks.length > 0 ? {
             track: release.tracks.map((tr) => ({
@@ -193,11 +212,19 @@ const ReleaseDetailPage: React.FC = () => {
   const artistCredit = release.artistCredit || t('common.artist_name');
   const metadataRows = [
     { label: t('music.release_detail.type_label'), value: releaseTypeLabel },
+    { label: t('music.release_detail.title_version_label'), value: release.titleVersion },
     { label: t('music.release_detail.date_label'), value: dateDisplay },
     { label: t('music.release_detail.duration_label'), value: firstTrack?.duration ? formatDuration(firstTrack.duration) : '' },
     { label: t('music.release_detail.country_label'), value: release.releaseCountry },
+    { label: t('music.release_detail.language_label'), value: release.language },
     { label: t('music.release_detail.status_label'), value: release.releaseStatus },
-    { label: t('music.release_detail.barcode_label'), value: release.barcode },
+    { label: t('music.release_detail.label_label'), value: release.labelName },
+    { label: t('music.release_detail.distributor_label'), value: release.distributor },
+    { label: t('music.release_detail.upc_label'), value: release.barcode },
+    { label: t('music.release_detail.catalog_number_label'), value: release.catalogNumber },
+    { label: t('music.release_detail.isrc_label'), value: firstTrack?.isrcCode },
+    { label: t('music.release_detail.phonographic_copyright_label'), value: release.phonographicCopyright },
+    { label: t('music.release_detail.copyright_label'), value: release.copyright },
     { label: t('music.release_detail.musicbrainz_id_label'), value: musicBrainzReleaseId },
   ].filter((row) => row.value);
 
@@ -208,6 +235,8 @@ const ReleaseDetailPage: React.FC = () => {
         description={releaseDescription || t('music.release_seo_desc_fallback', { name: release.name, type: releaseTypeLabel })}
         image={release.image}
         imageAlt={`${release.name} cover art`}
+        imageWidth={1200}
+        imageHeight={1200}
         type="music.song"
         url={pageUrl}
         schema={schema}
