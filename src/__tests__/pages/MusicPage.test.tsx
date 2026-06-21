@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import { HelmetProvider } from 'react-helmet-async';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi } from 'vitest';
@@ -96,6 +96,8 @@ function getSchema(): Record<string, unknown> {
   return JSON.parse(raw) as Record<string, unknown>;
 }
 
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // ── Render tests ──────────────────────────────────────────────────────────────
 
 describe('MusicPage — render', () => {
@@ -129,13 +131,21 @@ describe('MusicPage — render', () => {
     expect(names.some((n) => n.includes('YouTube'))).toBe(true);
   });
 
-  it('renders release cards as links for each DISCOGRAPHY entry', () => {
+  it('renders release list items as links for each DISCOGRAPHY entry', () => {
     renderPage();
-    const links = screen.getAllByRole('link');
-    expect(links.length).toBeGreaterThanOrEqual(DISCOGRAPHY.length);
+    const releasesHeading = screen.getByRole('heading', { name: 'music.releases_title' });
+    const releasesSection = releasesHeading.closest('section');
+    expect(releasesSection).not.toBeNull();
+
+    const releasesRegion = within(releasesSection as HTMLElement);
+    for (const release of DISCOGRAPHY) {
+      expect(
+        releasesRegion.getByRole('link', { name: new RegExp(escapeRegExp(release.name)) }),
+      ).toBeDefined();
+    }
   });
 
-  it('renders release card with name of first DISCOGRAPHY entry', () => {
+  it('renders release list item with name of first DISCOGRAPHY entry', () => {
     renderPage();
     expect(screen.getByText(DISCOGRAPHY[0].name)).toBeDefined();
   });
