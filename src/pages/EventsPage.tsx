@@ -288,7 +288,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                   // ⚡ Bolt: Prevented Date instantiation inside rendering loop, utilizing O(1) string slice
                   const dayStr = e.starts_at && e.starts_at.length >= 10 ? e.starts_at.substring(8, 10) : '??';
                   const identifier = e.canonical_path
-                    ? e.canonical_path.split('/').pop() || e.event_id
+                    ? (e.canonical_path.lastIndexOf('/') !== -1 ? e.canonical_path.substring(e.canonical_path.lastIndexOf('/') + 1) : e.canonical_path) || e.event_id
                     : e.event_id;
 
                   const detailHref = e._processed?.detailHref || generatePath(eventsDetailRoute, { id: identifier });

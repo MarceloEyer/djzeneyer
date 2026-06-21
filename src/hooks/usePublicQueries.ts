@@ -210,8 +210,9 @@ const withProcessedEvents = (events: ZenBitEventListItem[], lang?: string): ZenB
     .map(event => {
       const eventDate = new Date(event.starts_at);
       if (!Number.isFinite(eventDate.getTime())) return null;
+      // ⚡ Bolt: Prevent unnecessary array allocation with split('/').pop()
       const identifier = event.canonical_path
-        ? event.canonical_path.split('/').pop() || event.event_id
+        ? (event.canonical_path.lastIndexOf('/') !== -1 ? event.canonical_path.substring(event.canonical_path.lastIndexOf('/') + 1) : event.canonical_path) || event.event_id
         : event.event_id;
       return {
         ...event,
@@ -502,7 +503,8 @@ export const useNewsBySlug = (slug?: string, lang?: string) =>
 export function extractZenBitEventId(routeParam: string): string {
   if (!routeParam) return routeParam;
   if (!routeParam.includes('-')) return routeParam;
-  return routeParam.split('-').pop() ?? routeParam;
+  // ⚡ Bolt: Optimize split('-').pop() with zero-allocation lastIndexOf and substring
+  return routeParam.substring(routeParam.lastIndexOf('-') + 1) ?? routeParam;
 }
 
 export const useEventById = (
