@@ -206,8 +206,17 @@ describe('MusicPage — DISCOGRAPHY data', () => {
       expect(release.id).toBeTruthy();
       expect(release.name).toBeTruthy();
       if (release.releaseDate) expect(release.releaseDate).toMatch(/^\d{4}/);
-      expect(release.image).toMatch(/^https?:\/\//);
+      expect(release.image).toMatch(/^(https?:\/\/|\/images\/)/);
     }
+  });
+
+  it('music releases expose MusicBrainz-ready metadata when available', () => {
+    const release = DISCOGRAPHY.find((item) => item.id === 'baila-flaquita');
+    expect(release?.barcode).toBe('199999525394');
+    expect(release?.catalogNumber).toBe('199999525394');
+    expect(release?.labelName).toBe('Zen Eyer');
+    expect(release?.language).toBe('Spanish');
+    expect(release?.tracks[0]?.isrcCode).toBe('QZPJ32529510');
   });
 
   it('DISCOGRAPHY uses social.YouTube (capital Y) in secondary platforms URL', () => {

@@ -54,13 +54,12 @@ export function buildDiscographyListItems(
     };
 
     if (release.contributor) releaseNode.contributor = release.contributor;
-    if (release.barcode) {
-      releaseNode.identifier = {
-        '@type': 'PropertyValue',
-        propertyID: 'Barcode',
-        value: release.barcode,
-      };
-    }
+    if (release.labelName) releaseNode.recordLabel = release.labelName;
+    const identifiers = [
+      release.barcode ? { '@type': 'PropertyValue', propertyID: 'UPC', value: release.barcode } : null,
+      release.catalogNumber ? { '@type': 'PropertyValue', propertyID: 'Catalog number', value: release.catalogNumber } : null,
+    ].filter(Boolean);
+    if (identifiers.length > 0) releaseNode.identifier = identifiers;
 
     if (release.releaseDate && release.releaseDate !== '2024-01-01') {
       releaseNode.datePublished = release.releaseDate;

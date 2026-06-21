@@ -156,16 +156,24 @@ describe('buildDiscographyListItems', () => {
     expect(node.description).toBe('Descricao localizada');
   });
 
-  it('emits barcode as a schema identifier when available', () => {
+  it('emits release identifiers as schema PropertyValue entries when available', () => {
     const items = buildDiscographyListItems(
-      [makeRelease({ barcode: '199999525394' })],
+      [makeRelease({ barcode: '199999525394', catalogNumber: 'ZE000', labelName: 'Zen Eyer' })],
       opts,
     );
     const node = items[0].item as Record<string, unknown>;
-    expect(node.identifier).toEqual({
-      '@type': 'PropertyValue',
-      propertyID: 'Barcode',
-      value: '199999525394',
-    });
+    expect(node.recordLabel).toBe('Zen Eyer');
+    expect(node.identifier).toEqual([
+      {
+        '@type': 'PropertyValue',
+        propertyID: 'UPC',
+        value: '199999525394',
+      },
+      {
+        '@type': 'PropertyValue',
+        propertyID: 'Catalog number',
+        value: 'ZE000',
+      },
+    ]);
   });
 });

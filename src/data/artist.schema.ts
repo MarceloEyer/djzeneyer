@@ -482,6 +482,13 @@ export interface Release {
   releaseCountry?: string;
   releaseStatus?: 'Official' | 'Promotion' | 'Bootleg' | 'Pseudo-Release';
   barcode?: string;
+  catalogNumber?: string;
+  labelName?: string;
+  distributor?: string;
+  language?: string;
+  titleVersion?: string;
+  phonographicCopyright?: string;
+  copyright?: string;
   originalSong?: OriginalSong; // populated for covers and remixes
   byArtist?: Record<string, unknown>;
   contributor?: Record<string, unknown> | Record<string, unknown>[];
