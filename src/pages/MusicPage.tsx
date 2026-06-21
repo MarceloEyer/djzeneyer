@@ -15,7 +15,7 @@ import { MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { DISCOGRAPHY } from '../data/artist.discography';
 import { safeUrl } from '../utils/sanitize';
 import { buildReleaseCards, buildDiscographyListItems } from '../utils/music';
-import { getDateTimeFormatter } from '../utils/date';
+import { formatDateVal } from '../utils/date';
 
 // --- SVG Icons for music platforms ---
 const SpotifyIcon = () => (
@@ -70,12 +70,12 @@ const SECONDARY_PLATFORMS = [
 
 const formatReleaseListDate = (releaseDate: string | undefined, lang: string): string => {
   if (!releaseDate) return '';
-  return getDateTimeFormatter(lang === 'pt' ? 'pt-BR' : 'en', {
+  return formatDateVal(releaseDate, lang === 'pt' ? 'pt-BR' : 'en', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
     timeZone: 'UTC',
-  }).format(new Date(releaseDate));
+  });
 };
 
 const MusicPage: React.FC = () => {
