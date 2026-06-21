@@ -522,6 +522,7 @@
     "listen_now": "Listen Now",
     "releases_title": "Music releases",
     "releases_subtitle": "Release notes, credits, and official links published in Releases.",
+    "releases_archive_link": "Releases & Notes",
     "read_release": "Read release notes",
     "release_type": {
       "album": "Album",
