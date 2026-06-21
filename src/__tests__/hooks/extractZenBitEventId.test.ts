@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractZenBitEventId } from '../../hooks/usePublicQueries';
+import { extractLastPathSegment, extractZenBitEventId } from '../../hooks/usePublicQueries';
 
 describe('extractZenBitEventId', () => {
   it('returns pure numeric ID unchanged', () => {
@@ -31,5 +31,19 @@ describe('extractZenBitEventId', () => {
 
   it('returns last segment when slug has only two parts', () => {
     expect(extractZenBitEventId('prefix-suffix')).toBe('suffix');
+  });
+});
+
+describe('extractLastPathSegment', () => {
+  it('extracts the final canonical path segment', () => {
+    expect(extractLastPathSegment('/pt/eventos-zouk/festival-123')).toBe('festival-123');
+  });
+
+  it('returns the full string when there is no slash', () => {
+    expect(extractLastPathSegment('festival-123')).toBe('festival-123');
+  });
+
+  it('returns an empty segment for trailing slash paths', () => {
+    expect(extractLastPathSegment('/pt/eventos-zouk/')).toBe('');
   });
 });

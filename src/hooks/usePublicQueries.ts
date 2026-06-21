@@ -204,6 +204,11 @@ const getPrerenderEvents = (lang?: string) => getPrerenderData<ZenBitEventListIt
 
 const getPrerenderNews = (lang?: string) => getPrerenderData<WPPost[]>(lang, 'news');
 
+export function extractLastPathSegment(path: string): string {
+  const lastSlash = path.lastIndexOf('/');
+  return lastSlash === -1 ? path : path.substring(lastSlash + 1);
+}
+
 const withProcessedEvents = (events: ZenBitEventListItem[], lang?: string): ZenBitEventListItem[] => {
   const eventsDetailRoute = getLocalizedRoute('events-detail', (lang || 'en') as Language);
   return events
@@ -211,7 +216,7 @@ const withProcessedEvents = (events: ZenBitEventListItem[], lang?: string): ZenB
       const eventDate = new Date(event.starts_at);
       if (!Number.isFinite(eventDate.getTime())) return null;
       const identifier = event.canonical_path
-        ? event.canonical_path.split('/').pop() || event.event_id
+        ? extractLastPathSegment(event.canonical_path) || event.event_id
         : event.event_id;
       return {
         ...event,
@@ -502,7 +507,7 @@ export const useNewsBySlug = (slug?: string, lang?: string) =>
 export function extractZenBitEventId(routeParam: string): string {
   if (!routeParam) return routeParam;
   if (!routeParam.includes('-')) return routeParam;
-  return routeParam.split('-').pop() ?? routeParam;
+  return routeParam.substring(routeParam.lastIndexOf('-') + 1);
 }
 
 export const useEventById = (
