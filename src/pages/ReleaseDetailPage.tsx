@@ -49,6 +49,19 @@ const getMusicBrainzReleaseId = (url?: string): string | null => {
   return match?.[1] ?? null;
 };
 
+const getReleaseLanguageCode = (language: string | undefined, fallbackLang: 'en' | 'pt'): string => {
+  if (!language) return fallbackLang === 'pt' ? 'pt-BR' : 'en';
+
+  const normalized = language.trim().toLowerCase();
+  const languageCodes: Record<string, string> = {
+    english: 'en',
+    portuguese: 'pt-BR',
+    spanish: 'es',
+  };
+
+  return languageCodes[normalized] ?? language;
+};
+
 const PLATFORMS = [
   { key: 'spotifyUrl', label: 'Spotify', color: '#1DB954' },
   { key: 'appleMusicUrl', label: 'Apple Music', color: '#FA243C' },
@@ -127,6 +140,7 @@ const ReleaseDetailPage: React.FC = () => {
       release.barcode ? { '@type': 'PropertyValue', propertyID: 'UPC', value: release.barcode } : null,
       release.catalogNumber ? { '@type': 'PropertyValue', propertyID: 'Catalog number', value: release.catalogNumber } : null,
     ].filter(Boolean);
+    const releaseLanguageCode = getReleaseLanguageCode(release.language, lang);
 
     return {
       '@context': 'https://schema.org',
@@ -140,7 +154,7 @@ const ReleaseDetailPage: React.FC = () => {
           ...(release.releaseYear && !release.releaseDate ? { datePublished: release.releaseYear } : {}),
           image: release.image,
           ...(releaseDescription ? { description: releaseDescription } : {}),
-          ...(release.language ? { inLanguage: release.language } : { inLanguage: lang === 'pt' ? 'pt-BR' : 'en' }),
+          inLanguage: releaseLanguageCode,
           byArtist: release.byArtist ?? { '@id': `${ARTIST.site.baseUrl}/#musicgroup` },
           ...(release.contributor ? { contributor: release.contributor } : {}),
           ...(release.labelName ? { recordLabel: release.labelName } : {}),
@@ -221,6 +235,8 @@ const ReleaseDetailPage: React.FC = () => {
         description={releaseDescription || t('music.release_seo_desc_fallback', { name: release.name, type: releaseTypeLabel })}
         image={release.image}
         imageAlt={`${release.name} cover art`}
+        imageWidth={1200}
+        imageHeight={1200}
         type="music.song"
         url={pageUrl}
         schema={schema}

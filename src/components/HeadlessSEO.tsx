@@ -111,6 +111,8 @@ interface HeadlessSEOProps {
   url?: string;
   image?: string;
   imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   type?: string;
   hrefLang?: HrefLang[];
   noindex?: boolean;
@@ -159,6 +161,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   url,
   image,
   imageAlt,
+  imageWidth,
+  imageHeight,
   type = 'website',
   hrefLang = [],
   noindex = false,
@@ -241,6 +245,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const routeAwareImage = getOpenGraphImageForPath(location.pathname, baseUrl);
   const finalImage = safeUrl(ensureAbsoluteUrl(data?.image || data?.og_image || image || routeAwareImage, baseUrl), defaultImage);
   const finalImageAlt = data?.og_image_alt || imageAlt || getOpenGraphAltForPath(location.pathname, currentLang);
+  const finalImageWidth = imageWidth ?? OG_IMAGE_WIDTH;
+  const finalImageHeight = imageHeight ?? OG_IMAGE_HEIGHT;
   const finalImageType = getOpenGraphImageType(finalImage);
   const finalOpenGraphType = type === 'website' && events?.length === 1 ? 'event' : type;
 
@@ -441,8 +447,8 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       {finalImage && finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
       {finalImage && <meta property="og:image:alt" content={finalImageAlt} />}
       {finalImageType && <meta property="og:image:type" content={finalImageType} />}
-      {finalImage && <meta property="og:image:width" content={String(OG_IMAGE_WIDTH)} />}
-      {finalImage && <meta property="og:image:height" content={String(OG_IMAGE_HEIGHT)} />}
+      {finalImage && <meta property="og:image:width" content={String(finalImageWidth)} />}
+      {finalImage && <meta property="og:image:height" content={String(finalImageHeight)} />}
 
       <meta property="og:locale" content={currentLocale} />
       <meta property="og:locale:alternate" content={currentLocale === 'en_US' ? 'pt_BR' : 'en_US'} />
