@@ -69,7 +69,7 @@ const SECONDARY_PLATFORMS = [
 ];
 
 const formatReleaseListDate = (releaseDate: string | undefined, lang: string): string => {
-  if (!releaseDate) return '';
+  if (!releaseDate || releaseDate === '2024-01-01') return '';
   return formatDateVal(releaseDate, lang === 'pt' ? 'pt-BR' : 'en', {
     year: 'numeric',
     month: 'short',
