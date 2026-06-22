@@ -43,7 +43,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         initial={PAGE_HEADER_INITIAL}
         animate={PAGE_HEADER_ANIMATE}
         transition={PAGE_HEADER_TRANSITION}
-        className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-display uppercase tracking-tighter text-white ${
+        className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-display uppercase tracking-tighter text-text ${
           hasBreadcrumbs ? 'pt-16' : ''
         } ${centerTitle ? 'text-center' : 'text-left'}`}
       >

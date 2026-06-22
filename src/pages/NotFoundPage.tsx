@@ -55,14 +55,14 @@ const NotFoundPage: React.FC = () => {
           <h2 className="text-2xl md:text-3xl font-bold mb-4 font-display">
             {t('not_found.title')}
           </h2>
-          <p className="text-xl text-white/70 mb-8">
+          <p className="text-xl text-text/70 mb-8">
             {t('not_found.text')}
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <Link
               to={routes.home}
-              className="card p-4 text-center hover:bg-white/5 transition-colors"
+              className="card p-4 text-center hover:bg-text/5 transition-colors"
             >
               <div className="flex flex-col items-center">
                 <Home className="text-primary mb-2" size={24} />
@@ -72,7 +72,7 @@ const NotFoundPage: React.FC = () => {
 
             <Link
               to={routes.music}
-              className="card p-4 text-center hover:bg-white/5 transition-colors"
+              className="card p-4 text-center hover:bg-text/5 transition-colors"
             >
               <div className="flex flex-col items-center">
                 <Music className="text-secondary mb-2" size={24} />
@@ -82,7 +82,7 @@ const NotFoundPage: React.FC = () => {
 
             <Link
               to={routes.events}
-              className="card p-4 text-center hover:bg-white/5 transition-colors"
+              className="card p-4 text-center hover:bg-text/5 transition-colors"
             >
               <div className="flex flex-col items-center">
                 <Calendar className="text-accent mb-2" size={24} />
@@ -92,7 +92,7 @@ const NotFoundPage: React.FC = () => {
 
             <Link
               to={routes.zentribe}
-              className="card p-4 text-center hover:bg-white/5 transition-colors"
+              className="card p-4 text-center hover:bg-text/5 transition-colors"
             >
               <div className="flex flex-col items-center">
                 <Users className="text-success mb-2" size={24} />

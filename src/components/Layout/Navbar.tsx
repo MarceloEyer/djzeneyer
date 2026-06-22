@@ -30,7 +30,7 @@ import type { MenuItemData } from './Navbar/NavbarComponents';
 
 const VISUAL_CONFIGS = {
     base: { color: 'text-primary', bg: 'bg-primary/10' },
-    default: { icon: <Home size={20} />, color: 'text-white/70', bg: 'bg-white/5' },
+    default: { icon: <Home size={20} />, color: 'text-text/70', bg: 'bg-text/5' },
     event: { icon: <Calendar size={20} /> },
     shop: { icon: <ShoppingBag size={20} /> },
     tribe: { icon: <Users size={20} /> },
@@ -102,7 +102,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
     return (
         <>
-            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-[#121212]/95 backdrop-blur-md shadow-lg py-3 border-b border-white/10' : 'bg-transparent py-5'}`}>
+            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-[#121212]/95 backdrop-blur-md shadow-lg py-3 border-b border-border/10' : 'bg-transparent py-5'}`}>
                 <div className="container mx-auto px-4 md:px-6 flex items-center justify-between h-14">
                     <Link to={getLocalizedRoute('', currentLang)} className="flex items-center z-50 group font-display font-bold text-xl">
                         <span className="text-primary mr-1">DJ</span> Zen Eyer
@@ -129,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         )}
                     </div>
 
-                    <button className="md:hidden text-white z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
+                    <button className="md:hidden text-text z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
                         {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
                     </button>
                 </div>
@@ -139,9 +139,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                 <>
                     <div
                         onClick={() => setIsMenuOpen(false)}
-                        className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm md:hidden opacity-100 transition-opacity duration-200"
+                        className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden opacity-100 transition-opacity duration-200"
                     />
-                    <div className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-white/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto translate-y-0 transition-transform duration-300">
+                    <div className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-border/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto translate-y-0 transition-transform duration-300">
                         <nav className="flex flex-col space-y-3 mb-6">
                             {processedMenuItems.map(item => (
                                 <MenuItem
@@ -153,7 +153,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                                 />
                             ))}
                         </nav>
-                        <div className="pt-6 border-t border-white/10 flex flex-col gap-4">
+                        <div className="pt-6 border-t border-border/10 flex flex-col gap-4">
                             {user?.isLoggedIn ? <UserMenu /> : (
                                 <button onClick={handleLoginButtonClick} className="w-full btn btn-primary py-3 flex items-center justify-center space-x-2 shadow-lg shadow-primary/20">
                                     <LogIn size={18} /> <span className="font-bold">{t('nav.join_the_tribe')}</span>

@@ -205,8 +205,8 @@ const MyAccountContent: React.FC = () => {
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <p className="text-xl font-semibold text-white/90 mb-2">{t('dashboard.error_loading')}</p>
-          <p className="text-sm text-white/40 mb-6">{errorGP}</p>
+          <p className="text-xl font-semibold text-text/90 mb-2">{t('dashboard.error_loading')}</p>
+          <p className="text-sm text-text/40 mb-6">{errorGP}</p>
           <button
             onClick={() => window.location.reload()}
             className="btn btn-primary px-8 py-3 rounded-2xl font-black uppercase tracking-[0.2em] text-xs"
@@ -233,7 +233,7 @@ const MyAccountContent: React.FC = () => {
               <h2 className="text-4xl md:text-5xl font-black font-display mb-4 tracking-tighter">
                 {t('dashboard.welcomeBackWithName', { name: user?.display_name || user?.name || t('common.friend') })}
               </h2>
-              <p className="text-white/50 text-lg font-medium tracking-tight max-w-xl">
+              <p className="text-text/50 text-lg font-medium tracking-tight max-w-xl">
                 {t('dashboard.journeyBegins')} {t('dashboard.diveDeep')}
               </p>
             </div>
@@ -245,7 +245,7 @@ const MyAccountContent: React.FC = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-white/5 shadow-2xl overflow-hidden relative group"
+                  className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-border/5 shadow-2xl overflow-hidden relative group"
                 >
                   <div className="absolute top-0 right-0 p-6 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
                     <Trophy size={100} fill="currentColor" />
@@ -257,10 +257,10 @@ const MyAccountContent: React.FC = () => {
                   />
                   <div className="mt-4 flex flex-wrap gap-2">
                     {(gamipress.rank.requirements || EMPTY_REQUIREMENT_ARRAY).slice(0, 3).map((req, idx) => (
-                      <div key={idx} className="bg-white/5 px-4 py-2 rounded-full border border-white/5 flex items-center gap-2">
+                      <div key={idx} className="bg-text/5 px-4 py-2 rounded-full border border-border/5 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{req.title}:</span>
-                        <span className="text-[10px] font-black text-white/90">{req.current}/{req.required}</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-text/40">{req.title}:</span>
+                        <span className="text-[10px] font-black text-text/90">{req.current}/{req.required}</span>
                       </div>
                     ))}
                   </div>
@@ -270,7 +270,7 @@ const MyAccountContent: React.FC = () => {
             </div>
 
             {/* Recent Activity */}
-            <div className="card p-10 border-white/5 bg-surface/30 backdrop-blur-xl">
+            <div className="card p-10 border-border/5 bg-surface/30 backdrop-blur-xl">
               <h3 className="text-2xl font-black font-display mb-10 tracking-tight flex items-center gap-4">
                 <div className="w-1.5 h-8 bg-primary rounded-full" />
                 {t('dashboard.recentActivity')}
@@ -289,7 +289,7 @@ const MyAccountContent: React.FC = () => {
             <div className="flex justify-between items-end mb-4">
               <div>
                 <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2">{t('dashboard.yourAchievements')}</h2>
-                <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em]">{t('account.profile.milestones', { count: Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0 })}</p>
+                <p className="text-text/30 text-[10px] font-black uppercase tracking-[0.3em]">{t('account.profile.milestones', { count: Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0 })}</p>
               </div>
               <div className="bg-primary/20 text-primary px-6 py-2.5 rounded-2xl text-xs font-black uppercase tracking-widest border border-primary/20">
                 {Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0} / {(Array.isArray(gamipress.achievements_earned) ? gamipress.achievements_earned.length : 0) + (Array.isArray(gamipress.achievements_locked) ? gamipress.achievements_locked.length : 0)}
@@ -303,18 +303,18 @@ const MyAccountContent: React.FC = () => {
                   whileHover={ACHIEVEMENT_CARD_HOVER}
                   className={`relative rounded-[2rem] p-8 border transition-all duration-500 overflow-hidden ${ach.earned
                     ? 'bg-surface/50 border-primary/20 shadow-xl'
-                    : 'bg-black/40 border-white/5 opacity-40 grayscale hover:opacity-100 hover:grayscale-0'
+                    : 'bg-background/40 border-border/5 opacity-40 grayscale hover:opacity-100 hover:grayscale-0'
                     }`}
                 >
                   <div className="relative z-10 flex flex-col items-center text-center">
-                    <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-white/5'}`}>
+                    <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-text/5'}`}>
                       {ach?.image ? <img src={safeUrl(ach.image, '')} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
                     </div>
                     <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || t('account.achievement_unknown')}</h4>
-                    <p className="text-sm text-white/40 mb-6 leading-relaxed">
+                    <p className="text-sm text-text/40 mb-6 leading-relaxed">
                       {ach?.description ? stripHtml(ach.description) : ''}
                     </p>
-                    <span className={`text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full border ${ach?.earned ? 'bg-success/10 border-success/20 text-success' : 'bg-white/5 border-white/10 text-white/30'}`}>
+                    <span className={`text-[10px] font-black uppercase tracking-[0.3em] px-4 py-1.5 rounded-full border ${ach?.earned ? 'bg-success/10 border-success/20 text-success' : 'bg-text/5 border-border/10 text-text/30'}`}>
                       {ach?.earned ? t('dashboard.unlocked') : t('account.locked')}
                     </span>
                   </div>
@@ -324,7 +324,7 @@ const MyAccountContent: React.FC = () => {
 
             {/* Unified Mana Bar */}
             {gamipress.rank?.next && (
-              <div className="bg-surface/30 backdrop-blur-xl rounded-[2.5rem] p-10 border border-white/5 mt-12 shadow-2xl overflow-hidden relative group">
+              <div className="bg-surface/30 backdrop-blur-xl rounded-[2.5rem] p-10 border border-border/5 mt-12 shadow-2xl overflow-hidden relative group">
                 <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-10 transition-opacity">
                   <Trophy size={150} fill="currentColor" />
                 </div>
@@ -346,29 +346,29 @@ const MyAccountContent: React.FC = () => {
             {/* Profile Form Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Personal Info */}
-              <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-white/5 shadow-xl">
+              <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-border/5 shadow-xl">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="p-3 rounded-xl bg-primary/10 border border-primary/20"><User className="text-primary" size={24} /></div>
                   <h3 className="text-xl font-black font-display tracking-tight uppercase">{t('account.profile.identity')}</h3>
                 </div>
                 <div className="space-y-6">
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 block mb-3 ml-1">{t('account.profile.real_name')}</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text/30 block mb-3 ml-1">{t('account.profile.real_name')}</label>
                     <input
                       type="text"
                       value={profileForm.realName}
                       onChange={(e) => handleProfileChange('realName', e.target.value)}
-                      className="input bg-black/40 border-white/5 focus:border-primary/50 py-4 px-6 rounded-2xl font-medium"
+                      className="input bg-background/40 border-border/5 focus:border-primary/50 py-4 px-6 rounded-2xl font-medium"
                       placeholder={t('account.profile.real_name')}
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 block mb-3 ml-1">{t('account.profile.preferred_name')}</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text/30 block mb-3 ml-1">{t('account.profile.preferred_name')}</label>
                     <input
                       type="text"
                       value={profileForm.preferredName}
                       onChange={(e) => handleProfileChange('preferredName', e.target.value)}
-                      className="input bg-black/40 border-white/5 focus:border-primary/50 py-4 px-6 rounded-2xl font-medium"
+                      className="input bg-background/40 border-border/5 focus:border-primary/50 py-4 px-6 rounded-2xl font-medium"
                       placeholder={t('account.profile.preferred_name')}
                     />
                   </div>
@@ -376,7 +376,7 @@ const MyAccountContent: React.FC = () => {
               </div>
 
               {/* Social & Dance */}
-              <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-white/5 shadow-xl">
+              <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-8 border border-border/5 shadow-xl">
                 <div className="flex items-center gap-4 mb-8">
                   <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20"><InstagramIcon className="text-secondary" size={24} /></div>
                   <h3 className="text-xl font-black font-display tracking-tight uppercase">{t('account.profile.social')}</h3>
@@ -388,7 +388,7 @@ const MyAccountContent: React.FC = () => {
                         type="text"
                         value={profileForm.instagramUrl}
                         onChange={(e) => handleProfileChange('instagramUrl', e.target.value)}
-                        className="input bg-black/40 border-white/5 focus:border-secondary/50 py-4 px-5 rounded-2xl text-sm"
+                        className="input bg-background/40 border-border/5 focus:border-secondary/50 py-4 px-5 rounded-2xl text-sm"
                         placeholder={t('account.profile.instagram_placeholder')}
                       />
                     </div>
@@ -397,20 +397,20 @@ const MyAccountContent: React.FC = () => {
                         type="text"
                         value={profileForm.facebookUrl}
                         onChange={(e) => handleProfileChange('facebookUrl', e.target.value)}
-                        className="input bg-black/40 border-white/5 focus:border-secondary/50 py-4 px-5 rounded-2xl text-sm"
+                        className="input bg-background/40 border-border/5 focus:border-secondary/50 py-4 px-5 rounded-2xl text-sm"
                         placeholder={t('account.profile.facebook_placeholder')}
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 block mb-4 ml-1">{t('account.profile.dance_role')}</label>
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text/30 block mb-4 ml-1">{t('account.profile.dance_role')}</label>
                     <div className="flex gap-3">
                       {DANCE_ROLES.map(role => (
                         <button
                           key={role}
                           onClick={() => handleProfileChange('danceRole', profileForm.danceRole.includes(role) ? [] : [role])}
-                          className={`flex-1 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] border transition-all ${profileForm.danceRole.includes(role) ? 'bg-primary border-primary shadow-neon' : 'bg-white/5 border-white/10 text-white/30 hover:bg-white/10'
+                          className={`flex-1 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] border transition-all ${profileForm.danceRole.includes(role) ? 'bg-primary border-primary shadow-neon' : 'bg-text/5 border-border/10 text-text/30 hover:bg-text/10'
                             }`}
                         >
                           {t(`account.profile.${role}`)}
@@ -423,21 +423,21 @@ const MyAccountContent: React.FC = () => {
             </div>
 
             {/* Newsletter & Security */}
-            <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-10 border border-white/5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-10">
+            <div className="bg-surface/30 backdrop-blur-xl rounded-[2rem] p-10 border border-border/5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-10">
               <div className="flex items-center gap-6">
                 <div className="w-16 h-16 rounded-[1.5rem] bg-accent/10 flex items-center justify-center border border-accent/20"><Bell className="text-accent" size={32} /></div>
                 <div>
                   <h4 className="text-2xl font-black font-display tracking-tight mb-2">{t('account.newsletter.title')}</h4>
-                  <p className="text-white/40 text-sm font-medium">{t('account.newsletter.desc')}</p>
+                  <p className="text-text/40 text-sm font-medium">{t('account.newsletter.desc')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/20">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text/20">
                   {newsletterEnabled ? t('account.newsletter.enabled') : t('account.newsletter.disabled')}
                 </span>
                 <button
                   onClick={() => updateNewsletter.mutate(!newsletterEnabled)}
-                  className={`w-14 h-8 rounded-full relative transition-colors ${newsletterEnabled ? 'bg-primary' : 'bg-white/10'}`}
+                  className={`w-14 h-8 rounded-full relative transition-colors ${newsletterEnabled ? 'bg-primary' : 'bg-text/10'}`}
                 >
                   <motion.div
                     animate={{ x: newsletterEnabled ? 28 : 4 }}
@@ -454,13 +454,13 @@ const MyAccountContent: React.FC = () => {
                 disabled={savingProfile}
                 className="btn btn-primary px-12 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-xs shadow-2xl flex items-center gap-4 group"
               >
-                {savingProfile ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Save size={18} />}
+                {savingProfile ? <div className="w-5 h-5 border-2 border-border/30 border-t-white rounded-full animate-spin" /> : <Save size={18} />}
                 {profileSaved ? t('account.profile.success') : t('account.profile.save')}
               </button>
 
               <button
                 onClick={handleLogout}
-                className="btn bg-white/5 hover:bg-red-500/20 hover:text-red-500 border border-white/5 hover:border-red-500/30 px-10 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-xs transition-all"
+                className="btn bg-text/5 hover:bg-red-500/20 hover:text-red-500 border border-border/5 hover:border-red-500/30 px-10 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-xs transition-all"
               >
                 <LogOut size={18} className="mr-3" />
                 {t('nav.logout')}
@@ -484,13 +484,13 @@ const MyAccountContent: React.FC = () => {
         noindex
       />
 
-      <div className="min-h-screen pt-24 pb-16 bg-background selection:bg-primary selection:text-white">
+      <div className="min-h-screen pt-24 pb-16 bg-background selection:bg-primary selection:text-text">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex flex-col lg:flex-row gap-12 mt-8">
 
             {/* --- SIDEBAR --- */}
             <aside className="lg:w-1/4">
-              <div className="bg-surface/30 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-white/5 border-b-white/10 sticky top-28 shadow-2xl overflow-hidden group">
+              <div className="bg-surface/30 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-border/5 border-b-white/10 sticky top-28 shadow-2xl overflow-hidden group">
                 {/* Sidebar Glow */}
                 <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -522,21 +522,21 @@ const MyAccountContent: React.FC = () => {
                       key={tab.id}
                       onClick={() => handleTabChange(tab.id)}
                       className={`w-full flex items-center justify-between px-6 py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] transition-all group/btn ${activeTab === tab.id
-                        ? 'bg-primary text-white shadow-neon shadow-primary/20 scale-105'
-                        : 'text-white/30 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/5'
+                        ? 'bg-primary text-text shadow-neon shadow-primary/20 scale-105'
+                        : 'text-text/30 hover:text-text hover:bg-text/5 border border-transparent hover:border-border/5'
                         }`}
                     >
                       <div className="flex items-center gap-5">
-                        <tab.icon size={20} className={activeTab === tab.id ? 'text-white' : 'text-white/20 group-hover/btn:text-white transition-colors'} />
+                        <tab.icon size={20} className={activeTab === tab.id ? 'text-text' : 'text-text/20 group-hover/btn:text-text transition-colors'} />
                         {tab.label}
                       </div>
-                      {activeTab === tab.id && <ChevronRight size={16} className="text-white/50" />}
+                      {activeTab === tab.id && <ChevronRight size={16} className="text-text/50" />}
                     </button>
                   ))}
                 </nav>
 
                 {/* Sidebar Footer Info */}
-                <div className="mt-12 pt-8 border-t border-white/5 text-center text-[9px] font-black uppercase tracking-[0.4em] text-white/10 group-hover:text-white/20 transition-colors">
+                <div className="mt-12 pt-8 border-t border-border/5 text-center text-[9px] font-black uppercase tracking-[0.4em] text-text/10 group-hover:text-text/20 transition-colors">
                   Zen Tribe v2.1.0 · 2026
                 </div>
               </div>

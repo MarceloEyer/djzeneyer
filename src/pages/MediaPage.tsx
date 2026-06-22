@@ -216,10 +216,10 @@ const MediaPage: React.FC = () => {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
               <Newspaper size={16} /> {t('media_page.verified_profiles')}
             </div>
-            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-white tracking-tighter uppercase leading-[0.9]">
+            <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-text tracking-tighter uppercase leading-[0.9]">
               {t('media_page.h1')}
             </h1>
-            <p className="text-xl text-white/60 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-text/60 max-w-3xl mx-auto leading-relaxed">
               {t('media_page.intro')}
             </p>
           </motion.div>
@@ -227,7 +227,7 @@ const MediaPage: React.FC = () => {
           <div className="grid lg:grid-cols-3 gap-8 sm:gap-12">
             {/* Main Content: Clipping List */}
             <div className="lg:col-span-2 space-y-8">
-              <h2 className="text-3xl font-black font-display text-white uppercase tracking-widest mb-8 border-l-4 border-primary pl-6">
+              <h2 className="text-3xl font-black font-display text-text uppercase tracking-widest mb-8 border-l-4 border-primary pl-6">
                 {t('media_page.press_highlights')}
               </h2>
               
@@ -238,14 +238,14 @@ const MediaPage: React.FC = () => {
                     {t('media_page.sources_corrections')}
                   </h3>
                 </div>
-                <p className="text-sm leading-relaxed text-white/65">
+                <p className="text-sm leading-relaxed text-text/65">
                   {t('media_page.sources_corrections_desc')}
                 </p>
               </div>
 
               {mediaGroups.map((group) => (
                 <section key={group.title}>
-                  <h3 className="mb-5 mt-12 text-xl font-black text-white first:mt-0">{group.title}</h3>
+                  <h3 className="mb-5 mt-12 text-xl font-black text-text first:mt-0">{group.title}</h3>
                   <div className="grid gap-6">
                     {group.items.map((item, index: number) => (
                       <motion.div
@@ -262,15 +262,15 @@ const MediaPage: React.FC = () => {
                           className="group block card p-6 bg-surface/30 backdrop-blur-md border hover:border-primary/50 transition-all"
                         >
                           <div className="flex justify-between items-start mb-4">
-                            <span className="px-3 py-1 rounded-full bg-white/5 text-primary text-xs font-bold uppercase tracking-widest border border-white/5 group-hover:bg-primary/20 transition-colors">
+                            <span className="px-3 py-1 rounded-full bg-text/5 text-primary text-xs font-bold uppercase tracking-widest border border-border/5 group-hover:bg-primary/20 transition-colors">
                               {item.type}
                             </span>
-                            <span className="text-white/55 text-xs font-mono">{item.date}</span>
+                            <span className="text-text/55 text-xs font-mono">{item.date}</span>
                           </div>
-                          <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-primary transition-colors tracking-tight">
+                          <h3 className="text-2xl font-bold text-text mb-2 group-hover:text-primary transition-colors tracking-tight">
                             {item.title}
                           </h3>
-                          <p className="text-white/70 text-sm mb-4 line-clamp-2 leading-relaxed">
+                          <p className="text-text/70 text-sm mb-4 line-clamp-2 leading-relaxed">
                             {item.description}
                           </p>
                           <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-primary/70">
@@ -290,33 +290,33 @@ const MediaPage: React.FC = () => {
             {/* Sidebar: Assets & Quick Facts */}
             <div className="space-y-12">
               <section>
-                <h3 className="text-xl font-black font-display text-white uppercase tracking-widest mb-6">
+                <h3 className="text-xl font-black font-display text-text uppercase tracking-widest mb-6">
                   {t('media_page.media_assets')}
                 </h3>
                 <div className="grid gap-4">
                   {mediaAssets.map((asset, index) => (
-                    <div key={index} className="card p-5 bg-surface/50 border-white/5 hover:border-primary/30 transition-all flex items-center gap-4">
+                    <div key={index} className="card p-5 bg-surface/50 border-border/5 hover:border-primary/30 transition-all flex items-center gap-4">
                       <div className={`p-3 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 text-primary`}>
                         <asset.icon size={24} />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-bold text-white text-sm uppercase">{asset.title}</h4>
-                        <p className="text-white/55 text-xs line-clamp-1">{asset.description}</p>
+                        <h4 className="font-bold text-text text-sm uppercase">{asset.title}</h4>
+                        <p className="text-text/55 text-xs line-clamp-1">{asset.description}</p>
                       </div>
                       {asset.available ? (
                         <a href={asset.url} target="_blank" rel="noopener noreferrer" className="p-3 min-h-[44px] text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold uppercase">
                           {t('media_page.download')} <Download size={18} />
                         </a>
                       ) : (
-                        <span className="text-xs text-white/35 uppercase font-black">{t('media_page.coming_soon')}</span>
+                        <span className="text-xs text-text/35 uppercase font-black">{t('media_page.coming_soon')}</span>
                       )}
                     </div>
                   ))}
                 </div>
               </section>
 
-              <section className="overflow-hidden rounded-2xl border border-white/10 bg-surface/40">
-                <div className="aspect-video w-full bg-black">
+              <section className="overflow-hidden rounded-2xl border border-border/10 bg-surface/40">
+                <div className="aspect-video w-full bg-background">
                   <iframe
                     className="h-full w-full"
                     src={safeUrl(FEATURED_VIDEO.embedUrl, '/')}
@@ -330,10 +330,10 @@ const MediaPage: React.FC = () => {
                   <div className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
                     {t('media_page.featured_video_label')}
                   </div>
-                  <h3 className="mb-2 font-display text-lg font-black uppercase tracking-tight text-white">
+                  <h3 className="mb-2 font-display text-lg font-black uppercase tracking-tight text-text">
                     {featuredVideoTitle}
                   </h3>
-                  <p className="mb-4 text-sm leading-relaxed text-white/65">
+                  <p className="mb-4 text-sm leading-relaxed text-text/65">
                     {featuredVideoDescription}
                   </p>
                   <a
@@ -347,25 +347,25 @@ const MediaPage: React.FC = () => {
                 </div>
               </section>
 
-              <section className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl p-8 border border-white/5">
-                <h3 className="text-xl font-black font-display text-white uppercase tracking-widest mb-6">
+              <section className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-3xl p-8 border border-border/5">
+                <h3 className="text-xl font-black font-display text-text uppercase tracking-widest mb-6">
                   {t('media_page.quick_facts')}
                 </h3>
                 <div className="space-y-6">
                   {mediaFacts.map((fact, i) => (
-                    <div key={i} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                    <div key={i} className="border-b border-border/5 pb-3 last:border-0 last:pb-0">
                       <div className="text-xs text-primary font-black uppercase tracking-[0.2em] mb-1">{fact.label}</div>
-                      <div className="text-white font-bold text-sm">{fact.value}</div>
+                      <div className="text-text font-bold text-sm">{fact.value}</div>
                     </div>
                   ))}
                 </div>
               </section>
 
               <section className="card p-8 bg-primary/10 border-primary/20 text-center">
-                <h3 className="text-xl font-black font-display text-white uppercase tracking-tight mb-4">
+                <h3 className="text-xl font-black font-display text-text uppercase tracking-tight mb-4">
                   {t('media_page.press_inquiries')}
                 </h3>
-                <p className="text-white/70 text-sm mb-6 leading-relaxed">
+                <p className="text-text/70 text-sm mb-6 leading-relaxed">
                   {t('media_page.press_inquiries_desc')}
                 </p>
                 <a
@@ -379,7 +379,7 @@ const MediaPage: React.FC = () => {
           </div>
 
           {/* Social Proof / Footer IDs */}
-          <div className="mt-32 pt-16 border-t border-white/5 flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 hover:opacity-100 transition-opacity">
+          <div className="mt-32 pt-16 border-t border-border/5 flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 hover:opacity-100 transition-opacity">
             <a href={safeUrl(ARTIST.identifiers.wikidataUrl, '/')} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 grayscale hover:grayscale-0 transition-all">
               <span className="font-display font-black text-xl tracking-tighter">Wikidata</span>
               <ExternalLink size={14} />

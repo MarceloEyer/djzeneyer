@@ -14,6 +14,7 @@ import { ARTIST } from '../data/artistData';
 import { ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { useBranding } from '../contexts/BrandingContext';
+import { useCurrentTheme } from '../hooks/useCurrentTheme';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 
@@ -75,21 +76,21 @@ const LazyEventsList = React.lazy(() =>
 const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
   <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={STAT_CARD_HOVER}>
     <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
-    <div className="text-3xl md:text-4xl font-bold text-white font-display">{value}</div>
-    <div className="text-sm text-white/70 uppercase tracking-wider">{label}</div>
+    <div className="text-3xl md:text-4xl font-bold text-text font-display">{value}</div>
+    <div className="text-sm text-text/70 uppercase tracking-wider">{label}</div>
   </motion.div>
 ));
 
 const FeatureCard = React.memo(({ icon: Icon, title, description, variants }: FeatureCardProps) => (
-  <motion.li className="card p-5 sm:p-8 text-center bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors" variants={variants}>
+  <motion.li className="card p-5 sm:p-8 text-center bg-text/5 border border-border/10 rounded-xl hover:bg-text/10 transition-colors" variants={variants}>
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4"><Icon size={32} aria-hidden="true" /></div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
-    <p className="text-white/70">{description}</p>
+    <p className="text-text/70">{description}</p>
   </motion.li>
 ));
 
 const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
-  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full text-sm text-white/80 hover:bg-white/10 transition-colors cursor-default">
+  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-text/5 border border-border/10 rounded-full text-sm text-text/80 hover:bg-text/10 transition-colors cursor-default">
     <span role="img" aria-label={`Flag of ${name}`}>{flag}</span>
     <span>{name}</span>
   </span>
@@ -104,11 +105,15 @@ const HomePage: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
   const { data: seoSettings } = useZenSeoSettings();
   const { artist } = useBranding();
+  const currentTheme = useCurrentTheme();
 
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = currentLang === 'pt' ? '/pt' : '/';
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
+  
+  const heroImagePrefix = currentTheme === 'zen-night' ? 'hero-background' : `hero-background-${currentTheme}`;
+
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
   const stats = useMemo(() => ([
     ...STATS_BASE,
@@ -205,21 +210,21 @@ const HomePage: React.FC = () => {
 
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-20 pb-12" aria-label="Introduction">
-        <div className="absolute inset-0 z-0 bg-black">
+        <div className="absolute inset-0 z-0 bg-background">
             <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
               <picture>
                 <source
                   media="(max-width: 768px)"
-                  srcSet="/images/hero-background-mobile.webp"
+                  srcSet={`/images/${heroImagePrefix}-mobile.webp`}
                   sizes="100vw"
                 />
                 <source
                   media="(min-width: 769px)"
-                  srcSet="/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
-                sizes="100vw"
+                  srcSet={`/images/${heroImagePrefix}-1440.webp 1440w, /images/${heroImagePrefix}.webp 1920w`}
+                  sizes="100vw"
               />
               <img
-                src="/images/hero-background.webp"
+                src={`/images/${heroImagePrefix}.webp`}
                 alt="Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
                 className="w-full h-full object-cover object-center opacity-65"
                 width="1920"
@@ -227,6 +232,13 @@ const HomePage: React.FC = () => {
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
+                onError={(e) => {
+                  // Fallback to original image if theme image doesn't exist
+                  const target = e.target as HTMLImageElement;
+                  if (!target.src.includes('hero-background.webp')) {
+                    target.src = '/images/hero-background.webp';
+                  }
+                }}
               />
             </picture>
           </motion.div>
@@ -237,7 +249,7 @@ const HomePage: React.FC = () => {
           <div className="max-w-4xl mx-auto">
             {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
-              <span className="text-white">Zen</span> <span className="text-primary">Eyer</span>
+              <span className="text-text">Zen</span> <span className="text-primary">Eyer</span>
             </h1>
 
           <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
@@ -248,7 +260,7 @@ const HomePage: React.FC = () => {
               </div>
             </motion.div>
 
-            <motion.p id="artist-voice-bio" variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-white mb-2 font-light" data-speakable>
+            <motion.p id="artist-voice-bio" variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-text mb-2 font-light" data-speakable>
               {t('home.hero_subtitle')}
               <span id="pronunciation-faq-summary" className="sr-only">{t('home.pronunciation_summary')}</span>
             </motion.p>
@@ -282,7 +294,7 @@ const HomePage: React.FC = () => {
               </Link>
             </motion.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-white/60 max-w-2xl mx-auto leading-relaxed">
+            <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-text/60 max-w-2xl mx-auto leading-relaxed">
               <Trans
                 i18nKey="home.hero_cta_text"
                 components={[
@@ -299,8 +311,8 @@ const HomePage: React.FC = () => {
         </div>
 
         <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: shouldReduceMotion ? 0 : [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center backdrop-blur-sm">
-            <div className="w-1.5 h-3 bg-white/50 rounded-full mt-2" />
+          <div className="w-6 h-10 border-2 border-border/30 rounded-full flex justify-center backdrop-blur-sm">
+            <div className="w-1.5 h-3 bg-text/50 rounded-full mt-2" />
           </div>
         </motion.div>
       </section>
@@ -310,19 +322,19 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <motion.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
             <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none safe-html-contrast">
-              <h2 className="text-3xl font-bold mb-6 text-white font-display">{t('home.bio_title')}</h2>
-              <div className="text-xl leading-relaxed mb-6 text-white/90">
+              <h2 className="text-3xl font-bold mb-6 text-text font-display">{t('home.bio_title')}</h2>
+              <div className="text-xl leading-relaxed mb-6 text-text/90">
                 <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_intro')) }} />
               </div>
-              <p className="text-lg leading-relaxed text-white/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_style')) }} />
-              <p className="text-lg leading-relaxed text-white/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_mensa')) }} />
+              <p className="text-lg leading-relaxed text-text/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_style')) }} />
+              <p className="text-lg leading-relaxed text-text/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_mensa')) }} />
             </motion.article>
           </motion.div>
         </div>
       </section>
 
       {/* UPCOMING EVENTS PREVIEW */}
-      <section className="py-16 bg-background border-y border-white/5">
+      <section className="py-16 bg-background border-y border-border/5">
         <div className="container mx-auto px-4">
           <motion.div className="max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
             <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
@@ -333,9 +345,9 @@ const HomePage: React.FC = () => {
               <React.Suspense
                 fallback={
                   <div className="space-y-3" aria-hidden="true">
-                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
-                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
-                    <div className="h-[106px] rounded-xl bg-white/5 animate-pulse" />
+                    <div className="h-[106px] rounded-xl bg-text/5 animate-pulse" />
+                    <div className="h-[106px] rounded-xl bg-text/5 animate-pulse" />
+                    <div className="h-[106px] rounded-xl bg-text/5 animate-pulse" />
                   </div>
                 }
               >
@@ -395,7 +407,7 @@ const HomePage: React.FC = () => {
               <h3 id="press-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
-              <p className="text-white/70 mb-4 text-sm">{t('home.press.desc')}</p>
+              <p className="text-text/70 mb-4 text-sm">{t('home.press.desc')}</p>
               <Link to={routes.booking} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {t('home.press.cta')} →
               </Link>
@@ -404,7 +416,7 @@ const HomePage: React.FC = () => {
               <h3 id="bookers-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
-              <p className="text-white/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
+              <p className="text-text/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
               <Link to={routes.booking} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {t('home.bookers.cta')} →
               </Link>
@@ -414,14 +426,14 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* AUTHORITY LINKS */}
-      <section className="py-12 bg-background border-t border-white/5">
+      <section className="py-12 bg-background border-t border-border/5">
         <div className="container mx-auto px-4 text-center">
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-            <p className="text-xs font-semibold text-white/55 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
+            <p className="text-xs font-semibold text-text/55 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
-              <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
-              <a href={safeUrl(ARTIST.social.spotify.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/65 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
+              <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
+              <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
+              <a href={safeUrl(ARTIST.social.spotify.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
             </div>
           </motion.div>
         </div>
@@ -437,7 +449,7 @@ const HomePage: React.FC = () => {
               Junte-se à <span className="text-primary">Zen Tribe</span>
             </Trans>
           </motion.h2>
-          <motion.p variants={ITEM_VARIANTS} className="text-xl text-white/70 mb-10 max-w-2xl mx-auto">
+          <motion.p variants={ITEM_VARIANTS} className="text-xl text-text/70 mb-10 max-w-2xl mx-auto">
             {t('home.tribe.subtitle')}
           </motion.p>
           <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">

@@ -112,7 +112,7 @@ const BenefitCard = memo(({ icon, title, description, color }: BenefitCardProps)
       {icon}
     </div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
-    <p className="text-white/70">{description}</p>
+    <p className="text-text/70">{description}</p>
   </motion.div>
 ));
 BenefitCard.displayName = 'BenefitCard';
@@ -135,7 +135,7 @@ const MembershipCard = memo(({ tier, user, t }: MembershipCardProps) => (
     transition={{ duration: 0.5, delay: tier.popular ? 0 : 0.1 }}
   >
     {tier.popular && (
-      <div className="absolute top-0 right-0 bg-secondary text-white px-4 py-1 text-sm font-medium">
+      <div className="absolute top-0 right-0 bg-secondary text-text px-4 py-1 text-sm font-medium">
         {t('zenTribe.mostPopular')}
       </div>
     )}
@@ -157,7 +157,7 @@ const MembershipCard = memo(({ tier, user, t }: MembershipCardProps) => (
                 <polyline points="20 6 9 17 4 12"></polyline>
               </svg>
             </div>
-            <span className="text-white/80">{feature}</span>
+            <span className="text-text/80">{feature}</span>
           </li>
         ))}
       </ul>
@@ -187,7 +187,7 @@ const AchievementCard = memo(({ emoji, title, description, unlocked, t }: Achiev
   <div className={`bg-surface/50 rounded-lg p-4 transition-all duration-300 ${unlocked ? 'hover:bg-surface/70' : 'opacity-60'}`}>
     <div className="text-4xl mb-3">{emoji}</div>
     <h4 className="font-display text-lg mb-1">{title}</h4>
-    <p className="text-sm text-white/70">{description}</p>
+    <p className="text-sm text-text/70">{description}</p>
     {unlocked && (
       <div className="mt-2 text-xs text-success flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1">
@@ -312,7 +312,7 @@ const ZenTribePage: React.FC = () => {
                 {t('zenTribe.welcome')} <span className="text-primary">{t('zenTribe.tribe')}</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-text/70 max-w-2xl mx-auto">
                 {t('zenTribe.subtitle')}
               </p>
 
@@ -349,13 +349,13 @@ const ZenTribePage: React.FC = () => {
               <div className="mb-6 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
                 {t('zenTribe.philosophy.badge')}
               </div>
-              <h2 className="mb-6 text-2xl sm:text-4xl font-black font-display text-white">
+              <h2 className="mb-6 text-2xl sm:text-4xl font-black font-display text-text">
                 {t('zenTribe.philosophy.title')}
               </h2>
-              <div className="space-y-5 text-base sm:text-lg leading-relaxed text-white/70">
+              <div className="space-y-5 text-base sm:text-lg leading-relaxed text-text/70">
                 <p>{t('zenTribe.philosophy.p1')}</p>
                 <p>{t('zenTribe.philosophy.p2')}</p>
-                <p className="border-l-4 border-primary pl-5 text-white/85 italic">
+                <p className="border-l-4 border-primary pl-5 text-text/85 italic">
                   {t('zenTribe.philosophy.quote')}
                 </p>
               </div>
@@ -419,7 +419,7 @@ const ZenTribePage: React.FC = () => {
               <h2 className="text-2xl md:text-3xl font-bold mb-4 font-display">
                 {t('zenTribe.chooseMembership')}
               </h2>
-              <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-text/70 max-w-2xl mx-auto">
                 {t('zenTribe.selectTier')}
               </p>
             </div>
@@ -445,7 +445,7 @@ const ZenTribePage: React.FC = () => {
                 <h2 className="text-2xl sm:text-4xl font-bold mb-6 font-display">
                   {t('zenTribe.levelUpTitle')}
                 </h2>
-                <p className="text-lg text-white/70 mb-8">
+                <p className="text-lg text-text/70 mb-8">
                   {t('zenTribe.levelUpDesc')}
                 </p>
 
@@ -454,28 +454,28 @@ const ZenTribePage: React.FC = () => {
                     <TrendingUp className="text-primary mr-4 mt-1" size={24} />
                     <div>
                       <h3 className="text-xl font-display mb-2">{t('zenTribe.xpTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.xpDesc')}</p>
+                      <p className="text-text/70">{t('zenTribe.xpDesc')}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
                     <Award className="text-secondary mr-4 mt-1" size={24} />
                     <div>
                       <h3 className="text-xl font-display mb-2">{t('zenTribe.badgesTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.badgesDesc')}</p>
+                      <p className="text-text/70">{t('zenTribe.badgesDesc')}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
                     <Gift className="text-accent mr-4 mt-1" size={24} />
                     <div>
                       <h3 className="text-xl font-display mb-2">{t('zenTribe.rewardsTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.rewardsDesc')}</p>
+                      <p className="text-text/70">{t('zenTribe.rewardsDesc')}</p>
                     </div>
                   </div>
                   <div className="flex items-start">
                     <Clock className="text-success mr-4 mt-1" size={24} />
                     <div>
                       <h3 className="text-xl font-display mb-2">{t('zenTribe.streaksTitle')}</h3>
-                      <p className="text-white/70">{t('zenTribe.streaksDesc')}</p>
+                      <p className="text-text/70">{t('zenTribe.streaksDesc')}</p>
                     </div>
                   </div>
                 </div>
@@ -511,11 +511,11 @@ const ZenTribePage: React.FC = () => {
                     <span className="text-2xl text-primary">3</span>
                   </div>
                   <h5 className="text-lg mb-4">{t('zenTribe.zenApprentice')}</h5>
-                  <p className="text-sm text-white/70 mb-2">{t('zenTribe.progressToLevel')}</p>
+                  <p className="text-sm text-text/70 mb-2">{t('zenTribe.progressToLevel')}</p>
                   <div className="h-2 bg-background rounded-full overflow-hidden">
                     <div className="h-full bg-primary rounded-full" style={{ width: '87.5%' }}></div>
                   </div>
-                  <p className="text-right text-sm text-white/70 mt-1">350/400 XP</p>
+                  <p className="text-right text-sm text-text/70 mt-1">350/400 XP</p>
                 </div>
               </motion.div>
             </div>

@@ -31,7 +31,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' })
       animate={BREADCRUMB_ANIMATE}
       transition={BREADCRUMB_TRANSITION}
     >
-      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-white/70">
+      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-text/70">
         <li>
           <Link
             to={getLocalizedRoute('home', currentLang)}
@@ -43,7 +43,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' })
         </li>
         {items.map((item, index) => (
           <li key={`${item.label}-${index}`} className="flex min-w-0 items-center gap-2">
-            <ChevronRight size={14} className="flex-shrink-0 text-white/20" aria-hidden="true" />
+            <ChevronRight size={14} className="flex-shrink-0 text-text/20" aria-hidden="true" />
             {item.path ? (
               <Link
                 to={item.path}
@@ -52,7 +52,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' })
                 {item.label}
               </Link>
             ) : (
-              <span className="truncate py-1 font-semibold tracking-wide text-white/80" aria-current="page">
+              <span className="truncate py-1 font-semibold tracking-wide text-text/80" aria-current="page">
                 {item.label}
               </span>
             )}

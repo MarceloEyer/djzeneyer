@@ -40,7 +40,7 @@ const GlassCard = ({ children, className = '', glowColor = 'primary', noPadding 
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`relative overflow-hidden rounded-[2rem] border border-white/5 bg-surface/20 backdrop-blur-2xl transition-all duration-500 group ${glowClasses[glowColor]} ${noPadding ? '' : 'p-6 md:p-8'} ${className}`}
+      className={`relative overflow-hidden rounded-[2rem] border border-border/5 bg-surface/20 backdrop-blur-2xl transition-all duration-500 group ${glowClasses[glowColor]} ${noPadding ? '' : 'p-6 md:p-8'} ${className}`}
     >
       <div className={`absolute inset-0 bg-gradient-to-br from-${glowColor}/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700`} />
       <div className="relative z-10">{children}</div>
@@ -51,8 +51,8 @@ const GlassCard = ({ children, className = '', glowColor = 'primary', noPadding 
 const SectionHeader = ({ title, icon: Icon, badge }: { title: string; icon?: React.ElementType; badge?: string }) => (
   <div className="mb-6 flex items-center justify-between">
     <div className="flex items-center gap-3">
-      {Icon && <Icon className="text-white/40 group-hover:text-primary transition-colors" size={20} />}
-      <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/60 font-display">{title}</h3>
+      {Icon && <Icon className="text-text/40 group-hover:text-primary transition-colors" size={20} />}
+      <h3 className="text-sm font-black uppercase tracking-[0.2em] text-text/60 font-display">{title}</h3>
     </div>
     {badge && (
       <span className="rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-primary border border-primary/20">
@@ -75,7 +75,7 @@ const Gauge = ({ progress, strokeWidth = 14, color = 'rgb(var(--color-primary))'
         <circle
           cx={size / 2} cy={size / 2} r={radius}
           fill="transparent" stroke="currentColor"
-          strokeWidth={strokeWidth} className="text-white/5"
+          strokeWidth={strokeWidth} className="text-text/5"
         />
         <circle
           cx={size / 2} cy={size / 2} r={radius}
@@ -89,8 +89,8 @@ const Gauge = ({ progress, strokeWidth = 14, color = 'rgb(var(--color-primary))'
       </svg>
       <div className="absolute inset-0 rounded-full blur-2xl opacity-0 group-hover:opacity-20 transition-opacity" style={{ background: color }} />
       <div className="absolute flex flex-col items-center justify-center text-center px-2">
-        <span className="text-2xl sm:text-3xl font-black font-display text-white">{progress}%</span>
-        {label && <span className="text-[9px] font-black uppercase tracking-widest text-white/40 mt-1">{label}</span>}
+        <span className="text-2xl sm:text-3xl font-black font-display text-text">{progress}%</span>
+        {label && <span className="text-[9px] font-black uppercase tracking-widest text-text/40 mt-1">{label}</span>}
         {subLabel && <span className="text-[8px] text-primary font-bold mt-1 leading-tight text-center">{subLabel}</span>}
       </div>
     </div>
@@ -102,12 +102,12 @@ const HexBadge = ({ earned, title, image, size = '14' }: { earned: boolean; titl
     whileHover={HEX_BADGE_HOVER}
     className={`relative flex items-center justify-center group ${earned ? 'opacity-100' : 'opacity-30 grayscale'}`}
   >
-    <div className={`clip-hex flex items-center justify-center p-[2px] ${earned ? 'bg-gradient-to-br from-primary to-secondary' : 'bg-white/10'}`} style={{ width: `${size}rem`, height: `${size}rem` }}>
-      <div className="clip-hex h-full w-full bg-surface-dark flex items-center justify-center overflow-hidden bg-black/40">
+    <div className={`clip-hex flex items-center justify-center p-[2px] ${earned ? 'bg-gradient-to-br from-primary to-secondary' : 'bg-text/10'}`} style={{ width: `${size}rem`, height: `${size}rem` }}>
+      <div className="clip-hex h-full w-full bg-surface-dark flex items-center justify-center overflow-hidden bg-background/40">
         {image ? (
           <img src={safeUrl(image, '')} alt={title} className="h-2/3 w-2/3 object-contain" loading="lazy" width="64" height="64" />
         ) : (
-          <Award className={`h-1/2 w-1/2 ${earned ? 'text-primary' : 'text-white/20'}`} />
+          <Award className={`h-1/2 w-1/2 ${earned ? 'text-primary' : 'text-text/20'}`} />
         )}
       </div>
     </div>
@@ -142,7 +142,7 @@ const DashboardContent = () => {
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center bg-background">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center">
           <Loader2 className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
-          <p className="text-xl font-bold text-white tracking-widest uppercase font-display">{t('dashboard.loading')}</p>
+          <p className="text-xl font-bold text-text tracking-widest uppercase font-display">{t('dashboard.loading')}</p>
         </motion.div>
       </div>
     );
@@ -153,8 +153,8 @@ const DashboardContent = () => {
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center bg-background">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md px-4">
           <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-black text-white mb-2 font-display">{t('dashboard.error_loading')}</h2>
-          <p className="text-sm text-white/40 mb-8">{gamiError}</p>
+          <h2 className="text-2xl font-black text-text mb-2 font-display">{t('dashboard.error_loading')}</h2>
+          <p className="text-sm text-text/40 mb-8">{gamiError}</p>
           <button onClick={gamiRefresh} className="btn btn-primary btn-lg rounded-2xl w-full">
             {t('common.retry')}
           </button>
@@ -213,7 +213,7 @@ const DashboardContent = () => {
   const currentYear = user?.user_registered_year || CURRENT_YEAR;
 
   return (
-    <div className="pt-24 pb-20 min-h-screen bg-background text-white selection:bg-primary/30">
+    <div className="pt-24 pb-20 min-h-screen bg-background text-text selection:bg-primary/30">
       <HeadlessSEO
         title={`${t('dashboard_page_title')} | Zen Eyer`}
         description={t('dashboard_page_meta_desc')}
@@ -238,7 +238,7 @@ const DashboardContent = () => {
                 onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/images/default-avatar.svg'; }}
               />
               <div className="absolute -bottom-2 -right-2 z-20 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-xl bg-primary shadow-lg border-2 border-background">
-                <Crown size={13} className="fill-white text-white" />
+                <Crown size={13} className="fill-white text-text" />
               </div>
             </div>
             <div className="min-w-0">
@@ -246,19 +246,19 @@ const DashboardContent = () => {
                 <h1 className="text-2xl sm:text-4xl md:text-5xl font-black font-display tracking-tighter truncate">
                   {user.display_name || user.name}
                 </h1>
-                <Bell size={18} className="text-white/20 hover:text-white cursor-pointer transition-colors shrink-0" />
+                <Bell size={18} className="text-text/20 hover:text-text cursor-pointer transition-colors shrink-0" />
               </div>
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm font-bold opacity-70">
                 <span className="flex items-center gap-1.5 text-primary">
                   <Flame size={15} className="fill-current animate-bounce" />
                   {t('dashboard.level')} {rankLevel}
                 </span>
-                <span className="text-white/30">•</span>
-                <span className="uppercase tracking-widest text-xs px-2 py-0.5 rounded bg-white/10 border border-white/10">
+                <span className="text-text/30">•</span>
+                <span className="uppercase tracking-widest text-xs px-2 py-0.5 rounded bg-text/10 border border-border/10">
                   {currentRank}
                 </span>
-                <span className="hidden sm:inline text-white/30">•</span>
-                <span className="hidden sm:inline uppercase tracking-widest text-[10px] text-white/50">
+                <span className="hidden sm:inline text-text/30">•</span>
+                <span className="hidden sm:inline uppercase tracking-widest text-[10px] text-text/50">
                   {t('dashboard.joinedYear', { year: currentYear })}
                 </span>
               </div>
@@ -267,16 +267,16 @@ const DashboardContent = () => {
           
           <div className="flex flex-col sm:items-end gap-2 text-left sm:text-right">
              <div className="flex items-center gap-3 mb-1">
-                <span className="text-xs font-black uppercase tracking-widest text-white/30">{t('dashboard.rankProgression')}</span>
+                <span className="text-xs font-black uppercase tracking-widest text-text/30">{t('dashboard.rankProgression')}</span>
                 <span className="text-sm font-black text-primary font-display">{rankProgress}%</span>
              </div>
-             <div className="h-2 w-full sm:w-64 bg-white/5 rounded-full overflow-hidden border border-white/5">
+             <div className="h-2 w-full sm:w-64 bg-text/5 rounded-full overflow-hidden border border-border/5">
                 <div 
                   style={{ width: `${rankProgress}%` }}
                   className="h-full bg-gradient-to-r from-primary to-secondary shadow-neon-sm"
                 />
              </div>
-             <p className="text-[10px] font-black uppercase tracking-widest text-white/20 mt-1">
+             <p className="text-[10px] font-black uppercase tracking-widest text-text/20 mt-1">
                 {getNumberFormatter(i18n.language).format(rankExpCurrent)} / {getNumberFormatter(i18n.language).format(rankExpRequired)} XP
              </p>
           </div>
@@ -299,12 +299,12 @@ const DashboardContent = () => {
                 ].map((stat, i) => (
                   <div key={i} className="flex items-center justify-between group cursor-default">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2 rounded-xl bg-white/5 border border-white/5 ${stat.color} group-hover:scale-110 transition-transform`}>
+                      <div className={`p-2 rounded-xl bg-text/5 border border-border/5 ${stat.color} group-hover:scale-110 transition-transform`}>
                         <stat.icon size={18} className={stat.fill} />
                       </div>
-                      <span className="text-xs font-bold text-white/50">{stat.label}</span>
+                      <span className="text-xs font-bold text-text/50">{stat.label}</span>
                     </div>
-                    <span className="text-base sm:text-lg font-black font-display group-hover:text-white transition-colors">{stat.value}</span>
+                    <span className="text-base sm:text-lg font-black font-display group-hover:text-text transition-colors">{stat.value}</span>
                   </div>
                 ))}
               </div>
@@ -319,20 +319,20 @@ const DashboardContent = () => {
               />
               <div className="space-y-5">
                 {activeQuests.length === 0 ? (
-                  <div className="py-4 text-center text-white/40 text-xs font-bold uppercase tracking-widest">
+                  <div className="py-4 text-center text-text/40 text-xs font-bold uppercase tracking-widest">
                     {t('dashboard.allCleared')}
                   </div>
                 ) : (
                   activeQuests.map((quest, i) => (
                     <div key={i} className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-white/80">{quest.label}</span>
+                        <span className="text-[11px] font-bold text-text/80">{quest.label}</span>
                         {quest.done
                           ? <CircleCheck size={12} className="text-success" />
                           : <TrendingUp size={12} className="text-primary" />
                         }
                       </div>
-                      <div className="h-1.5 w-full bg-black/40 rounded-full overflow-hidden">
+                      <div className="h-1.5 w-full bg-background/40 rounded-full overflow-hidden">
                         <div
                           style={{ width: `${quest.progress}%` }}
                           className={`h-full ${quest.done ? 'bg-success' : 'bg-primary'}`}
@@ -365,15 +365,15 @@ const DashboardContent = () => {
                 <div className="space-y-6">
                    <div>
                      <h4 className="text-2xl font-black font-display leading-none mb-1">{t('dashboard.stats.ascension')}</h4>
-                     <p className="text-white/40 text-xs font-bold uppercase tracking-widest">{currentRank}</p>
+                     <p className="text-text/40 text-xs font-bold uppercase tracking-widest">{currentRank}</p>
                    </div>
                    <div className="space-y-3">
-                     <p className="text-sm text-white/60 italic leading-relaxed">
+                     <p className="text-sm text-text/60 italic leading-relaxed">
                         "{t('dashboard.ascension_quote')}"
                      </p>
                      <div className="flex gap-2">
                         {STAR_INDICES.map(i => (
-                          <Star key={i} size={12} className={i < rankStars ? 'text-yellow-500 fill-yellow-500' : 'text-white/10'} />
+                          <Star key={i} size={12} className={i < rankStars ? 'text-yellow-500 fill-yellow-500' : 'text-text/10'} />
                         ))}
                      </div>
                    </div>
@@ -398,7 +398,7 @@ const DashboardContent = () => {
               />
               <div className="grid grid-cols-5 gap-2 sm:gap-3">
                 {earnedAchievements.length === 0 ? (
-                  <div className="col-span-full py-6 text-center text-white/20 text-xs font-bold italic">
+                  <div className="col-span-full py-6 text-center text-text/20 text-xs font-bold italic">
                     {t('dashboard.startExploring')}
                   </div>
                 ) : (
@@ -412,7 +412,7 @@ const DashboardContent = () => {
               </div>
               <button 
                 onClick={() => navigate(routes.myAccount)}
-                className="mt-5 w-full py-2.5 rounded-xl border border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white hover:bg-white/10 transition-all"
+                className="mt-5 w-full py-2.5 rounded-xl border border-border/5 bg-text/5 text-[10px] font-black uppercase tracking-[0.2em] text-text/40 hover:text-text hover:bg-text/10 transition-all"
               >
                 {t('dashboard.viewAchievementTree')}
               </button>
@@ -423,16 +423,16 @@ const DashboardContent = () => {
                <SectionHeader title={t('dashboard.leaderboard')} icon={Trophy} />
                <div className="space-y-3">
                   {leaderboard.length === 0 ? (
-                    <div className="py-4 text-center text-white/20 text-xs italic">
+                    <div className="py-4 text-center text-text/20 text-xs italic">
                       {t('dashboard.findingTribeMembers')}
                     </div>
                   ) : (
                     leaderboard.map((entry, i) => (
-                      <div key={entry.user_id} className={`flex items-center gap-3 p-3 rounded-2xl transition-all ${entry.user_id === user.id ? 'bg-primary/20 border border-primary/30' : 'bg-black/30 border border-white/5'}`}>
-                        <span className={`w-5 text-sm font-black font-display shrink-0 ${i === 0 ? 'text-yellow-500' : 'text-white/30'}`}>{i + 1}.</span>
+                      <div key={entry.user_id} className={`flex items-center gap-3 p-3 rounded-2xl transition-all ${entry.user_id === user.id ? 'bg-primary/20 border border-primary/30' : 'bg-background/30 border border-border/5'}`}>
+                        <span className={`w-5 text-sm font-black font-display shrink-0 ${i === 0 ? 'text-yellow-500' : 'text-text/30'}`}>{i + 1}.</span>
                         <img
                           src={safeUrl(entry.avatar, '/images/default-avatar.svg')}
-                          className="h-8 w-8 rounded-full border border-white/10 shrink-0 object-cover"
+                          className="h-8 w-8 rounded-full border border-border/10 shrink-0 object-cover"
                           alt={entry.display_name}
                           loading="lazy"
                           width="32"
@@ -442,7 +442,7 @@ const DashboardContent = () => {
                         <span className="flex-1 text-sm font-bold truncate min-w-0">{entry.display_name}</span>
                         <div className="flex items-center gap-1 shrink-0">
                           <span className="text-xs font-black font-display text-primary">{getNumberFormatter(i18n.language).format(entry.points)}</span>
-                          <span className="text-[10px] font-bold text-white/20 uppercase">XP</span>
+                          <span className="text-[10px] font-bold text-text/20 uppercase">XP</span>
                         </div>
                       </div>
                     ))
@@ -458,9 +458,9 @@ const DashboardContent = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                      <h4 className="font-black font-display text-base sm:text-lg uppercase tracking-tight">{t('dashboard.vipRewardsShop')}</h4>
-                     <p className="text-xs text-white/50 font-medium leading-snug">{t('dashboard.vipRewardsDesc')}</p>
+                     <p className="text-xs text-text/50 font-medium leading-snug">{t('dashboard.vipRewardsDesc')}</p>
                   </div>
-                  <button onClick={() => navigate(routes.shop)} className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-full border border-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                  <button onClick={() => navigate(routes.shop)} className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-full border border-border/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
                      <ArrowRight size={16} />
                   </button>
                </div>

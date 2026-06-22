@@ -34,7 +34,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
 
   return (
     <div>
-      <div className="rounded-xl overflow-hidden border border-white/10 bg-surface">
+      <div className="rounded-xl overflow-hidden border border-border/10 bg-surface">
         <img
           src={safeUrl(mainImage, placeholderImage)}
           alt={product.name || ''}
@@ -53,7 +53,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
               type="button"
               onClick={() => setActiveImage(img.src)}
               className={`rounded-lg overflow-hidden border transition-all ${
-                activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-white/10 hover:border-white/30'
+                activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-border/10 hover:border-border/30'
               }`}
             >
               <img src={safeUrl(img.sizes?.thumbnail || img.src, '')} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
@@ -147,7 +147,7 @@ const ProductPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-text">
         <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
@@ -169,9 +169,9 @@ const ProductPage: React.FC = () => {
         schema={productSchema}
       />
 
-      <div className="min-h-screen bg-background text-white pb-20">
+      <div className="min-h-screen bg-background text-text pb-20">
         <div className="container mx-auto px-4 py-10">
-          <Link to={shopPath} className="inline-flex items-center gap-2 text-white/70 hover:text-primary mb-6">
+          <Link to={shopPath} className="inline-flex items-center gap-2 text-text/70 hover:text-primary mb-6">
             <ArrowLeft size={18} />
             {t('common.checkout.back_shop')}
           </Link>
@@ -184,7 +184,7 @@ const ProductPage: React.FC = () => {
                 {product.categories?.map((category) => (
                   <span
                     key={category.id}
-                    className="text-xs px-3 py-1 rounded-full bg-white/10 border border-white/10 text-white/80"
+                    className="text-xs px-3 py-1 rounded-full bg-text/10 border border-border/10 text-text/80"
                   >
                     {category.name}
                   </span>
@@ -197,14 +197,14 @@ const ProductPage: React.FC = () => {
 
               {product.short_description && (
                 <div
-                  className="text-white/80 text-lg mb-6"
+                  className="text-text/80 text-lg mb-6"
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.short_description) }}
                 />
               )}
 
               <div className="flex items-center gap-4 mb-6">
                 {product.on_sale && product.regular_price && (
-                  <span className="text-white/40 line-through text-lg">
+                  <span className="text-text/40 line-through text-lg">
                     {formatPrice(product.regular_price)}
                   </span>
                 )}
@@ -223,7 +223,7 @@ const ProductPage: React.FC = () => {
                   {t('shop.buy_now')}
                 </button>
               ) : (
-                <span className="text-xs text-white/40 uppercase font-bold border border-white/10 px-3 py-2 rounded">
+                <span className="text-xs text-text/40 uppercase font-bold border border-border/10 px-3 py-2 rounded">
                   {t('shop.out_of_stock')}
                 </span>
               )}

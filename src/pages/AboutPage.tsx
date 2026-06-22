@@ -134,28 +134,28 @@ const AboutPage: React.FC = () => {
       year: '2005-2010',
       title: t('about.timeline.m1.title'),
       description: t('about.timeline.m1.desc'),
-      icon: <Heart className="w-8 h-8 text-white" />,
+      icon: <Heart className="w-8 h-8 text-text" />,
       color: 'bg-gradient-to-br from-red-500 to-pink-600',
     },
     {
       year: '2012',
       title: t('about.timeline.m2.title'),
       description: t('about.timeline.m2.desc'),
-      icon: <Music2 className="w-8 h-8 text-white" />,
+      icon: <Music2 className="w-8 h-8 text-text" />,
       color: 'bg-gradient-to-br from-purple-500 to-indigo-600',
     },
     {
       year: '2015-2019',
       title: t('about.timeline.m3.title'),
       description: t('about.timeline.m3.desc'),
-      icon: <Brain className="w-8 h-8 text-white" />,
+      icon: <Brain className="w-8 h-8 text-text" />,
       color: 'bg-gradient-to-br from-blue-500 to-cyan-600',
     },
     {
       year: '2022',
       title: t('about.timeline.m4.title'),
       description: t('about.timeline.m4.desc'),
-      icon: <Trophy className="w-8 h-8 text-white" />,
+      icon: <Trophy className="w-8 h-8 text-text" />,
       color: 'bg-gradient-to-br from-yellow-500 to-amber-600',
     },
   ], [t]);
@@ -230,7 +230,7 @@ const AboutPage: React.FC = () => {
       />
 
       {/* Layout visual */}
-      <div className="min-h-screen bg-background text-white relative overflow-hidden">
+      <div className="min-h-screen bg-background text-text relative overflow-hidden">
         {/* Enhanced Background Decorations - Premium Glows */}
         <div className="absolute top-0 left-0 w-full h-[150vh] overflow-hidden pointer-events-none -z-0">
           <div className="absolute top-[5%] left-[-10%] w-[60%] h-[40%] bg-primary/10 blur-[130px] rounded-full" />
@@ -265,7 +265,7 @@ const AboutPage: React.FC = () => {
                   {t('about.hero.badge')}
                 </div>
               </motion.div>
-              <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
+              <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-text/80 max-w-3xl mx-auto leading-relaxed" data-speakable>
                 {t('about.hero.subtitle')}
                 <span id="pronunciation-faq-summary" className="sr-only">{t('about.hero.pronunciation_hint')}</span>
               </p>
@@ -284,11 +284,11 @@ const AboutPage: React.FC = () => {
                   className="group relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors duration-500 rounded-2xl" />
-                  <div className="relative bg-surface/40 backdrop-blur-md p-6 md:p-8 rounded-2xl border border-white/5 group-hover:border-primary/30 transition-all duration-300 flex flex-col items-center text-center h-full shadow-lg">
+                  <div className="relative bg-surface/40 backdrop-blur-md p-6 md:p-8 rounded-2xl border border-border/5 group-hover:border-primary/30 transition-all duration-300 flex flex-col items-center text-center h-full shadow-lg">
                     <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300">
                       {item.icon}
                     </div>
-                    <div className="text-3xl md:text-4xl font-black text-white mb-2 tracking-tighter">
+                    <div className="text-3xl md:text-4xl font-black text-text mb-2 tracking-tighter">
                       {item.value}
                     </div>
                     <div className="text-primary font-bold text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
@@ -308,7 +308,7 @@ const AboutPage: React.FC = () => {
               initial={FADE_IN_INITIAL}
               whileInView={FADE_IN_ANIMATE}
               viewport={VIEWPORT_ONCE}
-              className="space-y-8 text-lg md:text-xl text-white/70 leading-relaxed font-light safe-html-contrast"
+              className="space-y-8 text-lg md:text-xl text-text/70 leading-relaxed font-light safe-html-contrast"
             >
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p1')) }} />
               <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('about.story.p2')) }} />
@@ -338,7 +338,7 @@ const AboutPage: React.FC = () => {
                   Performing at International <span className="text-primary">Festivals</span>
                 </Trans>
               </h2>
-              <p className="text-white/50 max-w-xl mx-auto text-base leading-relaxed">
+              <p className="text-text/50 max-w-xl mx-auto text-base leading-relaxed">
                 {t('about.performed_at.subtitle')}
               </p>
             </motion.div>
@@ -355,12 +355,12 @@ const AboutPage: React.FC = () => {
                   viewport={VIEWPORT_ONCE_MARGIN}
                   custom={index}
                   variants={prefersReducedMotion ? undefined : ITEM_VARIANTS}
-                  className="group flex items-center gap-4 rounded-xl border border-white/10 bg-surface/40 p-4 transition-all hover:border-primary/40 hover:bg-surface/60"
+                  className="group flex items-center gap-4 rounded-xl border border-border/10 bg-surface/40 p-4 transition-all hover:border-primary/40 hover:bg-surface/60"
                 >
                   <span className="text-3xl grayscale transition-all duration-500 group-hover:grayscale-0 flex-shrink-0">{event.flag}</span>
                   <div className="min-w-0">
-                    <div className="text-base font-bold text-white leading-tight group-hover:text-primary transition-colors truncate">{event.name}</div>
-                    <div className="text-xs text-white/40 uppercase tracking-widest mt-1">{t(`about.performed_at.countries.${event.country}`, event.country)}</div>
+                    <div className="text-base font-bold text-text leading-tight group-hover:text-primary transition-colors truncate">{event.name}</div>
+                    <div className="text-xs text-text/40 uppercase tracking-widest mt-1">{t(`about.performed_at.countries.${event.country}`, event.country)}</div>
                   </div>
                 </motion.a>
               ))}
@@ -386,26 +386,26 @@ const AboutPage: React.FC = () => {
                   Verified <span className="text-primary">Artist Facts</span>
                 </Trans>
               </h2>
-              <p className="mx-auto max-w-3xl text-base leading-relaxed text-white/60">
+              <p className="mx-auto max-w-3xl text-base leading-relaxed text-text/60">
                 {t('about.facts.subtitle')}
               </p>
             </motion.div>
 
             <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-              <div className="rounded-2xl border border-white/10 bg-surface/40 p-5 md:p-7">
-                <h3 className="mb-5 text-xl font-black text-white">{t('about.facts.profile_heading')}</h3>
+              <div className="rounded-2xl border border-border/10 bg-surface/40 p-5 md:p-7">
+                <h3 className="mb-5 text-xl font-black text-text">{t('about.facts.profile_heading')}</h3>
                 <dl className="grid gap-4 sm:grid-cols-2">
                   {FACTS_DATA.map((fact) => (
-                    <div key={fact.label} className="rounded-xl border border-white/8 bg-white/[0.03] p-4">
+                    <div key={fact.label} className="rounded-xl border border-border/8 bg-text/[0.03] p-4">
                       <dt className="mb-1 text-xs font-bold uppercase tracking-widest text-primary/80">{fact.label}</dt>
-                      <dd className="text-sm leading-relaxed text-white/82">{fact.value}</dd>
+                      <dd className="text-sm leading-relaxed text-text/82">{fact.value}</dd>
                     </div>
                   ))}
                 </dl>
               </div>
 
-              <div className="rounded-2xl border border-white/10 bg-surface/40 p-5 md:p-7">
-                <h3 className="mb-5 text-xl font-black text-white">{t('about.facts.identifiers_heading')}</h3>
+              <div className="rounded-2xl border border-border/10 bg-surface/40 p-5 md:p-7">
+                <h3 className="mb-5 text-xl font-black text-text">{t('about.facts.identifiers_heading')}</h3>
                 <div className="space-y-3">
                   {AUTHORITY_LINKS.map((link) => (
                     <a
@@ -413,14 +413,14 @@ const AboutPage: React.FC = () => {
                       href={safeUrl(link.url, '/')}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block rounded-xl border border-white/8 bg-white/[0.03] p-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
+                      className="block rounded-xl border border-border/8 bg-text/[0.03] p-4 transition-colors hover:border-primary/40 hover:bg-primary/5"
                     >
                       <span className="mb-1 block text-xs font-bold uppercase tracking-widest text-primary/80">{link.label}</span>
-                      <span className="break-words text-sm leading-relaxed text-white/82">{link.value}</span>
+                      <span className="break-words text-sm leading-relaxed text-text/82">{link.value}</span>
                     </a>
                   ))}
                 </div>
-                <p className="mt-5 text-xs leading-relaxed text-white/45">
+                <p className="mt-5 text-xs leading-relaxed text-text/45">
                   {t('about.facts.note')}
                 </p>
               </div>
@@ -466,7 +466,7 @@ const AboutPage: React.FC = () => {
                         <h3 className="text-2xl font-display font-bold mb-3">
                           {milestone.title}
                         </h3>
-                        <p className="text-white/70 leading-relaxed">
+                        <p className="text-text/70 leading-relaxed">
                           {milestone.description}
                         </p>
                       </div>
@@ -485,7 +485,7 @@ const AboutPage: React.FC = () => {
               initial={FADE_IN_INITIAL}
               whileInView={FADE_IN_ANIMATE}
               viewport={VIEWPORT_ONCE}
-              className="card p-8 md:p-12 text-center bg-surface/50 rounded-2xl border border-white/10"
+              className="card p-8 md:p-12 text-center bg-surface/50 rounded-2xl border border-border/10"
             >
               <Heart className="w-16 h-16 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
@@ -493,10 +493,10 @@ const AboutPage: React.FC = () => {
                   My <span className="text-primary">Philosophy</span>
                 </Trans>
               </h2>
-              <p className="text-lg text-white/80 leading-relaxed italic">
+              <p className="text-lg text-text/80 leading-relaxed italic">
                 {t('about.philosophy.quote')}
               </p>
-              <div className="mt-8 text-white/60 font-semibold">- {artist.identity.stageName}</div>
+              <div className="mt-8 text-text/60 font-semibold">- {artist.identity.stageName}</div>
             </motion.div>
           </div>
         </section>
@@ -509,7 +509,7 @@ const AboutPage: React.FC = () => {
               whileInView={ITEM_ANIMATE}
               viewport={VIEWPORT_ONCE}
               transition={FADE_IN_UP_TRANSITION}
-              className="card bg-surface/50 rounded-2xl p-6 sm:p-10 md:p-12 border border-white/10 text-center"
+              className="card bg-surface/50 rounded-2xl p-6 sm:p-10 md:p-12 border border-border/10 text-center"
             >
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
@@ -517,7 +517,7 @@ const AboutPage: React.FC = () => {
                   Let's <span className="text-primary">Talk?</span>
                 </Trans>
               </h2>
-              <p className="text-base sm:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+              <p className="text-base sm:text-xl text-text/80 mb-8 max-w-2xl mx-auto">
                 {t('about.cta.desc')}
               </p>
               <motion.a

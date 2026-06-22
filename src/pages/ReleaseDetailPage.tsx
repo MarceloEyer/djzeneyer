@@ -274,7 +274,7 @@ const ReleaseDetailPage: React.FC = () => {
               alt={`${release.name} cover`}
               width="192"
               height="192"
-              className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shadow-lg flex-shrink-0 bg-white/5"
+              className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shadow-lg flex-shrink-0 bg-text/5"
               fetchPriority="high"
               decoding="async"
             />
@@ -323,7 +323,7 @@ const ReleaseDetailPage: React.FC = () => {
           </motion.div>
 
           {metadataRows.length > 0 && (
-            <section className="mt-8 rounded-2xl border border-white/10 bg-surface/35 p-4">
+            <section className="mt-8 rounded-2xl border border-border/10 bg-surface/35 p-4">
               <h2 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 <Info size={14} />
                 {t('music.release_detail.facts_title')}
@@ -353,7 +353,7 @@ const ReleaseDetailPage: React.FC = () => {
                 height={isAppleMusicEmbed ? 175 : 152}
                 allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                 loading="lazy"
-                className="rounded-xl border border-white/5"
+                className="rounded-xl border border-border/5"
                 title={t('music.release_detail.embed_title', { name: release.name })}
               />
             </motion.div>
@@ -376,7 +376,7 @@ const ReleaseDetailPage: React.FC = () => {
                     initial="hidden"
                     animate="visible"
                     custom={i}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 text-sm font-medium hover:border-white/30 hover:bg-white/5 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border/10 text-sm font-medium hover:border-border/30 hover:bg-text/5 transition-colors"
                   >
                     <Music2 size={14} style={{ color: p.color }} />
                     {p.label}
@@ -401,7 +401,7 @@ const ReleaseDetailPage: React.FC = () => {
                     initial="hidden"
                     animate="visible"
                     custom={i}
-                    className="flex items-center gap-4 p-3 rounded-lg border border-white/5 hover:border-white/10 transition-colors"
+                    className="flex items-center gap-4 p-3 rounded-lg border border-border/5 hover:border-border/10 transition-colors"
                   >
                     <span className="text-xs text-muted-foreground w-5 text-right flex-shrink-0">
                       {i + 1}
@@ -454,7 +454,7 @@ const ReleaseDetailPage: React.FC = () => {
               <ListMusic size={14} />
               {t('music.release_detail.musicbrainz_ready_title')}
             </h2>
-            <div className="rounded-2xl border border-white/10 bg-surface/30 p-4">
+            <div className="rounded-2xl border border-border/10 bg-surface/30 p-4">
               <dl className="grid gap-3 text-sm sm:grid-cols-2">
                 <div>
                   <dt className="text-muted-foreground">{t('music.release_detail.recording_title_label')}</dt>

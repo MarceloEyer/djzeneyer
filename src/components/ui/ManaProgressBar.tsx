@@ -32,12 +32,12 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
         {(label || subLabel) && (
           <div className="flex flex-col">
             {label && (
-              <span className="font-display text-[10px] font-black uppercase tracking-[0.25em] text-white/30 transition-colors group-hover:text-primary/60">
+              <span className="font-display text-[10px] font-black uppercase tracking-[0.25em] text-text/30 transition-colors group-hover:text-primary/60">
                 {label}
               </span>
             )}
             {subLabel && (
-              <span className="mt-0.5 font-display text-sm font-bold tracking-tight text-white/90 transition-colors group-hover:text-white">
+              <span className="mt-0.5 font-display text-sm font-bold tracking-tight text-text/90 transition-colors group-hover:text-text">
                 {subLabel}
               </span>
             )}
@@ -49,7 +49,7 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
         </span>
       </div>
 
-      <div className="relative h-4 w-full overflow-hidden rounded-full border border-white/10 bg-[#0a0f16] p-[2px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.05)]">
+      <div className="relative h-4 w-full overflow-hidden rounded-full border border-border/10 bg-[#0a0f16] p-[2px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.05)]">
         <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-white/10 to-transparent" />
 
         <motion.div
@@ -61,7 +61,7 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
             boxShadow: 'inset 0 0 8px rgba(255,255,255,0.4), 0 0 15px rgba(var(--color-primary),0.5)',
           }}
         >
-          <div className="absolute inset-x-0 top-0 z-10 h-[45%] bg-white/20" />
+          <div className="absolute inset-x-0 top-0 z-10 h-[45%] bg-text/20" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/30" />
 
           {clampedProgress > 0 && (

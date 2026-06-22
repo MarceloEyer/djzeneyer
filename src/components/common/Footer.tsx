@@ -68,7 +68,7 @@ const Footer: React.FC = () => {
   const whatsappLink = `https://wa.me/${ARTIST.contact.whatsapp.number}`;
 
   return (
-    <footer className="bg-background pt-20 pb-10 border-t border-white/5">
+    <footer className="bg-background pt-20 pb-10 border-t border-border/5">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
 
@@ -82,23 +82,23 @@ const Footer: React.FC = () => {
                 <span className="text-primary">DJ</span> Zen Eyer
               </span>
             </Link>
-            <p className="text-white/75 mb-4 text-sm leading-relaxed">
+            <p className="text-text/75 mb-4 text-sm leading-relaxed">
               {t('footer_bio')}
             </p>
             <div className="flex space-x-4">
-              <a href={safeUrl(ARTIST.social.instagram.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.instagram')}>
+              <a href={safeUrl(ARTIST.social.instagram.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/75 hover:text-primary transition-colors" aria-label={t('social.instagram')}>
                 <InstagramIcon size={22} />
               </a>
-              <a href={safeUrl(ARTIST.social.soundcloud.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.soundcloud')}>
+              <a href={safeUrl(ARTIST.social.soundcloud.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/75 hover:text-primary transition-colors" aria-label={t('social.soundcloud')}>
                 <Music2 size={22} />
               </a>
-              <a href={safeUrl(ARTIST.social.YouTube.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.YouTube')}>
+              <a href={safeUrl(ARTIST.social.YouTube.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/75 hover:text-primary transition-colors" aria-label={t('social.YouTube')}>
                 <YouTubeIcon size={22} />
               </a>
-              <a href={safeUrl(ARTIST.social.facebook.url, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.facebook')}>
+              <a href={safeUrl(ARTIST.social.facebook.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/75 hover:text-primary transition-colors" aria-label={t('social.facebook')}>
                 <FacebookIcon size={22} />
               </a>
-              <a href={safeUrl(whatsappLink, '/')} target="_blank" rel="noopener noreferrer" className="text-white/75 hover:text-primary transition-colors" aria-label={t('social.whatsapp')}>
+              <a href={safeUrl(whatsappLink, '/')} target="_blank" rel="noopener noreferrer" className="text-text/75 hover:text-primary transition-colors" aria-label={t('social.whatsapp')}>
                 <MessageCircle size={22} />
               </a>
             </div>
@@ -112,31 +112,31 @@ const Footer: React.FC = () => {
 
           {/* 2. Quick Links */}
           <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_quick_links')}</h3>
+            <h3 className="text-lg font-display font-semibold mb-4 text-text">{t('footer_quick_links')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={routes.events} className="text-white/75 hover:text-primary transition-colors">{t('nav.events')}</Link></li>
-              <li><Link to={routes.music} className="text-white/75 hover:text-primary transition-colors">{t('nav.music')}</Link></li>
-              <li><Link to={routes.shop} className="text-white/75 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
-              <li><Link to={routes.zentribe} className="text-white/75 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
-              <li><Link to={routes.booking} className="text-white/75 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
+              <li><Link to={routes.events} className="text-text/75 hover:text-primary transition-colors">{t('nav.events')}</Link></li>
+              <li><Link to={routes.music} className="text-text/75 hover:text-primary transition-colors">{t('nav.music')}</Link></li>
+              <li><Link to={routes.shop} className="text-text/75 hover:text-primary transition-colors">{t('nav.shop')}</Link></li>
+              <li><Link to={routes.zentribe} className="text-text/75 hover:text-primary transition-colors">{t('nav.tribe')}</Link></li>
+              <li><Link to={routes.booking} className="text-text/75 hover:text-primary transition-colors">{t('nav.booking')}</Link></li>
             </ul>
           </div>
 
           {/* 3. Discover More */}
           <div>
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_discover_more')}</h3>
+            <h3 className="text-lg font-display font-semibold mb-4 text-text">{t('footer_discover_more')}</h3>
             <ul className="space-y-2.5">
-              <li><Link to={routes.about} className="text-white/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
-              <li><Link to={routes.news} className="text-white/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
-              <li><Link to={routes.faq} className="text-white/75 hover:text-primary transition-colors">{t('nav.faq')}</Link></li>
-              <li><Link to={routes.encyclopedia} className="text-white/75 hover:text-primary transition-colors">{t('encyclopedia.nav_label')}</Link></li>
-              <li><Link to={routes.media} className="text-white/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
+              <li><Link to={routes.about} className="text-text/75 hover:text-primary transition-colors">{t('nav.about')}</Link></li>
+              <li><Link to={routes.news} className="text-text/75 hover:text-primary transition-colors">{t('news.label')}</Link></li>
+              <li><Link to={routes.faq} className="text-text/75 hover:text-primary transition-colors">{t('nav.faq')}</Link></li>
+              <li><Link to={routes.encyclopedia} className="text-text/75 hover:text-primary transition-colors">{t('encyclopedia.nav_label')}</Link></li>
+              <li><Link to={routes.media} className="text-text/75 hover:text-primary transition-colors">{t('nav.media')}</Link></li>
             </ul>
           </div>
 
           {/* 4. Newsletter */}
           <div className="lg:col-span-1">
-            <h3 className="text-lg font-display font-semibold mb-4 text-white">{t('footer_join_newsletter')}</h3>
+            <h3 className="text-lg font-display font-semibold mb-4 text-text">{t('footer_join_newsletter')}</h3>
             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <input
                 type="email"
@@ -145,7 +145,7 @@ const Footer: React.FC = () => {
                 value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                 placeholder={t('footer_email_placeholder')}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-white/40"
+                className="w-full px-4 py-2.5 bg-text/5 border border-border/10 rounded-lg text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent placeholder:text-text/40"
                 required
                 disabled={isSubmitting}
                 autoComplete="email"
@@ -168,7 +168,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar - Simplified */}
-        <div className="mt-10 pt-8 border-t border-white/10 text-center text-white/60 text-sm">
+        <div className="mt-10 pt-8 border-t border-border/10 text-center text-text/60 text-sm">
           <p>{t('footer_copyright', { year: CURRENT_YEAR })} <span className="mx-1">&bull;</span> {footerSignature}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">

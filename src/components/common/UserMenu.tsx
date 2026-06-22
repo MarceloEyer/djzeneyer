@@ -79,7 +79,7 @@ const UserMenu: React.FC = () => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1 pl-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors border border-white/10"
+        className="flex items-center gap-2 p-1 pl-2 bg-text/5 hover:bg-text/10 rounded-full transition-colors border border-border/10"
       >
         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30">
           <User size={16} className="text-primary" />
@@ -95,11 +95,11 @@ const UserMenu: React.FC = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-surface border border-white/10 rounded-2xl shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+        <div className="absolute right-0 mt-2 w-56 bg-surface border border-border/10 rounded-2xl shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
           {/* User Info Section */}
-          <div className="px-4 py-3 border-b border-white/5 mb-2">
+          <div className="px-4 py-3 border-b border-border/5 mb-2">
             <p className="text-sm font-bold truncate">{user.name}</p>
-            <p className="text-xs text-white/40 truncate">{user.email}</p>
+            <p className="text-xs text-text/40 truncate">{user.email}</p>
           </div>
 
           {/* Links */}
@@ -109,9 +109,9 @@ const UserMenu: React.FC = () => {
                 key={link.to}
                 to={link.to}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                className="flex items-center gap-3 px-3 py-2 text-sm text-text/70 hover:text-text hover:bg-text/5 rounded-xl transition-colors"
               >
-                <span className="text-white/40 group-hover:text-primary transition-colors">
+                <span className="text-text/40 group-hover:text-primary transition-colors">
                   {link.icon}
                 </span>
                 {link.label}
@@ -119,7 +119,7 @@ const UserMenu: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-2 pt-2 border-t border-white/5 px-2">
+          <div className="mt-2 pt-2 border-t border-border/5 px-2">
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-400/10 rounded-xl transition-colors text-left"

@@ -36,6 +36,10 @@ export default {
         },
         background: 'rgb(var(--color-background))',
         surface: 'rgb(var(--color-surface))',
+        text: 'rgb(var(--color-text))',
+        border: 'rgb(var(--color-border))',
+        pureWhite: '#ffffff',
+        pureBlack: '#000000',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

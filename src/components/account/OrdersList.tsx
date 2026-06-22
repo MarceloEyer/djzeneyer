@@ -43,7 +43,7 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
       case 'failed':
         return 'bg-error/20 text-error';
       default:
-        return 'bg-white/20 text-white/70';
+        return 'bg-text/20 text-text/70';
     }
   };
 
@@ -65,9 +65,9 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
   if (orders.length === 0) {
     return (
       <div className="text-center py-20">
-        <ShoppingBag className="mx-auto mb-4 text-white/30" size={64} />
+        <ShoppingBag className="mx-auto mb-4 text-text/30" size={64} />
         <h3 className="text-2xl font-semibold mb-3">{t('account.orders.no_orders')}</h3>
-        <p className="text-white/60 mb-8 max-w-md mx-auto">
+        <p className="text-text/60 mb-8 max-w-md mx-auto">
           {t('account.orders.no_orders_desc')}
         </p>
         <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary">
@@ -90,14 +90,14 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
         {orders.map((order) => (
           <div
             key={order.id}
-            className="bg-surface/50 rounded-lg p-6 border border-white/10 hover:border-primary/30 transition-colors"
+            className="bg-surface/50 rounded-lg p-6 border border-border/10 hover:border-primary/30 transition-colors"
           >
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="font-semibold text-lg">
                   {t('account.orders.order_number', { id: order.id })}
                 </h3>
-                <p className="text-sm text-white/60">
+                <p className="text-sm text-text/60">
                   {formatDateVal(order.date_created, currentLang)}
                 </p>
               </div>
@@ -110,8 +110,8 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
             </div>
             <div className="space-y-2">
               {order.line_items.map((item, index) => (
-                <div key={index} className="flex justify-between text-sm border-t border-white/5 pt-2">
-                  <span className="text-white/80">{item.name} x{item.quantity}</span>
+                <div key={index} className="flex justify-between text-sm border-t border-border/5 pt-2">
+                  <span className="text-text/80">{item.name} x{item.quantity}</span>
                   <span className="font-semibold">{formatCurrency(item.total)}</span>
                 </div>
               ))}

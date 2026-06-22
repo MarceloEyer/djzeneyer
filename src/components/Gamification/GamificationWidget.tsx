@@ -20,9 +20,9 @@ const GamificationWidget: React.FC = () => {
   if (loading) {
     return (
       <div className="bg-surface rounded-xl p-6 animate-pulse">
-        <div className="h-20 bg-white/10 rounded mb-4"></div>
-        <div className="h-16 bg-white/10 rounded mb-4"></div>
-        <div className="h-12 bg-white/10 rounded"></div>
+        <div className="h-20 bg-text/10 rounded mb-4"></div>
+        <div className="h-16 bg-text/10 rounded mb-4"></div>
+        <div className="h-12 bg-text/10 rounded"></div>
       </div>
     );
   }
@@ -37,12 +37,12 @@ const GamificationWidget: React.FC = () => {
   const totalAchievements = safeAchievements.length > 0 ? safeAchievements.length : 6;
 
   return (
-    <div className="bg-gradient-to-br from-surface via-surface to-primary/10 rounded-xl p-6 border border-white/10">
+    <div className="bg-gradient-to-br from-surface via-surface to-primary/10 rounded-xl p-6 border border-border/10">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-2xl font-black text-primary mb-1">{t('gamification.zenTribe')}</h3>
-          <p className="text-sm text-white/60">{t('gamification.yourProgress')}</p>
+          <p className="text-sm text-text/60">{t('gamification.yourProgress')}</p>
         </div>
         <Link
           to={getLocalizedRoute('my-account', currentLang)}
@@ -57,37 +57,37 @@ const GamificationWidget: React.FC = () => {
         {/* Level */}
         <motion.div
           whileHover={SCALE_HOVER_VARIANT}
-          className="bg-black/30 rounded-lg p-4 border border-primary/20"
+          className="bg-background/30 rounded-lg p-4 border border-primary/20"
         >
           <div className="flex items-center gap-2 mb-2">
             <Star size={16} className="text-primary" fill="currentColor" />
-            <span className="text-xs text-white/60">{t('gamification.level')}</span>
+            <span className="text-xs text-text/60">{t('gamification.level')}</span>
           </div>
           <p className="text-3xl font-black">{level}</p>
-          <p className="text-xs text-white/40 truncate">{rank || t('dashboard.rank_zen_novice')}</p>
+          <p className="text-xs text-text/40 truncate">{rank || t('dashboard.rank_zen_novice')}</p>
         </motion.div>
 
         {/* Points */}
         <motion.div
           whileHover={SCALE_HOVER_VARIANT}
-          className="bg-black/30 rounded-lg p-4 border border-secondary/20"
+          className="bg-background/30 rounded-lg p-4 border border-secondary/20"
         >
           <div className="flex items-center gap-2 mb-2">
             <Zap size={16} className="text-secondary" fill="currentColor" />
-            <span className="text-xs text-white/60">XP</span>
+            <span className="text-xs text-text/60">XP</span>
           </div>
           <p className="text-3xl font-black text-secondary">{points}</p>
-          <p className="text-xs text-white/40">{t('gamification.totalPoints')}</p>
+          <p className="text-xs text-text/40">{t('gamification.totalPoints')}</p>
         </motion.div>
       </div>
 
       {/* XP Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between text-xs mb-2">
-          <span className="text-white/60">{t('gamification.level')} {level}</span>
-          <span className="text-white/60">{t('gamification.level')} {level + 1}</span>
+          <span className="text-text/60">{t('gamification.level')} {level}</span>
+          <span className="text-text/60">{t('gamification.level')} {level + 1}</span>
         </div>
-        <div className="h-2 bg-black/30 rounded-full overflow-hidden">
+        <div className="h-2 bg-background/30 rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
             initial={{ width: 0 }}
@@ -95,19 +95,19 @@ const GamificationWidget: React.FC = () => {
             transition={{ duration: 1, ease: 'easeOut' }}
           />
         </div>
-        <p className="text-xs text-white/40 mt-1 text-center">
+        <p className="text-xs text-text/40 mt-1 text-center">
           {xpNeeded > 0 ? t('gamification.xpToNext', { count: xpNeeded }) : t('gamification.maxLevel')}
         </p>
       </div>
 
       {/* Achievements Summary */}
-      <div className="bg-black/20 rounded-lg p-4">
+      <div className="bg-background/20 rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <Award size={18} className="text-accent" />
             <span className="font-bold">{t('gamification.achievements')}</span>
           </div>
-          <span className="text-sm text-white/60">
+          <span className="text-sm text-text/60">
             {earnedAchievements}/{totalAchievements}
           </span>
         </div>
@@ -121,7 +121,7 @@ const GamificationWidget: React.FC = () => {
                 whileHover={ACHIEVEMENT_HOVER_VARIANT}
                 className={`w-10 h-10 rounded-lg flex items-center justify-center ${achievement?.earned
                   ? 'bg-gradient-to-br from-primary to-secondary'
-                  : 'bg-white/5 opacity-40'
+                  : 'bg-text/5 opacity-40'
                   }`}
                 title={achievement?.title || t('gamification.achievement')}
               >
@@ -135,13 +135,13 @@ const GamificationWidget: React.FC = () => {
                     height="24"
                   />
                 ) : (
-                  <Award size={16} className={achievement?.earned ? 'text-white' : 'text-white/30'} />
+                  <Award size={16} className={achievement?.earned ? 'text-text' : 'text-text/30'} />
                 )}
               </motion.div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-4 text-white/40 text-sm">
+          <div className="text-center py-4 text-text/40 text-sm">
             {t('gamification.startJourney')} 🎯
           </div>
         )}
