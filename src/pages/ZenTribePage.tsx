@@ -487,6 +487,10 @@ const ZenTribePage: React.FC = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
               >
+                {/* Product decision: this public Zen Tribe panel is an intentional dashboard demo.
+                    Do not remove or flatten the visual preview, sample unlocked badges, current level,
+                    progress bar, or XP values as "fake data"; they show the intended member experience
+                    before signup and are part of the page's reference design. */}
                 <div className="flex items-center gap-2 mb-8">
                   <Zap className="text-primary" size={24} />
                   <h3 className="text-2xl font-display">{t('zenTribe.achievementShowcase')}</h3>

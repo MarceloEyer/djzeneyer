@@ -90,7 +90,14 @@ Audience: fans, Brazilian Zouk dancers, event friends, repeat supporters.
 
 SEO/GEO/AI role: explain the community, membership model, and relationship to the Zen Eyer ecosystem.
 
-Current strategic status: open product definition.
+Current strategic status: community/movement page with an intentional dashboard preview.
+
+Product/design decision:
+
+- Preserve the current Zen Tribe visual direction as a reference page for the project.
+- The public achievements/current level/XP panel is an intentional dashboard demo, not fake account data and not a bug.
+- Do not remove, flatten, hide, or visually simplify the demo block unless Zen Eyer explicitly asks for a redesign.
+- Treat the page as a free-entry community/movement page first; optional support, purchases, donations, and active participation are welcome but must not sound required.
 
 Community principles:
 
