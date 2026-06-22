@@ -199,7 +199,7 @@ const MusicPage: React.FC = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="flex items-center gap-6 relative z-10">
-                <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-black rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
+                <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-pureBlack rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
                   <SpotifyIcon />
                 </div>
                 <div className="flex flex-col text-left">
@@ -277,7 +277,7 @@ const MusicPage: React.FC = () => {
               <p className="text-text/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
               <Link
                 to={getLocalizedRoute('support', currentLang)}
-                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-[rgb(var(--color-primary-fg))] font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
               >
                 {t('music.support_cta')} <ExternalLink size={16} />
               </Link>

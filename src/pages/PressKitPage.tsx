@@ -223,7 +223,7 @@ const PressKitPage: React.FC = () => {
         imageAlt={t('og.image_alt.press')}
       />
 
-      <div className="min-h-screen bg-[#0a0a0a] text-text">
+      <div className="min-h-screen bg-background text-text">
         <section className="pt-24 sm:pt-32 pb-10 sm:pb-14">
           <div className="container mx-auto px-4">
             <motion.div
@@ -354,7 +354,7 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-[#0d0d0d] py-16 sm:py-32">
+        <section className="bg-surface/40 py-16 sm:py-32">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 px-4 text-center">

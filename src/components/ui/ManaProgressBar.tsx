@@ -49,7 +49,7 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
         </span>
       </div>
 
-      <div className="relative h-4 w-full overflow-hidden rounded-full border border-border/10 bg-[#0a0f16] p-[2px] shadow-[inset_0_2px_10px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.05)]">
+      <div className="relative h-4 w-full overflow-hidden rounded-full border border-border/10 bg-background/80 p-[2px] shadow-inner">
         <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-b from-white/10 to-transparent" />
 
         <motion.div

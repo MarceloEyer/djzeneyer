@@ -259,7 +259,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                       <div className="w-full border-t border-border/10"></div>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
-                      <span className="px-3 bg-[#1a1a1a] text-text/40">{t('auth.or_continue_with_email')}</span>
+                      <span className="px-3 bg-surface text-text/40">{t('auth.or_continue_with_email')}</span>
                     </div>
                   </div>
                 </>

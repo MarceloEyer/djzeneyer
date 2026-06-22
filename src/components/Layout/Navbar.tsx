@@ -102,7 +102,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
     return (
         <>
-            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-[#121212]/95 backdrop-blur-md shadow-lg py-3 border-b border-border/10' : 'bg-transparent py-5'}`}>
+            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-background/95 backdrop-blur-md shadow-lg py-3 border-b border-border/10' : 'bg-transparent py-5'}`}>
                 <div className="container mx-auto px-4 md:px-6 flex items-center justify-between h-14">
                     <Link to={getLocalizedRoute('', currentLang)} className="flex items-center z-50 group font-display font-bold text-xl">
                         <span className="text-primary mr-1">DJ</span> Zen Eyer
@@ -141,7 +141,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         onClick={() => setIsMenuOpen(false)}
                         className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm md:hidden opacity-100 transition-opacity duration-200"
                     />
-                    <div className="fixed top-0 left-0 right-0 bg-[#0f0f0f] z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-border/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto translate-y-0 transition-transform duration-300">
+                    <div className="fixed top-0 left-0 right-0 bg-background z-40 md:hidden shadow-2xl rounded-b-3xl border-b border-border/10 pt-24 pb-8 px-4 flex flex-col max-h-[90vh] overflow-y-auto translate-y-0 transition-transform duration-300">
                         <nav className="flex flex-col space-y-3 mb-6">
                             {processedMenuItems.map(item => (
                                 <MenuItem

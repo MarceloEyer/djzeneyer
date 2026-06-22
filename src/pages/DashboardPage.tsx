@@ -460,7 +460,7 @@ const DashboardContent = () => {
                      <h4 className="font-black font-display text-base sm:text-lg uppercase tracking-tight">{t('dashboard.vipRewardsShop')}</h4>
                      <p className="text-xs text-text/50 font-medium leading-snug">{t('dashboard.vipRewardsDesc')}</p>
                   </div>
-                  <button onClick={() => navigate(routes.shop)} className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-full border border-border/10 flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                  <button onClick={() => navigate(routes.shop)} className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-full border border-border/10 flex items-center justify-center hover:bg-text hover:text-background transition-all">
                      <ArrowRight size={16} />
                   </button>
                </div>

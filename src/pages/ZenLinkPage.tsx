@@ -92,11 +92,11 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
             </div>
             <div className="text-left">
               <h3 className="text-text font-bold text-lg">{t('zenlink.listen_now')}</h3>
-              <p className="text-gray-400 text-sm">{t('zenlink.choose_platform')}</p>
+              <p className="text-text/50 text-sm">{t('zenlink.choose_platform')}</p>
             </div>
           </div>
           <motion.div variants={CHEVRON_VARIANTS} animate={isOpen ? 'open' : 'closed'}>
-            <ChevronDown className="w-5 h-5 text-gray-400" />
+            <ChevronDown className="w-5 h-5 text-text/50" />
           </motion.div>
         </div>
       </motion.button>
@@ -124,7 +124,7 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
                     </div>
                     <span className="text-text font-medium">{platform.name}</span>
                   </div>
-                  <ExternalLinkIcon className="w-4 h-4 text-gray-500" />
+                  <ExternalLinkIcon className="w-4 h-4 text-text/40" />
                 </motion.a>
               ))}
             </div>

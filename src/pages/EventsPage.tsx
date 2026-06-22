@@ -129,7 +129,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
               height="800" 
             />
             <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black via-black/60 to-transparent">
-              <div className="inline-block px-4 py-1 rounded-full bg-primary text-black font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
+              <div className="inline-block px-4 py-1 rounded-full bg-primary text-[rgb(var(--color-primary-fg))] font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
                 {t('events.featured', { defaultValue: 'Featured Event' })}
               </div>
             </div>
@@ -249,7 +249,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           <button
             onClick={() => setSelectedRegion('all')}
-            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
+            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
           >
             {t('common.all')}
           </button>
@@ -257,7 +257,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
+              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
             >
               {region}
             </button>

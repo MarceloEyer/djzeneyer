@@ -441,7 +441,7 @@ const MyAccountContent: React.FC = () => {
                 >
                   <motion.div
                     animate={{ x: newsletterEnabled ? 28 : 4 }}
-                    className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-lg"
+                    className="absolute top-1 w-6 h-6 bg-[rgb(var(--color-surface-elevated))] rounded-full shadow-lg"
                   />
                 </button>
               </div>

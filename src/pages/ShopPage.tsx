@@ -78,9 +78,9 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }:
           width="1200"
           height="675"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#141414] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-background to-transparent" />
       </div>
 
       <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-20 pb-32 md:pb-48">
@@ -122,10 +122,10 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }:
               whileHover={BUY_BUTTON_HOVER}
               whileTap={BUY_BUTTON_TAP}
               onClick={() => onAddToCart(product.id)}
-              className="flex items-center gap-2 bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-text/90 transition-colors shadow-xl"
+              className="flex items-center gap-2 bg-text text-background px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-text/90 transition-colors shadow-xl"
               disabled={isAddingToCart}
             >
-              {isAddingToCart ? <Loader2 className="animate-spin" /> : <Play className="fill-black" size={24} />}
+              {isAddingToCart ? <Loader2 className="animate-spin" /> : <Play className="fill-background" size={24} />}
               {t('shop.buy_now')}
             </motion.button>
 
@@ -194,7 +194,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
                 disabled={isAddingToCart || !isInStock}
                 aria-busy={isAddingToCart}
                 aria-label={t('shop.add_to_cart')}
-                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-text/80'
+                className={`w-8 h-8 rounded-full bg-text text-background flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-text/80'
                   }`}
                 title={t('shop.add_to_cart')}
               >
@@ -484,7 +484,7 @@ const ShopPage: React.FC = () => {
   }), [canonicalUrl, getProductPath, t, visibleProducts]);
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#141414] text-text">
+    <div className="min-h-screen flex items-center justify-center bg-background text-text">
       <Loader2 className="animate-spin text-primary" size={48} />
     </div>
   );
@@ -492,7 +492,7 @@ const ShopPage: React.FC = () => {
   // Removed the `if (error)` block as error handling is now per-query and not aggregated in a single `error` state.
 
   return (
-    <div className="min-h-screen bg-[#141414] text-text relative overflow-x-clip">
+    <div className="min-h-screen bg-background text-text relative overflow-x-clip">
       <div className="pointer-events-none absolute inset-0 opacity-70">
         <div className="absolute -top-40 left-[-15%] h-[460px] w-[460px] rounded-full bg-primary/15 blur-3xl" />
         <div className="absolute top-[28%] right-[-12%] h-[420px] w-[420px] rounded-full bg-cyan-500/10 blur-3xl" />
@@ -529,7 +529,7 @@ const ShopPage: React.FC = () => {
         />
       ) : (
         <div className="relative h-[60vh] w-full flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-dark from-primary/10 to-[#141414]" />
+          <div className="absolute inset-0 bg-gradient-to-dark from-primary/10 to-background" />
           <div className="container mx-auto px-6 relative z-10 text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}

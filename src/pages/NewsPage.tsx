@@ -446,7 +446,7 @@ const NewsPage: React.FC = () => {
                         />
                       </div>
                         <div className="inline-flex items-center gap-2 text-text font-bold text-lg hover:gap-4 transition-all">
-                          {t('news.read_full')} <div className="bg-white text-black rounded-full p-1"><ArrowRight size={16} /></div>
+                          {t('news.read_full')} <div className="bg-text text-background rounded-full p-1"><ArrowRight size={16} /></div>
                         </div>
                       </div>
                     </div>

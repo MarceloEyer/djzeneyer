@@ -238,7 +238,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
 
       <div className="min-h-screen bg-background text-text flex items-center justify-center p-4 relative overflow-hidden font-sans">
         {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-gray-900 to-black z-0" />
+        <div className="absolute inset-0 bg-gradient-to-br from-secondary/30 via-background to-surface z-0" />
         <div
           className="absolute inset-0 opacity-10 z-0 pointer-events-none"
           style={{ backgroundImage: `url(${patternSvg})` }}
@@ -255,15 +255,15 @@ const ZoukPersonaQuizPage: React.FC = () => {
                 animate={QUESTION_ANIMATE}
                 exit={QUESTION_EXIT}
                 transition={QUESTION_TRANSITION}
-                className="bg-gray-800/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-2xl border border-border/10"
+                className="bg-surface/80 backdrop-blur-md p-5 sm:p-8 rounded-2xl shadow-2xl border border-border/10"
               >
-                <div className="flex justify-between items-center mb-6 text-sm text-gray-400 font-mono">
+                <div className="flex justify-between items-center mb-6 text-sm text-text/50 font-mono">
                   <span>{t('quiz.ui.question_count', { current: currentQuestion + 1, total: QUESTIONS.length })}</span>
                   <span>{t('quiz.ui.complete', { percent: Math.round(((currentQuestion) / QUESTIONS.length) * 100) })}</span>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="w-full bg-gray-700 h-2 rounded-full mb-8 overflow-hidden">
+                <div className="w-full bg-text/10 h-2 rounded-full mb-8 overflow-hidden">
                   <motion.div
                     className="bg-primary h-full rounded-full"
                     initial={PROGRESS_INITIAL}
@@ -282,7 +282,7 @@ const ZoukPersonaQuizPage: React.FC = () => {
                       whileHover={QUIZ_OPTION_HOVER}
                       whileTap={QUIZ_OPTION_TAP}
                       onClick={() => handleAnswer(option.points)}
-                      className="w-full p-4 text-left bg-gray-700/50 hover:bg-gray-600 rounded-xl border border-border/5 transition-colors flex items-center justify-between group"
+                      className="w-full p-4 text-left bg-background/50 hover:bg-text/10 rounded-xl border border-border/5 transition-colors flex items-center justify-between group"
                     >
                       <span className="text-lg">{t(`quiz.questions.q${QUESTIONS[currentQuestion].id}.options.o${index + 1}`)}</span>
                       <ChevronRight className="opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
@@ -314,14 +314,14 @@ const ZoukPersonaQuizPage: React.FC = () => {
                   </h1>
                   <p className="text-xl text-primary font-medium mb-6">{t(`quiz.personas.${result.id}.subtitle`)}</p>
 
-                  <p className="text-gray-300 text-lg leading-relaxed mb-10 max-w-lg mx-auto border-t border-b border-border/10 py-6">
+                  <p className="text-text/70 text-lg leading-relaxed mb-10 max-w-lg mx-auto border-t border-b border-border/10 py-6">
                     {t(`quiz.personas.${result.id}.description`)}
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button
                       onClick={shareResult}
-                      className="btn bg-white text-black hover:bg-gray-200 flex items-center justify-center gap-2 px-8 py-3 rounded-full font-bold transition-all"
+                      className="btn bg-text text-background hover:brightness-95 flex items-center justify-center gap-2 px-8 py-3 rounded-full font-bold transition-all"
                     >
                       <Share2 size={20} />
                       {t('quiz.ui.share_result')}
