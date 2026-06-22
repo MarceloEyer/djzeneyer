@@ -48,11 +48,30 @@
   /* #080A10 - Softer black */
   --color-surface: 18, 22, 30;
   /* #12161E - Softer surface */
+  --color-surface-elevated: 28, 33, 43;
   --color-text: 255, 255, 255;
   /* #FFFFFF */
   --color-text-dark: 20, 20, 30;
   /* #14141E */
   --color-muted: 180, 190, 205;
+
+  /* Foreground — text ON colored backgrounds */
+  --color-primary-fg: 255, 255, 255;
+  --color-secondary-fg: 255, 255, 255;
+  --color-accent-fg: 255, 255, 255;
+  --color-success-fg: 255, 255, 255;
+  --color-error-fg: 255, 255, 255;
+
+  /* Semantic border */
+  --color-border: 255, 255, 255;
+  --color-border-opacity: 0.1;
+  --color-border-strong-opacity: 0.2;
+
+  /* Glass effect */
+  --color-glass-bg: 255, 255, 255;
+  --color-glass-bg-opacity: 0.05;
+  --color-glass-border-opacity: 0.1;
+
   --theme-page-background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
   --theme-color-scheme: dark;
 }
@@ -86,10 +105,26 @@
   /* #E8E0D3 - dusk linen */
   --color-surface: 245, 238, 226;
   /* #F5EEE2 - warm paper */
+  --color-surface-elevated: 255, 248, 238;
   --color-text: 38, 47, 56;
   /* #262F38 - soft ink */
   --color-text-dark: 38, 47, 56;
   --color-muted: 92, 103, 111;
+
+  --color-primary-fg: 255, 255, 255;
+  --color-secondary-fg: 255, 255, 255;
+  --color-accent-fg: 255, 255, 255;
+  --color-success-fg: 255, 255, 255;
+  --color-error-fg: 255, 255, 255;
+
+  --color-border: 38, 47, 56;
+  --color-border-opacity: 0.12;
+  --color-border-strong-opacity: 0.22;
+
+  --color-glass-bg: 255, 252, 245;
+  --color-glass-bg-opacity: 0.42;
+  --color-glass-border-opacity: 0.12;
+
   --theme-page-background:
     linear-gradient(135deg, rgba(232, 224, 211, 0.96), rgba(214, 224, 222, 0.9) 52%, rgba(222, 205, 183, 0.92)),
     repeating-linear-gradient(90deg, rgba(128, 105, 80, 0.035) 0 1px, transparent 1px 8px),
@@ -103,7 +138,8 @@
 @layer base {
   html {
     font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    @apply bg-background text-white antialiased;
+    @apply bg-background antialiased;
+    color: rgb(var(--color-text));
     scroll-behavior: smooth;
   }
 
@@ -167,7 +203,8 @@
 
   .btn-primary {
     background: rgb(var(--color-primary-darker));
-    @apply text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-primary;
+    color: rgb(var(--color-primary-fg));
+    @apply shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-primary;
     box-shadow: 0 4px 20px rgba(var(--color-primary), 0.3);
   }
 
@@ -177,28 +214,35 @@
   }
 
   .btn-secondary {
-    @apply bg-secondary text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-secondary;
+    @apply bg-secondary shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-secondary;
+    color: rgb(var(--color-secondary-fg));
   }
 
   .btn-accent {
-    @apply bg-accent text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-accent;
+    @apply bg-accent shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-accent;
+    color: rgb(var(--color-accent-fg));
   }
 
   .btn-success {
-    @apply bg-success text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-success;
+    @apply bg-success shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-success;
+    color: rgb(var(--color-success-fg));
   }
 
   .btn-error,
   .btn-danger {
-    @apply bg-error text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-error;
+    @apply bg-error shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-error;
+    color: rgb(var(--color-error-fg));
   }
 
   .btn-outline {
-    @apply border-2 border-white/20 text-white bg-transparent hover:bg-white hover:text-background hover:border-white active:scale-95 focus-visible:ring-white;
+    @apply border-2 bg-transparent hover:bg-white hover:text-background hover:border-white active:scale-95 focus-visible:ring-white;
+    border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
+    color: rgb(var(--color-text));
   }
 
   .btn-ghost {
-    @apply bg-transparent text-white hover:bg-white/10 active:scale-95;
+    @apply bg-transparent hover:bg-white/10 active:scale-95;
+    color: rgb(var(--color-text));
   }
 
   .btn-sm {
@@ -219,16 +263,23 @@
 
   /* ========== CARDS ========== */
   .card {
-    @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden transition-all duration-300;
+    @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl overflow-hidden transition-all duration-300;
+    border: 1px solid rgba(var(--color-border), var(--color-border-opacity));
   }
 
   .card:hover {
-    @apply border-white/20 shadow-2xl;
+    @apply shadow-2xl;
+    border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
   }
 
   /* ========== NAVIGATION ========== */
   .nav-link {
-    @apply relative px-4 py-2 text-white/70 hover:text-white transition-all duration-200 font-medium;
+    @apply relative px-4 py-2 transition-all duration-200 font-medium;
+    color: rgba(var(--color-text), 0.7);
+  }
+
+  .nav-link:hover {
+    color: rgb(var(--color-text));
   }
 
   .nav-link.active {
@@ -274,17 +325,25 @@
 
   /* ========== INPUTS ========== */
   .input {
-    @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply w-full px-4 py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    background: rgb(var(--color-surface));
+    border: 1px solid rgba(var(--color-border), var(--color-border-opacity));
+    color: rgb(var(--color-text));
     box-shadow: 0 0 0 0 rgba(var(--color-primary), 0);
   }
 
+  .input::placeholder {
+    color: rgba(var(--color-text), 0.4);
+  }
+
   .input:focus {
+    outline: none;
     border-color: rgb(var(--color-primary));
     box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
   }
 
   .input:hover:not(:disabled) {
-    @apply border-white/20;
+    border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
   }
 
   .input-error {
@@ -309,7 +368,9 @@
   }
 
   .glass {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10;
+    background-color: rgba(var(--color-glass-bg), var(--color-glass-bg-opacity));
+    border: 1px solid rgba(var(--color-glass-bg), var(--color-glass-border-opacity));
+    backdrop-filter: blur(4px);
   }
 
   .text-gradient {
@@ -326,10 +387,27 @@
    ======================================== */
 @layer utilities {
   .safe-html-contrast strong, .safe-html-contrast b, .safe-html-contrast em, .safe-html-contrast i, .safe-html-contrast span {
-    color: white !important;
+    color: rgb(var(--color-text)) !important;
   }
   .safe-html-contrast strong, .safe-html-contrast b {
     font-weight: bold !important;
+  }
+
+  /* Semantic theme utilities — prefer these over text-white/border-white/bg-white in JSX */
+  .theme-text { color: rgb(var(--color-text)); }
+  .theme-text-muted { color: rgb(var(--color-muted)); }
+  .theme-surface { background-color: rgb(var(--color-surface)); }
+  .theme-surface-elevated { background-color: rgb(var(--color-surface-elevated)); }
+  .theme-border { border-color: rgba(var(--color-border), var(--color-border-opacity)); }
+  .theme-border-strong { border-color: rgba(var(--color-border), var(--color-border-strong-opacity)); }
+  .theme-glass {
+    background-color: rgba(var(--color-glass-bg), var(--color-glass-bg-opacity));
+    border: 1px solid rgba(var(--color-glass-bg), var(--color-glass-border-opacity));
+    backdrop-filter: blur(4px);
+  }
+  .theme-card {
+    background-color: rgba(var(--color-surface), 0.8);
+    border: 1px solid rgba(var(--color-border), var(--color-border-opacity));
   }
 
   .text-neon {
@@ -389,24 +467,12 @@
 }
 
 /* ========================================
-   THEME PREVIEW OVERRIDES
+   THEME OVERRIDES — bridge for inline Tailwind classes in JSX.
+   Each entry here is technical debt. Migrate to .theme-* utilities
+   or semantic tokens over time, then remove the line.
    ======================================== */
 :root[data-theme='mediterranean-dusk'] .text-white {
   color: rgb(var(--color-text));
-}
-
-:root[data-theme='mediterranean-dusk'],
-:root[data-theme='mediterranean-dusk'] body {
-  color: rgb(var(--color-text));
-}
-
-:root[data-theme='mediterranean-dusk'] .btn-primary,
-:root[data-theme='mediterranean-dusk'] .btn-secondary,
-:root[data-theme='mediterranean-dusk'] .btn-accent,
-:root[data-theme='mediterranean-dusk'] .btn-success,
-:root[data-theme='mediterranean-dusk'] .btn-error,
-:root[data-theme='mediterranean-dusk'] .btn-danger {
-  color: #fff;
 }
 
 :root[data-theme='mediterranean-dusk'] .text-white\/90 {
@@ -450,20 +516,19 @@
 }
 
 :root[data-theme='mediterranean-dusk'] .border-white\/10 {
-  border-color: rgba(var(--color-text), 0.12);
+  border-color: rgba(var(--color-border), var(--color-border-opacity));
 }
 
 :root[data-theme='mediterranean-dusk'] .border-white\/20 {
-  border-color: rgba(var(--color-text), 0.2);
+  border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
 }
 
-:root[data-theme='mediterranean-dusk'] .bg-white\/5,
-:root[data-theme='mediterranean-dusk'] .glass {
-  background-color: rgba(255, 252, 245, 0.42);
+:root[data-theme='mediterranean-dusk'] .bg-white\/5 {
+  background-color: rgba(var(--color-glass-bg), var(--color-glass-bg-opacity));
 }
 
 :root[data-theme='mediterranean-dusk'] .bg-white\/10 {
-  background-color: rgba(255, 252, 245, 0.62);
+  background-color: rgba(var(--color-glass-bg), 0.62);
 }
 
 /* ========================================
