@@ -395,6 +395,20 @@
   color: rgb(var(--color-text));
 }
 
+:root[data-theme='mediterranean-dusk'],
+:root[data-theme='mediterranean-dusk'] body {
+  color: rgb(var(--color-text));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-primary,
+:root[data-theme='mediterranean-dusk'] .btn-secondary,
+:root[data-theme='mediterranean-dusk'] .btn-accent,
+:root[data-theme='mediterranean-dusk'] .btn-success,
+:root[data-theme='mediterranean-dusk'] .btn-error,
+:root[data-theme='mediterranean-dusk'] .btn-danger {
+  color: #fff;
+}
+
 :root[data-theme='mediterranean-dusk'] .text-white\/90 {
   color: rgba(var(--color-text), 0.9);
 }

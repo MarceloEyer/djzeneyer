@@ -1,5 +1,16 @@
-import { describe, expect, it } from 'vitest';
-import { applySiteTheme, resolveSiteTheme } from '../../utils/theme';
+import { afterEach, describe, expect, it } from 'vitest';
+import { applySiteTheme, initSiteTheme, resolveSiteTheme } from '../../utils/theme';
+
+const originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(window, 'localStorage');
+
+afterEach(() => {
+  if (originalLocalStorageDescriptor) {
+    Object.defineProperty(window, 'localStorage', originalLocalStorageDescriptor);
+  }
+  window.history.replaceState({}, '', '/');
+  delete document.documentElement.dataset.theme;
+  document.documentElement.style.colorScheme = '';
+});
 
 describe('theme utilities', () => {
   it('keeps zen-night as the default theme', () => {
@@ -25,5 +36,23 @@ describe('theme utilities', () => {
 
     expect(root.dataset.theme).toBe('mediterranean-dusk');
     expect(root.style.colorScheme).toBe('light');
+  });
+
+  it('continues bootstrapping when localStorage access is blocked', () => {
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: () => {
+          throw new DOMException('Blocked', 'SecurityError');
+        },
+        setItem: () => {
+          throw new DOMException('Blocked', 'SecurityError');
+        },
+      },
+    });
+    window.history.replaceState({}, '', '/?theme=mediterranean-dusk');
+
+    expect(initSiteTheme()).toBe('mediterranean-dusk');
+    expect(document.documentElement.dataset.theme).toBe('mediterranean-dusk');
   });
 });

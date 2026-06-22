@@ -30,10 +30,21 @@ export const initSiteTheme = (): SiteTheme => {
   }
 
   const requestedTheme = new URLSearchParams(window.location.search).get('theme');
-  const theme = resolveSiteTheme(window.location.search, window.localStorage.getItem(THEME_STORAGE_KEY));
+  let storedTheme: string | null = null;
+  try {
+    storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+  } catch {
+    storedTheme = null;
+  }
+
+  const theme = resolveSiteTheme(window.location.search, storedTheme);
 
   if (isSiteTheme(requestedTheme)) {
-    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // Storage can be blocked; the data-theme attribute still applies for this page load.
+    }
   }
 
   applySiteTheme(theme);
