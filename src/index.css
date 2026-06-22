@@ -1,10 +1,10 @@
 @import "tailwindcss";
+@import "./styles/themes.css";
 @config "../tailwind.config.js";
 
 /* ========================================
    CUSTOM PROPERTIES (CSS Variables)
    ======================================== */
-@import "./styles/themes.css";
 
 
 /* ========================================
@@ -110,9 +110,13 @@
   }
 
   .btn-outline {
-    @apply border-2 bg-transparent hover:bg-white hover:text-background hover:border-white active:scale-95 focus-visible:ring-white;
+    @apply border-2 bg-transparent hover:bg-white hover:border-white active:scale-95 focus-visible:ring-white;
     border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
     color: rgb(var(--color-text));
+  }
+
+  .btn-outline:hover {
+    color: rgb(var(--color-text-dark));
   }
 
   .btn-ghost {
@@ -388,6 +392,27 @@
 
 :root[data-theme='mediterranean-dusk'] .text-white\/10 {
   color: rgba(var(--color-text), 0.18);
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-primary {
+  color: rgb(var(--color-primary-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-secondary {
+  color: rgb(var(--color-secondary-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-accent {
+  color: rgb(var(--color-accent-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-success {
+  color: rgb(var(--color-success-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-error,
+:root[data-theme='mediterranean-dusk'] .btn-danger {
+  color: rgb(var(--color-error-fg));
 }
 
 :root[data-theme='mediterranean-dusk'] .border-white\/10 {

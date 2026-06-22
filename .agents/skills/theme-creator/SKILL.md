@@ -16,7 +16,8 @@ O projeto utiliza uma **Arquitetura de Design Tokens de 2 Camadas** no arquivo `
 Quando o usuário pedir a criação de um novo tema (ex: "Tema Cyberpunk" ou "Tema de Natal"), você DEVE seguir estes passos rigorosamente:
 
 ### 1. Definir a Paleta de Cores (Semantic Tokens)
-Você precisa definir **exatamente** 25 variáveis CSS (formatadas em valores R, G, B para compatibilidade com o design system atual que as consome como `rgb(var(--token))`). 
+
+Você precisa definir todos os tokens CSS do bloco abaixo, usando valores `R, G, B` puros para compatibilidade com o design system atual, que consome esses valores como `rgb(var(--token))`.
 
 Gere os valores para as seguintes variáveis mantendo harmonia de design e garantindo forte contraste de leitura:
 
@@ -69,9 +70,11 @@ Gere os valores para as seguintes variáveis mantendo harmonia de design e garan
 ```
 
 ### 2. Injetar o CSS
-Adicione o novo bloco `:root[data-theme='novo-nome-tema']` no final do arquivo `src/styles/themes.css`.
+
+Adicione o novo bloco `:root[data-theme='novo-nome-tema']` no final do arquivo `src/styles/themes.css`. Use o bloco existente `:root[data-theme='mediterranean-dusk']` como referência de formato: comentário inline depois do token quando houver um hex útil (`/* #RRGGBB - descrição curta */`), indentação de dois espaços, agrupamento por categoria e nenhuma classe CSS dentro do arquivo de temas.
 
 ### 3. Registrar o Tema no TypeScript
+
 Modifique o arquivo `src/utils/theme.ts`.
 Encontre o array `SITE_THEMES`:
 `export const SITE_THEMES = ['zen-night', 'mediterranean-dusk'] as const;`
@@ -79,8 +82,13 @@ Adicione o novo nome do tema ao final do array. Exemplo:
 `export const SITE_THEMES = ['zen-night', 'mediterranean-dusk', 'halloween-night'] as const;`
 
 ### 4. Validação Final
+
 - O nome do tema usa `kebab-case`?
 - As cores estão em formato numérico puro (`R, G, B`) sem `rgb()` envolvendo?
-- O texto base (`--color-text`) tem alto contraste com a superfície (`--color-surface`)?
+- O texto base (`--color-text`) tem contraste WCAG AA contra `--color-surface` e `--color-background`? Use 4.5:1 como mínimo para texto normal e 3:1 para texto grande ou elementos não textuais.
+- Os foreground tokens (`--color-primary-fg`, `--color-secondary-fg`, `--color-accent-fg`, `--color-success-fg`, `--color-error-fg`) mantêm contraste AA contra seus respectivos fundos?
+- Valide contraste com ferramenta confiável como WebAIM Contrast Checker, Lighthouse ou o painel Accessibility do navegador.
+- Teste visualmente o tema com `?theme=nome-do-tema` e volte para `?theme=zen-night` para confirmar que o tema default não regrediu.
+- Rode os testes de tema e ao menos um build local quando o tema mexer em tokens globais: `npm.cmd test -- --run src\\__tests__\\utils\\theme.test.ts` e `npm.cmd run build`.
 
 Se tudo estiver correto, apresente o tema criado ao usuário de forma visual (descrevendo o conceito e a paleta).
