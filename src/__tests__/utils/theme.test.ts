@@ -1,0 +1,58 @@
+import { afterEach, describe, expect, it } from 'vitest';
+import { applySiteTheme, initSiteTheme, resolveSiteTheme } from '../../utils/theme';
+
+const originalLocalStorageDescriptor = Object.getOwnPropertyDescriptor(window, 'localStorage');
+
+afterEach(() => {
+  if (originalLocalStorageDescriptor) {
+    Object.defineProperty(window, 'localStorage', originalLocalStorageDescriptor);
+  }
+  window.history.replaceState({}, '', '/');
+  delete document.documentElement.dataset.theme;
+  document.documentElement.style.colorScheme = '';
+});
+
+describe('theme utilities', () => {
+  it('keeps zen-night as the default theme', () => {
+    expect(resolveSiteTheme('', null)).toBe('zen-night');
+  });
+
+  it('resolves mediterranean-dusk from query string before stored theme', () => {
+    expect(resolveSiteTheme('?theme=mediterranean-dusk', 'zen-night')).toBe('mediterranean-dusk');
+  });
+
+  it('falls back to a valid stored theme when the query string is absent', () => {
+    expect(resolveSiteTheme('', 'mediterranean-dusk')).toBe('mediterranean-dusk');
+  });
+
+  it('ignores unknown theme values', () => {
+    expect(resolveSiteTheme('?theme=solarized', 'unknown')).toBe('zen-night');
+  });
+
+  it('applies the data-theme attribute and color scheme', () => {
+    const root = document.createElement('html');
+
+    applySiteTheme('mediterranean-dusk', root);
+
+    expect(root.dataset.theme).toBe('mediterranean-dusk');
+    expect(root.style.colorScheme).toBe('light');
+  });
+
+  it('continues bootstrapping when localStorage access is blocked', () => {
+    Object.defineProperty(window, 'localStorage', {
+      configurable: true,
+      value: {
+        getItem: () => {
+          throw new DOMException('Blocked', 'SecurityError');
+        },
+        setItem: () => {
+          throw new DOMException('Blocked', 'SecurityError');
+        },
+      },
+    });
+    window.history.replaceState({}, '', '/?theme=mediterranean-dusk');
+
+    expect(initSiteTheme()).toBe('mediterranean-dusk');
+    expect(document.documentElement.dataset.theme).toBe('mediterranean-dusk');
+  });
+});

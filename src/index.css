@@ -1,58 +1,11 @@
 @import "tailwindcss";
+@import "./styles/themes.css";
 @config "../tailwind.config.js";
 
 /* ========================================
    CUSTOM PROPERTIES (CSS Variables)
    ======================================== */
-:root {
-  /* PRIMARY - SEU AZUL ELÉTRICO FAVORITO */
-  --color-primary: 13, 150, 255;
-  /* #0D96FF - Electric Blue */
-  --color-primary-darker: 10, 120, 200;
-  /* #0A78C8 - Para hover */
-  --color-primary-light: 102, 195, 255;
-  /* #66C3FF - Para textos */
 
-  /* SECONDARY - Neon Purple */
-  --color-secondary: 157, 78, 221;
-  /* #9D4EDD */
-  --color-secondary-light: 196, 181, 253;
-  /* #C4B5FD */
-
-  /* ACCENT - Vibrant Pink */
-  --color-accent: 236, 72, 153;
-  /* #EC4899 */
-  --color-accent-light: 251, 207, 232;
-  /* #FBCFE8 */
-
-  /* SUCCESS */
-  --color-success: 16, 185, 129;
-  /* #10B981 - Green */
-  --color-success-light: 167, 243, 208;
-  /* #A7F3D0 */
-
-  /* WARNING */
-  --color-warning: 245, 158, 11;
-  /* #F59E0B - Amber */
-  --color-warning-light: 253, 230, 138;
-  /* #FDE68A */
-
-  /* ERROR */
-  --color-error: 239, 68, 68;
-  /* #EF4444 - Red */
-  --color-error-light: 254, 202, 202;
-  /* #FECACA */
-
-  /* NEUTRAL */
-  --color-background: 8, 10, 16;
-  /* #080A10 - Softer black */
-  --color-surface: 18, 22, 30;
-  /* #12161E - Softer surface */
-  --color-text: 255, 255, 255;
-  /* #FFFFFF */
-  --color-text-dark: 20, 20, 30;
-  /* #14141E */
-}
 
 /* ========================================
    BASE STYLES
@@ -60,7 +13,8 @@
 @layer base {
   html {
     font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-    @apply bg-background text-white antialiased;
+    @apply bg-background antialiased;
+    color: rgb(var(--color-text));
     scroll-behavior: smooth;
   }
 
@@ -77,9 +31,10 @@
   body {
     @apply antialiased;
     overflow-x: hidden;
-    background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
+    background: var(--theme-page-background);
     background-attachment: fixed;
     min-height: 100vh;
+    color-scheme: var(--theme-color-scheme);
   }
 
   a {
@@ -123,7 +78,8 @@
 
   .btn-primary {
     background: rgb(var(--color-primary-darker));
-    @apply text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-primary;
+    color: rgb(var(--color-primary-fg));
+    @apply shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-primary;
     box-shadow: 0 4px 20px rgba(var(--color-primary), 0.3);
   }
 
@@ -133,28 +89,39 @@
   }
 
   .btn-secondary {
-    @apply bg-secondary text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-secondary;
+    @apply bg-secondary shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-secondary;
+    color: rgb(var(--color-secondary-fg));
   }
 
   .btn-accent {
-    @apply bg-accent text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-accent;
+    @apply bg-accent shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-accent;
+    color: rgb(var(--color-accent-fg));
   }
 
   .btn-success {
-    @apply bg-success text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-success;
+    @apply bg-success shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-success;
+    color: rgb(var(--color-success-fg));
   }
 
   .btn-error,
   .btn-danger {
-    @apply bg-error text-white shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-error;
+    @apply bg-error shadow-lg hover:brightness-110 active:scale-95 focus-visible:ring-error;
+    color: rgb(var(--color-error-fg));
   }
 
   .btn-outline {
-    @apply border-2 border-white/20 text-white bg-transparent hover:bg-white hover:text-background hover:border-white active:scale-95 focus-visible:ring-white;
+    @apply border-2 bg-transparent hover:bg-white hover:border-white active:scale-95 focus-visible:ring-white;
+    border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
+    color: rgb(var(--color-text));
+  }
+
+  .btn-outline:hover {
+    color: rgb(var(--color-text-dark));
   }
 
   .btn-ghost {
-    @apply bg-transparent text-white hover:bg-white/10 active:scale-95;
+    @apply bg-transparent hover:bg-white/10 active:scale-95;
+    color: rgb(var(--color-text));
   }
 
   .btn-sm {
@@ -175,16 +142,23 @@
 
   /* ========== CARDS ========== */
   .card {
-    @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden transition-all duration-300;
+    @apply bg-surface/80 backdrop-blur-sm rounded-xl shadow-xl overflow-hidden transition-all duration-300;
+    border: 1px solid rgba(var(--color-border), var(--color-border-opacity));
   }
 
   .card:hover {
-    @apply border-white/20 shadow-2xl;
+    @apply shadow-2xl;
+    border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
   }
 
   /* ========== NAVIGATION ========== */
   .nav-link {
-    @apply relative px-4 py-2 text-white/70 hover:text-white transition-all duration-200 font-medium;
+    @apply relative px-4 py-2 transition-all duration-200 font-medium;
+    color: rgba(var(--color-text), 0.7);
+  }
+
+  .nav-link:hover {
+    color: rgb(var(--color-text));
   }
 
   .nav-link.active {
@@ -230,17 +204,25 @@
 
   /* ========== INPUTS ========== */
   .input {
-    @apply w-full px-4 py-3 bg-surface border border-white/10 rounded-lg text-white placeholder:text-white/40 focus:outline-none focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply w-full px-4 py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+    background: rgb(var(--color-surface));
+    border: 1px solid rgba(var(--color-border), var(--color-border-opacity));
+    color: rgb(var(--color-text));
     box-shadow: 0 0 0 0 rgba(var(--color-primary), 0);
   }
 
+  .input::placeholder {
+    color: rgba(var(--color-text), 0.4);
+  }
+
   .input:focus {
+    outline: none;
     border-color: rgb(var(--color-primary));
     box-shadow: 0 0 0 3px rgba(var(--color-primary), 0.1);
   }
 
   .input:hover:not(:disabled) {
-    @apply border-white/20;
+    border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
   }
 
   .input-error {
@@ -265,7 +247,9 @@
   }
 
   .glass {
-    @apply bg-white/5 backdrop-blur-sm border border-white/10;
+    background-color: rgba(var(--color-glass-bg), var(--color-glass-bg-opacity));
+    border: 1px solid rgba(var(--color-glass-bg), var(--color-glass-border-opacity));
+    backdrop-filter: blur(4px);
   }
 
   .text-gradient {
@@ -282,10 +266,27 @@
    ======================================== */
 @layer utilities {
   .safe-html-contrast strong, .safe-html-contrast b, .safe-html-contrast em, .safe-html-contrast i, .safe-html-contrast span {
-    color: white !important;
+    color: rgb(var(--color-text)) !important;
   }
   .safe-html-contrast strong, .safe-html-contrast b {
     font-weight: bold !important;
+  }
+
+  /* Semantic theme utilities — prefer these over text-white/border-white/bg-white in JSX */
+  .theme-text { color: rgb(var(--color-text)); }
+  .theme-text-muted { color: rgb(var(--color-muted)); }
+  .theme-surface { background-color: rgb(var(--color-surface)); }
+  .theme-surface-elevated { background-color: rgb(var(--color-surface-elevated)); }
+  .theme-border { border-color: rgba(var(--color-border), var(--color-border-opacity)); }
+  .theme-border-strong { border-color: rgba(var(--color-border), var(--color-border-strong-opacity)); }
+  .theme-glass {
+    background-color: rgba(var(--color-glass-bg), var(--color-glass-bg-opacity));
+    border: 1px solid rgba(var(--color-glass-bg), var(--color-glass-border-opacity));
+    backdrop-filter: blur(4px);
+  }
+  .theme-card {
+    background-color: rgba(var(--color-surface), 0.8);
+    border: 1px solid rgba(var(--color-border), var(--color-border-opacity));
   }
 
   .text-neon {
@@ -342,6 +343,92 @@
   .bg-surface-dark {
     background-color: #0a0c10;
   }
+}
+
+/* ========================================
+   THEME OVERRIDES — bridge for inline Tailwind classes in JSX.
+   Each entry here is technical debt. Migrate to .theme-* utilities
+   or semantic tokens over time, then remove the line.
+   ======================================== */
+:root[data-theme='mediterranean-dusk'] .text-white {
+  color: rgb(var(--color-text));
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/90 {
+  color: rgba(var(--color-text), 0.9);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/80 {
+  color: rgba(var(--color-text), 0.8);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/70 {
+  color: rgba(var(--color-text), 0.72);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/60 {
+  color: rgba(var(--color-text), 0.66);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/50 {
+  color: rgba(var(--color-text), 0.56);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/40 {
+  color: rgba(var(--color-text), 0.46);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/35 {
+  color: rgba(var(--color-text), 0.42);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/30 {
+  color: rgba(var(--color-text), 0.36);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/20 {
+  color: rgba(var(--color-text), 0.28);
+}
+
+:root[data-theme='mediterranean-dusk'] .text-white\/10 {
+  color: rgba(var(--color-text), 0.18);
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-primary {
+  color: rgb(var(--color-primary-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-secondary {
+  color: rgb(var(--color-secondary-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-accent {
+  color: rgb(var(--color-accent-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-success {
+  color: rgb(var(--color-success-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .btn-error,
+:root[data-theme='mediterranean-dusk'] .btn-danger {
+  color: rgb(var(--color-error-fg));
+}
+
+:root[data-theme='mediterranean-dusk'] .border-white\/10 {
+  border-color: rgba(var(--color-border), var(--color-border-opacity));
+}
+
+:root[data-theme='mediterranean-dusk'] .border-white\/20 {
+  border-color: rgba(var(--color-border), var(--color-border-strong-opacity));
+}
+
+:root[data-theme='mediterranean-dusk'] .bg-white\/5 {
+  background-color: rgba(var(--color-glass-bg), var(--color-glass-bg-opacity));
+}
+
+:root[data-theme='mediterranean-dusk'] .bg-white\/10 {
+  background-color: rgba(var(--color-glass-bg), 0.62);
 }
 
 /* ========================================

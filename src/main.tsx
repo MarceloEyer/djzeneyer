@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
+import { initSiteTheme } from './utils/theme';
 import './index.css';
 import './i18n';
 
@@ -17,6 +18,7 @@ declare global {
   }
 }
 
+initSiteTheme();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
