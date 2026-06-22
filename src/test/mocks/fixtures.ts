@@ -7,11 +7,11 @@ import type { UserProfile, AuthSessionResponse, WCOrder } from '../../hooks/useA
 export const mockRawEvent = {
   event_id: '12345678',
   title: 'DJ Zen Eyer at Club X',
-  starts_at: '2025-12-20T22:00:00.000Z',
+  starts_at: '2099-12-20T22:00:00.000Z',
   timezone: 'Europe/Lisbon',
   location: { venue: 'Club X', city: 'Lisbon', region: 'Lisbon', country: 'Portugal' },
-  canonical_path: '/zouk-events/2025-12-20-dj-zen-eyer-at-club-x-12345678',
-  canonical_url: 'https://djzeneyer.com/zouk-events/2025-12-20-dj-zen-eyer-at-club-x-12345678',
+  canonical_path: '/zouk-events/2099-12-20-dj-zen-eyer-at-club-x-12345678',
+  canonical_url: 'https://djzeneyer.com/zouk-events/2099-12-20-dj-zen-eyer-at-club-x-12345678',
 };
 
 export const mockEventsEnvelope = {

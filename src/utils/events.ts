@@ -1,6 +1,8 @@
 import type { ZenBitEventListItem } from '../types/events';
 import { stripHtml } from './text';
 
+export type EventTemporalMode = 'upcoming' | 'past' | 'all';
+
 /**
  * Extracts a plain-text title from a WordPress-style title field.
  * Handles both raw strings and `{ rendered: string }` objects, then strips HTML.
@@ -39,6 +41,38 @@ export function filterEventsByRegion(
 ): ZenBitEventListItem[] {
   if (region === 'all') return events;
   return events.filter((e) => e.location?.region === region);
+}
+
+const getStartOfLocalDay = (now: Date | number = Date.now()): number => {
+  const current = typeof now === 'number' ? new Date(now) : now;
+  return new Date(current.getFullYear(), current.getMonth(), current.getDate()).getTime();
+};
+
+const parseEventTime = (value?: string): number | null => {
+  if (!value) return null;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? parsed : null;
+};
+
+export function isEventUpcoming(
+  event: Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string },
+  now: Date | number = Date.now(),
+): boolean {
+  const comparableTime = parseEventTime(event.ends_at) ?? parseEventTime(event.starts_at);
+  if (comparableTime === null) return true;
+  return comparableTime >= getStartOfLocalDay(now);
+}
+
+export function filterEventsByTemporalMode<T extends Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string }>(
+  events: T[],
+  mode: EventTemporalMode = 'upcoming',
+  now: Date | number = Date.now(),
+): T[] {
+  if (mode === 'all') return events;
+  return events.filter((event) => {
+    const upcoming = isEventUpcoming(event, now);
+    return mode === 'upcoming' ? upcoming : !upcoming;
+  });
 }
 
 /**

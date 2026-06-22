@@ -363,6 +363,26 @@ function normalizeBandsintownEvent(raw, lang = 'en') {
   };
 }
 
+function getStartOfLocalDay(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+}
+
+function getEventComparableTime(event) {
+  const rawTime = event?.ends_at || event?.end_date || event?.starts_at || event?.datetime || '';
+  const parsed = Date.parse(rawTime);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterEventsByMode(events, mode = 'upcoming', now = new Date()) {
+  if (mode === 'all') return events;
+  const startOfDay = getStartOfLocalDay(now);
+  return events.filter(event => {
+    const comparableTime = getEventComparableTime(event);
+    if (comparableTime === null) return true;
+    return mode === 'past' ? comparableTime < startOfDay : comparableTime >= startOfDay;
+  });
+}
+
 async function fetchEvents() {
   const cacheFile = join(CONFIG.distDir, '.prerender-bandsintown-cache.json');
   let raw = null;
@@ -410,7 +430,7 @@ async function fetchEvents() {
       return JSON.parse(readFileSync(cacheFile, 'utf8'));
     }
 
-    const items = Array.isArray(raw) ? raw : [];
+    const items = filterEventsByMode(Array.isArray(raw) ? raw : [], 'upcoming');
     
     // Internal API events are already normalized by zen-bit. Only normalize raw
     // Bandsintown fallback payloads from scratch.
@@ -648,14 +668,7 @@ async function prerender() {
           const params = urlObj.searchParams;
           const limit = Number(params.get('limit') || list.length || 0);
           const mode = params.get('mode') || 'upcoming';
-          const now = Date.now();
-          const filtered = list.filter(event => {
-            const t = Date.parse(event.starts_at);
-            if (!Number.isFinite(t)) return true;
-            if (mode === 'past') return t < now;
-            if (mode === 'upcoming') return t >= now;
-            return true;
-          }).slice(0, limit || list.length);
+          const filtered = filterEventsByMode(list, mode).slice(0, limit || list.length);
           mockData = { success: true, count: filtered.length, mode, events: filtered };
         }
 

@@ -41,6 +41,25 @@ function toIsoDate(value, fallback) {
   return Number.isNaN(parsed.getTime()) ? fallback : parsed.toISOString();
 }
 
+function getStartOfLocalDay(now = new Date()) {
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+}
+
+function getEventComparableTime(event) {
+  const rawTime = event?.ends_at || event?.end_date || event?.starts_at || event?.datetime || '';
+  const parsed = Date.parse(rawTime);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function filterUpcomingEvents(events, now = new Date()) {
+  const startOfDay = getStartOfLocalDay(now);
+  return events.filter(event => {
+    const comparableTime = getEventComparableTime(event);
+    if (comparableTime === null) return true;
+    return comparableTime >= startOfDay;
+  });
+}
+
 function buildUrlEntry(url, date, priority = '0.8', altUrl = null, imageUrl = null, isEnglish = true) {
   let entry = `
   <url>
@@ -135,8 +154,10 @@ async function fetchEvents() {
 
   console.log(`✅ Events loaded via ${source}: ${raw.length} items`);
 
+  const upcomingEvents = filterUpcomingEvents(raw);
+
   // Mapeia para o formato que o gerador espera
-  return raw.map(ev => ({
+  return upcomingEvents.map(ev => ({
     event_id: String(ev.id || ev.event_id || ''),
     image: ev.artist?.image_url || ev.artist?.thumb_url || ev.image || DEFAULT_IMAGE,
     canonical_path: ev.canonical_path,

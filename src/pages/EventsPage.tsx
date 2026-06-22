@@ -23,6 +23,23 @@ import type { EventSchemaData } from '../components/HeadlessSEO';
 // Static month keys stay at module scope to avoid reallocation on every render.
 const MONTH_NAMES = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
 
+const COUNTRY_LABELS_PT: Record<string, string> = {
+  Australia: 'Austrália',
+  Brazil: 'Brasil',
+  Canada: 'Canadá',
+  Germany: 'Alemanha',
+  Netherlands: 'Países Baixos',
+  Portugal: 'Portugal',
+  Spain: 'Espanha',
+  Switzerland: 'Suíça',
+  'United States': 'Estados Unidos',
+  USA: 'Estados Unidos',
+};
+
+const getLocalizedCountry = (country: string | undefined, lang: string): string => {
+  if (!country) return '';
+  return lang === 'pt' ? (COUNTRY_LABELS_PT[country] ?? country) : country;
+};
 
 // ============================================================================
 // SUB-COMPONENTS (SUSPENSE READY)
@@ -298,7 +315,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                     <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
                       <div className="text-3xl font-black min-w-[50px]">{dayStr}</div>
                       <div className="flex-1">
-                        <div className="text-xs text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${loc.country})` : ''}</div>
+                        <div className="text-xs text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${getLocalizedCountry(loc.country, lang)})` : ''}</div>
                         <Link to={detailHref}>
                           <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
                         </Link>
