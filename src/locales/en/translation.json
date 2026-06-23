@@ -22,7 +22,8 @@
     "open_menu": "Open Menu",
     "main_navigation": "Main Navigation",
     "mobile_navigation": "Mobile Menu",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "contact": "Contact"
   },
   "dashboard": {
     "loading": "Syncing with the Zen Universe...",
@@ -1258,5 +1259,19 @@
     }
   },
   "share_event": "Share {{title}}",
-  "event_default_title": "Zen Eyer Event"
+  "event_default_title": "Zen Eyer Event",
+  "countries": {
+    "Brazil": "Brazil",
+    "Netherlands": "Netherlands",
+    "United States": "United States",
+    "Germany": "Germany",
+    "Spain": "Spain",
+    "France": "France",
+    "Portugal": "Portugal",
+    "Italy": "Italy",
+    "United Kingdom": "United Kingdom",
+    "Australia": "Australia",
+    "Canada": "Canada",
+    "Japan": "Japan"
+  }
 }
