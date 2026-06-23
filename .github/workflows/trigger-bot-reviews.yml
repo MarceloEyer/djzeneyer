@@ -26,6 +26,7 @@ concurrency:
 jobs:
   trigger-reviews:
     name: Trigger CodeRabbit
+    if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' && contains(github.event.pull_request.labels.*.name, 'needs-ai-review') }}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger CodeRabbit review once
