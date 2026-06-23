@@ -141,7 +141,8 @@ class Zen_SEO_Sitemap
         ];
 
         // If Polylang is active, get English posts only (translations will be added via hreflang)
-        if (\function_exists('pll_languages_list')) {
+        static $pll_langs_exists = null; if ($pll_langs_exists === null) $pll_langs_exists = \function_exists('pll_languages_list');
+        if ($pll_langs_exists) { /* ⚡ Bolt: Cached function_exists to prevent redundant evaluations */
             $args['lang'] = Zen_SEO_Helpers::get_default_language();
         }
 
@@ -156,7 +157,8 @@ class Zen_SEO_Sitemap
         \_prime_post_caches($batch_ids, true, true);
 
         // Pre-prime translation IDs as well to avoid N+1 in get_permalink()
-        if (\function_exists('pll_get_post_translations')) {
+        static $pll_trans_exists = null; if ($pll_trans_exists === null) $pll_trans_exists = \function_exists('pll_get_post_translations');
+        if ($pll_trans_exists) { /* ⚡ Bolt: Cached function_exists to prevent redundant evaluations */
             $all_ids = $batch_ids;
             foreach ($posts as $post) {
                 $trans = \pll_get_post_translations($post->ID);

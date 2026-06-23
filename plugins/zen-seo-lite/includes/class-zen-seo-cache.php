@@ -146,7 +146,8 @@ class Zen_SEO_Cache
 
     public static function apcu_available(): bool
     {
-        return \function_exists('apcu_enabled') && \apcu_enabled();
+        static $available = null; if ($available === null) $available = \function_exists('apcu_enabled') && \apcu_enabled();
+        return $available; /* ⚡ Bolt: Cached function_exists and APCU check to prevent redundant evaluations */
     }
 
     private static function apcu_key(string $key): string

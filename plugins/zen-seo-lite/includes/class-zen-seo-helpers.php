@@ -64,7 +64,8 @@ class Zen_SEO_Helpers
     {
         $translations = [];
 
-        if (!\function_exists('pll_get_post_translations')) {
+        static $pll_exists = null; if ($pll_exists === null) $pll_exists = \function_exists('pll_get_post_translations');
+        if (!$pll_exists) {
             // No Polylang, return current post only.
             $translations['en'] = \get_permalink($post_id);
 
@@ -116,7 +117,8 @@ class Zen_SEO_Helpers
      */
     public static function get_default_language()
     {
-        if (\function_exists('pll_default_language')) {
+        static $pll_exists = null; if ($pll_exists === null) $pll_exists = \function_exists('pll_default_language');
+        if ($pll_exists) {
             return \pll_default_language();
         }
 
@@ -130,7 +132,8 @@ class Zen_SEO_Helpers
      */
     public static function get_available_languages()
     {
-        if (\function_exists('pll_languages_list')) {
+        static $pll_exists = null; if ($pll_exists === null) $pll_exists = \function_exists('pll_languages_list');
+        if ($pll_exists) {
             return \pll_languages_list();
         }
 

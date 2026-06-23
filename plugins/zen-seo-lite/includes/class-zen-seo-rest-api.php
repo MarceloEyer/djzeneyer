@@ -510,7 +510,8 @@ class Zen_SEO_REST_API
         $batch_ids = \wp_list_pluck($posts, 'ID');
         \_prime_post_caches($batch_ids, true, true);
 
-        $pll_exists = \function_exists('pll_get_post_language');
+        static $pll_exists_cache = null; if ($pll_exists_cache === null) $pll_exists_cache = \function_exists('pll_get_post_language');
+        $pll_exists = $pll_exists_cache; /* ⚡ Bolt: Cached function_exists to prevent redundant evaluations */
 
         foreach ($posts as $post) {
             $meta = Zen_SEO_Helpers::get_post_meta($post->ID);
