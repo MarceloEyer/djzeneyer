@@ -208,6 +208,8 @@ export const prefetchQueries = {
  * Limpa todo o cache (útil em logout)
  */
 export const clearAllCache = () => {
+  // ⚡ Bolt: Clear context by invalidating the query cache in React Query when a user logs out
+  queryClient.invalidateQueries();
   queryClient.clear();
 };
 
