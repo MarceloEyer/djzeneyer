@@ -34,7 +34,7 @@ export const initSiteTheme = (): SiteTheme => {
   try {
     storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
   } catch {
-    storedTheme = null;
+    // Ignore storage errors.
   }
 
   const theme = resolveSiteTheme(window.location.search, storedTheme);

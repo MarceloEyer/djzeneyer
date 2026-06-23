@@ -500,7 +500,8 @@ await fs.mkdir(outputDir, { recursive: true });
 
 const browser = await puppeteer.launch({ headless: 'new' });
 try {
-  for (const doc of Object.values(documents)) {
+  // ⚡ Bolt: Generate PDFs in parallel using Promise.all to improve performance.
+  await Promise.all(Object.values(documents).map(async (doc) => {
     const page = await browser.newPage();
     await page.setContent(renderHtml(doc), { waitUntil: 'networkidle0' });
     await page.pdf({
@@ -513,7 +514,7 @@ try {
     await fs.writeFile(path.join(outputDir, doc.outputMd), renderMarkdown(doc), 'utf8');
     console.log(`Generated ${path.join('public', 'assets', 'press', doc.outputPdf)}`);
     console.log(`Generated ${path.join('public', 'assets', 'press', doc.outputMd)}`);
-  }
+  }));
 
   await fs.copyFile(
     path.join(outputDir, documents.en.outputPdf),
