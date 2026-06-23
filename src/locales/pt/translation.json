@@ -4,8 +4,8 @@
     "about": "Sobre",
     "events": "Eventos",
     "music": "Música",
-    "tribe": "Zen Tribe",
-    "presskit": "Press Kit",
+    "tribe": "Tribo Zen",
+    "presskit": "Kit de Imprensa",
     "booking": "Trabalhe Comigo",
     "media": "Imprensa",
     "shop": "Loja",
@@ -22,7 +22,8 @@
     "mobile_navigation": "Menu Mobile",
     "privacy": "Política de Privacidade",
     "terms": "Termos de Uso",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "contact": "Contato"
   },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
@@ -202,7 +203,7 @@
   "events": {
     "title_part1": "Agenda de",
     "title_part2": "Eventos",
-    "press_kit": "Press Kit",
+    "press_kit": "Kit de Imprensa",
     "featured": "Evento em Destaque"
   },
   "gamification": {
@@ -781,7 +782,7 @@
   "footer_music_philosophy": "Filosofia Musical",
   "footer_press_kit_booking": "Press Kit / Booking",
   "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine o Newsletter",
+  "footer_join_newsletter": "Assine a Newsletter",
   "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente no seu e-mail.",
   "footer_email_placeholder": "Seu endereço de e-mail",
   "footer_subscribe": "Inscrever-se",
@@ -1187,7 +1188,7 @@
       "meta_desc": "Quem é você na pista de dança? Faça o Quiz de Persona do Zouk e descubra se você é um Lambadeiro, Técnico ou o Cremoso!"
     }
   },
-  "contact": "contact",
+  "contact": "Contato",
   "event_desc_fallback": "event_desc_fallback",
   "events_noEvents": "events_noEvents",
   "events_subtitle": "events_subtitle",
@@ -1258,5 +1259,19 @@
   "events_venue": "Local",
   "quiz_you_are": "Você é...",
   "share_event": "Compartilhar {{title}}",
-  "event_default_title": "Evento Zen Eyer"
+  "event_default_title": "Evento Zen Eyer",
+  "countries": {
+    "Brazil": "Brasil",
+    "Netherlands": "Holanda",
+    "United States": "Estados Unidos",
+    "Germany": "Alemanha",
+    "Spain": "Espanha",
+    "France": "França",
+    "Portugal": "Portugal",
+    "Italy": "Itália",
+    "United Kingdom": "Reino Unido",
+    "Australia": "Austrália",
+    "Canada": "Canadá",
+    "Japan": "Japão"
+  }
 }
