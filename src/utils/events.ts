@@ -43,27 +43,26 @@ export function filterEventsByRegion(
   return events.filter((e) => e.location?.region === region);
 }
 
-const getStartOfLocalDay = (now: Date | number = Date.now()): number => {
+export const getLocalISODate = (now: Date | number = Date.now()): string => {
   const current = typeof now === 'number' ? new Date(now) : now;
-  return new Date(current.getFullYear(), current.getMonth(), current.getDate()).getTime();
-};
-
-const parseEventTime = (value?: string): number | null => {
-  if (!value) return null;
-  const parsed = Date.parse(value);
-  return Number.isFinite(parsed) ? parsed : null;
+  const offsetMs = current.getTimezoneOffset() * 60 * 1000;
+  const localDate = new Date(current.getTime() - offsetMs);
+  return localDate.toISOString().split('T')[0];
 };
 
 export function isEventUpcoming(
-  event: Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string },
+  event: Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string },
   now: Date | number = Date.now(),
 ): boolean {
-  const comparableTime = parseEventTime(event.ends_at) ?? parseEventTime(event.starts_at);
-  if (comparableTime === null) return true;
-  return comparableTime >= getStartOfLocalDay(now);
+  // Use ends_at if available, else starts_at, else fallbacks (for schema)
+  const comparableString = event.ends_at ?? event.starts_at ?? (event as any).event_date ?? (event as any).start_date;
+  if (!comparableString) return true; // Safety fallback
+  
+  const dateOnly = comparableString.split('T')[0];
+  return dateOnly >= getLocalISODate(now);
 }
 
-export function filterEventsByTemporalMode<T extends Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string }>(
+export function filterEventsByTemporalMode<T extends Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string }>(
   events: T[],
   mode: EventTemporalMode = 'upcoming',
   now: Date | number = Date.now(),

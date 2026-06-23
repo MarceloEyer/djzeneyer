@@ -363,23 +363,26 @@ function normalizeBandsintownEvent(raw, lang = 'en') {
   };
 }
 
-function getStartOfLocalDay(now = new Date()) {
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+function getLocalISODate(now = new Date()) {
+  const current = typeof now === 'number' ? new Date(now) : now;
+  const offsetMs = current.getTimezoneOffset() * 60 * 1000;
+  const localDate = new Date(current.getTime() - offsetMs);
+  return localDate.toISOString().split('T')[0];
 }
 
-function getEventComparableTime(event) {
-  const rawTime = event?.ends_at || event?.end_date || event?.starts_at || event?.datetime || '';
-  const parsed = Date.parse(rawTime);
-  return Number.isFinite(parsed) ? parsed : null;
+function isEventUpcoming(event, now = new Date()) {
+  const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
+  if (!comparableString) return true;
+  const dateOnly = comparableString.split('T')[0];
+  return dateOnly >= getLocalISODate(now);
 }
 
 function filterEventsByMode(events, mode = 'upcoming', now = new Date()) {
   if (mode === 'all') return events;
-  const startOfDay = getStartOfLocalDay(now);
   return events.filter(event => {
-    const comparableTime = getEventComparableTime(event);
-    if (comparableTime === null) return true;
-    return mode === 'past' ? comparableTime < startOfDay : comparableTime >= startOfDay;
+    const upcoming = isEventUpcoming(event, now);
+    return mode === 'upcoming' ? upcoming : !upcoming;
   });
 }
 
