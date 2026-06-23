@@ -773,14 +773,19 @@ class Rest_Routes
                 // Subscriber doesn't exist, will create if enabling
             }
 
-            // Find "Zen Tribe Newsletter" list
-            $lists = $mailpoet_api->getLists();
-            $zen_list_id = null;
+            // ⚡ Bolt: Check cache for Zen Tribe list ID to avoid O(N) list search and DB queries on every request
+            $zen_list_id = get_transient('zeneyer_mailpoet_zen_tribe_list_id');
+            if (false === $zen_list_id) {
+                // Find "Zen Tribe Newsletter" list
+                $lists = $mailpoet_api->getLists();
+                $zen_list_id = null;
 
-            foreach ($lists as $list) {
-                if (stripos($list['name'], 'Zen Tribe') !== false) {
-                    $zen_list_id = $list['id'];
-                    break;
+                foreach ($lists as $list) {
+                    if (stripos($list['name'], 'Zen Tribe') !== false) {
+                        $zen_list_id = $list['id'];
+                        set_transient('zeneyer_mailpoet_zen_tribe_list_id', $zen_list_id, 24 * HOUR_IN_SECONDS);
+                        break;
+                    }
                 }
             }
 
@@ -893,14 +898,19 @@ class Rest_Routes
                 ]);
             }
 
-            // Find Zen Tribe list
-            $lists = $mailpoet_api->getLists();
-            $zen_list_id = null;
+            // ⚡ Bolt: Check cache for Zen Tribe list ID to avoid O(N) list search and DB queries on every request
+            $zen_list_id = get_transient('zeneyer_mailpoet_zen_tribe_list_id');
+            if (false === $zen_list_id) {
+                // Find Zen Tribe list
+                $lists = $mailpoet_api->getLists();
+                $zen_list_id = null;
 
-            foreach ($lists as $list) {
-                if (stripos($list['name'], 'Zen Tribe') !== false) {
-                    $zen_list_id = $list['id'];
-                    break;
+                foreach ($lists as $list) {
+                    if (stripos($list['name'], 'Zen Tribe') !== false) {
+                        $zen_list_id = $list['id'];
+                        set_transient('zeneyer_mailpoet_zen_tribe_list_id', $zen_list_id, 24 * HOUR_IN_SECONDS);
+                        break;
+                    }
                 }
             }
 
