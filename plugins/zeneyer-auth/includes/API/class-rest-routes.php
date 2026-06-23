@@ -556,12 +556,84 @@ class Rest_Routes
             $fields['zen_gender'] = self::sanitize_gender($request->get_param('gender'));
         }
 
+        // ⚡ Bolt: Consolidate multiple update_user_meta() calls into targeted batch operations to prevent N+1 queries.
+        global $wpdb;
+        $existing_meta = get_user_meta($user_id);
+
+        $to_insert = [];
+        $to_update = [];
+        $to_delete = [];
+
         foreach ($fields as $meta_key => $value) {
             if ($value !== null && $value !== '') {
-                update_user_meta($user_id, $meta_key, $value);
+                $serialized_value = maybe_serialize($value);
+                if (isset($existing_meta[$meta_key])) {
+                    if ((string) $existing_meta[$meta_key][0] !== (string) $serialized_value) {
+                        $to_update[$meta_key] = $serialized_value;
+                    }
+                } else {
+                    $to_insert[$meta_key] = $serialized_value;
+                }
             } elseif ($value === '') {
-                delete_user_meta($user_id, $meta_key);
+                if (isset($existing_meta[$meta_key])) {
+                    $to_delete[] = $meta_key;
+                }
             }
+        }
+
+        $cache_needs_cleaning = false;
+
+        if (!empty($to_delete)) {
+            $placeholders = implode(',', array_fill(0, count($to_delete), '%s'));
+            $wpdb->query($wpdb->prepare(
+                "DELETE FROM {$wpdb->usermeta} WHERE user_id = %d AND meta_key IN ($placeholders)",
+                array_merge([$user_id], $to_delete)
+            ));
+            $cache_needs_cleaning = true;
+        }
+
+        if (!empty($to_insert)) {
+            $insert_query = "INSERT INTO {$wpdb->usermeta} (user_id, meta_key, meta_value) VALUES ";
+            $insert_values = [];
+            $insert_placeholders = [];
+            foreach ($to_insert as $key => $val) {
+                $insert_placeholders[] = "(%d, %s, %s)";
+                $insert_values[] = $user_id;
+                $insert_values[] = $key;
+                $insert_values[] = $val;
+            }
+            $insert_query .= implode(', ', $insert_placeholders);
+            $wpdb->query($wpdb->prepare($insert_query, $insert_values));
+            $cache_needs_cleaning = true;
+        }
+
+        if (!empty($to_update)) {
+            $when_clauses = [];
+            $args = [];
+            $in_keys = [];
+
+            foreach ($to_update as $key => $val) {
+                $when_clauses[] = "WHEN %s THEN %s";
+                $args[] = $key;
+                $args[] = $val;
+                $in_keys[] = $key;
+            }
+
+            $args[] = $user_id;
+
+            $in_placeholders = implode(',', array_fill(0, count($in_keys), '%s'));
+            foreach ($in_keys as $k) {
+                $args[] = $k;
+            }
+
+            $when_sql = implode(' ', $when_clauses);
+            $update_sql = "UPDATE {$wpdb->usermeta} SET meta_value = CASE meta_key $when_sql END WHERE user_id = %d AND meta_key IN ($in_placeholders)";
+            $wpdb->query($wpdb->prepare($update_sql, $args));
+            $cache_needs_cleaning = true;
+        }
+
+        if ($cache_needs_cleaning) {
+            clean_user_cache($user_id);
         }
 
         // Keep display_name aligned when preferred_name is changed or explicitly cleared.
