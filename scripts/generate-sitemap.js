@@ -261,31 +261,67 @@ async function fetchPostsFromZenSeoSitemap() {
 async function fetchPostsForLang(lang) {
   const fields = 'id,date,modified,slug,link,featured_image_src,featured_image_src_full,zen_seo,zen_translations';
   const posts = [];
-  let page = 1;
-  while (true) {
-    const url = `${REST_BASE_URL}/wp/v2/posts?lang=${lang}&per_page=100&page=${page}&status=publish&orderby=modified&order=desc&_fields=${encodeURIComponent(fields)}`;
-    let res;
-    try {
-      res = await fetch(url, { headers: { Accept: 'application/json' } });
-    } catch (error) {
-      console.warn(`⚠️ Error fetching posts (lang=${lang}, page=${page}):`, error instanceof Error ? error.message : String(error));
-      break;
-    }
-    if (!res.ok) {
-      console.warn(`⚠️ Posts (${lang}): API respondeu ${res.status}.`);
-      break;
-    }
-    const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) break;
-    posts.push(
-      ...data
-        .map(post => normalizePost(post, lang))
-        .filter(post => post.slug && !post.noindex)
-    );
-    const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
-    if (page >= totalPages) break;
-    page++;
+
+  // ⚡ Bolt: Replaced synchronous pagination while loop with concurrent fetch using Promise.all
+  // This reduces the time to fetch all pages by making network requests concurrently instead of sequentially.
+
+  const firstUrl = `${REST_BASE_URL}/wp/v2/posts?lang=${lang}&per_page=100&page=1&status=publish&orderby=modified&order=desc&_fields=${encodeURIComponent(fields)}`;
+  let res;
+  try {
+    res = await fetch(firstUrl, { headers: { Accept: 'application/json' } });
+  } catch (error) {
+    console.warn(`⚠️ Error fetching posts (lang=${lang}, page=1):`, error instanceof Error ? error.message : String(error));
+    return posts;
   }
+
+  if (!res.ok) {
+    console.warn(`⚠️ Posts (${lang}): API respondeu ${res.status}.`);
+    return posts;
+  }
+
+  const data = await res.json();
+  if (!Array.isArray(data) || data.length === 0) return posts;
+
+  posts.push(
+    ...data
+      .map(post => normalizePost(post, lang))
+      .filter(post => post.slug && !post.noindex)
+  );
+
+  const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
+
+  if (totalPages > 1) {
+    const promises = [];
+    for (let page = 2; page <= totalPages; page++) {
+      const url = `${REST_BASE_URL}/wp/v2/posts?lang=${lang}&per_page=100&page=${page}&status=publish&orderby=modified&order=desc&_fields=${encodeURIComponent(fields)}`;
+      promises.push(
+        fetch(url, { headers: { Accept: 'application/json' } })
+          .then(async (r) => {
+            if (!r.ok) {
+              console.warn(`⚠️ Posts (${lang}): API respondeu ${r.status} on page ${page}.`);
+              return [];
+            }
+            return r.json();
+          })
+          .catch((error) => {
+            console.warn(`⚠️ Error fetching posts (lang=${lang}, page=${page}):`, error instanceof Error ? error.message : String(error));
+            return [];
+          })
+      );
+    }
+
+    const results = await Promise.all(promises);
+    for (const pageData of results) {
+      if (Array.isArray(pageData) && pageData.length > 0) {
+        posts.push(
+          ...pageData
+            .map(post => normalizePost(post, lang))
+            .filter(post => post.slug && !post.noindex)
+        );
+      }
+    }
+  }
+
   return posts;
 }
 
