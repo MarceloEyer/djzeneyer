@@ -41,6 +41,38 @@ function toIsoDate(value, fallback) {
   return Number.isNaN(parsed.getTime()) ? fallback : parsed.toISOString();
 }
 
+function getLocalISODate(now = new Date()) {
+  const current = typeof now === 'number' ? new Date(now) : now;
+  const offsetMs = current.getTimezoneOffset() * 60 * 1000;
+  const localDate = new Date(current.getTime() - offsetMs);
+  return localDate.toISOString().split('T')[0];
+}
+
+function getDateOnly(value) {
+  if (!value) return null;
+  const raw = String(value);
+  const dateOnly = raw.split('T')[0];
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? dateOnly : null;
+}
+
+function getEventComparableDate(event) {
+  const candidates = [event?.ends_at, event?.end_date, event?.starts_at, event?.datetime];
+  for (const candidate of candidates) {
+    const dateOnly = getDateOnly(candidate);
+    if (dateOnly) return dateOnly;
+  }
+  return null;
+}
+
+function filterUpcomingEvents(events, now = new Date()) {
+  const today = getLocalISODate(now);
+  return events.filter(event => {
+    const comparableDate = getEventComparableDate(event);
+    if (comparableDate === null) return true;
+    return comparableDate >= today;
+  });
+}
+
 function buildUrlEntry(url, date, priority = '0.8', altUrl = null, imageUrl = null, isEnglish = true) {
   let entry = `
   <url>
@@ -135,8 +167,10 @@ async function fetchEvents() {
 
   console.log(`✅ Events loaded via ${source}: ${raw.length} items`);
 
+  const upcomingEvents = filterUpcomingEvents(raw);
+
   // Mapeia para o formato que o gerador espera
-  return raw.map(ev => ({
+  return upcomingEvents.map(ev => ({
     event_id: String(ev.id || ev.event_id || ''),
     image: ev.artist?.image_url || ev.artist?.thumb_url || ev.image || DEFAULT_IMAGE,
     canonical_path: ev.canonical_path,
