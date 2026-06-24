@@ -168,7 +168,7 @@ const Footer: React.FC = () => {
         </div>
 
         {/* Bottom Bar - Simplified */}
-        <div className="mt-10 pt-8 border-t border-border/10 text-center text-text/60 text-sm">
+        <div className="mt-10 pt-8 border-t border-border/10 text-center text-text/75 text-sm">
           <p>{t('footer_copyright', { year: CURRENT_YEAR })} <span className="mx-1">&bull;</span> {footerSignature}</p>
 
           <div className="flex justify-center gap-4 mt-2 text-xs uppercase tracking-wider">
@@ -177,7 +177,7 @@ const Footer: React.FC = () => {
             <Link to={routes.terms} className="hover:text-primary transition-colors">{t('common.footer_terms')}</Link>
           </div>
 
-          <div className="mt-4 text-xs opacity-80 flex justify-center gap-4">
+          <div className="mt-4 text-xs flex justify-center gap-4">
             <a href={safeUrl(ARTIST.identifiers.wikidataUrl, '/')} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Wikidata
             </a>

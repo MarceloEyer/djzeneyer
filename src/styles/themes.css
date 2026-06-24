@@ -32,9 +32,9 @@
   /* #FCF7ED - warm plaster */
   --color-surface-elevated: 255, 253, 247;
   /* #FFFDF7 - sunlit paper */
-  --color-text: 62, 49, 40;
-  /* #3E3128 - warm brown ink */
-  --color-text-dark: 62, 49, 40;
+  --color-text: 22, 17, 14;
+  /* #16110E - warm brown ink, dark enough for subdued UI text */
+  --color-text-dark: 22, 17, 14;
   --color-muted: 123, 109, 96;
 
   --color-primary-fg: 255, 255, 255;
