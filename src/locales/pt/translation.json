@@ -4,7 +4,7 @@
     "about": "Sobre",
     "events": "Eventos",
     "music": "Música",
-    "tribe": "Zen Tribe",
+    "tribe": "Tribo Zen",
     "presskit": "Kit de Imprensa",
     "booking": "Trabalhe Comigo",
     "media": "Imprensa",
@@ -22,7 +22,8 @@
     "mobile_navigation": "Menu Mobile",
     "privacy": "Política de Privacidade",
     "terms": "Termos de Uso",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "contact": "Contato"
   },
   "countries": {
     "australia": "Austrália",
@@ -792,7 +793,7 @@
   "footer_music_philosophy": "Filosofia Musical",
   "footer_press_kit_booking": "Kit de Imprensa / Booking",
   "footer_support_artist": "Apoie o Artista",
-  "footer_join_newsletter": "Assine a newsletter",
+  "footer_join_newsletter": "Assine a Newsletter",
   "footer_newsletter_desc": "Receba atualizações exclusivas, novos lançamentos e acesso VIP a eventos diretamente no seu e-mail.",
   "footer_email_placeholder": "Seu endereço de e-mail",
   "footer_subscribe": "Inscrever-se",
@@ -1269,5 +1270,19 @@
   "events_venue": "Local",
   "quiz_you_are": "Você é...",
   "share_event": "Compartilhar {{title}}",
-  "event_default_title": "Evento Zen Eyer"
+  "event_default_title": "Evento Zen Eyer",
+  "countries": {
+    "Brazil": "Brasil",
+    "Netherlands": "Holanda",
+    "United States": "Estados Unidos",
+    "Germany": "Alemanha",
+    "Spain": "Espanha",
+    "France": "França",
+    "Portugal": "Portugal",
+    "Italy": "Itália",
+    "United Kingdom": "Reino Unido",
+    "Australia": "Austrália",
+    "Canada": "Canadá",
+    "Japan": "Japão"
+  }
 }
