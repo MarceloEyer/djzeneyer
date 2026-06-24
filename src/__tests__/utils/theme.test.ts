@@ -13,8 +13,8 @@ afterEach(() => {
 });
 
 describe('theme utilities', () => {
-  it('keeps zen-night as the default theme', () => {
-    expect(resolveSiteTheme('', null)).toBe('zen-night');
+  it('keeps mediterranean-dusk as the default theme', () => {
+    expect(resolveSiteTheme('', null)).toBe('mediterranean-dusk');
   });
 
   it('resolves mediterranean-dusk from query string before stored theme', () => {
@@ -26,7 +26,7 @@ describe('theme utilities', () => {
   });
 
   it('ignores unknown theme values', () => {
-    expect(resolveSiteTheme('?theme=solarized', 'unknown')).toBe('zen-night');
+    expect(resolveSiteTheme('?theme=solarized', 'unknown')).toBe('mediterranean-dusk');
   });
 
   it('applies the data-theme attribute and color scheme', () => {
