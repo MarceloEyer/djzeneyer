@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractRegions, filterEventsByRegion, groupEventsByMonth } from '../../utils/events';
+import { extractRegions, filterEventsByRegion, filterEventsByTemporalMode, groupEventsByMonth, isEventUpcoming } from '../../utils/events';
 import type { ZenBitEventListItem } from '../../types/events';
 
 const e = (id: string, region?: string, starts_at?: string): ZenBitEventListItem =>
@@ -59,6 +59,40 @@ describe('filterEventsByRegion', () => {
 });
 
 // ── groupEventsByMonth ─────────────────────────────────────────────────────────
+
+describe('filterEventsByTemporalMode', () => {
+  const now = new Date('2026-06-22T12:00:00-03:00');
+
+  it('treats previous local dates as past', () => {
+    expect(isEventUpcoming(e('past', undefined, '2026-06-21T23:59:00-03:00'), now)).toBe(false);
+  });
+
+  it('keeps current local date as upcoming', () => {
+    expect(isEventUpcoming(e('today', undefined, '2026-06-22T00:01:00-03:00'), now)).toBe(true);
+  });
+
+  it('filters upcoming mode to today and future dates', () => {
+    const events = [
+      e('past', undefined, '2026-06-21T20:00:00-03:00'),
+      e('today', undefined, '2026-06-22T20:00:00-03:00'),
+      e('future', undefined, '2026-06-23T20:00:00-03:00'),
+    ];
+    expect(filterEventsByTemporalMode(events, 'upcoming', now).map((event) => event.event_id)).toEqual(['today', 'future']);
+  });
+
+  it('filters past mode to previous dates', () => {
+    const events = [
+      e('past', undefined, '2026-06-21T20:00:00-03:00'),
+      e('today', undefined, '2026-06-22T20:00:00-03:00'),
+    ];
+    expect(filterEventsByTemporalMode(events, 'past', now).map((event) => event.event_id)).toEqual(['past']);
+  });
+
+  it('returns the same reference for all mode', () => {
+    const events = [e('past', undefined, '2026-06-21T20:00:00-03:00')];
+    expect(filterEventsByTemporalMode(events, 'all', now)).toBe(events);
+  });
+});
 
 describe('groupEventsByMonth', () => {
   it('returns empty array for empty input', () => {
