@@ -41,22 +41,35 @@ function toIsoDate(value, fallback) {
   return Number.isNaN(parsed.getTime()) ? fallback : parsed.toISOString();
 }
 
-function getStartOfLocalDay(now = new Date()) {
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+function getLocalISODate(now = new Date()) {
+  const current = typeof now === 'number' ? new Date(now) : now;
+  const offsetMs = current.getTimezoneOffset() * 60 * 1000;
+  const localDate = new Date(current.getTime() - offsetMs);
+  return localDate.toISOString().split('T')[0];
 }
 
-function getEventComparableTime(event) {
-  const rawTime = event?.ends_at || event?.end_date || event?.starts_at || event?.datetime || '';
-  const parsed = Date.parse(rawTime);
-  return Number.isFinite(parsed) ? parsed : null;
+function getDateOnly(value) {
+  if (!value) return null;
+  const raw = String(value);
+  const dateOnly = raw.split('T')[0];
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? dateOnly : null;
+}
+
+function getEventComparableDate(event) {
+  const candidates = [event?.ends_at, event?.end_date, event?.starts_at, event?.datetime];
+  for (const candidate of candidates) {
+    const dateOnly = getDateOnly(candidate);
+    if (dateOnly) return dateOnly;
+  }
+  return null;
 }
 
 function filterUpcomingEvents(events, now = new Date()) {
-  const startOfDay = getStartOfLocalDay(now);
+  const today = getLocalISODate(now);
   return events.filter(event => {
-    const comparableTime = getEventComparableTime(event);
-    if (comparableTime === null) return true;
-    return comparableTime >= startOfDay;
+    const comparableDate = getEventComparableDate(event);
+    if (comparableDate === null) return true;
+    return comparableDate >= today;
   });
 }
 

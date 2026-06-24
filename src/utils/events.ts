@@ -55,7 +55,7 @@ export function isEventUpcoming(
   now: Date | number = Date.now(),
 ): boolean {
   // Use ends_at if available, else starts_at, else fallbacks (for schema)
-  const comparableString = event.ends_at ?? event.starts_at ?? (event as any).event_date ?? (event as any).start_date;
+  const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
   if (!comparableString) return true; // Safety fallback
   
   const dateOnly = comparableString.split('T')[0];

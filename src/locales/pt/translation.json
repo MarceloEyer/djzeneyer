@@ -24,6 +24,17 @@
     "terms": "Termos de Uso",
     "faq": "FAQ"
   },
+  "countries": {
+    "australia": "Austrália",
+    "brazil": "Brasil",
+    "canada": "Canadá",
+    "germany": "Alemanha",
+    "netherlands": "Países Baixos",
+    "portugal": "Portugal",
+    "spain": "Espanha",
+    "switzerland": "Suíça",
+    "united_states": "Estados Unidos"
+  },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
     "error_loading": "Não foi possível carregar os dados do painel.",
