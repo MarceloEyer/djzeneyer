@@ -24,6 +24,8 @@ class Rest_Routes
 {
 
     const NAMESPACE = 'zeneyer-auth/v1';
+    private const MAILPOET_ZEN_TRIBE_LIST_TRANSIENT = 'zeneyer_mailpoet_zen_tribe_list_id';
+    private const MAILPOET_ZEN_TRIBE_LIST_TTL = 43200;
 
     public static function register_routes()
     {
@@ -732,6 +734,34 @@ class Rest_Routes
     }
 
     /**
+     * Resolve the MailPoet list used for Zen Tribe newsletter subscriptions.
+     *
+     * MailPoet list names can be changed in wp-admin, so the cache is short-lived
+     * and refreshed through one helper instead of duplicating getLists() searches.
+     */
+    private static function get_zen_tribe_mailpoet_list_id($mailpoet_api)
+    {
+        $cached_id = get_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT);
+
+        if (false !== $cached_id && (int) $cached_id > 0) {
+            return (int) $cached_id;
+        }
+
+        $lists = $mailpoet_api->getLists();
+
+        foreach ($lists as $list) {
+            if (isset($list['id'], $list['name']) && stripos((string) $list['name'], 'Zen Tribe') !== false) {
+                $list_id = (int) $list['id'];
+                set_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT, $list_id, self::MAILPOET_ZEN_TRIBE_LIST_TTL);
+                return $list_id;
+            }
+        }
+
+        delete_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT);
+        return null;
+    }
+
+    /**
      * Toggle newsletter subscription (MailPoet integration)
      */
     public static function toggle_newsletter($request)
@@ -773,16 +803,7 @@ class Rest_Routes
                 // Subscriber doesn't exist, will create if enabling
             }
 
-            // Find "Zen Tribe Newsletter" list
-            $lists = $mailpoet_api->getLists();
-            $zen_list_id = null;
-
-            foreach ($lists as $list) {
-                if (stripos($list['name'], 'Zen Tribe') !== false) {
-                    $zen_list_id = $list['id'];
-                    break;
-                }
-            }
+            $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api);
 
             if (!$zen_list_id) {
                 // Fallback to user meta if list not found
@@ -893,16 +914,7 @@ class Rest_Routes
                 ]);
             }
 
-            // Find Zen Tribe list
-            $lists = $mailpoet_api->getLists();
-            $zen_list_id = null;
-
-            foreach ($lists as $list) {
-                if (stripos($list['name'], 'Zen Tribe') !== false) {
-                    $zen_list_id = $list['id'];
-                    break;
-                }
-            }
+            $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api);
 
             if (!$zen_list_id) {
                 return rest_ensure_response([
