@@ -30,11 +30,11 @@ export const initSiteTheme = (): SiteTheme => {
   }
 
   const requestedTheme = new URLSearchParams(window.location.search).get('theme');
-  let storedTheme: string | null = null;
+  let storedTheme: string | null;
   try {
     storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
   } catch {
-    storedTheme = null;
+    // ignore
   }
 
   const theme = resolveSiteTheme(window.location.search, storedTheme);
