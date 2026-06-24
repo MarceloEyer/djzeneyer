@@ -110,6 +110,16 @@ Em rotina programada de auditoria, abrir PR apenas para achados relevantes:
 
 **WooCommerce HPOS:**
 - Nunca SQL direto em `wp_posts` para pedidos. Usar `wc_get_orders()`.
+- Nunca ler itens de pedido diretamente das tabelas internas do WooCommerce em PR autonomo. Use o CRUD/API do WooCommerce (`$order->get_items()`) para manter compatibilidade com HPOS, extensoes, filtros e formato de dados.
+- Otimizacoes de pedidos so podem trocar APIs WooCommerce por SQL manual com issue humana explicita, benchmark reproduzivel, fixture de contrato REST e revisao humana planejada.
+
+**User meta / profile:**
+- Nunca substituir `update_user_meta()`, `delete_user_meta()` ou `get_user_meta()` por SQL direto em `wp_usermeta` em PR autonomo. Essas APIs preservam serializacao, hooks e cache.
+- Batch updates de perfil sao risco alto. Se houver gargalo real, propor primeiro um design que mantenha APIs WordPress ou documentar exatamente quais hooks/cache seriam preservados.
+
+**MailPoet/newsletter:**
+- Se cachear ID de lista do MailPoet, criar um helper unico e reutilizado. Nao duplicar busca/cache em varios metodos.
+- O helper deve revalidar/fazer fallback quando o ID cacheado nao existir mais, porque listas podem ser renomeadas, apagadas ou recriadas.
 
 **GamiPress:**
 - `gamipress_get_rank_types()` retorna array associativo. Sempre `array_values()` antes de `[0]`.
@@ -121,6 +131,7 @@ Em rotina programada de auditoria, abrir PR apenas para achados relevantes:
 **Performance N+1:**
 - Buscar thumbnails/metas dentro de loop: agrupar IDs e usar `_prime_post_caches()` + `update_meta_cache()`.
 - Nunca usar `_embed` em endpoints de lista. Usar `register_rest_field()` para campos customizados enxutos.
+- Nao criar PR para micro-otimizacao de `function_exists()`/APCu ou arrays pequenos sem hot path medido. Se necessario, usar helper legivel compartilhado; nao espalhar `static` inline em varias classes.
 
 **Segurança:**
 - Todo `$request->get_param()` deve ser sanitizado/validado.
@@ -150,6 +161,7 @@ Em rotina programada de auditoria, abrir PR apenas para achados relevantes:
 - Nunca adicionar `pnpm-lock.yaml` ou `plan.md` a PRs — o projeto usa npm.
 - **Nunca criar ou modificar arquivos em `plugins/gamipress/`** — o GamiPress foi removido do repositório no commit f9556574 e é gerenciado como plugin WordPress instalado no servidor, fora do controle de versão. Qualquer tarefa que envolva GamiPress no repositório deve ser fechada como "obsoleta".
 - **Nunca commitar arquivos de trabalho temporários**: `*.patch`, `*.orig`, `*.sh` de uso único, `update_*.sh` — esses são artefatos de trabalho, não código do projeto.
+- **Nunca misturar artefatos binarios gerados com refactor de script**: PR de PDF/presskit deve separar mudanca de copy, mudanca de script e PDFs gerados. Um PR de performance em `scripts/generate-presskit-pdf.js` nao deve incluir PDFs binarios nem ajustes de texto.
 
 ---
 
