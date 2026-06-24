@@ -264,6 +264,11 @@ class Zen_BIT_Normalizer
         if ($region)  $address['addressRegion']   = $region;
         if ($country) $address['addressCountry']  = $country;
 
+        // Se não possuímos nenhum sub-campo de endereço, falhamos graciosamente (evita warnings no Google)
+        if (count($address) === 1) {
+            return [];
+        }
+
         // endDate: fallback startDate + 4h quando não fornecido
         $start_ts = strtotime($event['starts_at']);
         if (!$start_ts) {
@@ -276,13 +281,14 @@ class Zen_BIT_Normalizer
         $is_past = $start_ts < time();
 
         // description: fallback descritivo quando vazio
-        $description = !empty($event['description'])
-            ? wp_strip_all_tags($event['description'])
-            : sprintf(
+        $desc_text = !empty($event['description']) ? trim(wp_strip_all_tags($event['description'])) : '';
+        if ($desc_text === '') {
+            $desc_text = sprintf(
                 'Live Brazilian Zouk DJ set by DJ Zen Eyer%s.',
                 $venue_name && $venue_name !== 'TBA' ? ' at ' . $venue_name : ''
             );
-        $description = substr($description, 0, 300);
+        }
+        $description = substr($desc_text, 0, 300);
 
         // image: fallback OG padrão do site
         $default_image = home_url('/images/zen-eyer-og-image.png');

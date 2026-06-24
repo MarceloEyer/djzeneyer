@@ -312,9 +312,7 @@ const NewsPage: React.FC = () => {
                 {t('news.live_feed')}
               </motion.div>
               <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display tracking-tight text-text leading-none">
-                <Trans i18nKey="news.title">
-                  Latest <span className="text-primary">Stories</span>
-                </Trans>
+                <Trans i18nKey="news.title" components={{ 1: <span className="text-primary" /> }} />
               </h1>
             </div>
             <div className="text-right text-text/50 text-sm hidden md:block">
@@ -455,9 +453,7 @@ const NewsPage: React.FC = () => {
               )}
 
               <h2 className="text-2xl sm:text-4xl md:text-5xl font-display font-black text-center mb-10 sm:mb-16 text-text uppercase tracking-tight">
-                <Trans i18nKey="news.latest_stories_title">
-                  Trending <span className="text-primary">News</span>
-                </Trans>
+                <Trans i18nKey="news.latest_stories_title" components={{ 1: <span className="text-primary" /> }} />
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
                 {secondaryPosts.map((post, index) => (

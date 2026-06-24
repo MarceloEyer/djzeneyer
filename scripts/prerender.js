@@ -363,6 +363,29 @@ function normalizeBandsintownEvent(raw, lang = 'en') {
   };
 }
 
+
+function getLocalISODate(now = new Date()) {
+  const current = typeof now === 'number' ? new Date(now) : now;
+  const offsetMs = current.getTimezoneOffset() * 60 * 1000;
+  const localDate = new Date(current.getTime() - offsetMs);
+  return localDate.toISOString().split('T')[0];
+}
+
+function isEventUpcoming(event, now = new Date()) {
+  const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
+  if (!comparableString) return true;
+  const dateOnly = comparableString.split('T')[0];
+  return dateOnly >= getLocalISODate(now);
+}
+
+function filterEventsByMode(events, mode = 'upcoming', now = new Date()) {
+  if (mode === 'all') return events;
+  return events.filter(event => {
+    const upcoming = isEventUpcoming(event, now);
+    return mode === 'upcoming' ? upcoming : !upcoming;
+  });
+}
+
 async function fetchEvents() {
   const cacheFile = join(CONFIG.distDir, '.prerender-bandsintown-cache.json');
   let raw = null;
@@ -410,7 +433,7 @@ async function fetchEvents() {
       return JSON.parse(readFileSync(cacheFile, 'utf8'));
     }
 
-    const items = Array.isArray(raw) ? raw : [];
+    const items = filterEventsByMode(Array.isArray(raw) ? raw : [], 'upcoming');
     
     // Internal API events are already normalized by zen-bit. Only normalize raw
     // Bandsintown fallback payloads from scratch.
@@ -648,14 +671,7 @@ async function prerender() {
           const params = urlObj.searchParams;
           const limit = Number(params.get('limit') || list.length || 0);
           const mode = params.get('mode') || 'upcoming';
-          const now = Date.now();
-          const filtered = list.filter(event => {
-            const t = Date.parse(event.starts_at);
-            if (!Number.isFinite(t)) return true;
-            if (mode === 'past') return t < now;
-            if (mode === 'upcoming') return t >= now;
-            return true;
-          }).slice(0, limit || list.length);
+          const filtered = filterEventsByMode(list, mode).slice(0, limit || list.length);
           mockData = { success: true, count: filtered.length, mode, events: filtered };
         }
 
