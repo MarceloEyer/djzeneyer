@@ -10,7 +10,7 @@
  *   GET  /wp-json/zen-bit/v2/events/{event_id}           → Detalhe completo (ZenBitEventDetail)
  *   GET  /wp-json/zen-bit/v2/events/{event_id}/schema    → JSON-LD evento individual
  *   POST /wp-json/zen-bit/v2/admin/fetch-now             → Força refresh do cache (admin)
- *   POST /wp-json/zen-bit/v2/admin/clear-cache           → Limpa todo o cache (admin)
+ *   POST /wp-json/zen-bit/v2/admin/clear-cache           → Limpa o cache (admin)
  *   GET  /wp-json/zen-bit/v2/admin/health                → Status do sistema (admin)
  *
  * CHANGELOG v3.1.0 — 2026-03-06
