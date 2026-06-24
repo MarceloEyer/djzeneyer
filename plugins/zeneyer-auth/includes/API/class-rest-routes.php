@@ -25,6 +25,7 @@ class Rest_Routes
 
     const NAMESPACE = 'zeneyer-auth/v1';
     private const MAILPOET_ZEN_TRIBE_LIST_TRANSIENT = 'zeneyer_mailpoet_zen_tribe_list_id';
+    private const MAILPOET_ZEN_TRIBE_LIST_MISSING = -1;
     private const MAILPOET_ZEN_TRIBE_LIST_TTL = 43200;
 
     public static function register_routes()
@@ -743,6 +744,10 @@ class Rest_Routes
     {
         $cached_id = get_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT);
 
+        if ((int) $cached_id === self::MAILPOET_ZEN_TRIBE_LIST_MISSING) {
+            return null;
+        }
+
         if (false !== $cached_id && (int) $cached_id > 0) {
             return (int) $cached_id;
         }
@@ -757,7 +762,7 @@ class Rest_Routes
             }
         }
 
-        delete_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT);
+        set_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT, self::MAILPOET_ZEN_TRIBE_LIST_MISSING, self::MAILPOET_ZEN_TRIBE_LIST_TTL);
         return null;
     }
 
