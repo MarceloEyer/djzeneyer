@@ -294,7 +294,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                           if (formErrors.username) setFormErrors({ ...formErrors, username: undefined });
                         }}
                         className={`w-full bg-background/40 text-text border ${formErrors.username ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
-                          } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                          } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                         placeholder={t('auth.placeholders.name')}
                         disabled={loading}
                         autoComplete="username"
@@ -318,7 +318,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                       }}
                       className={`w-full bg-background/40 text-text border ${formErrors.email ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
-                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                       placeholder={t('auth.placeholders.email')}
                       disabled={loading}
                       autoComplete="email"
@@ -352,7 +352,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
                       }}
                       className={`w-full bg-background/40 text-text border ${formErrors.password ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
-                        } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                        } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                       placeholder={t('auth.placeholders.password')}
                       disabled={loading}
                       autoComplete={mode === 'login' ? 'current-password' : 'new-password'}

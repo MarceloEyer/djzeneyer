@@ -74,7 +74,7 @@ const GamificationWidget: React.FC = () => {
         >
           <div className="flex items-center gap-2 mb-2">
             <Zap size={16} className="text-secondary" fill="currentColor" />
-            <span className="text-xs text-text/60">XP</span>
+            <span className="text-xs text-text/60">{t('gamification.xpLabel')}</span>
           </div>
           <p className="text-3xl font-black text-secondary">{points}</p>
           <p className="text-xs text-text/40">{t('gamification.totalPoints')}</p>

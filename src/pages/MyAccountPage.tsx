@@ -308,7 +308,7 @@ const MyAccountContent: React.FC = () => {
                 >
                   <div className="relative z-10 flex flex-col items-center text-center">
                     <div className={`w-20 h-20 rounded-2xl mb-6 flex items-center justify-center ${ach?.earned ? 'bg-primary/10' : 'bg-text/5'}`}>
-                      {ach?.image ? <img src={safeUrl(ach.image, '')} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
+                      {ach?.image ? <img src={safeUrl(ach.image, '/fallback.svg')} className="w-12 h-12 object-contain" alt={ach?.title || t('gamification.achievement')} loading="lazy" width="48" height="48" /> : <Award size={32} />}
                     </div>
                     <h4 className="font-black font-display text-xl mb-3 tracking-tight">{ach?.title || t('account.achievement_unknown')}</h4>
                     <p className="text-sm text-text/40 mb-6 leading-relaxed">
@@ -436,7 +436,9 @@ const MyAccountContent: React.FC = () => {
                   {newsletterEnabled ? t('account.newsletter.enabled') : t('account.newsletter.disabled')}
                 </span>
                 <button
+                  type="button"
                   onClick={() => updateNewsletter.mutate(!newsletterEnabled)}
+                  aria-label={`${t('account.newsletter.title')}: ${newsletterEnabled ? t('account.newsletter.enabled') : t('account.newsletter.disabled')}`}
                   className={`w-14 h-8 rounded-full relative transition-colors ${newsletterEnabled ? 'bg-primary' : 'bg-text/10'}`}
                 >
                   <motion.div
@@ -490,7 +492,7 @@ const MyAccountContent: React.FC = () => {
 
             {/* --- SIDEBAR --- */}
             <aside className="lg:w-1/4">
-              <div className="bg-surface/30 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-border/5 border-b-white/10 sticky top-28 shadow-2xl overflow-hidden group">
+              <div className="bg-surface/30 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-border/5 border-b-border/10 sticky top-28 shadow-2xl overflow-hidden group">
                 {/* Sidebar Glow */}
                 <div className="absolute -top-10 -left-10 w-32 h-32 bg-primary/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity" />
 

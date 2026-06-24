@@ -451,7 +451,7 @@ const ShopPage: React.FC = () => {
         name: t('shop.page_title'),
         itemListElement: visibleProducts.map((product, index) => {
           const productUrl = `${ARTIST.site.baseUrl}${getProductPath(product.slug)}`;
-          const imageUrl = safeUrl(product.images?.[0]?.sizes?.large || product.images?.[0]?.src, '');
+          const imageUrl = safeUrl(product.images?.[0]?.sizes?.large || product.images?.[0]?.src, `${ARTIST.site.baseUrl}/fallback.svg`);
           const price = product.price || product.regular_price;
 
           return {

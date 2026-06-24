@@ -372,8 +372,15 @@ function getLocalISODate(now = new Date()) {
 }
 
 function isEventUpcoming(event, now = new Date()) {
-  const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
+  const comparableFields = [event.ends_at, event.end_date, event.starts_at, event.datetime, event.event_date, event.start_date];
+  const comparableString = comparableFields.find((value) => {
+    if (!value) return false;
+    const timestamp = Date.parse(value);
+    return Number.isFinite(timestamp);
+  });
+
   if (!comparableString) return true;
+
   const dateOnly = comparableString.split('T')[0];
   return dateOnly >= getLocalISODate(now);
 }

@@ -56,6 +56,7 @@ class ErrorBoundaryBase extends Component<Props, State> {
               )}
             </div>
             <button
+              type="button"
               onClick={() => window.location.reload()}
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-text bg-primary hover:bg-primary/90 transition-colors"
             >

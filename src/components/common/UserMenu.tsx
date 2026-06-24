@@ -109,7 +109,7 @@ const UserMenu: React.FC = () => {
                 key={link.to}
                 to={link.to}
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-3 px-3 py-2 text-sm text-text/70 hover:text-text hover:bg-text/5 rounded-xl transition-colors"
+                className="group flex items-center gap-3 px-3 py-2 text-sm text-text/70 hover:text-text hover:bg-text/5 rounded-xl transition-colors"
               >
                 <span className="text-text/40 group-hover:text-primary transition-colors">
                   {link.icon}

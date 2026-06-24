@@ -8,7 +8,7 @@ const PAGE_HEADER_ANIMATE = { opacity: 1, y: 0 };
 const PAGE_HEADER_TRANSITION = { duration: 0.6 };
 
 interface PageHeaderProps {
-  /** First part of the title (rendered in white) */
+  /** First part of the title (rendered with the semantic text token) */
   titlePart1: string | React.ReactNode;
   /** Second part of the title (rendered in primary color/blue) */
   titlePart2?: string | React.ReactNode;

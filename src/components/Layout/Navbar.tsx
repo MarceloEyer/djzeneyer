@@ -129,7 +129,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         )}
                     </div>
 
-                    <button className="md:hidden text-text z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
+                    <button className="md:hidden text-text z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label={t('nav.toggle_menu')}>
                         {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
                     </button>
                 </div>

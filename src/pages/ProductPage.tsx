@@ -56,7 +56,7 @@ const ProductGallery = React.memo(({ product, placeholderImage }: ProductGallery
                 activeImage === img.src ? 'border-primary ring-2 ring-primary/40' : 'border-border/10 hover:border-border/30'
               }`}
             >
-              <img src={safeUrl(img.sizes?.thumbnail || img.src, '')} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
+              <img src={safeUrl(img.sizes?.thumbnail || img.src, '/fallback.svg')} alt={img.alt || product.name} className="w-full h-full object-cover" loading="lazy" width="150" height="150" />
             </button>
           ))}
         </div>
@@ -104,7 +104,7 @@ const ProductPage: React.FC = () => {
     if (!product || !canonicalUrl) return undefined;
 
     const imageUrls = product.images
-      ?.map((image) => safeUrl(image.sizes?.large || image.src, ''))
+      ?.map((image) => safeUrl(image.sizes?.large || image.src, placeholderImage))
       .filter(Boolean);
     const rawDescription = product.short_description || product.description || product.name;
     const price = product.price || product.regular_price;

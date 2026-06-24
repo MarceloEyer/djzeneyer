@@ -109,8 +109,8 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
               </div>
             </div>
             <div className="space-y-2">
-              {order.line_items.map((item, index) => (
-                <div key={index} className="flex justify-between text-sm border-t border-border/5 pt-2">
+              {order.line_items.map((item) => (
+                <div key={`${order.id}-${item.name}-${item.quantity}-${item.total}`} className="flex justify-between text-sm border-t border-border/5 pt-2">
                   <span className="text-text/80">{item.name} x{item.quantity}</span>
                   <span className="font-semibold">{formatCurrency(item.total)}</span>
                 </div>

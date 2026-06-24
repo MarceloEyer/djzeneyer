@@ -73,7 +73,7 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
         </div>
         <div>
           <p className="text-4xl font-black text-text font-display tracking-tighter mb-1">
-            {getNumberFormatter(i18n.language).format(stats.xp)} <span className="text-lg text-secondary/70">XP</span>
+            {getNumberFormatter(i18n.language).format(stats.xp)} <span className="text-lg text-secondary/70">{t('account.stats.xp_label')}</span>
           </p>
           <p className="text-[11px] font-bold text-text/30 uppercase tracking-widest leading-none">
             {stats.xpToNext > 0

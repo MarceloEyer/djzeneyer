@@ -105,7 +105,7 @@ const HexBadge = ({ earned, title, image, size = '14' }: { earned: boolean; titl
     <div className={`clip-hex flex items-center justify-center p-[2px] ${earned ? 'bg-gradient-to-br from-primary to-secondary' : 'bg-text/10'}`} style={{ width: `${size}rem`, height: `${size}rem` }}>
       <div className="clip-hex h-full w-full bg-surface-dark flex items-center justify-center overflow-hidden bg-background/40">
         {image ? (
-          <img src={safeUrl(image, '')} alt={title} className="h-2/3 w-2/3 object-contain" loading="lazy" width="64" height="64" />
+          <img src={safeUrl(image, '/fallback.svg')} alt={title} className="h-2/3 w-2/3 object-contain" loading="lazy" width="64" height="64" />
         ) : (
           <Award className={`h-1/2 w-1/2 ${earned ? 'text-primary' : 'text-text/20'}`} />
         )}
