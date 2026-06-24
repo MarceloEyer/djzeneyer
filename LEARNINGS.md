@@ -92,3 +92,11 @@ Este arquivo registra a memória operacional consolidada do projeto, unindo deci
 - **REST profile PATCH semantics:** Endpoints de atualização parcial devem chamar `$request->has_param()` antes de sanitizar ou persistir cada campo. Sanitizar parâmetro ausente pode convertê-lo em vazio e apagar metadados existentes silenciosamente.
 - **WooCommerce order items e HPOS:** Em BFFs autenticados de pedidos, usar o CRUD do WooCommerce (`wc_get_orders()` + `$order->get_items()`) para cabeçalhos e itens. Não contornar a camada de dados com SQL direto nas tabelas internas do WooCommerce.
 - **Turnstile em REST:** A camada de rota deve extrair `turnstileToken` de `WP_REST_Request` e repassá-lo à autenticação. Não reler `php://input` dentro do provider, pois isso acopla a regra de negócio ao transporte HTTP e pode falhar dependendo do servidor.
+
+## Agent PR Guardrails - 2026-06-24
+
+- **User meta profile updates:** Nao substituir `get_user_meta()`, `update_user_meta()` ou `delete_user_meta()` por SQL direto em `wp_usermeta` para batch de perfil. Essas APIs preservam serializacao, hooks e cache. Batch via SQL so com pedido humano explicito, benchmark, fixture e revisao humana planejada.
+- **WooCommerce order items e HPOS:** Em BFFs autenticados de pedidos, usar o CRUD do WooCommerce (`wc_get_orders()` + `$order->get_items()`) para cabecalhos e itens. Nao contornar a camada de dados com SQL direto nas tabelas internas do WooCommerce.
+- **MailPoet list ID cache:** Cachear ID de lista e uma boa ideia apenas quando implementado como helper unico, com transient centralizado e fallback/revalidacao se a lista for renomeada, removida ou recriada. Nao duplicar a mesma busca/cache em varios metodos.
+- **Micro-cache de `function_exists()`/APCu:** Nao espalhar `static` inline em varias classes para micro-otimizacoes sem hot path medido. Se o custo for real, criar helper legivel compartilhado e validar ganho.
+- **Presskit/PDF PR boundaries:** Nao misturar refactor de script, copy de presskit e PDFs binarios gerados no mesmo PR. Separar mudanca de conteudo, mudanca de gerador e artefatos finais.
