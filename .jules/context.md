@@ -30,6 +30,9 @@ Jules não deve atuar como reviewer automático de PRs de terceiros. Essa funç�
 - PR comment-only para trocar palavras como `FIX`, `CRITICAL`, `TODO` ou comentários históricos.
 - Micro-otimizações de arrays pequenos, menus pequenos ou objetos estáticos sem profiler.
 - PRs de performance PHP que alteram SQL/queries sem fixture, benchmark e revisão humana.
+- PRs que trocam APIs WordPress/WooCommerce por SQL direto em `wp_usermeta` ou tabelas internas do WooCommerce para "otimizar" sem preservar hooks, cache, HPOS e contratos REST.
+- PRs que espalham micro-cache de `function_exists()`/APCu em varias classes sem hot path medido.
+- PRs de presskit/PDF que misturam copy, script e binarios gerados.
 - Mudanças em SEO/head/SSR/schema sem validar duplicação de tags, status HTTP e guidelines do Google.
 - Abrir múltiplos PRs para a mesma classe de problema.
 
@@ -69,6 +72,8 @@ PHP/WordPress:
 - usar APIs WordPress/WooCommerce antes de SQL direto
 - sanitizar entrada e usar prepared statements quando SQL for inevitável
 - validar contrato REST e compatibilidade HPOS
+- para pedidos WooCommerce, usar `wc_get_orders()` e `$order->get_items()`; SQL em tabelas internas de pedidos exige pedido humano explicito, benchmark e fixture
+- para user meta, usar `get_user_meta()`, `update_user_meta()` e `delete_user_meta()`; SQL em `wp_usermeta` nao e aceitavel em PR autonomo
 
 Workflows:
 - manter mudanças mínimas

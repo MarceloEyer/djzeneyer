@@ -100,6 +100,10 @@ GET  zen-bit/v2/events/:slug            → Detalhe do evento
 
 ## Regras ao editar PHP
 
+- Nao trocar APIs do WooCommerce por SQL direto em tabelas internas de order items. Para payloads de pedidos, usar `wc_get_orders()` + `$order->get_items()`; SQL manual so com pedido humano explicito, benchmark, fixture de contrato e revisao humana.
+- Nao trocar `get_user_meta()`, `update_user_meta()` ou `delete_user_meta()` por SQL direto em `wp_usermeta`. Essas APIs preservam hooks, serializacao e cache.
+- Cache de MailPoet/list IDs deve ficar em helper unico com revalidacao/fallback; nao duplicar transient logic em varios metodos.
+- Nao espalhar micro-cache de `function_exists()`/APCu em varias classes sem hot path medido. Se for necessario, criar helper legivel e compartilhado.
 - HPOS ativo: nunca SQL em `wp_posts` para pedidos → usar `wc_get_orders()`.
 - `gamipress_get_rank_types()` retorna array associativo → sempre `array_values()` antes de `[0]`.
 - `get_avatar_url()` pode retornar `false` → coerção obrigatória: `$val ?: ''`.
@@ -174,3 +178,11 @@ git push origin main → CI builda (tsc + vite + prerender) → rsync para Hosti
 - ❌ Remover lógica de slug/detalhe em NewsPage/EventsPage (crítico para SEO).
 - ❌ Usar `loading` em vez de `loadingInitial` em guards de rota privada.
 - ❌ SQL direto em `wp_posts` para pedidos WooCommerce.
+
+---
+
+## Guardrails adicionais para PRs Bolt/Jules
+
+- Proibido SQL direto em `wp_usermeta` para batch de perfil.
+- Proibido SQL direto em tabelas internas de itens de pedido WooCommerce para substituir `$order->get_items()`.
+- Proibido PR de performance em presskit/PDF que mistura script, copy e artefatos binarios gerados.
