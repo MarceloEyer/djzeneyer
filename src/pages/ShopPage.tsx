@@ -49,7 +49,7 @@ const PagingIndicator = ({ count, active }: PagingIndicatorProps) => (
     {Array.from({ length: count }).map((_, i) => (
       <div
         key={i}
-        className={`h-full w-4 rounded-full transition-all duration-300 ${i === active ? 'bg-primary w-8' : 'bg-white/20'}`}
+        className={`h-full w-4 rounded-full transition-all duration-300 ${i === active ? 'bg-primary w-8' : 'bg-text/20'}`}
       />
     ))}
   </div>
@@ -78,9 +78,9 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }:
           width="1200"
           height="675"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#141414] via-transparent to-black/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#141414] via-[#141414]/40 to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-[#141414] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/30" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-background to-transparent" />
       </div>
 
       <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-12 lg:p-20 pb-32 md:pb-48">
@@ -92,27 +92,27 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }:
         >
           <div className="flex items-center gap-3">
             <div className="h-6 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(13,150,255,0.5)]" />
-            <span className="text-white font-black text-xs md:text-sm uppercase flex items-center gap-2 bg-black/35 border border-white/20 rounded-full px-3 py-1 backdrop-blur-sm">
-              {t('shop.artist_badge')} <span className="text-white/60">{t('badge_featured')}</span>
+            <span className="text-text font-black text-xs md:text-sm uppercase flex items-center gap-2 bg-background/35 border border-border/20 rounded-full px-3 py-1 backdrop-blur-sm">
+              {t('shop.artist_badge')} <span className="text-text/60">{t('badge_featured')}</span>
             </span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black font-display text-white leading-[0.92] drop-shadow-2xl max-w-4xl text-balance">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl xl:text-8xl font-black font-display text-text leading-[0.92] drop-shadow-2xl max-w-4xl text-balance">
             {product.name}
           </h1>
 
           <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-base">
             <span className="text-primary font-bold">{t('shop.match_score')}</span>
-            <span className="text-white/60">2024</span>
-            <span className="border border-white/40 px-2 py-1 text-[11px] md:text-xs text-white/85 rounded-full bg-black/35">
+            <span className="text-text/60">2024</span>
+            <span className="border border-border/40 px-2 py-1 text-[11px] md:text-xs text-text/85 rounded-full bg-background/35">
               {t('shop.cremosidade_level')}
             </span>
-            <span className="text-white/60">HD</span>
+            <span className="text-text/60">HD</span>
           </div>
 
           {product.short_description && (
             <div
-              className="text-lg md:text-xl text-white/80 line-clamp-3 md:line-clamp-2 drop-shadow-lg max-w-2xl font-light leading-relaxed"
+              className="text-lg md:text-xl text-text/80 line-clamp-3 md:line-clamp-2 drop-shadow-lg max-w-2xl font-light leading-relaxed"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.short_description) }}
             />
           )}
@@ -122,16 +122,16 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }:
               whileHover={BUY_BUTTON_HOVER}
               whileTap={BUY_BUTTON_TAP}
               onClick={() => onAddToCart(product.id)}
-              className="flex items-center gap-2 bg-white text-black px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-white/90 transition-colors shadow-xl"
+              className="flex items-center gap-2 bg-text text-background px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg hover:bg-text/90 transition-colors shadow-xl"
               disabled={isAddingToCart}
             >
-              {isAddingToCart ? <Loader2 className="animate-spin" /> : <Play className="fill-black" size={24} />}
+              {isAddingToCart ? <Loader2 className="animate-spin" /> : <Play className="fill-background" size={24} />}
               {t('shop.buy_now')}
             </motion.button>
 
             <Link
               to={getProductPath(product.slug)}
-              className="flex items-center gap-2 bg-white/20 text-white px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg backdrop-blur-md hover:bg-white/30 transition-colors border border-white/10"
+              className="flex items-center gap-2 bg-text/20 text-text px-6 md:px-10 py-3 md:py-4 rounded-md font-bold text-lg backdrop-blur-md hover:bg-text/30 transition-colors border border-border/10"
             >
               <Info size={24} />
               {t('shop.product_details')}
@@ -164,7 +164,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
     >
-      <div className="card-outer flex h-full flex-col bg-surface border border-white/10 rounded-md overflow-hidden shadow-2xl transition-colors hover:border-primary/40">
+      <div className="card-outer flex h-full flex-col bg-surface border border-border/10 rounded-md overflow-hidden shadow-2xl transition-colors hover:border-primary/40">
         <Link to={productPath} className="block relative aspect-[16/9] overflow-hidden">
           <img
             src={safeUrl(product.images[0]?.sizes?.medium || product.images[0]?.sizes?.medium_large || product.images[0]?.src, 'https://placehold.co/640x360/0D96FF/FFFFFF')}
@@ -177,13 +177,13 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
           {product.on_sale && (
-            <div className="absolute top-2 right-2 bg-error text-white px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter">
+            <div className="absolute top-2 right-2 bg-error text-text px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-tighter">
               {t('badge_sale')}
             </div>
           )}
         </Link>
 
-        <div className="p-4 bg-surface/95 border-t border-white/5">
+        <div className="p-4 bg-surface/95 border-t border-border/5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex gap-2">
               <button
@@ -194,7 +194,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
                 disabled={isAddingToCart || !isInStock}
                 aria-busy={isAddingToCart}
                 aria-label={t('shop.add_to_cart')}
-                className={`w-8 h-8 rounded-full bg-white text-black flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white/80'
+                className={`w-8 h-8 rounded-full bg-text text-background flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-text/80'
                   }`}
                 title={t('shop.add_to_cart')}
               >
@@ -202,7 +202,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
               </button>
               <Link
                 to={productPath}
-                className="h-8 rounded-full bg-white/10 text-white flex items-center justify-center gap-1.5 px-3 hover:bg-white/20 transition-colors border border-white/20 text-[10px] font-bold uppercase tracking-widest"
+                className="h-8 rounded-full bg-text/10 text-text flex items-center justify-center gap-1.5 px-3 hover:bg-text/20 transition-colors border border-border/20 text-[10px] font-bold uppercase tracking-widest"
                 title={t('shop.product_details')}
               >
                 <Plus size={16} />
@@ -214,29 +214,29 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
             </div>
           </div>
 
-          <h3 className="text-sm md:text-base font-bold text-white mb-2 line-clamp-2">
+          <h3 className="text-sm md:text-base font-bold text-text mb-2 line-clamp-2">
             {product.name}
           </h3>
 
           {productDescription && (
             <div
-              className="text-xs md:text-sm leading-relaxed text-white/70 line-clamp-3 mb-3"
+              className="text-xs md:text-sm leading-relaxed text-text/70 line-clamp-3 mb-3"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(productDescription) }}
             />
           )}
 
-          <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs text-white/60">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs text-text/60">
             <span className={isInStock ? 'text-green-400 font-bold' : 'text-error font-bold'}>
               {isInStock ? t('shop.in_stock') : t('shop.out_of_stock')}
             </span>
-            <span className="border border-white/30 px-1.5 rounded-sm uppercase tracking-tighter">
+            <span className="border border-border/30 px-1.5 rounded-sm uppercase tracking-tighter">
               {t('shop.cremosidade_level')}
             </span>
           </div>
 
           <div className="mt-3 flex flex-wrap gap-1">
             {product.categories?.slice(0, 2).map((cat, idx) => (
-              <span key={idx} className="text-[9px] text-white/40 after:content-['•'] after:ml-1 last:after:content-none whitespace-nowrap">
+              <span key={idx} className="text-[9px] text-text/40 after:content-['•'] after:ml-1 last:after:content-none whitespace-nowrap">
                 {cat.name}
               </span>
             ))}
@@ -300,7 +300,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
   return (
     <div className="mb-12 relative group z-20">
       <div className="flex items-center justify-between px-6 md:px-12 lg:px-20 mb-4">
-        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold font-display text-white group-hover:text-primary transition-colors cursor-default">
+        <h2 className="text-xl md:text-2xl lg:text-3xl font-bold font-display text-text group-hover:text-primary transition-colors cursor-default">
           {title}
           <ChevronRight className="inline-block ml-2 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300" size={24} />
         </h2>
@@ -315,9 +315,9 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => scroll('left')}
-              className="absolute left-0 top-0 bottom-0 z-40 bg-black/40 hover:bg-black/60 w-12 md:w-16 flex items-center justify-center group/btn"
+              className="absolute left-0 top-0 bottom-0 z-40 bg-background/40 hover:bg-background/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
-              <ChevronLeft size={48} className="text-white group-hover/btn:scale-125 transition-transform" />
+              <ChevronLeft size={48} className="text-text group-hover/btn:scale-125 transition-transform" />
             </motion.button>
           )}
 
@@ -327,9 +327,9 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => scroll('right')}
-              className="absolute right-0 top-0 bottom-0 z-40 bg-black/40 hover:bg-black/60 w-12 md:w-16 flex items-center justify-center group/btn"
+              className="absolute right-0 top-0 bottom-0 z-40 bg-background/40 hover:bg-background/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
-              <ChevronRight size={48} className="text-white group-hover/btn:scale-125 transition-transform" />
+              <ChevronRight size={48} className="text-text group-hover/btn:scale-125 transition-transform" />
             </motion.button>
           )}
         </AnimatePresence>
@@ -451,7 +451,7 @@ const ShopPage: React.FC = () => {
         name: t('shop.page_title'),
         itemListElement: visibleProducts.map((product, index) => {
           const productUrl = `${ARTIST.site.baseUrl}${getProductPath(product.slug)}`;
-          const imageUrl = safeUrl(product.images?.[0]?.sizes?.large || product.images?.[0]?.src, '');
+          const imageUrl = safeUrl(product.images?.[0]?.sizes?.large || product.images?.[0]?.src, `${ARTIST.site.baseUrl}/fallback.svg`);
           const price = product.price || product.regular_price;
 
           return {
@@ -484,7 +484,7 @@ const ShopPage: React.FC = () => {
   }), [canonicalUrl, getProductPath, t, visibleProducts]);
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#141414] text-white">
+    <div className="min-h-screen flex items-center justify-center bg-background text-text">
       <Loader2 className="animate-spin text-primary" size={48} />
     </div>
   );
@@ -492,7 +492,7 @@ const ShopPage: React.FC = () => {
   // Removed the `if (error)` block as error handling is now per-query and not aggregated in a single `error` state.
 
   return (
-    <div className="min-h-screen bg-[#141414] text-white relative overflow-x-clip">
+    <div className="min-h-screen bg-background text-text relative overflow-x-clip">
       <div className="pointer-events-none absolute inset-0 opacity-70">
         <div className="absolute -top-40 left-[-15%] h-[460px] w-[460px] rounded-full bg-primary/15 blur-3xl" />
         <div className="absolute top-[28%] right-[-12%] h-[420px] w-[420px] rounded-full bg-cyan-500/10 blur-3xl" />
@@ -529,7 +529,7 @@ const ShopPage: React.FC = () => {
         />
       ) : (
         <div className="relative h-[60vh] w-full flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-dark from-primary/10 to-[#141414]" />
+          <div className="absolute inset-0 bg-gradient-to-dark from-primary/10 to-background" />
           <div className="container mx-auto px-6 relative z-10 text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -539,7 +539,7 @@ const ShopPage: React.FC = () => {
               <h1 className="text-5xl md:text-8xl font-black font-display mb-6 tracking-tighter uppercase leading-[0.8] opacity-40 hover:opacity-100 transition-opacity duration-700 select-none">
                 Zen <span className="text-primary italic">Store</span>
               </h1>
-              <p className="text-xl text-white/40 font-bold uppercase tracking-widest">
+              <p className="text-xl text-text/40 font-bold uppercase tracking-widest">
                 {t('shop.coming_soon_msg', 'Exclusividade em cada batida.')}
               </p>
             </motion.div>
@@ -583,12 +583,12 @@ const ShopPage: React.FC = () => {
           </>
         ) : (
           <div className="container mx-auto px-6 py-20 text-center">
-            <div className="p-16 rounded-[3rem] bg-white/[0.02] border border-dashed border-white/10 backdrop-blur-sm max-w-4xl mx-auto">
+            <div className="p-16 rounded-[3rem] bg-text/[0.02] border border-dashed border-border/10 backdrop-blur-sm max-w-4xl mx-auto">
               <Loader2 className="w-12 h-12 text-primary/30 mx-auto mb-6 animate-spin" />
               <h3 className="text-3xl font-display font-bold mb-4 opacity-70">
                 {t('shop.empty_title', 'O Baú está Sendo Preparado')}
               </h3>
-              <p className="text-white/30 text-lg max-w-lg mx-auto leading-relaxed mb-8">
+              <p className="text-text/30 text-lg max-w-lg mx-auto leading-relaxed mb-8">
                 Estamos organizando os novos lançamentos e produtos exclusivos da Zen Tribe. Fique de olho no seu e-mail para o drop!
               </p>
               <Link to={getLocalizedRoute('zentribe', currentLang)} className="btn btn-primary px-10 py-4 uppercase font-black tracking-widest">
@@ -600,7 +600,7 @@ const ShopPage: React.FC = () => {
       </div>
 
       {/* --- Netflix-style Footer Section (Benefits) --- */}
-      <section className="px-6 md:px-12 lg:px-20 py-20 bg-background border-t border-white/5">
+      <section className="px-6 md:px-12 lg:px-20 py-20 bg-background border-t border-border/5">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {[
             { icon: Truck, title: t('shop.benefits.instant_delivery'), desc: t('shop.benefits.instant_delivery_desc') },
@@ -612,8 +612,8 @@ const ShopPage: React.FC = () => {
               <div className="text-primary group-hover:scale-110 transition-transform duration-300 w-fit">
                 <item.icon size={32} />
               </div>
-              <h3 className="font-bold text-lg md:text-xl text-white group-hover:text-primary transition-colors">{item.title}</h3>
-              <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
+              <h3 className="font-bold text-lg md:text-xl text-text group-hover:text-primary transition-colors">{item.title}</h3>
+              <p className="text-sm text-text/40 leading-relaxed">{item.desc}</p>
             </div>
           ))}
         </div>

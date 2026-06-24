@@ -129,10 +129,10 @@ const CodeOfConductPage: React.FC = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
               <Heart size={40} className="text-primary" />
             </div>
-            <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white leading-tight">
+            <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-text leading-tight">
               Código de <span className="text-primary">Conduta</span>
             </h1>
-            <p className="text-white/70">
+            <p className="text-text/70">
               {t('conduct_page.last_updated')}: <span className="text-primary font-semibold">{lastUpdated}</span>
             </p>
           </motion.div>
@@ -145,10 +145,10 @@ const CodeOfConductPage: React.FC = () => {
             className="card p-8 mb-8 border-l-4 border-primary"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('conduct_page.commitment')}</h2>
-            <p className="text-lg text-white/80 leading-relaxed mb-4">
+            <p className="text-lg text-text/80 leading-relaxed mb-4">
               {t('conduct_page.commitment_intro')}
             </p>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-text/70 leading-relaxed">
               {t('conduct_page.commitment_participation')}
             </p>
           </motion.div>
@@ -174,10 +174,10 @@ const CodeOfConductPage: React.FC = () => {
                     <principle.icon size={32} className="text-primary" />
                   </div>
                   <h3 className="text-xl font-bold mb-3">{principle.title}</h3>
-                  <p className="text-white/70 mb-4 leading-relaxed">{principle.description}</p>
+                  <p className="text-text/70 mb-4 leading-relaxed">{principle.description}</p>
                   <div className="text-left space-y-2">
                     {principle.examples.map((example, i) => (
-                      <div key={i} className="flex items-start gap-2 text-sm text-white/60">
+                      <div key={i} className="flex items-start gap-2 text-sm text-text/60">
                         <span className="text-primary mt-0.5">✓</span>
                         <span>{example}</span>
                       </div>
@@ -201,7 +201,7 @@ const CodeOfConductPage: React.FC = () => {
               </div>
               <h2 className="text-3xl font-display font-bold">{t('conduct_page.prohibited')}</h2>
             </div>
-            <p className="text-white/70 mb-6">
+            <p className="text-text/70 mb-6">
               {t('conduct_page.prohibited_intro')}
             </p>
             <div className="space-y-6">
@@ -216,7 +216,7 @@ const CodeOfConductPage: React.FC = () => {
                   <h3 className="text-xl font-bold mb-4 text-red-400">{category.title}</h3>
                   <ul className="space-y-2">
                     {category.items.map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 text-white/70">
+                      <li key={i} className="flex items-start gap-3 text-text/70">
                         <span className="text-red-400 mt-1">×</span>
                         <span>{item}</span>
                       </li>
@@ -240,13 +240,13 @@ const CodeOfConductPage: React.FC = () => {
               </div>
               <h2 className="text-2xl font-display font-bold">{t('conduct_page.reporting')}</h2>
             </div>
-            <p className="text-white/70 mb-6 leading-relaxed">
+            <p className="text-text/70 mb-6 leading-relaxed">
               {t('conduct_page.reporting_intro')}
             </p>
             <div className="space-y-4">
               <div>
-                <h3 className="font-bold text-white mb-2">{t('conduct_page.reporting_how')}</h3>
-                <ul className="space-y-2 text-white/70">
+                <h3 className="font-bold text-text mb-2">{t('conduct_page.reporting_how')}</h3>
+                <ul className="space-y-2 text-text/70">
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
                     <span>{t('conduct_page.reporting_events')}</span>
@@ -261,9 +261,9 @@ const CodeOfConductPage: React.FC = () => {
                   </li>
                 </ul>
               </div>
-              <div className="border-t border-white/10 pt-4">
-                <h3 className="font-bold text-white mb-2">{t('conduct_page.reporting_after')}</h3>
-                <ul className="space-y-2 text-white/70">
+              <div className="border-t border-border/10 pt-4">
+                <h3 className="font-bold text-text mb-2">{t('conduct_page.reporting_after')}</h3>
+                <ul className="space-y-2 text-text/70">
                   <li className="flex items-start gap-2">
                     <span className="text-primary">1.</span>
                     <span>{t('conduct_page.reporting_acknowledge')}</span>
@@ -293,7 +293,7 @@ const CodeOfConductPage: React.FC = () => {
             className="mb-8"
           >
             <h2 className="text-3xl font-display font-bold mb-6">{t('conduct_page.enforcement')}</h2>
-            <p className="text-white/70 mb-6">
+            <p className="text-text/70 mb-6">
               {t('conduct_page.enforcement_intro')}
             </p>
             <div className="space-y-4">
@@ -311,7 +311,7 @@ const CodeOfConductPage: React.FC = () => {
                   <div className="flex-1">
                     <h3 className="font-bold text-lg mb-1">{consequence.level}</h3>
                     <p className="text-primary font-semibold mb-2">{consequence.action}</p>
-                    <p className="text-white/70 text-sm">{consequence.description}</p>
+                    <p className="text-text/70 text-sm">{consequence.description}</p>
                   </div>
                 </motion.div>
               ))}
@@ -326,10 +326,10 @@ const CodeOfConductPage: React.FC = () => {
             className="card p-8 mb-8"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('conduct_page.scope')}</h2>
-            <p className="text-white/70 leading-relaxed mb-4">
+            <p className="text-text/70 leading-relaxed mb-4">
               {t('conduct_page.scope_intro')}
             </p>
-            <ul className="space-y-2 text-white/70">
+            <ul className="space-y-2 text-text/70">
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
                 <span>{t('conduct_page.scope_events')}</span>
@@ -364,7 +364,7 @@ const CodeOfConductPage: React.FC = () => {
               <Mail size={32} className="text-primary" />
             </div>
             <h2 className="text-2xl font-display font-bold mb-4">{t('conduct_page.contact')}</h2>
-            <p className="text-white/70 mb-6">
+            <p className="text-text/70 mb-6">
               {t('conduct_page.contact_intro')}
             </p>
             <a
@@ -381,10 +381,10 @@ const CodeOfConductPage: React.FC = () => {
             initial={FADE_UP_INITIAL}
             animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.7 }}
-            className="text-center text-white/50 text-sm mt-8 space-y-2"
+            className="text-center text-text/50 text-sm mt-8 space-y-2"
           >
             <p>{t('conduct_page.acknowledgment')}</p>
-            <p className="pt-4 text-white/70">{t('conduct_page.together')} 💙</p>
+            <p className="pt-4 text-text/70">{t('conduct_page.together')} 💙</p>
           </motion.div>
         </div>
       </div>

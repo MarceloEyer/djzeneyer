@@ -50,14 +50,15 @@ class ErrorBoundaryBase extends Component<Props, State> {
                 {t('error_boundary.description')}
               </p>
               {process.env.NODE_ENV === 'development' && this.state.error && (
-                <div className="mt-4 p-4 bg-black/50 rounded-lg text-left overflow-auto max-h-48 text-xs text-red-400 font-mono">
+                <div className="mt-4 p-4 bg-background/50 rounded-lg text-left overflow-auto max-h-48 text-xs text-red-400 font-mono">
                   {this.state.error.message}
                 </div>
               )}
             </div>
             <button
+              type="button"
               onClick={() => window.location.reload()}
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary/90 transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-text bg-primary hover:bg-primary/90 transition-colors"
             >
               {t('error_boundary.reload')}
             </button>

@@ -365,22 +365,35 @@ function normalizeBandsintownEvent(raw, lang = 'en') {
 
 
 function getLocalISODate(now = new Date()) {
-  const current = typeof now === 'number' ? new Date(now) : now;
+  const current = now instanceof Date ? now : new Date(now);
   const offsetMs = current.getTimezoneOffset() * 60 * 1000;
   const localDate = new Date(current.getTime() - offsetMs);
   return localDate.toISOString().split('T')[0];
 }
 
+function parseEventTimestamp(value) {
+  if (!value) return null;
+  const timestamp = Date.parse(value);
+  return Number.isFinite(timestamp) ? timestamp : null;
+}
+
 function isEventUpcoming(event, now = new Date()) {
-  const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
-  if (!comparableString) return true;
-  const dateOnly = comparableString.split('T')[0];
+  const comparableFields = [event.ends_at, event.end_date, event.starts_at, event.datetime, event.event_date, event.start_date];
+  const comparableTimestamp = comparableFields
+    .map(parseEventTimestamp)
+    .find((timestamp) => timestamp !== null);
+
+  if (comparableTimestamp === undefined) return true;
+
+  const dateOnly = getLocalISODate(comparableTimestamp);
   return dateOnly >= getLocalISODate(now);
 }
 
 function filterEventsByMode(events, mode = 'upcoming', now = new Date()) {
+  if (!Array.isArray(events)) return [];
   if (mode === 'all') return events;
   return events.filter(event => {
+    if (!event) return false;
     const upcoming = isEventUpcoming(event, now);
     return mode === 'upcoming' ? upcoming : !upcoming;
   });

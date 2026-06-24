@@ -90,7 +90,7 @@ const AddCalendarMenu = ({ event, variant = 'primary', className = '', eventUrl 
     return (
         <button
             onClick={openCalendar}
-            className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
+            className={`w-10 h-10 rounded-xl bg-text/5 flex items-center justify-center hover:bg-primary/20 hover:text-primary transition-all ${className}`}
             title={calendarLabel}
             aria-label={calendarLabel}
         >

@@ -18,7 +18,7 @@ const ReturnPolicyPage: React.FC = () => {
         isHomepage={false}
       />
 
-      <div className="min-h-screen pt-24 pb-20 bg-background text-white">
+      <div className="min-h-screen pt-24 pb-20 bg-background text-text">
         <div className="container mx-auto px-4 max-w-4xl">
           <motion.article
             initial={{ opacity: 0, y: 20 }}
@@ -29,7 +29,7 @@ const ReturnPolicyPage: React.FC = () => {
               {t('legal.return_policy.h1')}
             </h1>
 
-            <div className="p-6 bg-surface border border-white/10 rounded-xl mb-10 text-white/80">
+            <div className="p-6 bg-surface border border-border/10 rounded-xl mb-10 text-text/80">
               <p className="lead">
                 {t('legal.return_policy.intro')}
               </p>
@@ -65,7 +65,7 @@ const ReturnPolicyPage: React.FC = () => {
               {t('legal.return_policy.request_text')} <strong>{ARTIST.contact.email}</strong> {t('legal.return_policy.request_text_2')}
             </p>
 
-            <div className="mt-12 pt-8 border-t border-white/10 text-sm text-white/50">
+            <div className="mt-12 pt-8 border-t border-border/10 text-sm text-text/50">
               <p>{t('legal.return_policy.last_updated')}: <span className="text-primary font-semibold">{t('legal.return_policy.last_updated_date')}</span></p>
             </div>
           </motion.article>

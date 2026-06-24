@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Loader2, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/UserContext';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const ResetPasswordPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { requestPasswordReset, resetPassword, loading, error, clearError } = useAuth();
+    const currentLang = normalizeLanguage(i18n.language);
+    const homeRoute = getLocalizedRoute('home', currentLang);
+    const [brandFirstName, ...brandRest] = t('common.artist_name').split(' ');
+    const brandLastName = brandRest.join(' ');
+    const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Query Params
     const key = searchParams.get('key');
@@ -27,6 +33,11 @@ const ResetPasswordPage: React.FC = () => {
 
     useEffect(() => {
         clearError();
+        return () => {
+            if (redirectTimeoutRef.current) {
+                clearTimeout(redirectTimeoutRef.current);
+            }
+        };
     }, [clearError]);
 
     const handleRequestReset = async (e: React.FormEvent) => {
@@ -61,15 +72,17 @@ const ResetPasswordPage: React.FC = () => {
             await resetPassword(key!, login!, password);
             setSuccess(true);
             // Redirecionar após alguns segundos respeitando o idioma
-            const homePath = i18n.language.startsWith('pt') ? '/pt/' : '/';
-            setTimeout(() => navigate(homePath), 5000);
+            if (redirectTimeoutRef.current) {
+                clearTimeout(redirectTimeoutRef.current);
+            }
+            redirectTimeoutRef.current = setTimeout(() => navigate(homeRoute), 5000);
         } catch {
             // Erro já tratado pelo context
         }
     };
 
     return (
-        <div className="min-h-screen bg-black flex items-center justify-center p-4 relative overflow-hidden">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
             <HeadlessSEO
                 title={`${isSettingNewPassword ? t('auth.reset_password.title_set') : t('auth.reset_password.title_request')} | Zen Eyer`}
                 noindex={true}
@@ -86,22 +99,22 @@ const ResetPasswordPage: React.FC = () => {
             >
                 {/* Logo/Header */}
                 <div className="text-center mb-8">
-                    <Link to={i18n.language.startsWith('pt') ? '/pt/' : '/'} className="inline-block mb-6">
-                        <h1 className="text-2xl font-black tracking-tighter text-white uppercase italic">
-                            Zen<span className="text-primary italic">Eyer</span>
+                    <Link to={homeRoute} className="inline-block mb-6">
+                        <h1 className="text-2xl font-black tracking-tighter text-text uppercase italic">
+                            {brandFirstName} <span className="text-primary italic">{brandLastName}</span>
                         </h1>
                     </Link>
-                    <h2 className="text-3xl font-black text-white mb-2 font-display tracking-tight">
+                    <h2 className="text-3xl font-black text-text mb-2 font-display tracking-tight">
                         {isSettingNewPassword ? t('auth.reset_password.title_set') : t('auth.reset_password.title_request')}
                     </h2>
-                    <p className="text-white/60 text-sm">
+                    <p className="text-text/60 text-sm">
                         {isSettingNewPassword
                             ? t('auth.reset_password.subtitle_set')
                             : t('auth.reset_password.subtitle_request')}
                     </p>
                 </div>
 
-                <div className="bg-surface/80 backdrop-blur-xl rounded-2xl p-8 border border-white/10 shadow-2xl">
+                <div className="bg-surface/80 backdrop-blur-xl rounded-2xl p-8 border border-border/10 shadow-2xl">
                     <AnimatePresence mode="wait">
                         {success ? (
                             <motion.div
@@ -113,15 +126,15 @@ const ResetPasswordPage: React.FC = () => {
                                 <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/30">
                                     <CheckCircle className="text-green-500" size={32} />
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-3">{t('auth.reset_password.success_title')}</h3>
-                                <p className="text-white/60 mb-6 underline-offset-4 decoration-primary/50">
+                                <h3 className="text-xl font-bold text-text mb-3">{t('auth.reset_password.success_title')}</h3>
+                                <p className="text-text/60 mb-6 underline-offset-4 decoration-primary/50">
                                     {isSettingNewPassword
                                         ? t('auth.reset_password.success_set')
                                         : t('auth.reset_password.success_request')}
                                 </p>
                                 <Link
-                                    to={i18n.language.startsWith('pt') ? '/pt/' : '/'}
-                                    className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors font-bold"
+                                    to={homeRoute}
+                                    className="inline-flex items-center gap-2 text-primary hover:text-text transition-colors font-bold"
                                 >
                                     <ArrowLeft size={18} />
                                     {t('auth.reset_password.back_home')}
@@ -139,9 +152,9 @@ const ResetPasswordPage: React.FC = () => {
                                 {!isSettingNewPassword ? (
                                     <form onSubmit={handleRequestReset} className="space-y-6">
                                         <div>
-                                            <label htmlFor="reset_email" className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.email_label')}</label>
+                                            <label htmlFor="reset_email" className="block text-xs font-bold uppercase text-text/50 mb-2 ml-1">{t('auth.reset_password.email_label')}</label>
                                             <div className="relative group">
-                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
+                                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
                                                     type="email"
                                                     id="reset_email"
@@ -150,7 +163,7 @@ const ResetPasswordPage: React.FC = () => {
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder={t('auth.reset_password.email_placeholder')}
-                                                    className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                                                    className="w-full bg-background/40 text-text border border-border/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                                                     autoComplete="email"
                                                 />
                                             </div>
@@ -159,7 +172,7 @@ const ResetPasswordPage: React.FC = () => {
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50"
+                                            className="w-full bg-primary hover:bg-primary/90 text-text font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50"
                                         >
                                             {loading ? <Loader2 className="animate-spin" size={20} /> : t('auth.reset_password.submit_request')}
                                         </button>
@@ -167,9 +180,9 @@ const ResetPasswordPage: React.FC = () => {
                                 ) : (
                                     <form onSubmit={handleSetPassword} className="space-y-6">
                                         <div>
-                                            <label htmlFor="reset_password" className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.password_label')}</label>
+                                            <label htmlFor="reset_password" className="block text-xs font-bold uppercase text-text/50 mb-2 ml-1">{t('auth.reset_password.password_label')}</label>
                                             <div className="relative group">
-                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
                                                     type={showPassword ? "text" : "password"}
                                                     id="reset_password"
@@ -178,13 +191,13 @@ const ResetPasswordPage: React.FC = () => {
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     placeholder={t('auth.reset_password.password_placeholder')}
-                                                    className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-12 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                                                    className="w-full bg-background/40 text-text border border-border/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-12 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                                                     autoComplete="new-password"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors"
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text/40 hover:text-text transition-colors"
                                                     aria-label={showPassword ? t('auth.aria.hide_password') : t('auth.aria.show_password')}
                                                 >
                                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -193,9 +206,9 @@ const ResetPasswordPage: React.FC = () => {
                                         </div>
 
                                         <div>
-                                            <label htmlFor="confirm_password" className="block text-xs font-bold uppercase text-white/50 mb-2 ml-1">{t('auth.reset_password.confirm_label')}</label>
+                                            <label htmlFor="confirm_password" className="block text-xs font-bold uppercase text-text/50 mb-2 ml-1">{t('auth.reset_password.confirm_label')}</label>
                                             <div className="relative group">
-                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40 group-focus-within:text-primary transition-colors" size={18} />
                                                 <input
                                                     type={showPassword ? "text" : "password"}
                                                     id="confirm_password"
@@ -204,7 +217,7 @@ const ResetPasswordPage: React.FC = () => {
                                                     value={confirmPassword}
                                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                                     placeholder={t('auth.reset_password.confirm_placeholder')}
-                                                    className="w-full bg-black/40 text-white border border-white/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
+                                                    className="w-full bg-background/40 text-text border border-border/10 group-focus-within:border-primary/50 rounded-xl py-3.5 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all"
                                                     autoComplete="new-password"
                                                 />
                                             </div>
@@ -213,15 +226,15 @@ const ResetPasswordPage: React.FC = () => {
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50"
+                                            className="w-full bg-primary hover:bg-primary/90 text-text font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex justify-center items-center gap-2 disabled:opacity-50"
                                         >
                                             {loading ? <Loader2 className="animate-spin" size={20} /> : t('auth.reset_password.submit_set')}
                                         </button>
                                     </form>
                                 )}
 
-                                <div className="mt-8 text-center pt-6 border-t border-white/5">
-                                    <Link to={i18n.language.startsWith('pt') ? '/pt/' : '/'} className="text-white/40 hover:text-white transition-colors text-sm font-medium">
+                                <div className="mt-8 text-center pt-6 border-t border-border/5">
+                                    <Link to={homeRoute} className="text-text/40 hover:text-text transition-colors text-sm font-medium">
                                         {t('auth.reset_password.back_login')}
                                     </Link>
                                 </div>

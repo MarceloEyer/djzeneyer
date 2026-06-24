@@ -228,7 +228,7 @@ const NewsPage: React.FC = () => {
           type={release ? getReleaseOpenGraphType(release.type) : 'article'}
           schema={articleSchema}
         />
-        <div className="min-h-screen bg-background text-white pt-24 pb-20">
+        <div className="min-h-screen bg-background text-text pt-24 pb-20">
           <div className="container mx-auto px-4 max-w-4xl">
             <Breadcrumb
               items={[
@@ -237,13 +237,13 @@ const NewsPage: React.FC = () => {
               ]}
               className="mb-8"
             />
-            <Link to={getRouteForKey('news')} className="inline-flex items-center gap-2 text-primary hover:text-white transition-colors mb-8 font-bold">
+            <Link to={getRouteForKey('news')} className="inline-flex items-center gap-2 text-primary hover:text-text transition-colors mb-8 font-bold">
               <ArrowLeft size={20} /> {t('news.back_to_list')}
             </Link>
 
             <article>
               <header className="mb-10 text-center">
-                <div className="flex items-center justify-center gap-4 text-white/50 text-sm mb-4 font-mono uppercase tracking-widest">
+                <div className="flex items-center justify-center gap-4 text-text/50 text-sm mb-4 font-mono uppercase tracking-widest">
                   <span className="flex items-center gap-1.5"><Calendar size={14} /> {formatDate(singlePost.date, i18n.language)}</span>
                   <span>•</span>
                   <span>{t('news.by')} {singlePost.author_name || singlePost._embedded?.author?.[0]?.name || t('news.default_author')}</span>
@@ -251,7 +251,7 @@ const NewsPage: React.FC = () => {
                 <h1 className="text-2xl sm:text-4xl md:text-6xl font-black font-display leading-tight mb-6 sm:mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost?.title?.rendered ?? '') }} />
 
                 {postImage !== '#' && (
-                  <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl aspect-video">
+                  <div className="rounded-3xl overflow-hidden border border-border/10 shadow-2xl aspect-video">
                     <img
                       src={postImage}
                       className="w-full h-full object-cover"
@@ -266,7 +266,7 @@ const NewsPage: React.FC = () => {
               </header>
 
               <div
-                className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:font-black prose-a:text-primary hover:prose-a:text-white transition-colors"
+                className="prose prose-invert prose-lg max-w-none prose-headings:font-display prose-headings:font-black prose-a:text-primary hover:prose-a:text-text transition-colors"
                 dangerouslySetInnerHTML={{ __html: sanitizeHtml(singlePost?.content?.rendered || '') }}
               />
             </article>
@@ -290,7 +290,7 @@ const NewsPage: React.FC = () => {
         image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-press-og.jpg`}
         imageAlt={t('og.image_alt.news')}
       />
-      <div className="min-h-screen bg-background text-white pt-24 pb-20 relative overflow-hidden">
+      <div className="min-h-screen bg-background text-text pt-24 pb-20 relative overflow-hidden">
         {/* Background Decorations - Premium Glows */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
           <div className="absolute top-[10%] left-[-5%] w-[40%] h-[40%] bg-primary/5 blur-[100px] rounded-full" />
@@ -301,7 +301,7 @@ const NewsPage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10">
           <Breadcrumb items={[{ label: t('footer_news') }]} className="mb-8" />
 
-          <header className="mb-16 border-b border-white/10 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
+          <header className="mb-16 border-b border-border/10 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
             <div>
               <motion.div
                 initial={LIVE_FEED_INITIAL}
@@ -311,11 +311,11 @@ const NewsPage: React.FC = () => {
                 <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
                 {t('news.live_feed')}
               </motion.div>
-              <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display tracking-tight text-white leading-none">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display tracking-tight text-text leading-none">
                 <Trans i18nKey="news.title" components={{ 1: <span className="text-primary" /> }} />
               </h1>
             </div>
-            <div className="text-right text-white/50 text-sm hidden md:block">
+            <div className="text-right text-text/50 text-sm hidden md:block">
               <p>{t('news.curatorship')}</p>
               <p>{t('news.zouk_production')}</p>
               <p>{getDateTimeFormatter(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</p>
@@ -325,13 +325,13 @@ const NewsPage: React.FC = () => {
           {!slug && taxonomiesData && (
             <section className="mb-10 space-y-5" aria-label={t('news.filters_label')}>
               <form onSubmit={handleSearchSubmit} className="relative max-w-md">
-                <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35" size={16} aria-hidden="true" />
+                <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text/35" size={16} aria-hidden="true" />
                 <input
                   type="search"
                   name="news-search"
                   defaultValue={selectedFilterSlugs.search || ''}
                   placeholder={t('news.search_placeholder')}
-                  className="min-h-[44px] w-full rounded-full border border-white/10 bg-white/5 py-2 pl-11 pr-4 text-sm text-white outline-none transition-colors placeholder:text-white/35 focus:border-primary"
+                  className="min-h-[44px] w-full rounded-full border border-border/10 bg-text/5 py-2 pl-11 pr-4 text-sm text-text outline-none transition-colors placeholder:text-text/35 focus:border-primary"
                   aria-label={t('news.search_label')}
                 />
               </form>
@@ -342,7 +342,7 @@ const NewsPage: React.FC = () => {
                   className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
                     !hasActiveFilter
                       ? 'border-primary bg-primary text-background'
-                      : 'border-white/10 bg-white/5 text-white/70 hover:border-primary hover:text-white'
+                      : 'border-border/10 bg-text/5 text-text/70 hover:border-primary hover:text-text'
                   }`}
                 >
                   {t('news.filters_all')}
@@ -355,7 +355,7 @@ const NewsPage: React.FC = () => {
                     className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors ${
                       selectedFilterSlugs.category === term.slug
                         ? 'border-primary bg-primary text-background'
-                        : 'border-white/10 bg-white/5 text-white/70 hover:border-primary hover:text-white'
+                        : 'border-border/10 bg-text/5 text-text/70 hover:border-primary hover:text-text'
                     }`}
                   >
                     {term.name}
@@ -364,7 +364,7 @@ const NewsPage: React.FC = () => {
               </div>
               {taxonomiesData.tags.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-widest text-white/35">
+                  <span className="text-xs font-bold uppercase tracking-widest text-text/35">
                     {t('news.tags')}
                   </span>
                   {taxonomiesData.tags.map(term => (
@@ -375,7 +375,7 @@ const NewsPage: React.FC = () => {
                       className={`rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
                         selectedFilterSlugs.tag === term.slug
                           ? 'border-primary bg-primary/90 text-background'
-                          : 'border-white/10 bg-white/5 text-white/55 hover:border-primary hover:text-white'
+                          : 'border-border/10 bg-text/5 text-text/55 hover:border-primary hover:text-text'
                       }`}
                     >
                       #{term.name}
@@ -389,14 +389,14 @@ const NewsPage: React.FC = () => {
           <div className={reserveListHeight ? 'min-h-[1600px]' : ''}>
           {loading ? (
             <div className="animate-pulse space-y-8" aria-busy="true" aria-label={t('common.loading')}>
-              <div className="aspect-[16/9] bg-white/5 rounded-2xl w-full" />
+              <div className="aspect-[16/9] bg-text/5 rounded-2xl w-full" />
               <div className="grid md:grid-cols-3 gap-8">
-                <div className="h-[420px] bg-white/5 rounded-xl" />
-                <div className="h-[420px] bg-white/5 rounded-xl" />
-                <div className="h-[420px] bg-white/5 rounded-xl" />
-                <div className="h-[420px] bg-white/5 rounded-xl" />
-                <div className="h-[420px] bg-white/5 rounded-xl" />
-                <div className="h-[420px] bg-white/5 rounded-xl" />
+                <div className="h-[420px] bg-text/5 rounded-xl" />
+                <div className="h-[420px] bg-text/5 rounded-xl" />
+                <div className="h-[420px] bg-text/5 rounded-xl" />
+                <div className="h-[420px] bg-text/5 rounded-xl" />
+                <div className="h-[420px] bg-text/5 rounded-xl" />
+                <div className="h-[420px] bg-text/5 rounded-xl" />
               </div>
             </div>
           ) : (
@@ -406,7 +406,7 @@ const NewsPage: React.FC = () => {
                   className="relative group cursor-pointer mb-20"
                 >
                   <Link to={generatePath(newsDetailRoute, { slug: featuredPost.slug })}>
-                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border border-border/10 shadow-2xl">
                       <img
                         src={safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src || featuredPost._embedded?.['wp:featuredmedia']?.[0]?.source_url || '/images/hero-background.webp')}
                         alt={stripHtml(featuredPost?.title?.rendered || '')}
@@ -417,7 +417,7 @@ const NewsPage: React.FC = () => {
                         height="675"
                         srcSet={
                           featuredPost.featured_image_src && featuredPost.featured_image_src !== featuredPost.featured_image_src_full
-                            ? `${safeUrl(featuredPost.featured_image_src, '')} 800w, ${safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src, '')} 1200w`
+                            ? `${safeUrl(featuredPost.featured_image_src, '/images/hero-background.webp')} 800w, ${safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src, '/images/hero-background.webp')} 1200w`
                             : undefined
                         }
                         sizes="100vw"
@@ -429,22 +429,22 @@ const NewsPage: React.FC = () => {
                           <span className="bg-primary/20 px-3 py-1 rounded-full text-xs uppercase tracking-wider backdrop-blur-md border border-primary/30">
                             {t('news.featured')}
                           </span>
-                          <span className="flex items-center gap-2 text-white/80 text-sm">
+                          <span className="flex items-center gap-2 text-text/80 text-sm">
                             <Calendar size={14} /> {formatDate(featuredPost.date, i18n.language)}
                           </span>
                         </div>
                         <h2
-                        className="text-2xl sm:text-4xl md:text-6xl font-black font-display leading-tight mb-4 sm:mb-6 group-hover:text-primary transition-colors text-white"
+                        className="text-2xl sm:text-4xl md:text-6xl font-black font-display leading-tight mb-4 sm:mb-6 group-hover:text-primary transition-colors text-text"
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(featuredPost?.title?.rendered || '') }}
                       />
                       <div className="prose prose-invert max-w-2xl mb-8 hidden md:block">
                         <p
-                          className="text-lg text-white/80 line-clamp-3"
+                          className="text-lg text-text/80 line-clamp-3"
                           dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(featuredPost?.excerpt?.rendered || '')) }}
                         />
                       </div>
-                        <div className="inline-flex items-center gap-2 text-white font-bold text-lg hover:gap-4 transition-all">
-                          {t('news.read_full')} <div className="bg-white text-black rounded-full p-1"><ArrowRight size={16} /></div>
+                        <div className="inline-flex items-center gap-2 text-text font-bold text-lg hover:gap-4 transition-all">
+                          {t('news.read_full')} <div className="bg-text text-background rounded-full p-1"><ArrowRight size={16} /></div>
                         </div>
                       </div>
                     </div>
@@ -452,7 +452,7 @@ const NewsPage: React.FC = () => {
                 </motion.article>
               )}
 
-              <h2 className="text-2xl sm:text-4xl md:text-5xl font-display font-black text-center mb-10 sm:mb-16 text-white uppercase tracking-tight">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-display font-black text-center mb-10 sm:mb-16 text-text uppercase tracking-tight">
                 <Trans i18nKey="news.latest_stories_title" components={{ 1: <span className="text-primary" /> }} />
               </h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
@@ -463,7 +463,7 @@ const NewsPage: React.FC = () => {
                     whileInView={ARTICLE_ANIMATE}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="group flex flex-col h-full bg-surface/30 rounded-2xl overflow-hidden border border-white/5 hover:border-primary/50 hover:bg-surface/50 transition-all duration-300 text-left"
+                    className="group flex flex-col h-full bg-surface/30 rounded-2xl overflow-hidden border border-border/5 hover:border-primary/50 hover:bg-surface/50 transition-all duration-300 text-left"
                   >
                     <Link to={generatePath(newsDetailRoute, { slug: post.slug })} className="block h-56 overflow-hidden relative">
                       <img
@@ -475,7 +475,7 @@ const NewsPage: React.FC = () => {
                         height="600"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
-                      <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-white border border-white/10">
+                      <div className="absolute top-4 right-4 bg-background/60 backdrop-blur-md px-3 py-1 rounded-full text-xs text-text border border-border/10">
                         <Clock size={12} className="inline mr-1" /> {t('news.read_time', { min: 3 })}
                       </div>
                     </Link>
@@ -485,19 +485,19 @@ const NewsPage: React.FC = () => {
                       </div>
                       <Link to={generatePath(newsDetailRoute, { slug: post.slug })}>
                         <h3
-                          className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2 text-white"
+                          className="text-xl font-bold font-display leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2 text-text"
                           dangerouslySetInnerHTML={{ __html: sanitizeHtml(post?.title?.rendered || '') }}
                         />
                       </Link>
                       <p
-                        className="text-white/60 text-sm line-clamp-3 mb-6 flex-1"
+                        className="text-text/60 text-sm line-clamp-3 mb-6 flex-1"
                         dangerouslySetInnerHTML={{ __html: sanitizeHtml(stripHtml(post?.excerpt?.rendered || '')) }}
                       />
-                      <div className="flex items-center justify-between border-t border-white/10 pt-4 mt-auto">
-                        <span className="text-xs text-white/60 font-medium">
+                      <div className="flex items-center justify-between border-t border-border/10 pt-4 mt-auto">
+                        <span className="text-xs text-text/60 font-medium">
                           {formatDate(post.date, i18n.language)}
                         </span>
-                        <Link to={generatePath(newsDetailRoute, { slug: post.slug })} className="text-sm font-bold text-white group-hover:underline decoration-primary underline-offset-4">
+                        <Link to={generatePath(newsDetailRoute, { slug: post.slug })} className="text-sm font-bold text-text group-hover:underline decoration-primary underline-offset-4">
                           {t('news.read_more')}
                         </Link>
                       </div>
@@ -506,7 +506,7 @@ const NewsPage: React.FC = () => {
                 ))}
               </div>
               {!featuredPost && (
-                <div className="rounded-2xl border border-white/10 bg-white/5 px-6 py-12 text-center text-white/60">
+                <div className="rounded-2xl border border-border/10 bg-text/5 px-6 py-12 text-center text-text/60">
                   {t('news.no_posts_for_filter')}
                 </div>
               )}
@@ -514,9 +514,9 @@ const NewsPage: React.FC = () => {
           )}
 
           {!loading && posts.length > 0 && (
-            <div className="mt-20 text-center border-t border-white/10 pt-10">
-              <p className="text-white/60 text-sm mb-4">{t('news.end_reached')}</p>
-              <button className="btn btn-outline text-sm px-8 py-3 rounded-full hover:bg-white/5">
+            <div className="mt-20 text-center border-t border-border/10 pt-10">
+              <p className="text-text/60 text-sm mb-4">{t('news.end_reached')}</p>
+              <button className="btn btn-outline text-sm px-8 py-3 rounded-full hover:bg-text/5">
                 {t('news.view_archive')}
               </button>
             </div>

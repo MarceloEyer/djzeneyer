@@ -71,7 +71,7 @@ const PrivacyPolicyPage: React.FC = () => {
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
               {t('privacy_page.title').split(' ')[0]} <span className="text-primary">{t('privacy_page.title').split(' ').slice(1).join(' ')}</span>
             </h1>
-            <p className="text-white/70">
+            <p className="text-text/70">
               {t('privacy_page.last_updated')}: <span className="text-primary font-semibold">{t('privacy_page.last_updated_date')}</span>
             </p>
           </motion.div>
@@ -83,10 +83,10 @@ const PrivacyPolicyPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card p-8 mb-8"
           >
-            <p className="text-lg text-white/80 leading-relaxed mb-4">
+            <p className="text-lg text-text/80 leading-relaxed mb-4">
               {t('privacy_page.intro_p1')}
             </p>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-text/70 leading-relaxed">
               {t('privacy_page.intro_p2')}
             </p>
           </motion.div>
@@ -110,7 +110,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 {section.content.map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="text-primary mt-1.5">•</span>
-                    <span className="text-white/70 leading-relaxed">{item}</span>
+                    <span className="text-text/70 leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -125,10 +125,10 @@ const PrivacyPolicyPage: React.FC = () => {
             className="card p-8 mb-6"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.cookies_title')}</h2>
-            <p className="text-white/70 leading-relaxed mb-4">
+            <p className="text-text/70 leading-relaxed mb-4">
               {t('privacy_page.cookies_p1')}
             </p>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-text/70 leading-relaxed">
               {t('privacy_page.cookies_p2')}
             </p>
           </motion.div>
@@ -141,13 +141,13 @@ const PrivacyPolicyPage: React.FC = () => {
             className="card p-8 mb-6"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.third_party_title')}</h2>
-            <p className="text-white/70 leading-relaxed mb-4">
+            <p className="text-text/70 leading-relaxed mb-4">
               {t('privacy_page.third_party_p1')}
             </p>
             <div className="space-y-2">
-              <p className="text-white/80"><strong>{t('privacy_page.third_party_analytics').split(':')[0]}:</strong>{t('privacy_page.third_party_analytics').split(':')[1]}</p>
-              <p className="text-white/80"><strong>{t('privacy_page.third_party_payments').split(':')[0]}:</strong>{t('privacy_page.third_party_payments').split(':')[1]}</p>
-              <p className="text-white/80"><strong>{t('privacy_page.third_party_email').split(':')[0]}:</strong>{t('privacy_page.third_party_email').split(':')[1]}</p>
+              <p className="text-text/80"><strong>{t('privacy_page.third_party_analytics').split(':')[0]}:</strong>{t('privacy_page.third_party_analytics').split(':')[1]}</p>
+              <p className="text-text/80"><strong>{t('privacy_page.third_party_payments').split(':')[0]}:</strong>{t('privacy_page.third_party_payments').split(':')[1]}</p>
+              <p className="text-text/80"><strong>{t('privacy_page.third_party_email').split(':')[0]}:</strong>{t('privacy_page.third_party_email').split(':')[1]}</p>
             </div>
           </motion.div>
 
@@ -159,10 +159,10 @@ const PrivacyPolicyPage: React.FC = () => {
             className="card p-8 mb-6 border-l-4 border-primary"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.lgpd_title')}</h2>
-            <p className="text-white/70 leading-relaxed mb-4">
+            <p className="text-text/70 leading-relaxed mb-4">
               {t('privacy_page.lgpd_p1')}
             </p>
-            <ul className="space-y-2 text-white/70">
+            <ul className="space-y-2 text-text/70">
               {(t('privacy_page.lgpd_items', { returnObjects: true }) as string[]).map((item, i) => (
                 <li key={i} className="flex items-start gap-3">
                   <span className="text-primary">•</span>
@@ -180,7 +180,7 @@ const PrivacyPolicyPage: React.FC = () => {
             className="card p-8 mb-6"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.changes_title')}</h2>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-text/70 leading-relaxed">
               {t('privacy_page.changes_p1')}
             </p>
           </motion.div>
@@ -193,10 +193,10 @@ const PrivacyPolicyPage: React.FC = () => {
             className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.contact_title')}</h2>
-            <p className="text-white/70 mb-6">
+            <p className="text-text/70 mb-6">
               {t('privacy_page.contact_p1')}
             </p>
-            <div className="space-y-2 text-white/80">
+            <div className="space-y-2 text-text/80">
               <p><strong>{t('common.legal_name')}</strong></p>
               <p>{t('privacy_page.contact_name')}</p>
               <p>{t('media_page.cnpj')}: {t('common.cnpj')}</p>

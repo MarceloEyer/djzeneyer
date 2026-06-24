@@ -91,7 +91,7 @@ const PhilosophyPage: React.FC = () => {
         leadAnswer={t('philosophy_page.hero_subtitle')}
       />
 
-      <div className="min-h-screen bg-background text-white">
+      <div className="min-h-screen bg-background text-text">
 
         {/* ── HERO ─────────────────────────────────────────────────────── */}
         <section className="relative min-h-[55vh] flex items-center justify-center pt-24 pb-16 px-4 overflow-hidden">
@@ -120,14 +120,14 @@ const PhilosophyPage: React.FC = () => {
               </Trans>
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed" data-speakable>
+            <p className="text-base sm:text-lg md:text-xl text-text/60 max-w-2xl mx-auto leading-relaxed" data-speakable>
               {t('philosophy_page.hero_subtitle')}
             </p>
           </motion.div>
         </section>
 
         {/* ── QUOTE ────────────────────────────────────────────────────── */}
-        <section className="py-16 sm:py-20 px-4 bg-surface/30 border-y border-white/5">
+        <section className="py-16 sm:py-20 px-4 bg-surface/30 border-y border-border/5">
           <motion.div
             className="max-w-3xl mx-auto text-center"
             initial="hidden"
@@ -138,10 +138,10 @@ const PhilosophyPage: React.FC = () => {
             <div className="text-7xl sm:text-8xl text-primary/20 font-display leading-none mb-2 select-none" aria-hidden>
               &ldquo;
             </div>
-            <blockquote className="text-lg sm:text-xl md:text-2xl text-white/80 leading-relaxed italic font-light -mt-4">
+            <blockquote className="text-lg sm:text-xl md:text-2xl text-text/80 leading-relaxed italic font-light -mt-4">
               {t('about.philosophy.quote')}
             </blockquote>
-            <div className="mt-6 text-sm text-white/40 font-bold uppercase tracking-[0.2em]">
+            <div className="mt-6 text-sm text-text/40 font-bold uppercase tracking-[0.2em]">
               &mdash; {ARTIST.identity.stageName}
             </div>
           </motion.div>
@@ -161,16 +161,16 @@ const PhilosophyPage: React.FC = () => {
               <motion.div
                 variants={CARD_ITEM_VARIANTS}
                 whileHover={CARD_HOVER}
-                className="group card p-6 sm:p-8 bg-surface/50 border border-white/10 hover:border-primary/50 transition-colors duration-300 rounded-3xl"
+                className="group card p-6 sm:p-8 bg-surface/50 border border-border/10 hover:border-primary/50 transition-colors duration-300 rounded-3xl"
               >
                 <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center mb-6 group-hover:bg-primary/25 transition-colors duration-300">
                   <Music2 className="w-6 h-6 text-primary" />
                 </div>
                 <div className="text-xs font-bold text-primary/50 uppercase tracking-[0.3em] mb-2">01</div>
-                <h2 className="text-xl font-black uppercase tracking-[0.15em] text-white mb-4">
+                <h2 className="text-xl font-black uppercase tracking-[0.15em] text-text mb-4">
                   {t('philosophy_page.style_title')}
                 </h2>
-                <p className="text-white/70 leading-relaxed text-sm sm:text-base">
+                <p className="text-text/70 leading-relaxed text-sm sm:text-base">
                   {t('philosophy_page.style_desc')}
                 </p>
               </motion.div>
@@ -179,16 +179,16 @@ const PhilosophyPage: React.FC = () => {
               <motion.div
                 variants={CARD_ITEM_VARIANTS}
                 whileHover={CARD_HOVER}
-                className="group card p-6 sm:p-8 bg-surface/50 border border-white/10 hover:border-accent/50 transition-colors duration-300 rounded-3xl"
+                className="group card p-6 sm:p-8 bg-surface/50 border border-border/10 hover:border-accent/50 transition-colors duration-300 rounded-3xl"
               >
                 <div className="w-12 h-12 rounded-2xl bg-accent/15 flex items-center justify-center mb-6 group-hover:bg-accent/25 transition-colors duration-300">
                   <Heart className="w-6 h-6 text-accent" />
                 </div>
                 <div className="text-xs font-bold text-accent/50 uppercase tracking-[0.3em] mb-2">02</div>
-                <h2 className="text-xl font-black uppercase tracking-[0.15em] text-white mb-4">
+                <h2 className="text-xl font-black uppercase tracking-[0.15em] text-text mb-4">
                   {t('philosophy_page.connection')}
                 </h2>
-                <p className="text-white/70 leading-relaxed text-sm sm:text-base">
+                <p className="text-text/70 leading-relaxed text-sm sm:text-base">
                   {t('philosophy_page.connection_desc')}
                 </p>
               </motion.div>
@@ -197,16 +197,16 @@ const PhilosophyPage: React.FC = () => {
               <motion.div
                 variants={CARD_ITEM_VARIANTS}
                 whileHover={CARD_HOVER}
-                className="group card p-6 sm:p-8 bg-surface/50 border border-white/10 hover:border-cyan-500/50 transition-colors duration-300 rounded-3xl"
+                className="group card p-6 sm:p-8 bg-surface/50 border border-border/10 hover:border-cyan-500/50 transition-colors duration-300 rounded-3xl"
               >
                 <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 flex items-center justify-center mb-6 group-hover:bg-cyan-500/25 transition-colors duration-300">
                   <Sparkles className="w-6 h-6 text-cyan-500" />
                 </div>
                 <div className="text-xs font-bold text-cyan-500/50 uppercase tracking-[0.3em] mb-2">03</div>
-                <h2 className="text-xl font-black uppercase tracking-[0.15em] text-white mb-4">
+                <h2 className="text-xl font-black uppercase tracking-[0.15em] text-text mb-4">
                   {t('philosophy_page.flow')}
                 </h2>
-                <p className="text-white/70 leading-relaxed text-sm sm:text-base">
+                <p className="text-text/70 leading-relaxed text-sm sm:text-base">
                   {t('philosophy_page.flow_desc')}
                 </p>
               </motion.div>
@@ -218,7 +218,7 @@ const PhilosophyPage: React.FC = () => {
         <section className="pb-6 px-4 sm:px-6">
           <div className="container mx-auto max-w-5xl">
             <motion.div
-              className="relative p-8 sm:p-12 md:p-16 rounded-[2rem] sm:rounded-[3rem] bg-gradient-to-br from-primary/10 to-transparent border border-white/5 overflow-hidden"
+              className="relative p-8 sm:p-12 md:p-16 rounded-[2rem] sm:rounded-[3rem] bg-gradient-to-br from-primary/10 to-transparent border border-border/5 overflow-hidden"
               initial="hidden"
               whileInView="visible"
               viewport={VIEWPORT_ONCE}
@@ -230,7 +230,7 @@ const PhilosophyPage: React.FC = () => {
                   {t('philosophy_page.cremosidade_title')}
                 </h3>
                 <div className="h-1 w-16 sm:w-20 bg-primary mb-6 sm:mb-8" />
-                <p className="text-lg sm:text-xl md:text-2xl text-white/80 leading-relaxed max-w-3xl">
+                <p className="text-lg sm:text-xl md:text-2xl text-text/80 leading-relaxed max-w-3xl">
                   {t('philosophy_page.cremosidade_desc')}
                 </p>
               </div>
@@ -251,18 +251,18 @@ const PhilosophyPage: React.FC = () => {
                 viewport={VIEWPORT_ONCE}
                 variants={FADE_UP_VARIANTS}
               >
-                <h4 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-widest text-white/90">
+                <h4 className="text-2xl sm:text-3xl font-black font-display uppercase tracking-widest text-text/90">
                   {t('philosophy_page.the_source')}
                 </h4>
                 <div className="h-0.5 w-12 bg-primary/50" />
-                <p className="text-base sm:text-lg text-white/60 leading-relaxed">
+                <p className="text-base sm:text-lg text-text/60 leading-relaxed">
                   {t('philosophy_page.the_source_desc')}
                 </p>
               </motion.div>
 
               {/* Manifesto 2026 */}
               <motion.div
-                className="relative p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 overflow-hidden"
+                className="relative p-6 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-white/5 to-transparent border border-border/10 overflow-hidden"
                 initial="hidden"
                 whileInView="visible"
                 viewport={VIEWPORT_ONCE}
@@ -276,7 +276,7 @@ const PhilosophyPage: React.FC = () => {
                       {t('philosophy_page.coming_soon_title')}
                     </span>
                   </div>
-                  <p className="text-white/60 leading-relaxed text-sm sm:text-base">
+                  <p className="text-text/60 leading-relaxed text-sm sm:text-base">
                     {t('philosophy_page.coming_soon_desc')}
                   </p>
                 </div>

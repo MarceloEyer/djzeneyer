@@ -35,7 +35,7 @@ export const EventMedia: React.FC<EventMediaProps> = ({
     }).format(new Date(date)) : '';
 
     const renderFallback = () => (
-        <div className="w-full h-full bg-gradient-to-br from-surface to-background relative flex flex-col items-center justify-center p-8 text-center overflow-hidden border border-white/5 rounded-[2.5rem]">
+        <div className="w-full h-full bg-gradient-to-br from-surface to-background relative flex flex-col items-center justify-center p-8 text-center overflow-hidden border border-border/5 rounded-[2.5rem]">
             {/* Subtle Texture */}
             <div
                 className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -47,7 +47,7 @@ export const EventMedia: React.FC<EventMediaProps> = ({
                 <div className="w-12 h-1 bg-primary/30 mx-auto rounded-full" />
 
                 <h3
-                    className="text-4xl md:text-6xl font-black uppercase tracking-tighter font-display text-white leading-[0.85] break-words"
+                    className="text-4xl md:text-6xl font-black uppercase tracking-tighter font-display text-text leading-[0.85] break-words"
                     style={{ textShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
                     dangerouslySetInnerHTML={{ __html: sanitizeTitleHtml(title) }}
                 />
@@ -66,7 +66,7 @@ export const EventMedia: React.FC<EventMediaProps> = ({
                 </div>
 
                 <div className="pt-8">
-                     <Music className="w-6 h-6 mx-auto text-white/10" />
+                     <Music className="w-6 h-6 mx-auto text-text/10" />
                 </div>
             </div>
 
@@ -77,7 +77,7 @@ export const EventMedia: React.FC<EventMediaProps> = ({
 
 
     return (
-        <div className={`aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 ${className}`}>
+        <div className={`aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl border border-border/10 ${className}`}>
             {image ? (
                 <img
                     src={safeUrl(image, '/images/zen-eyer-og-image.png')}

@@ -53,10 +53,10 @@ export const LanguageSelector: React.FC = React.memo(() => {
     );
 
     return (
-        <div className="flex items-center gap-2 border-r border-white/20 pr-4 mr-2">
-            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>PT</button>
-            <span className="text-white/20">|</span>
-            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-white/60 hover:text-white'}`}>EN</button>
+        <div className="flex items-center gap-2 border-r border-border/20 pr-4 mr-2">
+            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-text/60 hover:text-text'}`}>PT</button>
+            <span className="text-text/20">|</span>
+            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-text/60 hover:text-text'}`}>EN</button>
         </div>
     );
 });
@@ -75,9 +75,9 @@ export const MenuItem: React.FC<MenuItemProps> = React.memo(({ item, isMobile, o
 
     const commonClass = isMobile
         ? `group flex items-center justify-between p-4 rounded-xl transition-all duration-300 border border-transparent`
-        : `relative group nav-link py-2 text-white/80 hover:text-white transition-colors`;
+        : `relative group nav-link py-2 text-text/80 hover:text-text transition-colors`;
 
-    const activeMobileClass = 'bg-primary/10 border-white/5';
+    const activeMobileClass = 'bg-primary/10 border-border/5';
 
     if (isExternal) {
         return (
@@ -90,10 +90,10 @@ export const MenuItem: React.FC<MenuItemProps> = React.memo(({ item, isMobile, o
                 onClick={onNavigate}
             >
                 <div className="flex items-center gap-3">
-                    {isMobile && <div className="p-2 rounded-lg bg-white/5 text-white/50 group-hover:text-white">{visuals.icon}</div>}
+                    {isMobile && <div className="p-2 rounded-lg bg-text/5 text-text/50 group-hover:text-text">{visuals.icon}</div>}
                     <span className={isMobile ? 'text-base font-medium' : ''}>{safeTitle}</span>
                 </div>
-                {isMobile && <ChevronRight size={16} className="text-white/20" />}
+                {isMobile && <ChevronRight size={16} className="text-text/20" />}
             </a>
         );
     }
@@ -110,7 +110,7 @@ export const MenuItem: React.FC<MenuItemProps> = React.memo(({ item, isMobile, o
                 <>
                     <div className="flex items-center gap-3">
                         {isMobile && (
-                            <div className={`p-2 rounded-lg ${isActive ? visuals.color + ' bg-black/20' : 'text-white/50 bg-white/5 group-hover:text-white'}`}>
+                            <div className={`p-2 rounded-lg ${isActive ? visuals.color + ' bg-background/20' : 'text-text/50 bg-text/5 group-hover:text-text'}`}>
                                 {visuals.icon}
                             </div>
                         )}
@@ -119,7 +119,7 @@ export const MenuItem: React.FC<MenuItemProps> = React.memo(({ item, isMobile, o
                     {!isMobile && (
                         <span className={`absolute -bottom-0.5 left-0 h-[2px] bg-primary transition-all duration-300 ease-out ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`} />
                     )}
-                    {isMobile && <ChevronRight size={16} className={`transition-transform ${isActive ? 'text-primary translate-x-1' : 'text-white/20'}`} />}
+                    {isMobile && <ChevronRight size={16} className={`transition-transform ${isActive ? 'text-primary translate-x-1' : 'text-text/20'}`} />}
                 </>
             )}
         </NavLink>

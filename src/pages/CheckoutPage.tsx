@@ -132,7 +132,7 @@ const CheckoutPage: React.FC = () => {
 
   if (cartLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-text">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
@@ -140,7 +140,7 @@ const CheckoutPage: React.FC = () => {
 
   if (orderSuccess) {
     return (
-      <div className="min-h-screen pt-24 pb-12 bg-background text-white flex flex-col items-center justify-center text-center px-4">
+      <div className="min-h-screen pt-24 pb-12 bg-background text-text flex flex-col items-center justify-center text-center px-4">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -150,7 +150,7 @@ const CheckoutPage: React.FC = () => {
             <CheckCircle size={40} className="text-primary" />
           </div>
           <h1 className="text-3xl font-bold mb-4 font-display">{t('common.checkout.success_title')}</h1>
-          <p className="text-white/70 mb-8">{t('common.checkout.success_desc')}</p>
+          <p className="text-text/70 mb-8">{t('common.checkout.success_desc')}</p>
           <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary w-full">
             {t('common.checkout.back_shop')}
           </Link>
@@ -168,7 +168,7 @@ const CheckoutPage: React.FC = () => {
         isHomepage={false}
       />
 
-      <div className="min-h-screen pt-24 pb-12 bg-background text-white">
+      <div className="min-h-screen pt-24 pb-12 bg-background text-text">
         <div className="container mx-auto px-4 max-w-6xl">
           <h1 className="text-3xl font-bold mb-8 font-display">{t('common.checkout.title')}</h1>
 
@@ -177,7 +177,7 @@ const CheckoutPage: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-surface p-6 md:p-8 rounded-xl border border-white/10 mb-8"
+                className="bg-surface p-6 md:p-8 rounded-xl border border-border/10 mb-8"
               >
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">1</span>
@@ -187,67 +187,67 @@ const CheckoutPage: React.FC = () => {
                 <form id="checkout-form" onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-first-name" className="block text-sm text-white/60 mb-1">{t('common.form.first_name')}</label>
+                      <label htmlFor="checkout-first-name" className="block text-sm text-text/60 mb-1">{t('common.form.first_name')}</label>
                       <input type="text" id="checkout-first-name" name="firstName" required
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.firstName} onChange={handleInputChange} autoComplete="given-name" />
                     </div>
                     <div>
-                      <label htmlFor="checkout-last-name" className="block text-sm text-white/60 mb-1">{t('common.form.last_name')}</label>
+                      <label htmlFor="checkout-last-name" className="block text-sm text-text/60 mb-1">{t('common.form.last_name')}</label>
                       <input type="text" id="checkout-last-name" name="lastName" required
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.lastName} onChange={handleInputChange} autoComplete="family-name" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-email" className="block text-sm text-white/60 mb-1">{t('common.form.email')}</label>
+                      <label htmlFor="checkout-email" className="block text-sm text-text/60 mb-1">{t('common.form.email')}</label>
                       <input type="email" id="checkout-email" name="email" required
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.email} onChange={handleInputChange} autoComplete="email" />
                     </div>
                     <div>
-                      <label htmlFor="checkout-phone" className="block text-sm text-white/60 mb-1">{t('common.form.phone')}</label>
+                      <label htmlFor="checkout-phone" className="block text-sm text-text/60 mb-1">{t('common.form.phone')}</label>
                       <input type="tel" id="checkout-phone" name="phone"
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.phone} onChange={handleInputChange} autoComplete="tel" />
                     </div>
                   </div>
 
                   <div>
-                    <label htmlFor="checkout-address" className="block text-sm text-white/60 mb-1">{t('common.form.address')}</label>
+                    <label htmlFor="checkout-address" className="block text-sm text-text/60 mb-1">{t('common.form.address')}</label>
                     <input type="text" id="checkout-address" name="address" required
-                      className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                      className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                       value={formData.address} onChange={handleInputChange} autoComplete="street-address" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-city" className="block text-sm text-white/60 mb-1">{t('common.form.city')}</label>
+                      <label htmlFor="checkout-city" className="block text-sm text-text/60 mb-1">{t('common.form.city')}</label>
                       <input type="text" id="checkout-city" name="city" required
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.city} onChange={handleInputChange} autoComplete="address-level2" />
                     </div>
                     <div>
-                      <label htmlFor="checkout-state" className="block text-sm text-white/60 mb-1">{t('common.form.state')}</label>
+                      <label htmlFor="checkout-state" className="block text-sm text-text/60 mb-1">{t('common.form.state')}</label>
                       <input type="text" id="checkout-state" name="state" required
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.state} onChange={handleInputChange} autoComplete="address-level1" />
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="checkout-zip" className="block text-sm text-white/60 mb-1">{t('common.form.zip')}</label>
+                      <label htmlFor="checkout-zip" className="block text-sm text-text/60 mb-1">{t('common.form.zip')}</label>
                       <input type="text" id="checkout-zip" name="zip" required
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.zip} onChange={handleInputChange} autoComplete="postal-code" />
                     </div>
                     <div>
-                      <label htmlFor="checkout-country" className="block text-sm text-white/60 mb-1">{t('common.form.country')}</label>
+                      <label htmlFor="checkout-country" className="block text-sm text-text/60 mb-1">{t('common.form.country')}</label>
                       <input type="text" id="checkout-country" name="country" required
-                        className="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-white focus:border-primary focus:outline-none transition-colors"
+                        className="w-full bg-background/20 border border-border/10 rounded-lg p-3 text-text focus:border-primary focus:outline-none transition-colors"
                         value={formData.country} onChange={handleInputChange} autoComplete="country" />
                     </div>
                   </div>
@@ -258,7 +258,7 @@ const CheckoutPage: React.FC = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-surface p-6 md:p-8 rounded-xl border border-white/10"
+                className="bg-surface p-6 md:p-8 rounded-xl border border-border/10"
               >
                 <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
                   <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">2</span>
@@ -273,7 +273,7 @@ const CheckoutPage: React.FC = () => {
                         className={`p-4 rounded-lg border flex items-start gap-4 cursor-pointer transition-colors ${
                           actualSelectedPaymentMethod === method.id
                             ? 'border-primary bg-primary/10'
-                            : 'border-white/10 hover:border-white/30 bg-black/20'
+                            : 'border-border/10 hover:border-border/30 bg-background/20'
                         }`}
                       >
                         <input
@@ -288,18 +288,18 @@ const CheckoutPage: React.FC = () => {
                         <div>
                           <div className="font-semibold">{method.title}</div>
                           <div
-                            className="text-xs text-white/60 mt-1"
+                            className="text-xs text-text/60 mt-1"
                             dangerouslySetInnerHTML={{ __html: sanitizeHtml(method.description) }}
                           />
                         </div>
                       </label>
                     ))
                   ) : (
-                    <div className="text-white/60 italic">{t('common.checkout.no_payments')}</div>
+                    <div className="text-text/60 italic">{t('common.checkout.no_payments')}</div>
                   )}
                 </div>
 
-                <div className="mt-4 flex items-center gap-2 text-sm text-white/60">
+                <div className="mt-4 flex items-center gap-2 text-sm text-text/60">
                   <Lock size={14} />
                   {t('common.checkout.secure_msg')}
                 </div>
@@ -311,9 +311,9 @@ const CheckoutPage: React.FC = () => {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-surface p-6 rounded-xl border border-white/10 sticky top-24"
+                className="bg-surface p-6 rounded-xl border border-border/10 sticky top-24"
               >
-                <h2 className="text-xl font-bold mb-4 border-b border-white/10 pb-4">
+                <h2 className="text-xl font-bold mb-4 border-b border-border/10 pb-4">
                   {t('common.checkout.summary')}
                 </h2>
 
@@ -321,24 +321,24 @@ const CheckoutPage: React.FC = () => {
                   <div className="space-y-4 mb-6">
                     {cart.items.map((item: { key?: string; id?: string; quantity: number; name: string; price: string | number; totals?: { line_total: string | number } }) => (
                       <div key={item.key || item.id} className="flex justify-between items-start text-sm">
-                        <span className="text-white/80 line-clamp-2 pr-4">{item.quantity}x {item.name}</span>
-                        <span className="font-mono text-white/60">{formatPrice(item.totals?.line_total || item.price)}</span>
+                        <span className="text-text/80 line-clamp-2 pr-4">{item.quantity}x {item.name}</span>
+                        <span className="font-mono text-text/60">{formatPrice(item.totals?.line_total || item.price)}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-4 mb-4 text-white/40">
+                  <div className="text-center py-4 mb-4 text-text/40">
                     <AlertCircle className="mx-auto mb-2" />
                     {t('common.cart.empty')}
                   </div>
                 )}
 
-                <div className="space-y-2 mb-6 text-sm border-t border-white/10 pt-4">
-                  <div className="flex justify-between text-white/70">
+                <div className="space-y-2 mb-6 text-sm border-t border-border/10 pt-4">
+                  <div className="flex justify-between text-text/70">
                     <span>{t('common.cart.subtotal')}</span>
                     <span>{formatPrice(cart?.totals?.total_price || '0')}</span>
                   </div>
-                  <div className="flex justify-between text-white/70">
+                  <div className="flex justify-between text-text/70">
                     <span>{t('common.cart.total')}</span>
                     <span className="text-primary font-bold text-lg">{formatPrice(cart?.totals?.total_price || '0')}</span>
                   </div>
@@ -351,7 +351,7 @@ const CheckoutPage: React.FC = () => {
                   className="btn btn-primary w-full py-3 font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitOrder.isPending ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-border"></div>
                   ) : (
                     t('common.checkout.place_order')
                   )}

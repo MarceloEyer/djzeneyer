@@ -40,22 +40,22 @@ const FestivalCard: React.FC<FestivalCardProps> = React.memo(({ festival, year, 
     target="_blank"
     rel="noopener noreferrer"
     aria-label={`${festival.name} (${opensInNewTab})`}
-    className="group flex items-center gap-4 rounded-2xl border border-white/10 bg-surface/35 p-5 transition-colors hover:border-primary/35"
+    className="group flex items-center gap-4 rounded-2xl border border-border/10 bg-surface/35 p-5 transition-colors hover:border-primary/35"
   >
     <span className="flex-shrink-0 text-4xl" role="img" aria-label={festival.country}>
       {festival.flag}
     </span>
     <div className="min-w-0 flex-1">
-      <p className="truncate font-display font-bold text-white transition-colors group-hover:text-primary">
+      <p className="truncate font-display font-bold text-text transition-colors group-hover:text-primary">
         {festival.name}
       </p>
-      <p className="flex items-center gap-1 text-sm text-white/50">
+      <p className="flex items-center gap-1 text-sm text-text/50">
         <MapPin size={12} />
         {festival.country}
         {year && <span className="ml-1">· {year}</span>}
       </p>
     </div>
-    <ExternalLink size={16} className="flex-shrink-0 text-white/30 transition-colors group-hover:text-primary" />
+    <ExternalLink size={16} className="flex-shrink-0 text-text/30 transition-colors group-hover:text-primary" />
   </a>
 ));
 
@@ -104,7 +104,7 @@ const ZoukFestivalsPage: React.FC = () => {
         description={t('hub_pages.zouk_festivals.seo_description')}
         url={pageUrl}
       />
-      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
+      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-text">
         <div className="container mx-auto max-w-5xl">
           <Breadcrumb items={[{ label: t('hub_pages.zouk_festivals.breadcrumb') }]} className="mb-10" />
 
@@ -121,14 +121,14 @@ const ZoukFestivalsPage: React.FC = () => {
             <h1 className="mb-4 font-display text-4xl font-black md:text-6xl">
               {t('hub_pages.zouk_festivals.h1')}
             </h1>
-            <p className="max-w-2xl text-lg leading-relaxed text-white/65">
+            <p className="max-w-2xl text-lg leading-relaxed text-text/65">
               {t('hub_pages.zouk_festivals.seo_description')}
             </p>
           </motion.header>
 
           {upcoming.length > 0 && (
             <section className="mb-12" aria-labelledby="upcoming-festivals">
-              <h2 id="upcoming-festivals" className="mb-5 font-display text-2xl font-black text-white">
+              <h2 id="upcoming-festivals" className="mb-5 font-display text-2xl font-black text-text">
                 {t('upcoming_events')}
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -145,7 +145,7 @@ const ZoukFestivalsPage: React.FC = () => {
           )}
 
           <section aria-labelledby="past-festivals">
-            <h2 id="past-festivals" className="mb-5 font-display text-2xl font-black text-white">
+            <h2 id="past-festivals" className="mb-5 font-display text-2xl font-black text-text">
               {t('hub_pages.zouk_festivals.past_editions')}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">

@@ -28,7 +28,7 @@ const MainLayout: React.FC = () => {
     <>
       <ScrollToTop />
 
-      <div className={`flex flex-col min-h-screen bg-background text-white ${isZenLink ? 'pt-0' : ''}`}>
+      <div className={`flex flex-col min-h-screen bg-background text-text ${isZenLink ? 'pt-0' : ''}`}>
         {!isZenLink && <Navbar onLoginClick={openModal} />}
 
         <main className={`flex-grow ${!isZenLink ? 'pt-20' : ''}`}>

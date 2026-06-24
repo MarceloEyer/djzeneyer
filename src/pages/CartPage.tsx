@@ -47,7 +47,7 @@ const CartPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-text">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
@@ -55,9 +55,9 @@ const CartPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-text">
         <div className="text-center">
-          <p className="text-white/60 mb-4">{t('common.cart.load_error')}</p>
+          <p className="text-text/60 mb-4">{t('common.cart.load_error')}</p>
           <button onClick={() => refetch()} className="btn btn-primary">
             {t('common.retry')}
           </button>
@@ -77,7 +77,7 @@ const CartPage: React.FC = () => {
         isHomepage={false}
       />
 
-      <div className="min-h-screen pt-24 pb-12 bg-background text-white">
+      <div className="min-h-screen pt-24 pb-12 bg-background text-text">
         <div className="container mx-auto px-4 max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -94,11 +94,11 @@ const CartPage: React.FC = () => {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-center py-16 bg-surface rounded-xl border border-white/10"
+              className="text-center py-16 bg-surface rounded-xl border border-border/10"
             >
-              <ShoppingCart size={64} className="mx-auto mb-4 text-white/20" />
+              <ShoppingCart size={64} className="mx-auto mb-4 text-text/20" />
               <h2 className="text-xl font-semibold mb-2">{t('common.cart.empty')}</h2>
-              <p className="text-white/60 mb-8">{t('common.cart.empty_desc')}</p>
+              <p className="text-text/60 mb-8">{t('common.cart.empty_desc')}</p>
               <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary">
                 {t('common.cart.continue_shopping')}
               </Link>
@@ -115,13 +115,13 @@ const CartPage: React.FC = () => {
                   <motion.div
                     key={item.key || item.id}
                     variants={ITEM_VARIANTS}
-                    className="flex gap-4 p-4 bg-surface rounded-lg border border-white/10"
+                    className="flex gap-4 p-4 bg-surface rounded-lg border border-border/10"
                   >
-                    <div className="w-20 h-20 bg-white/5 rounded-md overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-20 bg-text/5 rounded-md overflow-hidden flex-shrink-0">
                       {item.images && item.images[0] ? (
                         <img src={item.images[0].src} alt={item.name} className="w-full h-full object-cover" loading="lazy" width="80" height="80" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-white/20">
+                        <div className="w-full h-full flex items-center justify-center text-text/20">
                           <ShoppingCart size={24} />
                         </div>
                       )}
@@ -133,7 +133,7 @@ const CartPage: React.FC = () => {
                         <button
                           onClick={() => removeItem.mutate(item.key)}
                           disabled={removeItem.isPending}
-                          className="text-white/40 hover:text-error transition-colors p-1 disabled:opacity-50"
+                          className="text-text/40 hover:text-error transition-colors p-1 disabled:opacity-50"
                           aria-label={t('common.cart.remove_item')}
                         >
                           <Trash2 size={18} />
@@ -141,7 +141,7 @@ const CartPage: React.FC = () => {
                       </div>
 
                       <div className="flex justify-between items-center mt-2">
-                        <div className="text-sm text-white/60">
+                        <div className="text-sm text-text/60">
                           {t('common.cart.qty')}: {item.quantity}
                         </div>
                         <div className="font-bold text-primary">
@@ -159,23 +159,23 @@ const CartPage: React.FC = () => {
                 transition={{ delay: 0.2 }}
                 className="lg:col-span-1"
               >
-                <div className="bg-surface p-6 rounded-xl border border-white/10 sticky top-24">
-                  <h2 className="text-xl font-bold mb-4 border-b border-white/10 pb-4">
+                <div className="bg-surface p-6 rounded-xl border border-border/10 sticky top-24">
+                  <h2 className="text-xl font-bold mb-4 border-b border-border/10 pb-4">
                     {t('common.cart.summary')}
                   </h2>
 
                   <div className="space-y-2 mb-4 text-sm">
-                    <div className="flex justify-between text-white/70">
+                    <div className="flex justify-between text-text/70">
                       <span>{t('common.cart.subtotal')}</span>
                       <span>{formatPrice(cart.totals?.total_price || '0')}</span>
                     </div>
-                    <div className="flex justify-between text-white/70">
+                    <div className="flex justify-between text-text/70">
                       <span>{t('common.cart.shipping')}</span>
                       <span>{t('common.cart.shipping_calc')}</span>
                     </div>
                   </div>
 
-                  <div className="flex justify-between text-xl font-bold border-t border-white/10 pt-4 mb-6">
+                  <div className="flex justify-between text-xl font-bold border-t border-border/10 pt-4 mb-6">
                     <span>{t('common.cart.total')}</span>
                     <span className="text-primary">{formatPrice(cart.totals?.total_price || '0')}</span>
                   </div>

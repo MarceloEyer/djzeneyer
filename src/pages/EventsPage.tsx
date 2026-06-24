@@ -54,11 +54,11 @@ const SKELETON_ITEMS = [1, 2, 3];
 const EventSkeleton = () => (
   <div className="space-y-6">
     {SKELETON_ITEMS.map(i => (
-      <div key={i} className="h-32 bg-surface/50 border border-white/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
-        <div className="w-12 h-12 bg-white/5 rounded-full" />
+      <div key={i} className="h-32 bg-surface/50 border border-border/5 rounded-2xl animate-pulse flex items-center gap-6 px-6">
+        <div className="w-12 h-12 bg-text/5 rounded-full" />
         <div className="flex-1 space-y-3">
-          <div className="h-4 bg-white/5 rounded w-1/4" />
-          <div className="h-3 bg-white/5 rounded w-1/2" />
+          <div className="h-4 bg-text/5 rounded w-1/4" />
+          <div className="h-3 bg-text/5 rounded w-1/2" />
         </div>
       </div>
     ))}
@@ -67,14 +67,14 @@ const EventSkeleton = () => (
 
 const EventDetailSkeleton = () => (
   <div className="max-w-4xl mx-auto space-y-8 animate-pulse">
-    <div className="h-10 w-32 bg-white/5 rounded-lg mb-8" />
+    <div className="h-10 w-32 bg-text/5 rounded-lg mb-8" />
     <div className="grid md:grid-cols-2 gap-8">
-      <div className="rounded-3xl aspect-[4/5] bg-white/5 border border-white/10" />
+      <div className="rounded-3xl aspect-[4/5] bg-text/5 border border-border/10" />
       <div className="space-y-6">
-        <div className="h-12 w-3/4 bg-white/5 rounded-xl" />
+        <div className="h-12 w-3/4 bg-text/5 rounded-xl" />
         <div className="space-y-3">
-          <div className="h-4 bg-white/5 rounded w-1/2" />
-          <div className="h-4 bg-white/5 rounded w-1/3" />
+          <div className="h-4 bg-text/5 rounded w-1/2" />
+          <div className="h-4 bg-text/5 rounded w-1/3" />
         </div>
       </div>
     </div>
@@ -131,7 +131,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 
       <Link
         to={getLocalizedRoute('events', lang as Language)}
-        className="inline-flex items-center gap-2 text-white/60 hover:text-primary mb-12 transition-colors font-bold uppercase tracking-widest text-xs"
+        className="inline-flex items-center gap-2 text-text/60 hover:text-primary mb-12 transition-colors font-bold uppercase tracking-widest text-xs"
       >
         <ArrowLeft size={16} /> {t('common.back_to_list', { defaultValue: 'Back to list' })}
       </Link>
@@ -140,7 +140,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         {/* Event Poster/Image */}
         <div className="lg:col-span-5 relative group">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
-          <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
+          <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-border/10 shadow-2xl">
             <img 
               src={event.image || '/images/default-event-poster.png'} 
               alt={event.title} 
@@ -150,7 +150,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
               height="800" 
             />
             <div className="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black via-black/60 to-transparent">
-              <div className="inline-block px-4 py-1 rounded-full bg-primary text-black font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
+              <div className="inline-block px-4 py-1 rounded-full bg-primary text-[rgb(var(--color-primary-fg))] font-black text-[10px] uppercase tracking-tighter mb-4 shadow-lg shadow-primary/20">
                 {t('events.featured', { defaultValue: 'Featured Event' })}
               </div>
             </div>
@@ -158,37 +158,37 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
         </div>
 
         {/* Content */}
-        <div className="lg:col-span-7 bg-surface/30 backdrop-blur-xl border border-white/5 rounded-[2.5rem] p-5 sm:p-8 md:p-12 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 text-white/5 pointer-events-none">
+        <div className="lg:col-span-7 bg-surface/30 backdrop-blur-xl border border-border/5 rounded-[2.5rem] p-5 sm:p-8 md:p-12 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 text-text/5 pointer-events-none">
             <Music size={120} className="rotate-12" />
           </div>
 
           <div className="relative z-10">
             <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 leading-[0.9] tracking-tighter uppercase whitespace-pre-line" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.title) }} />
 
-            <div className="flex items-center gap-4 text-white/80 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
+            <div className="flex items-center gap-4 text-text/80 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-text/5 flex items-center justify-center text-primary">
                 <Calendar size={20} />
               </div>
               <span className="font-bold">
                 {isValidDate ? getDateTimeFormatter(lang, { day: 'numeric', month: 'long', year: 'numeric' }).format(eventDate) : t('tba')}
               </span>
             </div>
-            <div className="flex items-center gap-4 text-white/80">
-              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-primary">
+            <div className="flex items-center gap-4 text-text/80">
+              <div className="w-10 h-10 rounded-xl bg-text/5 flex items-center justify-center text-primary">
                 <MapPin size={20} />
               </div>
               <span className="font-bold">{loc.venue}{loc.city ? `, ${loc.city}` : ''}</span>
             </div>
 
-            <div className="prose prose-invert mt-10 mb-10 text-white/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || '') }} />
+            <div className="prose prose-invert mt-10 mb-10 text-text/60 leading-relaxed text-lg" dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description || '') }} />
 
             <div className="space-y-4">
               <AddCalendarMenu event={event} variant="primary" eventUrl={eventDetailUrl} />
 
               <button
                 onClick={share}
-                className="btn btn-outline border-white/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-white/5 transition-all text-white/50 hover:text-white font-bold uppercase tracking-widest text-xs"
+                className="btn btn-outline border-border/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-text/5 transition-all text-text/50 hover:text-text font-bold uppercase tracking-widest text-xs"
                 aria-label={t('share_event', { title: cleanEventTitle || t('event_default_title') })}
               >
                 <Share2 size={18} /> {t('share')}
@@ -249,8 +249,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   if (events.length === 0) {
     return (
-      <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5 animate-in fade-in duration-500">
-        <p className="text-white/40">{t('events_no_results')}</p>
+      <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5 animate-in fade-in duration-500">
+        <p className="text-text/40">{t('events_no_results')}</p>
       </div>
     );
   }
@@ -270,7 +270,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           <button
             onClick={() => setSelectedRegion('all')}
-            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
           >
             {t('common.all')}
           </button>
@@ -278,7 +278,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-black border-primary shadow-lg shadow-primary/20' : 'bg-white/5 text-white/40 border-white/10 hover:border-white/20'}`}
+              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
             >
               {region}
             </button>
@@ -287,8 +287,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
       )}
 
       {filteredEvents.length === 0 ? (
-        <div className="text-center py-20 bg-surface/30 rounded-3xl border border-white/5">
-          <p className="text-white/40">{t('events_no_results_filter')}</p>
+        <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5">
+          <p className="text-text/40">{t('events_no_results_filter')}</p>
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
@@ -300,8 +300,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
           return (
             <section key={key}>
               <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
-                {name} <span className="text-white/60 drop-shadow-sm">{y}</span>
-                <div className="h-px flex-1 bg-white/5" />
+                {name} <span className="text-text/60 drop-shadow-sm">{y}</span>
+                <div className="h-px flex-1 bg-text/5" />
               </h2>
               <div className="space-y-3">
                 {monthEvents.map((e) => {
@@ -316,7 +316,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                   const cleanEventTitle = getPlainTitle(e.title);
 
                   return (
-                    <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-white/5 rounded-2xl hover:border-primary/20 transition-all group">
+                    <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-border/5 rounded-2xl hover:border-primary/20 transition-all group">
                       <div className="text-3xl font-black min-w-[50px]">{dayStr}</div>
                       <div className="flex-1">
                         <div className="text-xs text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${getLocalizedCountry(loc.country, t)})` : ''}</div>
@@ -328,7 +328,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
                         <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" eventUrl={detailUrl} />
                         <button
                           onClick={() => share(e)}
-                          className="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center hover:bg-primary/20 transition-all"
+                          className="w-11 h-11 rounded-xl bg-text/5 flex items-center justify-center hover:bg-primary/20 transition-all"
                           aria-label={t('share_event', { title: cleanEventTitle || t('event_default_title') })}
                         >
                           <Share2 size={16} />
@@ -365,7 +365,7 @@ const EventsPage: React.FC = () => {
 
   if (id) {
     return (
-      <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
+      <div className="min-h-screen bg-background text-text pt-24 pb-20 px-4">
         <React.Suspense fallback={<EventDetailSkeleton />}>
           <EventDetailContent id={id} lang={lang} />
         </React.Suspense>
@@ -374,7 +374,7 @@ const EventsPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background text-white pt-24 pb-20 px-4">
+    <div className="min-h-screen bg-background text-text pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto relative pt-8">
         <PageHeader 
           titlePart1={t('events.title_part1')}
@@ -386,12 +386,12 @@ const EventsPage: React.FC = () => {
           <EventListContent lang={lang} />
         </React.Suspense>
 
-        <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-white/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
-          <Music className="absolute -right-8 -bottom-8 text-white/5 w-48 h-48 rotate-12 z-10" />
+        <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-border/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
+          <Music className="absolute -right-8 -bottom-8 text-text/5 w-48 h-48 rotate-12 z-10" />
           <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
             <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <a href={safeUrl(pressKitUrl, '/')} className="btn btn-outline border-white/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
+            <a href={safeUrl(pressKitUrl, '/')} className="btn btn-outline border-border/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
           </div>
         </section>
       </div>
