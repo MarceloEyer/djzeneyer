@@ -740,9 +740,9 @@ class Rest_Routes
      * MailPoet list names can be changed in wp-admin, so the cache is short-lived
      * and refreshed through one helper instead of duplicating getLists() searches.
      */
-    private static function get_zen_tribe_mailpoet_list_id($mailpoet_api)
+    private static function get_zen_tribe_mailpoet_list_id($mailpoet_api, $force_refresh = false)
     {
-        $cached_id = get_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT);
+        $cached_id = $force_refresh ? false : get_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT);
 
         if ((int) $cached_id === self::MAILPOET_ZEN_TRIBE_LIST_MISSING) {
             return null;
@@ -825,20 +825,54 @@ class Rest_Routes
             if ($enabled) {
                 if (!$subscriber) {
                     // Create new subscriber and add to list
-                    $subscriber = $mailpoet_api->addSubscriber([
-                        'email' => $user->user_email,
-                        'first_name' => $user->first_name ?: $user->display_name,
-                        'last_name' => $user->last_name ?: '',
-                    ], [$zen_list_id]);
+                    try {
+                        $subscriber = $mailpoet_api->addSubscriber([
+                            'email' => $user->user_email,
+                            'first_name' => $user->first_name ?: $user->display_name,
+                            'last_name' => $user->last_name ?: '',
+                        ], [$zen_list_id]);
+                    } catch (\Exception $e) {
+                        $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+
+                        if (!$zen_list_id) {
+                            throw $e;
+                        }
+
+                        $subscriber = $mailpoet_api->addSubscriber([
+                            'email' => $user->user_email,
+                            'first_name' => $user->first_name ?: $user->display_name,
+                            'last_name' => $user->last_name ?: '',
+                        ], [$zen_list_id]);
+                    }
                 } else {
                     // Add existing subscriber to list
-                    $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
+                    try {
+                        $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
+                    } catch (\Exception $e) {
+                        $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+
+                        if (!$zen_list_id) {
+                            throw $e;
+                        }
+
+                        $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
+                    }
                 }
                 $message = 'Successfully subscribed to newsletter';
             } else {
                 if ($subscriber) {
                     // Remove from list
-                    $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
+                    try {
+                        $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
+                    } catch (\Exception $e) {
+                        $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+
+                        if (!$zen_list_id) {
+                            throw $e;
+                        }
+
+                        $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
+                    }
                 }
                 $message = 'Successfully unsubscribed from newsletter';
             }
