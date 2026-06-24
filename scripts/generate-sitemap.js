@@ -41,6 +41,38 @@ function toIsoDate(value, fallback) {
   return Number.isNaN(parsed.getTime()) ? fallback : parsed.toISOString();
 }
 
+function getLocalISODate(now = new Date()) {
+  const current = typeof now === 'number' ? new Date(now) : now;
+  const offsetMs = current.getTimezoneOffset() * 60 * 1000;
+  const localDate = new Date(current.getTime() - offsetMs);
+  return localDate.toISOString().split('T')[0];
+}
+
+function getDateOnly(value) {
+  if (!value) return null;
+  const raw = String(value);
+  const dateOnly = raw.split('T')[0];
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateOnly) ? dateOnly : null;
+}
+
+function getEventComparableDate(event) {
+  const candidates = [event?.ends_at, event?.end_date, event?.starts_at, event?.datetime];
+  for (const candidate of candidates) {
+    const dateOnly = getDateOnly(candidate);
+    if (dateOnly) return dateOnly;
+  }
+  return null;
+}
+
+function filterUpcomingEvents(events, now = new Date()) {
+  const today = getLocalISODate(now);
+  return events.filter(event => {
+    const comparableDate = getEventComparableDate(event);
+    if (comparableDate === null) return true;
+    return comparableDate >= today;
+  });
+}
+
 function buildUrlEntry(url, date, priority = '0.8', altUrl = null, imageUrl = null, isEnglish = true) {
   let entry = `
   <url>
@@ -135,8 +167,10 @@ async function fetchEvents() {
 
   console.log(`✅ Events loaded via ${source}: ${raw.length} items`);
 
+  const upcomingEvents = filterUpcomingEvents(raw);
+
   // Mapeia para o formato que o gerador espera
-  return raw.map(ev => ({
+  return upcomingEvents.map(ev => ({
     event_id: String(ev.id || ev.event_id || ''),
     image: ev.artist?.image_url || ev.artist?.thumb_url || ev.image || DEFAULT_IMAGE,
     canonical_path: ev.canonical_path,
@@ -261,34 +295,58 @@ async function fetchPostsFromZenSeoSitemap() {
 async function fetchPostsForLang(lang) {
   const fields = 'id,date,modified,slug,link,featured_image_src,featured_image_src_full,zen_seo,zen_translations';
   const posts = [];
-  let page = 1;
-  while (true) {
-    const url = `${REST_BASE_URL}/wp/v2/posts?lang=${lang}&per_page=100&page=${page}&status=publish&orderby=modified&order=desc&_fields=${encodeURIComponent(fields)}`;
+  const buildPostsUrl = (page) =>
+    `${REST_BASE_URL}/wp/v2/posts?lang=${lang}&per_page=100&page=${page}&status=publish&orderby=modified&order=desc&_fields=${encodeURIComponent(fields)}`;
+  const normalizePostPage = (data) =>
+    Array.isArray(data)
+      ? data.map(post => normalizePost(post, lang)).filter(post => post.slug && !post.noindex)
+      : [];
+  const fetchPostPage = async (page) => {
+    const url = buildPostsUrl(page);
     let res;
     try {
       res = await fetch(url, { headers: { Accept: 'application/json' } });
     } catch (error) {
-      console.warn(`⚠️ Error fetching posts (lang=${lang}, page=${page}):`, error instanceof Error ? error.message : String(error));
-      break;
+      console.warn(`Error fetching posts (lang=${lang}, page=${page}):`, error instanceof Error ? error.message : String(error));
+      return { posts: [], totalPages: page === 1 ? 0 : null };
     }
     if (!res.ok) {
-      console.warn(`⚠️ Posts (${lang}): API respondeu ${res.status}.`);
-      break;
+      console.warn(`Posts (${lang}, page=${page}): API respondeu ${res.status}.`);
+      return { posts: [], totalPages: page === 1 ? 0 : null };
     }
-    const data = await res.json();
-    if (!Array.isArray(data) || data.length === 0) break;
-    posts.push(
-      ...data
-        .map(post => normalizePost(post, lang))
-        .filter(post => post.slug && !post.noindex)
-    );
-    const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
-    if (page >= totalPages) break;
-    page++;
+    let data;
+    try {
+      data = await res.json();
+    } catch (error) {
+      console.warn(`Error parsing JSON for posts (lang=${lang}, page=${page}):`, error instanceof Error ? error.message : String(error));
+      return { posts: [], totalPages: page === 1 ? 0 : null };
+    }
+    return {
+      posts: normalizePostPage(data),
+      totalPages: page === 1 ? parseInt(res.headers.get('X-WP-TotalPages') || '1', 10) : null,
+    };
+  };
+
+  const firstPage = await fetchPostPage(1);
+  posts.push(...firstPage.posts);
+  const totalPages = Number.isFinite(firstPage.totalPages) ? firstPage.totalPages : 0;
+  if (totalPages <= 1) {
+    return posts;
+  }
+
+  const concurrencyLimit = 5;
+  for (let i = 2; i <= totalPages; i += concurrencyLimit) {
+    const batch = [];
+    for (let j = 0; j < concurrencyLimit && (i + j) <= totalPages; j++) {
+      batch.push(fetchPostPage(i + j));
+    }
+    const batchResults = await Promise.all(batch);
+    for (const pageResult of batchResults) {
+      posts.push(...pageResult.posts);
+    }
   }
   return posts;
 }
-
 async function fetchPosts() {
   const endpointPosts = await fetchPostsFromZenSeoSitemap();
   if (endpointPosts.length > 0) {

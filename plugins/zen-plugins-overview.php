@@ -145,9 +145,15 @@ class Zen_Plugins_Overview
         $db_version = $GLOBALS['wpdb']->db_version();
         $plugins = $this->get_plugins_data();
         $active_count = 0;
+        // ⚡ Bolt: Fetch active plugins option once outside the loop to prevent N+1 is_plugin_active checks and redundant option reads.
+        $active_plugins = (array) \get_option('active_plugins', array());
+        if (\is_multisite()) {
+            $active_plugins = \array_merge($active_plugins, \array_keys((array) \get_site_option('active_sitewide_plugins', array())));
+        }
         foreach ($plugins as $p) {
-            if ($this->check_active($p['path']))
+            if (\in_array($p['path'], $active_plugins, true)) {
                 $active_count++;
+            }
         }
         $integrity = \round(($active_count / \count($plugins)) * 100);
         ?>
@@ -202,7 +208,8 @@ class Zen_Plugins_Overview
             <!-- MAIN GRID / SKILL TREE -->
             <div class="zc-skill-tree">
                 <?php foreach ($plugins as $plugin):
-                    $is_active = $this->check_active($plugin['path']);
+                    // ⚡ Bolt: Using the pre-fetched active_plugins array from outside the loop instead of $this->check_active()
+                    $is_active = \in_array($plugin['path'], $active_plugins, true);
                     $rarity = \strpos(\strtolower($plugin['name']), 'pro') !== false ? 'legendary' : 'rare';
                     $accent = $plugin['color'];
                     ?>

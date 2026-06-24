@@ -10,7 +10,7 @@
  *   GET  /wp-json/zen-bit/v2/events/{event_id}           → Detalhe completo (ZenBitEventDetail)
  *   GET  /wp-json/zen-bit/v2/events/{event_id}/schema    → JSON-LD evento individual
  *   POST /wp-json/zen-bit/v2/admin/fetch-now             → Força refresh do cache (admin)
- *   POST /wp-json/zen-bit/v2/admin/clear-cache           → Limpa todo o cache (admin)
+ *   POST /wp-json/zen-bit/v2/admin/clear-cache           → Limpa o cache (admin)
  *   GET  /wp-json/zen-bit/v2/admin/health                → Status do sistema (admin)
  *
  * CHANGELOG v3.1.0 — 2026-03-06
@@ -309,15 +309,21 @@ class Zen_BIT_API_V2
         }
 
         return array_values(array_filter($events, static function ($e) use ($ds, $de): bool {
-            $ts = strtotime((string) ($e['starts_at'] ?? ''));
-            if (!$ts) {
+            $start_ts = strtotime((string) ($e['starts_at'] ?? ''));
+            $end_ts = strtotime((string) ($e['ends_at'] ?? $e['end_date'] ?? ''));
+            $lower_bound_ts = $end_ts === false ? $start_ts : $end_ts;
+            $upper_bound_ts = $start_ts === false ? $end_ts : $start_ts;
+
+            if ($lower_bound_ts === false && $upper_bound_ts === false) {
                 return false;
             }
-            $d = \gmdate('Y-m-d', $ts);
-            if ($ds !== '' && $d < $ds) {
+
+            $lower_bound_date = \gmdate('Y-m-d', (int) $lower_bound_ts);
+            $upper_bound_date = \gmdate('Y-m-d', (int) $upper_bound_ts);
+            if ($ds !== '' && $lower_bound_date < $ds) {
                 return false;
             }
-            if ($de !== '' && $d > $de) {
+            if ($de !== '' && $upper_bound_date > $de) {
                 return false;
             }
             return true;
