@@ -4,7 +4,7 @@ export const SITE_THEMES = ['zen-night', 'mediterranean-dusk'] as const;
 
 export type SiteTheme = (typeof SITE_THEMES)[number];
 
-const DEFAULT_THEME: SiteTheme = 'zen-night';
+const DEFAULT_THEME: SiteTheme = 'mediterranean-dusk';
 
 export const isSiteTheme = (value: string | null | undefined): value is SiteTheme =>
   SITE_THEMES.includes(value as SiteTheme);
