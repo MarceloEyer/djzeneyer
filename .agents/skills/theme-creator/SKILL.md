@@ -11,18 +11,18 @@ O projeto utiliza uma **Arquitetura de Design Tokens de 2 Camadas** no arquivo `
 - `:root` contém as variáveis base (Primitive Tokens e Semantic Tokens default).
 - `:root[data-theme='nome-do-tema']` contém os *Semantic Tokens* específicos que fazem o override.
 
-## Arquitetura obrigatoria
+## Arquitetura obrigatória
 
 O projeto deve continuar simples de escalar:
 
-- `src/styles/themes.css` e a fonte dos tokens visuais.
-- `src/utils/theme.ts` e a fonte do registro TypeScript de temas.
+- `src/styles/themes.css` é a fonte dos tokens visuais.
+- `src/utils/theme.ts` é a fonte do registro TypeScript de temas.
 - Todo tema novo precisa entrar em `THEME_CONFIGS`, com `label` e `colorScheme`.
-- `SITE_THEMES` deve continuar derivado de `Object.keys(THEME_CONFIGS)`. Nao recrie arrays paralelos.
-- `applySiteTheme()` deve usar `THEME_CONFIGS[theme].colorScheme`. Nao adicionar `if/else` por tema.
-- Componentes React nao devem conhecer nomes de tema para escolher cor; eles devem usar tokens semanticos (`text-text`, `bg-surface`, `border-border`, `text-primary`, etc.).
-- O tema escuro `zen-night` e referencia preservada. Nao alterar sua paleta ao criar tema claro/sazonal sem pedido explicito.
-- O tema claro default `mediterranean-dusk` deve preservar a estetica Mediterranean cool: linho/bege como fundo, texto marrom quente, azul egeu calmo, terracota suave, superficies tipo papel/plaster e textura discreta.
+- `SITE_THEMES` deve continuar derivado de `Object.keys(THEME_CONFIGS)`. Não recrie arrays paralelos.
+- `applySiteTheme()` deve usar `THEME_CONFIGS[theme].colorScheme`. Não adicionar `if/else` por tema.
+- Componentes React não devem conhecer nomes de tema para escolher cor; eles devem usar tokens semânticos (`text-text`, `bg-surface`, `border-border`, `text-primary`, etc.).
+- O tema escuro `zen-night` é referência preservada. Não alterar sua paleta ao criar tema claro/sazonal sem pedido explícito.
+- O tema claro default `mediterranean-dusk` deve preservar a estética Mediterranean cool: linho/bege como fundo, texto marrom quente, azul egeu calmo, terracota suave, superfícies tipo papel/plaster e textura discreta.
 
 ## Passo a Passo para Criar um Tema
 

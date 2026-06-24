@@ -104,7 +104,7 @@ const ProductPage: React.FC = () => {
     if (!product || !canonicalUrl) return undefined;
 
     const imageUrls = product.images
-      ?.map((image) => safeUrl(image.sizes?.large || image.src, placeholderImage))
+      ?.map((image) => safeUrl(image.sizes?.large || image.src, '/fallback.svg'))
       .filter(Boolean);
     const rawDescription = product.short_description || product.description || product.name;
     const price = product.price || product.regular_price;

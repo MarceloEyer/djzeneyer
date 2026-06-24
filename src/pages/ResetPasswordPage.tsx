@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, Loader2, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff } from 'lucide-react';
@@ -16,6 +16,7 @@ const ResetPasswordPage: React.FC = () => {
     const homeRoute = getLocalizedRoute('home', currentLang);
     const [brandFirstName, ...brandRest] = t('common.artist_name').split(' ');
     const brandLastName = brandRest.join(' ');
+    const redirectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Query Params
     const key = searchParams.get('key');
@@ -32,6 +33,11 @@ const ResetPasswordPage: React.FC = () => {
 
     useEffect(() => {
         clearError();
+        return () => {
+            if (redirectTimeoutRef.current) {
+                clearTimeout(redirectTimeoutRef.current);
+            }
+        };
     }, [clearError]);
 
     const handleRequestReset = async (e: React.FormEvent) => {
@@ -66,7 +72,10 @@ const ResetPasswordPage: React.FC = () => {
             await resetPassword(key!, login!, password);
             setSuccess(true);
             // Redirecionar após alguns segundos respeitando o idioma
-            setTimeout(() => navigate(homeRoute), 5000);
+            if (redirectTimeoutRef.current) {
+                clearTimeout(redirectTimeoutRef.current);
+            }
+            redirectTimeoutRef.current = setTimeout(() => navigate(homeRoute), 5000);
         } catch {
             // Erro já tratado pelo context
         }
@@ -92,7 +101,7 @@ const ResetPasswordPage: React.FC = () => {
                 <div className="text-center mb-8">
                     <Link to={homeRoute} className="inline-block mb-6">
                         <h1 className="text-2xl font-black tracking-tighter text-text uppercase italic">
-                            {brandFirstName}<span className="text-primary italic">{brandLastName}</span>
+                            {brandFirstName} <span className="text-primary italic">{brandLastName}</span>
                         </h1>
                     </Link>
                     <h2 className="text-3xl font-black text-text mb-2 font-display tracking-tight">

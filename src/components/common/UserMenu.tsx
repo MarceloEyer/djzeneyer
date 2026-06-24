@@ -78,6 +78,7 @@ const UserMenu: React.FC = () => {
   return (
     <div className="relative" ref={menuRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 p-1 pl-2 bg-text/5 hover:bg-text/10 rounded-full transition-colors border border-border/10"
       >

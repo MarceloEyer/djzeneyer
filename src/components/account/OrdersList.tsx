@@ -19,6 +19,7 @@ interface Order {
   date_created: string;
   total: string;
   line_items: Array<{
+    id?: number;
     name: string;
     quantity: number;
     total: string;
@@ -109,8 +110,8 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
               </div>
             </div>
             <div className="space-y-2">
-              {order.line_items.map((item) => (
-                <div key={`${order.id}-${item.name}-${item.quantity}-${item.total}`} className="flex justify-between text-sm border-t border-border/5 pt-2">
+              {order.line_items.map((item, index) => (
+                <div key={`${order.id}-${item.id ?? `line-${index}`}`} className="flex justify-between text-sm border-t border-border/5 pt-2">
                   <span className="text-text/80">{item.name} x{item.quantity}</span>
                   <span className="font-semibold">{formatCurrency(item.total)}</span>
                 </div>

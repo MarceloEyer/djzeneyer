@@ -20,7 +20,9 @@ const requiredThemeTokens = [
 
 const getThemeCssBlock = (theme: string): string => {
   if (theme === 'mediterranean-dusk') {
-    return themesCss.slice(0, themesCss.indexOf(":root[data-theme='zen-night']"));
+    const zenNightBlockStart = themesCss.indexOf(":root[data-theme='zen-night']");
+    if (zenNightBlockStart === -1) return '';
+    return themesCss.slice(0, zenNightBlockStart);
   }
 
   const blockStart = themesCss.indexOf(`:root[data-theme='${theme}']`);
