@@ -1,8 +1,19 @@
 export const THEME_STORAGE_KEY = 'zen_theme';
 
-export const SITE_THEMES = ['zen-night', 'mediterranean-dusk'] as const;
+export const THEME_CONFIGS = {
+  'mediterranean-dusk': {
+    label: 'Mediterranean Dusk',
+    colorScheme: 'light',
+  },
+  'zen-night': {
+    label: 'Zen Night',
+    colorScheme: 'dark',
+  },
+} as const;
 
-export type SiteTheme = (typeof SITE_THEMES)[number];
+export type SiteTheme = keyof typeof THEME_CONFIGS;
+
+export const SITE_THEMES = Object.keys(THEME_CONFIGS) as SiteTheme[];
 
 const DEFAULT_THEME: SiteTheme = 'mediterranean-dusk';
 
@@ -21,7 +32,7 @@ export const resolveSiteTheme = (search: string, storedTheme?: string | null): S
 
 export const applySiteTheme = (theme: SiteTheme, root: HTMLElement = document.documentElement): void => {
   root.dataset.theme = theme;
-  root.style.colorScheme = theme === 'mediterranean-dusk' ? 'light' : 'dark';
+  root.style.colorScheme = THEME_CONFIGS[theme].colorScheme;
 };
 
 export const initSiteTheme = (): SiteTheme => {
