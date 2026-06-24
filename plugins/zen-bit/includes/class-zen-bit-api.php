@@ -309,15 +309,21 @@ class Zen_BIT_API_V2
         }
 
         return array_values(array_filter($events, static function ($e) use ($ds, $de): bool {
-            $ts = strtotime((string) ($e['starts_at'] ?? ''));
-            if (!$ts) {
+            $start_ts = strtotime((string) ($e['starts_at'] ?? ''));
+            $end_ts = strtotime((string) ($e['ends_at'] ?? $e['end_date'] ?? ''));
+            $lower_bound_ts = $end_ts === false ? $start_ts : $end_ts;
+            $upper_bound_ts = $start_ts === false ? $end_ts : $start_ts;
+
+            if ($lower_bound_ts === false && $upper_bound_ts === false) {
                 return false;
             }
-            $d = \gmdate('Y-m-d', $ts);
-            if ($ds !== '' && $d < $ds) {
+
+            $lower_bound_date = \gmdate('Y-m-d', (int) $lower_bound_ts);
+            $upper_bound_date = \gmdate('Y-m-d', (int) $upper_bound_ts);
+            if ($ds !== '' && $lower_bound_date < $ds) {
                 return false;
             }
-            if ($de !== '' && $d > $de) {
+            if ($de !== '' && $upper_bound_date > $de) {
                 return false;
             }
             return true;

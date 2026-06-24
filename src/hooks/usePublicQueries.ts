@@ -18,6 +18,7 @@ import {
 import type { ZenBitEventListItem, ZenBitEventDetail, FetchEventsParams } from '../types/events';
 import { ProductImage, ProductCategory } from '../types/product';
 import { logger } from '../lib/logger';
+import { filterEventsByTemporalMode } from '../utils/events';
 
 // ----------------------------------------------------------------------------
 // TYPES
@@ -250,7 +251,8 @@ const getPrerenderEventsForParams = ({
     limit <= payload.eventsLimit;
 
   if (!canUsePrerenderEvents || !prerenderEvents || prerenderEvents.length === 0) return undefined;
-  return withProcessedEvents(prerenderEvents.slice(0, limit), lang);
+  const filteredEvents = filterEventsByTemporalMode(prerenderEvents, requestedMode);
+  return withProcessedEvents(filteredEvents.slice(0, limit), lang);
 };
 
 // ----------------------------------------------------------------------------
@@ -301,7 +303,8 @@ export const fetchEventsFn = async ({
       throw new Error('Events API returned unexpected format');
     }
 
-    return withProcessedEvents(events, lang);
+    const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
+    return withProcessedEvents(filterEventsByTemporalMode(events, requestedMode), lang);
   } catch (err) {
     logger.error('EVENTS_FETCH_FAILED', 'Failed to fetch events', { error: String(err) });
     throw err;
