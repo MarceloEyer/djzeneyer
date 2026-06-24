@@ -64,7 +64,7 @@ jobs:
 
       - name: 🔌 Deploy plugins/
         if: hashFiles('plugins/**') != ''
-        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
+        uses: burnett01/rsync-deployments@4d419d1dc46d4a8a2b6ceab2f951f0f93b2da8f5 # 9
         with:
           switches: -avzr --checksum --exclude='*.md' --exclude='tests/' --exclude='.git/'
           path: plugins/
@@ -76,7 +76,7 @@ jobs:
 
       - name: 📚 Deploy inc/
         if: hashFiles('inc/**') != ''
-        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
+        uses: burnett01/rsync-deployments@4d419d1dc46d4a8a2b6ceab2f951f0f93b2da8f5 # 9
         with:
           switches: -avzr --delete --checksum
           path: inc/
@@ -88,7 +88,7 @@ jobs:
 
       - name: 📚 Deploy parts/
         if: hashFiles('parts/**') != ''
-        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
+        uses: burnett01/rsync-deployments@4d419d1dc46d4a8a2b6ceab2f951f0f93b2da8f5 # 9
         with:
           switches: -avzr --delete --checksum
           path: parts/
@@ -100,7 +100,7 @@ jobs:
 
       - name: 📚 Deploy templates/
         if: hashFiles('templates/**') != ''
-        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
+        uses: burnett01/rsync-deployments@4d419d1dc46d4a8a2b6ceab2f951f0f93b2da8f5 # 9
         with:
           switches: -avzr --delete --checksum
           path: templates/
