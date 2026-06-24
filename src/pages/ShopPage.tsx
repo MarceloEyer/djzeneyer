@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback, useRef, memo, useMemo } from 'react';
 import { Link, generatePath } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { sanitizeHtml, safeUrl } from '../utils/sanitize';
 import { stripHtml } from '../utils/text';
 import { useShopPageQuery, useAddToCartMutation, WCProduct } from '../hooks/useQueries';
@@ -537,10 +537,10 @@ const ShopPage: React.FC = () => {
               className="max-w-4xl mx-auto"
             >
               <h1 className="text-5xl md:text-8xl font-black font-display mb-6 tracking-tighter uppercase leading-[0.8] opacity-40 hover:opacity-100 transition-opacity duration-700 select-none">
-                Zen <span className="text-primary italic">Store</span>
+                <Trans i18nKey="shop.hero_title_rich" components={{ 1: <span className="text-primary italic" /> }} />
               </h1>
               <p className="text-xl text-text/40 font-bold uppercase tracking-widest">
-                {t('shop.coming_soon_msg', 'Exclusividade em cada batida.')}
+                {t('shop.coming_soon_msg')}
               </p>
             </motion.div>
           </div>

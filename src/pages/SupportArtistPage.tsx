@@ -139,9 +139,7 @@ const SupportArtistPage: React.FC = () => {
             <Heart size={16} /> {t('common.footer_support_artist')}
           </div>
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-text tracking-tighter uppercase leading-[0.9]">
-            <Trans i18nKey="support.header.title">
-              Support DJ <span className="text-primary">Zen Eyer</span>
-            </Trans>
+            <Trans i18nKey="support.header.title" components={{ 1: <span className="text-primary" /> }} />
           </h1>
           <div className="text-base sm:text-xl text-text/70 max-w-2xl mx-auto leading-relaxed space-y-4">
             <p>{t('support.header.description_p1')}</p>

@@ -612,6 +612,7 @@
     "page_title": "Loja",
     "page_meta_desc": "Loja oficial de Zen Eyer com produtos, ingressos e itens selecionados da Zen Tribe.",
     "title": "Loja Zen Tribe",
+    "hero_title_rich": "Zen <1>Store</1>",
     "subtitle": "Merchandise exclusivo e ingressos para eventos",
     "all_products": "Todos os Produtos",
     "featured_title": "Produtos em Destaque",
@@ -1274,6 +1275,10 @@
   "quiz_you_are": "Você é...",
   "share_event": "Compartilhar {{title}}",
   "event_default_title": "Evento Zen Eyer",
+  "tickets": {
+    "tbd": "A definir",
+    "location_online_tbd": "Online/a definir"
+  },
   "countries": {
     "Brazil": "Brasil",
     "Netherlands": "Holanda",
