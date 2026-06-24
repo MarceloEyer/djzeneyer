@@ -314,7 +314,13 @@ async function fetchPostsForLang(lang) {
       console.warn(`Posts (${lang}, page=${page}): API respondeu ${res.status}.`);
       return { posts: [], totalPages: page === 1 ? 0 : null };
     }
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch (error) {
+      console.warn(`Error parsing JSON for posts (lang=${lang}, page=${page}):`, error instanceof Error ? error.message : String(error));
+      return { posts: [], totalPages: page === 1 ? 0 : null };
+    }
     return {
       posts: normalizePostPage(data),
       totalPages: page === 1 ? parseInt(res.headers.get('X-WP-TotalPages') || '1', 10) : null,
@@ -328,13 +334,16 @@ async function fetchPostsForLang(lang) {
     return posts;
   }
 
-  const pageRequests = [];
-  for (let page = 2; page <= totalPages; page++) {
-    pageRequests.push(fetchPostPage(page));
-  }
-  const remainingPages = await Promise.all(pageRequests);
-  for (const pageResult of remainingPages) {
-    posts.push(...pageResult.posts);
+  const concurrencyLimit = 5;
+  for (let i = 2; i <= totalPages; i += concurrencyLimit) {
+    const batch = [];
+    for (let j = 0; j < concurrencyLimit && (i + j) <= totalPages; j++) {
+      batch.push(fetchPostPage(i + j));
+    }
+    const batchResults = await Promise.all(batch);
+    for (const pageResult of batchResults) {
+      posts.push(...pageResult.posts);
+    }
   }
   return posts;
 }
