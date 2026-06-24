@@ -156,6 +156,24 @@ describe('buildDynamicGraph — MusicEvent', () => {
     const ev = graph.find((n) => n['@type'] === 'MusicEvent')!;
     expect(ev.name).toBe('Fallback Event Name');
   });
+
+  it('omits stale past events from EventSeries on list pages', () => {
+    const pastEvent = {
+      ...futureEvent,
+      event_id: 'past',
+      title: 'Old Event',
+      starts_at: '2020-01-01T20:00:00Z',
+    };
+    const graph = buildDynamicGraph({ ...baseOpts, events: [pastEvent, futureEvent] });
+    const names = graph.flatMap((node) => {
+      if (node['@type'] === 'MusicEvent') return [node.name];
+      if (node['@type'] === 'EventSeries') {
+        return (node.subEvent as Record<string, unknown>[]).map((event) => event.name);
+      }
+      return [];
+    });
+    expect(names).toEqual(['Zen Eyer at Rio']);
+  });
 });
 
 // ── VideoObject ────────────────────────────────────────────────────────────────

@@ -25,6 +25,17 @@
     "faq": "FAQ",
     "contact": "Contact"
   },
+  "countries": {
+    "australia": "Australia",
+    "brazil": "Brazil",
+    "canada": "Canada",
+    "germany": "Germany",
+    "netherlands": "Netherlands",
+    "portugal": "Portugal",
+    "spain": "Spain",
+    "switzerland": "Switzerland",
+    "united_states": "United States"
+  },
   "dashboard": {
     "loading": "Syncing with the Zen Universe...",
     "error_loading": "Could not load your dashboard data.",
