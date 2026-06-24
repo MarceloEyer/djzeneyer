@@ -14,7 +14,7 @@ const ResetPasswordPage: React.FC = () => {
     const { requestPasswordReset, resetPassword, loading, error, clearError } = useAuth();
     const currentLang = normalizeLanguage(i18n.language);
     const homeRoute = getLocalizedRoute('home', currentLang);
-    const [brandFirstName, ...brandRest] = t('artist_name').split(' ');
+    const [brandFirstName, ...brandRest] = t('common.artist_name').split(' ');
     const brandLastName = brandRest.join(' ');
 
     // Query Params

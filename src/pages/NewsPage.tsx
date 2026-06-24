@@ -417,7 +417,7 @@ const NewsPage: React.FC = () => {
                         height="675"
                         srcSet={
                           featuredPost.featured_image_src && featuredPost.featured_image_src !== featuredPost.featured_image_src_full
-                            ? `${safeUrl(featuredPost.featured_image_src, '')} 800w, ${safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src, '')} 1200w`
+                            ? `${safeUrl(featuredPost.featured_image_src, '/images/hero-background.webp')} 800w, ${safeUrl(featuredPost.featured_image_src_full || featuredPost.featured_image_src, '/images/hero-background.webp')} 1200w`
                             : undefined
                         }
                         sizes="100vw"
