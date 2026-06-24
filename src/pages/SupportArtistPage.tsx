@@ -33,7 +33,7 @@ const CurrencyAccordion = memo(({
   onToggle: () => void; 
   children: React.ReactNode 
 }) => (
-  <div className="bg-surface/30 backdrop-blur-sm rounded-2xl overflow-hidden border border-white/10 hover:border-primary/30 transition-all duration-300 mb-4">
+  <div className="bg-surface/30 backdrop-blur-sm rounded-2xl overflow-hidden border border-border/10 hover:border-primary/30 transition-all duration-300 mb-4">
     <button
       onClick={onToggle}
       className="w-full min-h-[5rem] flex items-center justify-between p-6 text-left hover:bg-surface/50 transition-colors group"
@@ -43,7 +43,7 @@ const CurrencyAccordion = memo(({
         <div className={`p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 text-primary group-hover:scale-110 transition-transform`}>
           <Icon size={28} />
         </div>
-        <h3 className="text-xl md:text-2xl font-black text-white group-hover:text-primary transition-colors font-display uppercase tracking-tighter">
+        <h3 className="text-xl md:text-2xl font-black text-text group-hover:text-primary transition-colors font-display uppercase tracking-tighter">
           {title}
         </h3>
       </div>
@@ -76,9 +76,9 @@ const CurrencyAccordion = memo(({
 CurrencyAccordion.displayName = 'CurrencyAccordion';
 
 const DetailCard = ({ label, value }: { label: string; value: string }) => (
-    <div className="bg-surface/50 p-4 rounded-xl border border-white/5 group hover:border-primary/30 transition-all shadow-lg">
-    <div className="text-xs text-white/55 uppercase tracking-widest mb-1 group-hover:text-primary/70 transition-colors font-bold">{label}</div>
-    <div className="font-mono text-white font-bold break-all select-all selection:bg-primary/30">{value}</div>
+    <div className="bg-surface/50 p-4 rounded-xl border border-border/5 group hover:border-primary/30 transition-all shadow-lg">
+    <div className="text-xs text-text/55 uppercase tracking-widest mb-1 group-hover:text-primary/70 transition-colors font-bold">{label}</div>
+    <div className="font-mono text-text font-bold break-all select-all selection:bg-primary/30">{value}</div>
   </div>
 );
 
@@ -138,34 +138,34 @@ const SupportArtistPage: React.FC = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
             <Heart size={16} /> {t('common.footer_support_artist')}
           </div>
-          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-white tracking-tighter uppercase leading-[0.9]">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-text tracking-tighter uppercase leading-[0.9]">
             <Trans i18nKey="support.header.title">
               Support DJ <span className="text-primary">Zen Eyer</span>
             </Trans>
           </h1>
-          <div className="text-base sm:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed space-y-4">
+          <div className="text-base sm:text-xl text-text/70 max-w-2xl mx-auto leading-relaxed space-y-4">
             <p>{t('support.header.description_p1')}</p>
             <p>{t('support.header.description_p2')}</p>
             <p>{t('support.header.description_p3')}</p>
           </div>
         </motion.div>
 
-        <section className="mx-auto mb-16 max-w-4xl rounded-2xl border border-white/10 bg-surface/40 p-5 sm:p-8">
+        <section className="mx-auto mb-16 max-w-4xl rounded-2xl border border-border/10 bg-surface/40 p-5 sm:p-8">
           <div className="space-y-5">
             {supportActions.map((action) => (
-              <div key={action.title} className="flex gap-4 rounded-xl border border-white/5 bg-black/15 p-4">
+              <div key={action.title} className="flex gap-4 rounded-xl border border-border/5 bg-background/15 p-4">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-2xl" aria-hidden="true">
                   {action.emoji}
                 </div>
                 <div className="min-w-0">
-                  <h2 className="text-base font-black uppercase tracking-tight text-white sm:text-lg">
+                  <h2 className="text-base font-black uppercase tracking-tight text-text sm:text-lg">
                     {action.title}
                   </h2>
-                  <p className="mt-1 text-sm leading-relaxed text-white/70 sm:text-base">
+                  <p className="mt-1 text-sm leading-relaxed text-text/70 sm:text-base">
                     {action.description}
                   </p>
                   {action.to && (
-                    <Link to={action.to} className="mt-3 inline-flex min-h-[44px] items-center text-sm font-bold text-primary transition-colors hover:text-white">
+                    <Link to={action.to} className="mt-3 inline-flex min-h-[44px] items-center text-sm font-bold text-primary transition-colors hover:text-text">
                       {action.cta}
                     </Link>
                   )}
@@ -177,7 +177,7 @@ const SupportArtistPage: React.FC = () => {
 
         {/* Currency Accordions */}
         <div className="mb-20">
-          <h2 className="text-2xl md:text-3xl font-black font-display mb-8 text-center uppercase tracking-widest text-white/80">
+          <h2 className="text-2xl md:text-3xl font-black font-display mb-8 text-center uppercase tracking-widest text-text/80">
             {t('support.payment.by_currency')}
           </h2>
 
@@ -214,8 +214,8 @@ const SupportArtistPage: React.FC = () => {
               onToggle={() => handleToggle('USD')}
             >
               <div className="space-y-6">
-                <div className="p-6 bg-white/5 rounded-2xl border border-white/10">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-white uppercase text-sm tracking-widest">
+                <div className="p-6 bg-text/5 rounded-2xl border border-border/10">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-text uppercase text-sm tracking-widest">
                     <Building2 size={18} /> {t('support.inter.usd')}
                   </h4>
                   <div className="grid md:grid-cols-2 gap-4">
@@ -243,7 +243,7 @@ const SupportArtistPage: React.FC = () => {
                   <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
                     <Globe size={18} /> {t('support.payment.wise_eur_title')}
                   </h4>
-                  <p className="mb-4 text-sm leading-relaxed text-white/65">
+                  <p className="mb-4 text-sm leading-relaxed text-text/65">
                     {t('support.payment.global_note')}
                   </p>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
@@ -307,7 +307,7 @@ const SupportArtistPage: React.FC = () => {
 
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
           <Sparkles className="mx-auto mb-4 text-primary" size={24} />
-          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-white/70 sm:text-2xl">
+          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-text/70 sm:text-2xl">
             {t('support.thankYou')}
           </p>
         </motion.div>

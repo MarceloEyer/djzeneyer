@@ -45,10 +45,10 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-inner group-hover:shadow-[0_0_15px_rgba(var(--color-primary),0.3)] transition-all">
             <TrendingUp className="text-primary" size={24} />
           </div>
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 font-display">{t('account.stats.level_title')}</h3>
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text/40 font-display">{t('account.stats.level_title')}</h3>
         </div>
         <div>
-          <p className="text-4xl font-black text-white font-display tracking-tighter mb-1">
+          <p className="text-4xl font-black text-text font-display tracking-tighter mb-1">
             {t('account.stats.level_value', { level: stats.level })}
           </p>
           <div className="flex items-center gap-2">
@@ -69,13 +69,13 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
           <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center border border-secondary/20 shadow-inner group-hover:shadow-[0_0_15px_rgba(var(--color-secondary),0.3)] transition-all">
             <Star className="text-secondary" size={24} />
           </div>
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 font-display">{t('account.stats.xp_title')}</h3>
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text/40 font-display">{t('account.stats.xp_title')}</h3>
         </div>
         <div>
-          <p className="text-4xl font-black text-white font-display tracking-tighter mb-1">
-            {getNumberFormatter(i18n.language).format(stats.xp)} <span className="text-lg text-secondary/70">XP</span>
+          <p className="text-4xl font-black text-text font-display tracking-tighter mb-1">
+            {getNumberFormatter(i18n.language).format(stats.xp)} <span className="text-lg text-secondary/70">{t('account.stats.xp_label')}</span>
           </p>
-          <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest leading-none">
+          <p className="text-[11px] font-bold text-text/30 uppercase tracking-widest leading-none">
             {stats.xpToNext > 0
               ? t('account.stats.xp_to_next_rank', { count: stats.xpToNext })
               : t('account.stats.xp_max')
@@ -95,13 +95,13 @@ export const UserStatsCards: React.FC<UserStatsCardsProps> = memo(({ stats }) =>
           <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20 shadow-inner group-hover:shadow-[0_0_15px_rgba(var(--color-accent),0.3)] transition-all">
             <Award className="text-accent" size={24} />
           </div>
-          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/40 font-display">{t('account.stats.achievements_title')}</h3>
+          <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text/40 font-display">{t('account.stats.achievements_title')}</h3>
         </div>
         <div>
-          <p className="text-4xl font-black text-white font-display tracking-tighter mb-1">
+          <p className="text-4xl font-black text-text font-display tracking-tighter mb-1">
             {stats.totalAchievements}
           </p>
-          <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest leading-none">
+          <p className="text-[11px] font-bold text-text/30 uppercase tracking-widest leading-none">
             {stats.recentAchievements > 0
               ? t('account.stats.unlocked_recently', { count: stats.recentAchievements })
               : t('account.stats.keep_exploring')

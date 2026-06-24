@@ -36,9 +36,9 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
   };
 
   return (
-    <div className={`${!hideHeader ? 'bg-surface/30 backdrop-blur-xl rounded-[1.5rem] p-8 border border-white/10 shadow-2xl' : ''}`}>
+    <div className={`${!hideHeader ? 'bg-surface/30 backdrop-blur-xl rounded-[1.5rem] p-8 border border-border/10 shadow-2xl' : ''}`}>
       {!hideHeader && (
-        <h3 className="text-2xl font-black mb-8 flex items-center gap-3 font-display tracking-tight text-white uppercase">
+        <h3 className="text-2xl font-black mb-8 flex items-center gap-3 font-display tracking-tight text-text uppercase">
           <Clock className="text-primary animate-pulse" size={24} />
           {t('dashboard.recentActivity')}
         </h3>
@@ -55,7 +55,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
                 log.points >= 0 ? 'border-primary' : 'border-red-500'
               }`} />
               
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all hover:translate-x-1 shadow-sm">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-text/5 border border-border/5 hover:border-border/10 hover:bg-text/10 transition-all hover:translate-x-1 shadow-sm">
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
                   log.points >= 0 ? 'bg-primary/10 text-primary' : 'bg-red-500/10 text-red-400'
                 }`}>
@@ -63,13 +63,13 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-sm text-white/90 leading-tight mb-1">{log.description}</p>
-                  <p className="text-[10px] text-white/40 font-black uppercase tracking-widest flex items-center gap-1">
+                  <p className="font-bold text-sm text-text/90 leading-tight mb-1">{log.description}</p>
+                  <p className="text-[10px] text-text/40 font-black uppercase tracking-widest flex items-center gap-1">
                     <Clock size={10} /> {formatDate(log.date)}
                   </p>
                 </div>
                 
-                <div className={`text-sm font-black font-display px-2 py-1 rounded-lg bg-black/40 ${
+                <div className={`text-sm font-black font-display px-2 py-1 rounded-lg bg-background/40 ${
                   log.points >= 0 ? 'text-primary' : 'text-red-400'
                 }`}>
                   {log.points >= 0 ? '+' : ''}{log.points}
@@ -81,26 +81,26 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
           <div className="space-y-6">
             <div className="relative pl-14 group transition-all">
               <div className="absolute left-4 top-1 h-4 w-4 rounded-full border-2 border-primary bg-background z-10" />
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-text/5 border border-border/5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/20 text-primary">
                   <Music size={20} />
                 </div>
                 <div>
-                  <p className="font-bold text-sm text-white/90">{t('dashboard.welcomeTribe')}</p>
-                  <p className="text-[10px] text-white/40 font-black uppercase tracking-widest leading-none mt-1">{t('dashboard.journeyBegins')}</p>
+                  <p className="font-bold text-sm text-text/90">{t('dashboard.welcomeTribe')}</p>
+                  <p className="text-[10px] text-text/40 font-black uppercase tracking-widest leading-none mt-1">{t('dashboard.journeyBegins')}</p>
                 </div>
               </div>
             </div>
             
             <div className="relative pl-14 group transition-all">
               <div className="absolute left-4 top-1 h-4 w-4 rounded-full border-2 border-accent bg-background z-10" />
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-text/5 border border-border/5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent/20 text-accent">
                   <Calendar size={20} />
                 </div>
                 <div>
-                  <p className="font-bold text-sm text-white/90">{t('dashboard.accountCreated')}</p>
-                  <p className="text-[10px] text-white/40 font-black uppercase tracking-widest leading-none mt-1">{t('dashboard.startExploring')}</p>
+                  <p className="font-bold text-sm text-text/90">{t('dashboard.accountCreated')}</p>
+                  <p className="text-[10px] text-text/40 font-black uppercase tracking-widest leading-none mt-1">{t('dashboard.startExploring')}</p>
                 </div>
               </div>
             </div>

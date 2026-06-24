@@ -107,7 +107,7 @@ const EncyclopediaHubPage: React.FC = () => {
         leadAnswer={leadAnswer}
       />
 
-      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
+      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-text">
         <div className="container mx-auto max-w-5xl">
           <Breadcrumb items={[{ label: t('nav_label', { ns: 'encyclopedia' }) }]} className="mb-10" />
 
@@ -126,7 +126,7 @@ const EncyclopediaHubPage: React.FC = () => {
                 Zouk <span className="text-primary">Encyclopedia</span>
               </Trans>
             </h1>
-            <p className="mx-auto max-w-3xl text-lg leading-relaxed text-white/65">
+            <p className="mx-auto max-w-3xl text-lg leading-relaxed text-text/65">
               {t('hero_subtitle', { ns: 'encyclopedia' })}
             </p>
           </motion.header>
@@ -134,11 +134,11 @@ const EncyclopediaHubPage: React.FC = () => {
           <section aria-label={t('intro_label', { ns: 'encyclopedia' })} className="mx-auto mb-14 max-w-4xl">
             <div className="grid gap-6 md:grid-cols-3">
               {(['what_is', 'dance_or_music', 'differences'] as const).map((item) => (
-                <div key={item} className="border-t border-white/10 pt-5">
-                  <h2 className="mb-3 font-display text-lg font-bold leading-tight text-white">
+                <div key={item} className="border-t border-border/10 pt-5">
+                  <h2 className="mb-3 font-display text-lg font-bold leading-tight text-text">
                     {t(`intro.${item}.q`, { ns: 'encyclopedia' })}
                   </h2>
-                  <p className="text-sm leading-relaxed text-white/62">
+                  <p className="text-sm leading-relaxed text-text/62">
                     {t(`intro.${item}.a`, { ns: 'encyclopedia' })}
                   </p>
                 </div>
@@ -148,14 +148,14 @@ const EncyclopediaHubPage: React.FC = () => {
 
           <section aria-label={t('search_label', { ns: 'encyclopedia' })} className="mx-auto mb-14 max-w-2xl">
             <div className="relative">
-              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35" size={20} />
+              <Search className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-text/35" size={20} />
               <input
                 type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('search_placeholder', { ns: 'encyclopedia' })}
                 aria-label={t('search_label', { ns: 'encyclopedia' })}
-                className="h-14 w-full rounded-xl border border-white/10 bg-surface/50 pl-12 pr-4 text-white outline-none transition-colors placeholder:text-white/35 focus:border-primary/60"
+                className="h-14 w-full rounded-xl border border-border/10 bg-surface/50 pl-12 pr-4 text-text outline-none transition-colors placeholder:text-text/35 focus:border-primary/60"
               />
             </div>
           </section>
@@ -164,7 +164,7 @@ const EncyclopediaHubPage: React.FC = () => {
             <div className="space-y-12">
               {groupedTerms.map((group) => (
                 <section key={group.category} aria-labelledby={`encyclopedia-${group.category}`}>
-                  <h2 id={`encyclopedia-${group.category}`} className="mb-5 font-display text-2xl font-black text-white">
+                  <h2 id={`encyclopedia-${group.category}`} className="mb-5 font-display text-2xl font-black text-text">
                     {t(`categories.${group.category}`, { ns: 'encyclopedia' })}
                   </h2>
                   <div className="grid gap-5">
@@ -172,14 +172,14 @@ const EncyclopediaHubPage: React.FC = () => {
                       <article
                         id={item.key}
                         key={item.key}
-                        className="rounded-2xl border border-white/10 bg-surface/35 p-5 transition-colors hover:border-primary/35 md:p-7"
+                        className="rounded-2xl border border-border/10 bg-surface/35 p-5 transition-colors hover:border-primary/35 md:p-7"
                       >
                         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                           <div className="flex min-w-0 items-center gap-3">
                             <div className="flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-primary/10 text-primary">
                               <Sparkles size={20} />
                             </div>
-                            <h3 className="font-display text-2xl font-black text-white">
+                            <h3 className="font-display text-2xl font-black text-text">
                               <Link
                                 to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(item.key)}`}
                                 className="transition-colors hover:text-primary"
@@ -188,15 +188,15 @@ const EncyclopediaHubPage: React.FC = () => {
                               </Link>
                             </h3>
                           </div>
-                          <span className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-white/45">
+                          <span className="w-fit rounded-full border border-border/10 bg-text/5 px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-text/45">
                             {t(`categories.${item.category}`, { ns: 'encyclopedia' })}
                           </span>
                         </div>
 
-                        <p className="mb-4 text-base font-semibold leading-relaxed text-white/85" data-speakable>
+                        <p className="mb-4 text-base font-semibold leading-relaxed text-text/85" data-speakable>
                           {t(`terms.${item.key}.short`, { ns: 'encyclopedia' })}
                         </p>
-                        <p className="text-base leading-relaxed text-white/62">
+                        <p className="text-base leading-relaxed text-text/62">
                           {t(`terms.${item.key}.body`, { ns: 'encyclopedia' })}
                         </p>
 
@@ -206,7 +206,7 @@ const EncyclopediaHubPage: React.FC = () => {
                               <Link
                                 key={related}
                                 to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(related)}`}
-                                className="inline-flex items-center gap-1 rounded-lg bg-white/5 px-2.5 py-1.5 text-xs font-bold text-primary/75 transition-colors hover:bg-primary/10 hover:text-primary"
+                                className="inline-flex items-center gap-1 rounded-lg bg-text/5 px-2.5 py-1.5 text-xs font-bold text-primary/75 transition-colors hover:bg-primary/10 hover:text-primary"
                               >
                                 <ChevronRight size={12} />
                                 {t(`terms.${related}.term`, { ns: 'encyclopedia' })}
@@ -216,8 +216,8 @@ const EncyclopediaHubPage: React.FC = () => {
                         )}
 
                         {item.sources && item.sources.length > 0 && (
-                          <div className="mt-5 border-t border-white/10 pt-4">
-                            <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-white/40">
+                          <div className="mt-5 border-t border-border/10 pt-4">
+                            <p className="mb-2 text-[11px] font-bold uppercase tracking-widest text-text/40">
                               {t('sources_label', { ns: 'encyclopedia' })}
                             </p>
                             <div className="flex flex-wrap gap-2">
@@ -227,7 +227,7 @@ const EncyclopediaHubPage: React.FC = () => {
                                   href={safeUrl(source.url, '/')}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-border/10 bg-text/5 px-2.5 py-1.5 text-xs font-bold text-text/65 transition-colors hover:border-primary/35 hover:text-primary"
                                 >
                                   {t(`sources.${source.labelKey}`, { ns: 'encyclopedia' })}
                                   <ExternalLink size={12} />
@@ -243,7 +243,7 @@ const EncyclopediaHubPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-white/10 bg-surface/35 p-8 text-center text-white/60">
+            <div className="rounded-2xl border border-border/10 bg-surface/35 p-8 text-center text-text/60">
               {t('no_results', { ns: 'encyclopedia' })}
             </div>
           )}
@@ -336,7 +336,7 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
         schema={schema}
       />
 
-      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
+      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-text">
         <div className="container mx-auto max-w-4xl">
           <Breadcrumb
             items={[
@@ -350,7 +350,7 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
             variants={HERO_VARIANTS}
             initial={prefersReducedMotion ? false : 'hidden'}
             animate={prefersReducedMotion ? undefined : 'visible'}
-            className="rounded-3xl border border-white/10 bg-surface/35 p-6 md:p-10"
+            className="rounded-3xl border border-border/10 bg-surface/35 p-6 md:p-10"
           >
             <Link to={hubPath} className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-primary/80">
               <ArrowLeft size={16} />
@@ -363,14 +363,14 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
             <h1 className="mb-8 font-display text-4xl font-black tracking-tight md:text-6xl">{termName}</h1>
 
             <section aria-labelledby="term-question">
-              <h2 id="term-question" className="mb-4 font-display text-2xl font-black text-white md:text-3xl">{question}</h2>
-              <p className="mb-5 text-lg font-semibold leading-relaxed text-white/85" data-speakable>{shortAnswer}</p>
-              <p className="text-base leading-relaxed text-white/65 md:text-lg">{body}</p>
+              <h2 id="term-question" className="mb-4 font-display text-2xl font-black text-text md:text-3xl">{question}</h2>
+              <p className="mb-5 text-lg font-semibold leading-relaxed text-text/85" data-speakable>{shortAnswer}</p>
+              <p className="text-base leading-relaxed text-text/65 md:text-lg">{body}</p>
             </section>
 
             {term.relatedTerms && term.relatedTerms.length > 0 && (
-              <section className="mt-10 border-t border-white/10 pt-6" aria-labelledby="related-terms">
-                <h2 id="related-terms" className="mb-4 text-sm font-black uppercase tracking-widest text-white/60">
+              <section className="mt-10 border-t border-border/10 pt-6" aria-labelledby="related-terms">
+                <h2 id="related-terms" className="mb-4 text-sm font-black uppercase tracking-widest text-text/60">
                   {t('detail.related_terms', { ns: 'encyclopedia' })}
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -378,7 +378,7 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
                     <Link
                       key={related}
                       to={`${hubPath}/${toEncyclopediaTermSlug(related)}`}
-                      className="inline-flex items-center gap-1 rounded-lg bg-white/5 px-3 py-2 text-sm font-bold text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary"
+                      className="inline-flex items-center gap-1 rounded-lg bg-text/5 px-3 py-2 text-sm font-bold text-primary/80 transition-colors hover:bg-primary/10 hover:text-primary"
                     >
                       <ChevronRight size={14} />
                       {t(`terms.${related}.term`, { ns: 'encyclopedia' })}
@@ -389,13 +389,13 @@ const EncyclopediaTermPage: React.FC<EncyclopediaTermPageProps> = ({ term }) => 
             )}
 
             {term.sources && term.sources.length > 0 && (
-              <section className="mt-8 border-t border-white/10 pt-6" aria-labelledby="term-sources">
-                <h2 id="term-sources" className="mb-4 text-sm font-black uppercase tracking-widest text-white/60">
+              <section className="mt-8 border-t border-border/10 pt-6" aria-labelledby="term-sources">
+                <h2 id="term-sources" className="mb-4 text-sm font-black uppercase tracking-widest text-text/60">
                   {t('sources_label', { ns: 'encyclopedia' })}
                 </h2>
                 <div className="flex flex-wrap gap-2">
                   {term.sources.map((source) => (
-                    <a key={source.url} href={safeUrl(source.url, '/')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-bold text-white/65 transition-colors hover:border-primary/35 hover:text-primary">
+                    <a key={source.url} href={safeUrl(source.url, '/')} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 rounded-lg border border-border/10 bg-text/5 px-3 py-2 text-sm font-bold text-text/65 transition-colors hover:border-primary/35 hover:text-primary">
                       {t(`sources.${source.labelKey}`, { ns: 'encyclopedia' })}
                       <ExternalLink size={14} />
                     </a>

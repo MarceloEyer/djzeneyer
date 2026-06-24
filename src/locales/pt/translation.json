@@ -23,7 +23,8 @@
     "privacy": "Política de Privacidade",
     "terms": "Termos de Uso",
     "faq": "FAQ",
-    "contact": "Contato"
+    "contact": "Contato",
+    "toggle_menu": "Alternar menu"
   },
   "countries": {
     "australia": "Austrália",
@@ -223,6 +224,7 @@
     "viewAll": "Ver Tudo",
     "level": "Nível",
     "totalPoints": "Pontos Totais",
+    "xpLabel": "XP",
     "xpToNext": "{{count}} XP para o próximo nível",
     "maxLevel": "Nível máximo alcançado!",
     "achievements": "Conquistas",
@@ -859,6 +861,7 @@
       "level_title": "Nível",
       "level_value": "Nível {{level}}",
       "xp_title": "Pontos de Experiência",
+      "xp_label": "XP",
       "xp_to_next_rank": "{{count}} XP para o próximo nível",
       "xp_max": "Nível máximo alcançado!",
       "achievements_title": "Conquistas",

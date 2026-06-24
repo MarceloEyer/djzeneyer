@@ -190,7 +190,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           initial={OVERLAY_INITIAL}
           animate={OVERLAY_ANIMATE}
           exit={OVERLAY_EXIT}
-          className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+          className="absolute inset-0 bg-background/80 backdrop-blur-sm"
         />
 
         <motion.div
@@ -203,20 +203,20 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
         >
           <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/10 to-transparent rounded-3xl blur-xl" />
 
-          <div className="relative bg-surface/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
+          <div className="relative bg-surface/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-border/10 overflow-hidden">
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-white/10 transition-colors z-10 text-white/60 hover:text-white"
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-text/10 transition-colors z-10 text-text/60 hover:text-text"
               aria-label={t('common.close')}
             >
               <X size={20} />
             </button>
 
             <div className="pt-10 pb-6 px-8 text-center">
-              <h2 className="text-3xl font-black text-white mb-2 font-display tracking-tight">
+              <h2 className="text-3xl font-black text-text mb-2 font-display tracking-tight">
                 {mode === 'login' ? t('auth.login.title') : t('auth.register.title')}
               </h2>
-              <p className="text-white/60 text-sm">
+              <p className="text-text/60 text-sm">
                 {mode === 'login' ? t('auth.login.subtitle') : t('auth.register.subtitle')}
               </p>
             </div>
@@ -234,8 +234,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               )}
 
               {isLoadingSettings ? (
-                <div className="mb-6 h-12 bg-white/5 animate-pulse rounded-lg flex items-center justify-center border border-white/5">
-                  <Loader2 size={20} className="animate-spin text-white/40" />
+                <div className="mb-6 h-12 bg-text/5 animate-pulse rounded-lg flex items-center justify-center border border-border/5">
+                  <Loader2 size={20} className="animate-spin text-text/40" />
                 </div>
               ) : googleClientId ? (
                 <>
@@ -256,10 +256,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   </div>
                   <div className="relative my-6">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-white/10"></div>
+                      <div className="w-full border-t border-border/10"></div>
                     </div>
                     <div className="relative flex justify-center text-xs uppercase tracking-wider font-semibold">
-                      <span className="px-3 bg-[#1a1a1a] text-white/40">{t('auth.or_continue_with_email')}</span>
+                      <span className="px-3 bg-surface text-text/40">{t('auth.or_continue_with_email')}</span>
                     </div>
                   </div>
                 </>
@@ -281,9 +281,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
                 {mode === 'register' && (
                   <div>
-                    <label htmlFor="auth_username" className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.name')}</label>
+                    <label htmlFor="auth_username" className="block text-xs font-bold uppercase text-text/50 mb-1.5 ml-1">{t('auth.labels.name')}</label>
                     <div className="relative group">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40 group-focus-within:text-primary transition-colors" size={18} />
                       <input
                         type="text"
                         id="auth_username"
@@ -293,8 +293,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                           setUsername(e.target.value);
                           if (formErrors.username) setFormErrors({ ...formErrors, username: undefined });
                         }}
-                        className={`w-full bg-black/40 text-white border ${formErrors.username ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                          } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                        className={`w-full bg-background/40 text-text border ${formErrors.username ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
+                          } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                         placeholder={t('auth.placeholders.name')}
                         disabled={loading}
                         autoComplete="username"
@@ -305,9 +305,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 )}
 
                 <div>
-                  <label htmlFor="auth_email" className="block text-xs font-bold uppercase text-white/50 mb-1.5 ml-1">{t('auth.labels.email')}</label>
+                  <label htmlFor="auth_email" className="block text-xs font-bold uppercase text-text/50 mb-1.5 ml-1">{t('auth.labels.email')}</label>
                   <div className="relative group">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40 group-focus-within:text-primary transition-colors" size={18} />
                     <input
                       type="email"
                       id="auth_email"
@@ -317,8 +317,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setEmail(e.target.value);
                         if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                       }}
-                      className={`w-full bg-black/40 text-white border ${formErrors.email ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                      className={`w-full bg-background/40 text-text border ${formErrors.email ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
+                        } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                       placeholder={t('auth.placeholders.email')}
                       disabled={loading}
                       autoComplete="email"
@@ -329,7 +329,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
 
                 <div>
                   <div className="flex justify-between items-center mb-1.5 ml-1">
-                    <label htmlFor="auth_password" className="text-xs font-bold uppercase text-white/50">{t('auth.labels.password')}</label>
+                    <label htmlFor="auth_password" className="text-xs font-bold uppercase text-text/50">{t('auth.labels.password')}</label>
                     {mode === 'login' && (
                       <button
                         type="button"
@@ -341,7 +341,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                     )}
                   </div>
                   <div className="relative group">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 group-focus-within:text-primary transition-colors" size={18} />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40 group-focus-within:text-primary transition-colors" size={18} />
                     <input
                       type={showPassword ? "text" : "password"}
                       id="auth_password"
@@ -351,8 +351,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setPassword(e.target.value);
                         if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
                       }}
-                      className={`w-full bg-black/40 text-white border ${formErrors.password ? 'border-red-500/50' : 'border-white/10 group-focus-within:border-primary/50'
-                        } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder-white/20`}
+                      className={`w-full bg-background/40 text-text border ${formErrors.password ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
+                        } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                       placeholder={t('auth.placeholders.password')}
                       disabled={loading}
                       autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
@@ -360,7 +360,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors focus:outline-none"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text/40 hover:text-text transition-colors focus:outline-none"
                       aria-label={showPassword ? t('auth.aria.hide_password') : t('auth.aria.show_password')}
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -382,7 +382,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-primary/20 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex justify-center items-center gap-2 mt-2"
+                  className="w-full bg-primary hover:bg-primary/90 text-text font-bold py-3.5 rounded-lg shadow-lg shadow-primary/20 transition-all transform hover:scale-[1.01] active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex justify-center items-center gap-2 mt-2"
                 >
                   {loading ? (
                     <>
@@ -397,14 +397,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 </button>
               </form>
 
-              <div className="mt-6 text-center pt-4 border-t border-white/5">
-                <p className="text-white/50 text-sm">
+              <div className="mt-6 text-center pt-4 border-t border-border/5">
+                <p className="text-text/50 text-sm">
                   {mode === 'login' ? t('auth.login.no_account') : t('auth.register.has_account')}
                   {' '}
                   <button
                     onClick={switchMode}
                     disabled={loading}
-                    className="text-primary font-bold hover:text-white transition-colors disabled:opacity-50 ml-1"
+                    className="text-primary font-bold hover:text-text transition-colors disabled:opacity-50 ml-1"
                   >
                     {mode === 'login' ? t('auth.login.create_now') : t('auth.register.login_now')}
                   </button>

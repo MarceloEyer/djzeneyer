@@ -45,16 +45,16 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
         noindex
       />
 
-      <main className="min-h-screen bg-background text-white pt-24 pb-20">
+      <main className="min-h-screen bg-background text-text pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">
           <motion.section
             initial={FADE_IN_UP_INITIAL}
             animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6 }}
-            className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-primary/20 via-surface/80 to-background p-6 md:p-12 shadow-2xl"
+            className="relative overflow-hidden rounded-[2rem] border border-border/10 bg-gradient-to-br from-primary/20 via-surface/80 to-background p-6 md:p-12 shadow-2xl"
           >
             <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-primary/20 blur-3xl" aria-hidden="true" />
-            <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-white/5 blur-3xl" aria-hidden="true" />
+            <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-text/5 blur-3xl" aria-hidden="true" />
 
             <div className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
               <div>
@@ -67,7 +67,7 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                   {t(`${mode}.title`)}
                 </h1>
 
-                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/75 md:text-xl">
+                <p className="mt-6 max-w-2xl text-lg leading-relaxed text-text/75 md:text-xl">
                   {t(`${mode}.lead`)}
                 </p>
 
@@ -75,19 +75,19 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                   <Link to={homePath} className="btn btn-primary rounded-full px-7 py-3 text-center font-bold transition-transform hover:scale-105">
                     {t(`${mode}.primary`)}
                   </Link>
-                  <Link to={secondaryPath} className="btn btn-outline rounded-full border border-white/30 px-7 py-3 text-center font-bold transition-transform hover:scale-105 hover:bg-white/10">
+                  <Link to={secondaryPath} className="btn btn-outline rounded-full border border-border/30 px-7 py-3 text-center font-bold transition-transform hover:scale-105 hover:bg-text/10">
                     {t(`${mode}.secondary`)}
                   </Link>
                 </div>
               </div>
 
-              <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-6 backdrop-blur-sm">
+              <div className="rounded-[1.5rem] border border-border/10 bg-background/20 p-6 backdrop-blur-sm">
                 <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/20 text-primary">
                   <Icon size={34} />
                 </div>
                 <ol className="space-y-4">
                   {(t(`${mode}.steps`, { returnObjects: true }) as string[]).map((step, index) => (
-                    <li key={step} className="flex gap-3 text-white/80">
+                    <li key={step} className="flex gap-3 text-text/80">
                       <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-sm font-bold text-primary">
                         {index + 1}
                       </span>
@@ -112,7 +112,7 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                 </div>
                 <h2 className="font-display text-2xl font-bold">{t('embedPlaceholder')}</h2>
               </div>
-              <div className="rounded-2xl border border-dashed border-white/20 bg-white/[0.03] p-6 text-white/70">
+              <div className="rounded-2xl border border-dashed border-border/20 bg-text/[0.03] p-6 text-text/70">
                 <p className="leading-relaxed">{t('embedHelper')}</p>
               </div>
             </div>
@@ -124,8 +124,8 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                 </div>
                 <h2 className="font-display text-2xl font-bold">{t('trustTitle')}</h2>
               </div>
-              <p className="leading-relaxed text-white/70">{t('trustCopy')}</p>
-              <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/10 p-4 text-sm leading-relaxed text-white/75">
+              <p className="leading-relaxed text-text/70">{t('trustCopy')}</p>
+              <div className="mt-6 rounded-2xl border border-primary/20 bg-primary/10 p-4 text-sm leading-relaxed text-text/75">
                 <div className="mb-2 flex items-center gap-2 font-bold text-primary">
                   <HeartHandshake size={18} />
                   Zen Eyer
@@ -140,7 +140,7 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
               initial={FADE_IN_UP_INITIAL}
               animate={FADE_IN_UP_ANIMATE}
               transition={{ duration: 0.6, delay: 0.18 }}
-              className="mt-6 flex items-center gap-3 rounded-2xl border border-white/10 bg-surface/50 p-5 text-white/70"
+              className="mt-6 flex items-center gap-3 rounded-2xl border border-border/10 bg-surface/50 p-5 text-text/70"
             >
               <CheckCircle2 className="flex-shrink-0 text-primary" size={24} />
               <p className="leading-relaxed">

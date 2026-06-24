@@ -23,7 +23,8 @@
     "main_navigation": "Main Navigation",
     "mobile_navigation": "Mobile Menu",
     "faq": "FAQ",
-    "contact": "Contact"
+    "contact": "Contact",
+    "toggle_menu": "Toggle menu"
   },
   "countries": {
     "australia": "Australia",
@@ -192,6 +193,7 @@
     "viewAll": "View All",
     "level": "Level",
     "totalPoints": "Total Points",
+    "xpLabel": "XP",
     "xpToNext": "{{count}} XP to next level",
     "maxLevel": "Max level reached!",
     "achievements": "Achievements",
@@ -852,6 +854,7 @@
       "level_title": "Level",
       "level_value": "Level {{level}}",
       "xp_title": "Experience Points",
+      "xp_label": "XP",
       "xp_to_next_rank": "{{count}} XP to next level",
       "xp_max": "Max level reached!",
       "achievements_title": "Achievements",

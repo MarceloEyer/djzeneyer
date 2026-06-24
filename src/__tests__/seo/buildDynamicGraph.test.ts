@@ -164,7 +164,14 @@ describe('buildDynamicGraph — MusicEvent', () => {
       title: 'Old Event',
       starts_at: '2020-01-01T20:00:00Z',
     };
-    const graph = buildDynamicGraph({ ...baseOpts, events: [pastEvent, futureEvent] });
+    const pastEventDateFallback = {
+      ...futureEvent,
+      event_id: 'past-event-date',
+      title: 'Old Event Date',
+      starts_at: '',
+      event_date: '2020-02-01T20:00:00Z',
+    };
+    const graph = buildDynamicGraph({ ...baseOpts, events: [pastEvent, pastEventDateFallback, futureEvent] });
     const names = graph.flatMap((node) => {
       if (node['@type'] === 'MusicEvent') return [node.name];
       if (node['@type'] === 'EventSeries') {

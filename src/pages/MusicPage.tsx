@@ -162,7 +162,7 @@ const MusicPage: React.FC = () => {
         imageAlt={t('og.image_alt.music')}
         schema={musicListingSchema}
       />
-      <div className="min-h-screen bg-background text-white pt-24 pb-20">
+      <div className="min-h-screen bg-background text-text pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">
           <Breadcrumb items={[{ label: t('nav.music') }]} className="mb-8" />
 
@@ -182,7 +182,7 @@ const MusicPage: React.FC = () => {
               initial={prefersReducedMotion ? false : { opacity: 0 }}
               animate={prefersReducedMotion ? undefined : { opacity: 1 }}
               transition={prefersReducedMotion ? undefined : { delay: 0.2 }}
-              className="text-xl text-white/60"
+              className="text-xl text-text/60"
             >
               {t('music.hub_subtitle')}
             </motion.p>
@@ -199,20 +199,20 @@ const MusicPage: React.FC = () => {
             >
               <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="flex items-center gap-6 relative z-10">
-                <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-black rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
+                <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-pureBlack rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
                   <SpotifyIcon />
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="text-xl sm:text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
                     {SPOTIFY_PLATFORM.name}
                   </span>
-                  <span className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-white mt-1 opacity-90 transition-opacity group-hover:opacity-100">
+                  <span className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-text mt-1 opacity-90 transition-opacity group-hover:opacity-100">
                     {t('music.listen_now')}
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-4 relative z-10">
-                <ExternalLink size={24} className="text-[#1DB954] group-hover:text-white transition-colors" />
+                <ExternalLink size={24} className="text-[#1DB954] group-hover:text-text transition-colors" />
               </div>
             </motion.button>
 
@@ -232,7 +232,7 @@ const MusicPage: React.FC = () => {
                     <div className="w-8 flex justify-center opacity-70 group-hover:opacity-100 transition-opacity">{platform.icon}</div>
                     <span className="text-sm font-bold font-display uppercase tracking-wider">{platform.name}</span>
                   </div>
-                  <ExternalLink size={16} className="text-white/10 group-hover:text-white/40 transition-colors" />
+                  <ExternalLink size={16} className="text-text/10 group-hover:text-text/40 transition-colors" />
                 </motion.button>
               ))}
             </div>
@@ -252,10 +252,10 @@ const MusicPage: React.FC = () => {
               <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
                 <Download className="text-red-500" /> {t('music.steal_button')}
               </h3>
-              <p className="text-white/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
+              <p className="text-text/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
               <button
                 onClick={() => handleTrackInteraction('download_hub', 0, 'https://download.djzeneyer.com')}
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-text font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
               >
                 {t('music.steal_cta')} <ExternalLink size={16} />
               </button>
@@ -274,10 +274,10 @@ const MusicPage: React.FC = () => {
               <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
                 <Coffee className="text-primary" /> {t('music.support_button')}
               </h3>
-              <p className="text-white/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
+              <p className="text-text/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
               <Link
                 to={getLocalizedRoute('support', currentLang)}
-                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-black font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
+                className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-[rgb(var(--color-primary-fg))] font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
               >
                 {t('music.support_cta')} <ExternalLink size={16} />
               </Link>
@@ -288,37 +288,37 @@ const MusicPage: React.FC = () => {
             <section aria-labelledby="music-releases-title">
               <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 id="music-releases-title" className="text-2xl font-black font-display text-white">
+                  <h2 id="music-releases-title" className="text-2xl font-black font-display text-text">
                     {t('music.releases_title')}
                   </h2>
-                  <p className="mt-1 text-sm text-white/50">{t('music.releases_subtitle')}</p>
+                  <p className="mt-1 text-sm text-text/50">{t('music.releases_subtitle')}</p>
                 </div>
                 <Link to={getLocalizedRoute('news', currentLang)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
                   {t('music.releases_archive_link')}
                   <ExternalLink size={14} />
                 </Link>
               </div>
-              <div className="overflow-hidden rounded-2xl border border-white/10 bg-surface/25">
+              <div className="overflow-hidden rounded-2xl border border-border/10 bg-surface/25">
                 {releaseCards.map((release) => (
                   <Link
                     key={release.id}
                     to={release.path}
-                    className="group flex items-center justify-between gap-4 border-b border-white/10 px-4 py-4 transition-colors last:border-b-0 hover:bg-surface/55 sm:px-5"
+                    className="group flex items-center justify-between gap-4 border-b border-border/10 px-4 py-4 transition-colors last:border-b-0 hover:bg-surface/55 sm:px-5"
                   >
                     <div className="min-w-0">
                       <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold uppercase tracking-wider text-primary">
                         <span>{t(`music.release_type.${release.type}`, { defaultValue: release.type })}</span>
                         {release.releaseDate && (
-                          <span className="text-white/40">
+                          <span className="text-text/40">
                             {formatReleaseListDate(release.releaseDate, currentLang)}
                           </span>
                         )}
                       </div>
-                      <h3 className="truncate text-base font-black text-white transition-colors group-hover:text-primary sm:text-lg">
+                      <h3 className="truncate text-base font-black text-text transition-colors group-hover:text-primary sm:text-lg">
                         {release.name}
                       </h3>
                     </div>
-                    <span className="hidden shrink-0 text-sm font-bold text-white/35 transition-colors group-hover:text-primary sm:inline">
+                    <span className="hidden shrink-0 text-sm font-bold text-text/35 transition-colors group-hover:text-primary sm:inline">
                       {t('music.read_release')}
                     </span>
                   </Link>

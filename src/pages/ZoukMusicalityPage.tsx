@@ -18,11 +18,11 @@ const ZoukMusicalityPage: React.FC = () => {
         url={pageUrl}
         noindex
       />
-      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-white">
+      <div className="min-h-screen bg-background px-4 pb-20 pt-24 text-text">
         <div className="container mx-auto max-w-5xl">
           <Breadcrumb items={[{ label: t('hub_pages.zouk_musicality.breadcrumb') }]} className="mb-10" />
           <h1 className="mb-6 font-display text-4xl font-black md:text-6xl text-primary">{t('hub_pages.zouk_musicality.h1')}</h1>
-          <p className="text-white/70">{t('hub_pages.coming_soon')}</p>
+          <p className="text-text/70">{t('hub_pages.coming_soon')}</p>
         </div>
       </div>
     </>

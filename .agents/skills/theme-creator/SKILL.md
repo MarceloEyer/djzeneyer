@@ -11,6 +11,19 @@ O projeto utiliza uma **Arquitetura de Design Tokens de 2 Camadas** no arquivo `
 - `:root` contém as variáveis base (Primitive Tokens e Semantic Tokens default).
 - `:root[data-theme='nome-do-tema']` contém os *Semantic Tokens* específicos que fazem o override.
 
+## Arquitetura obrigatória
+
+O projeto deve continuar simples de escalar:
+
+- `src/styles/themes.css` é a fonte dos tokens visuais.
+- `src/utils/theme.ts` é a fonte do registro TypeScript de temas.
+- Todo tema novo precisa entrar em `THEME_CONFIGS`, com `label` e `colorScheme`.
+- `SITE_THEMES` deve continuar derivado de `Object.keys(THEME_CONFIGS)`. Não recrie arrays paralelos.
+- `applySiteTheme()` deve usar `THEME_CONFIGS[theme].colorScheme`. Não adicionar `if/else` por tema.
+- Componentes React não devem conhecer nomes de tema para escolher cor; eles devem usar tokens semânticos (`text-text`, `bg-surface`, `border-border`, `text-primary`, etc.).
+- O tema escuro `zen-night` é referência preservada. Não alterar sua paleta ao criar tema claro/sazonal sem pedido explícito.
+- O tema claro default `mediterranean-dusk` deve preservar a estética Mediterranean cool: linho/bege como fundo, texto marrom quente, azul egeu calmo, terracota suave, superfícies tipo papel/plaster e textura discreta.
+
 ## Passo a Passo para Criar um Tema
 
 Quando o usuário pedir a criação de um novo tema (ex: "Tema Cyberpunk" ou "Tema de Natal"), você DEVE seguir estes passos rigorosamente:
@@ -76,10 +89,32 @@ Adicione o novo bloco `:root[data-theme='novo-nome-tema']` no final do arquivo `
 ### 3. Registrar o Tema no TypeScript
 
 Modifique o arquivo `src/utils/theme.ts`.
-Encontre o array `SITE_THEMES`:
-`export const SITE_THEMES = ['zen-night', 'mediterranean-dusk'] as const;`
-Adicione o novo nome do tema ao final do array. Exemplo:
-`export const SITE_THEMES = ['zen-night', 'mediterranean-dusk', 'halloween-night'] as const;`
+Adicione o novo tema em `THEME_CONFIGS`, nunca em um array separado. Exemplo:
+
+```ts
+export const THEME_CONFIGS = {
+  'mediterranean-dusk': {
+    label: 'Mediterranean Dusk',
+    colorScheme: 'light',
+  },
+  'zen-night': {
+    label: 'Zen Night',
+    colorScheme: 'dark',
+  },
+  'halloween-night': {
+    label: 'Halloween Night',
+    colorScheme: 'dark',
+  },
+} as const;
+```
+
+`SITE_THEMES` deve continuar derivado:
+
+```ts
+export const SITE_THEMES = Object.keys(THEME_CONFIGS) as Array<keyof typeof THEME_CONFIGS>;
+```
+
+Se o tema novo deve virar default, altere somente `DEFAULT_THEME` e atualize os testes. Nao mude a ordem do registro para controlar comportamento.
 
 ### 4. Validação Final
 
@@ -89,6 +124,7 @@ Adicione o novo nome do tema ao final do array. Exemplo:
 - Os foreground tokens (`--color-primary-fg`, `--color-secondary-fg`, `--color-accent-fg`, `--color-success-fg`, `--color-error-fg`) mantêm contraste AA contra seus respectivos fundos?
 - Valide contraste com ferramenta confiável como WebAIM Contrast Checker, Lighthouse ou o painel Accessibility do navegador.
 - Teste visualmente o tema com `?theme=nome-do-tema` e volte para `?theme=zen-night` para confirmar que o tema default não regrediu.
-- Rode os testes de tema e ao menos um build local quando o tema mexer em tokens globais: `npm.cmd test -- --run src\\__tests__\\utils\\theme.test.ts` e `npm.cmd run build`.
+- Rode os testes de tema e ao menos um build local quando o tema mexer em tokens globais: `npm run test -- src/__tests__/utils/theme.test.ts` e `npm run build`.
+- Se o objetivo for economizar recursos, rode no minimo `npm run test -- src/__tests__/utils/theme.test.ts`, `npm run type-check` e deixe o build completo para o GitHub Actions.
 
 Se tudo estiver correto, apresente o tema criado ao usuário de forma visual (descrevendo o conceito e a paleta).

@@ -20,7 +20,7 @@ const FAQItem = memo<{
   onToggle: (id: string) => void;
 }>(({ id, question, answer, isOpen, onToggle }: { id: string; question: string; answer: string; isOpen: boolean; onToggle: (id: string) => void }) => (
   <motion.div
-    className="bg-surface/30 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-primary/30 transition-all duration-300"
+    className="bg-surface/30 backdrop-blur-sm rounded-xl overflow-hidden border border-border/10 hover:border-primary/30 transition-all duration-300"
     initial={{ opacity: 0, y: 10 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -30,7 +30,7 @@ const FAQItem = memo<{
       className="w-full flex items-center justify-between p-6 text-left hover:bg-surface/50 transition-colors group"
       aria-expanded={isOpen}
     >
-      <h3 className="text-lg font-bold text-white pr-4 group-hover:text-primary transition-colors font-display">
+      <h3 className="text-lg font-bold text-text pr-4 group-hover:text-primary transition-colors font-display">
         {question}
       </h3>
       <motion.div
@@ -52,7 +52,7 @@ const FAQItem = memo<{
       className="overflow-hidden"
     >
       <div
-        className="px-6 pb-6 text-white/80 leading-relaxed prose prose-invert max-w-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-white border-t border-white/5 pt-4"
+        className="px-6 pb-6 text-text/80 leading-relaxed prose prose-invert max-w-none prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-text border-t border-border/5 pt-4"
         dangerouslySetInnerHTML={{ __html: sanitizeHtml(answer) }}
       />
     </motion.div>
@@ -115,7 +115,7 @@ const FAQPage: React.FC = () => {
   }, [faqData]);
 
   return (
-    <div className="min-h-screen bg-background text-white pt-24 pb-20">
+    <div className="min-h-screen bg-background text-text pt-24 pb-20">
       <HeadlessSEO
         title={t('faq.title')}
         description={t('faq.subtitle')}
@@ -138,12 +138,12 @@ const FAQPage: React.FC = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 text-sm font-bold tracking-widest uppercase">
             <BookOpen size={16} /> {t('faq.badge')}
           </div>
-          <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-white leading-tight">
+          <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-text leading-tight">
             <Trans i18nKey="faq.title" ns="faq">
               Perguntas <span className="text-primary">Frequentes</span>
             </Trans>
           </h1>
-          <p className="text-xl text-white/50 max-w-2xl mx-auto">
+          <p className="text-xl text-text/50 max-w-2xl mx-auto">
             {t('faq.subtitle')}
           </p>
         </motion.div>
@@ -159,15 +159,15 @@ const FAQPage: React.FC = () => {
               transition={{ delay: catIndex * 0.1 }}
             >
               <div className="flex items-start gap-4 mb-8">
-                <div className="p-3 bg-surface rounded-xl text-primary border border-white/10 shadow-lg shadow-primary/5">
+                <div className="p-3 bg-surface rounded-xl text-primary border border-border/10 shadow-lg shadow-primary/5">
                   {category.icon}
                 </div>
                 <div>
-                  <h2 className="text-2xl md:text-3xl font-bold font-display text-white mb-2">
+                  <h2 className="text-2xl md:text-3xl font-bold font-display text-text mb-2">
                     {category.title}
                   </h2>
                   {category.description && (
-                    <p className="text-white/50 text-sm">{category.description}</p>
+                    <p className="text-text/50 text-sm">{category.description}</p>
                   )}
                 </div>
               </div>
@@ -193,7 +193,7 @@ const FAQPage: React.FC = () => {
 
         {/* CTA Footer */}
         <motion.div
-          className="mt-24 text-center border-t border-white/10 pt-16"
+          className="mt-24 text-center border-t border-border/10 pt-16"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -203,7 +203,7 @@ const FAQPage: React.FC = () => {
             <a href={`https://wa.me/${ARTIST.contact.whatsapp.number}?text=${encodeURIComponent(t('about.cta.whatsapp_msg'))}`} target="_blank" rel="noopener noreferrer" className="btn btn-primary px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 transition-transform hover:scale-105">
               <Mic2 size={18} /> {t('faq.cta_whatsapp')}
             </a>
-            <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 border border-white/30 hover:bg-white/10 transition-transform hover:scale-105">
+            <a href={`mailto:${ARTIST.contact.email}`} className="btn btn-outline px-8 py-3 rounded-full font-bold flex items-center justify-center gap-2 border border-border/30 hover:bg-text/10 transition-transform hover:scale-105">
               <Globe size={18} /> {t('faq.cta_email')}
             </a>
           </div>

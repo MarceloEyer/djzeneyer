@@ -39,12 +39,12 @@ const StatCard = memo<{ icon: React.ReactNode; number: string; label: string; co
   ({ icon, number, label, color }) => (
     <motion.div
       whileHover={STAT_CARD_HOVER}
-      className={`${color} rounded-2xl border border-white/20 p-6 text-center shadow-xl backdrop-blur-sm`}
+      className={`${color} rounded-2xl border border-border/20 p-6 text-center shadow-xl backdrop-blur-sm`}
       transition={{ type: 'spring', stiffness: 300 }}
     >
-      <div className="mb-4 inline-block rounded-full bg-white/10 p-4 text-white">{icon}</div>
-      <h3 className="mb-2 text-4xl font-black text-white">{number}</h3>
-      <p className="font-semibold text-white/90">{label}</p>
+      <div className="mb-4 inline-block rounded-full bg-text/10 p-4 text-text">{icon}</div>
+      <h3 className="mb-2 text-4xl font-black text-text">{number}</h3>
+      <p className="font-semibold text-text/90">{label}</p>
     </motion.div>
   )
 );
@@ -62,15 +62,15 @@ const MediaKitCard = memo<{
     href={path}
     target="_blank"
     rel="noopener noreferrer"
-    className="group flex h-full flex-col rounded-2xl border border-white/10 bg-surface/50 p-8 backdrop-blur-sm transition-all hover:border-primary hover:bg-surface/80"
+    className="group flex h-full flex-col rounded-2xl border border-border/10 bg-surface/50 p-8 backdrop-blur-sm transition-all hover:border-primary hover:bg-surface/80"
     whileHover={MEDIA_CARD_HOVER}
     transition={{ type: 'spring', stiffness: 300 }}
   >
     <div className="mx-auto mb-4 inline-block rounded-full bg-primary/10 p-4 text-primary transition-transform group-hover:scale-110">
       {icon}
     </div>
-    <h3 className="mb-2 text-xl font-bold text-white">{title}</h3>
-    <p className="mb-4 flex-grow text-white/70">{description}</p>
+    <h3 className="mb-2 text-xl font-bold text-text">{title}</h3>
+    <p className="mb-4 flex-grow text-text/70">{description}</p>
     <div className="mt-auto flex items-center justify-center gap-2 font-semibold text-primary">
       {isExternal ? <ExternalLink size={20} /> : <Download size={20} />}
       <span>{isExternal ? t('presskit.media.access') : t('presskit.media.download')}</span>
@@ -223,7 +223,7 @@ const PressKitPage: React.FC = () => {
         imageAlt={t('og.image_alt.press')}
       />
 
-      <div className="min-h-screen bg-[#0a0a0a] text-white">
+      <div className="min-h-screen bg-background text-text">
         <section className="pt-24 sm:pt-32 pb-10 sm:pb-14">
           <div className="container mx-auto px-4">
             <motion.div
@@ -238,11 +238,11 @@ const PressKitPage: React.FC = () => {
               <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-xs font-bold uppercase tracking-[0.28em] text-primary">
                 {t('presskit.tag')}
               </div>
-              <h1 className="mt-6 text-2xl sm:text-4xl font-black uppercase tracking-tight text-white md:text-6xl">
+              <h1 className="mt-6 text-2xl sm:text-4xl font-black uppercase tracking-tight text-text md:text-6xl">
                 {t('presskit.title_prefix')} <span className="text-primary">{t('presskit.title_suffix')}</span>
               </h1>
-              <p className="mt-5 text-lg text-white/70 md:text-xl">{t('presskit.role')}</p>
-              <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-white/50 md:text-base">
+              <p className="mt-5 text-lg text-text/70 md:text-xl">{t('presskit.role')}</p>
+              <p className="mt-2 text-sm font-semibold uppercase tracking-[0.18em] text-text/50 md:text-base">
                 {t('presskit.subtitle')}
               </p>
             </motion.div>
@@ -274,7 +274,7 @@ const PressKitPage: React.FC = () => {
               <div className="grid items-center gap-10 sm:gap-20 lg:grid-cols-2">
                 <div className="relative">
                   <motion.div
-                    className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/10 shadow-2xl"
+                    className="group relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-border/10 shadow-2xl"
                     whileHover={SUBTLE_SCALE_HOVER}
                   >
                     <img
@@ -299,19 +299,19 @@ const PressKitPage: React.FC = () => {
                     {t('presskit.bio.title')}
                   </h2>
 
-                  <div className="space-y-6 text-justify text-lg leading-relaxed text-white/70 safe-html-contrast">
+                  <div className="space-y-6 text-justify text-lg leading-relaxed text-text/70 safe-html-contrast">
                     <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p1')) }} />
                     <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p2')) }} />
                     <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('presskit.bio.p3')) }} />
                   </div>
 
-                  <div className="mt-12 grid grid-cols-2 gap-6 rounded-3xl border border-white/5 bg-surface/50 p-4 sm:p-8">
+                  <div className="mt-12 grid grid-cols-2 gap-6 rounded-3xl border border-border/5 bg-surface/50 p-4 sm:p-8">
                     {quickStatsItems.map((item, index) => (
                       <div key={index} className="flex items-start gap-3">
                         <div className="rounded-xl bg-primary/10 p-3">{item.icon}</div>
                         <div>
-                          <div className="text-base font-bold leading-tight text-white">{item.title}</div>
-                          <div className="text-sm text-white/50">{item.desc}</div>
+                          <div className="text-base font-bold leading-tight text-text">{item.title}</div>
+                          <div className="text-sm text-text/50">{item.desc}</div>
                         </div>
                       </div>
                     ))}
@@ -332,11 +332,11 @@ const PressKitPage: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="mx-auto max-w-4xl"
             >
-              <div className="rounded-2xl border border-white/10 bg-surface/40 p-6 sm:p-8">
+              <div className="rounded-2xl border border-border/10 bg-surface/40 p-6 sm:p-8">
                 <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <h2 className="text-xl sm:text-2xl font-black text-white">{t('presskit.canonical_bio.title')}</h2>
-                    <p className="mt-1 text-sm text-white/40">{t('presskit.canonical_bio.subtitle')}</p>
+                    <h2 className="text-xl sm:text-2xl font-black text-text">{t('presskit.canonical_bio.title')}</h2>
+                    <p className="mt-1 text-sm text-text/40">{t('presskit.canonical_bio.subtitle')}</p>
                   </div>
                   <button
                     onClick={handleCopyBio}
@@ -346,7 +346,7 @@ const PressKitPage: React.FC = () => {
                     {isCopied ? t('presskit.canonical_bio.copied') : t('presskit.canonical_bio.copy_button')}
                   </button>
                 </div>
-                <div className="rounded-xl bg-black/40 p-5 sm:p-6 text-sm leading-relaxed text-white/70 select-all border border-white/5 cursor-text">
+                <div className="rounded-xl bg-background/40 p-5 sm:p-6 text-sm leading-relaxed text-text/70 select-all border border-border/5 cursor-text">
                   {t('presskit.canonical_bio.text')}
                 </div>
               </div>
@@ -354,14 +354,14 @@ const PressKitPage: React.FC = () => {
           </div>
         </section>
 
-        <section className="bg-[#0d0d0d] py-16 sm:py-32">
+        <section className="bg-surface/40 py-16 sm:py-32">
           <div className="container mx-auto px-4">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 px-4 text-center">
                 <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
                   {t('presskit.lineups.title')}
                 </h2>
-                <p className="mx-auto max-w-2xl text-xl text-white/50">
+                <p className="mx-auto max-w-2xl text-xl text-text/50">
                   {t('presskit.lineups.subtitle')}
                 </p>
               </div>
@@ -371,12 +371,12 @@ const PressKitPage: React.FC = () => {
                   <motion.div
                     key={index}
                     whileHover={SUBTLE_SCALE_HOVER}
-                    className="group flex items-center gap-4 rounded-2xl border border-white/5 bg-surface/40 p-5 transition-all hover:border-primary/30"
+                    className="group flex items-center gap-4 rounded-2xl border border-border/5 bg-surface/40 p-5 transition-all hover:border-primary/30"
                   >
                     <div className="text-3xl grayscale transition-all group-hover:grayscale-0">{festival.flag}</div>
                     <div className="flex-1 text-left">
-                      <div className="text-lg font-bold leading-tight text-white">{festival.name}</div>
-                      <div className="mt-1 text-sm uppercase tracking-widest text-white/40">
+                      <div className="text-lg font-bold leading-tight text-text">{festival.name}</div>
+                      <div className="mt-1 text-sm uppercase tracking-widest text-text/40">
                         {festival.country} • {String(festival.date).substring(0, 4)}
                       </div>
                     </div>
@@ -385,7 +385,7 @@ const PressKitPage: React.FC = () => {
               </div>
 
               <div className="mt-12 px-4 text-center">
-                <p className="text-lg italic text-white/30">{t('presskit.lineups.global_note')}</p>
+                <p className="text-lg italic text-text/30">{t('presskit.lineups.global_note')}</p>
               </div>
             </motion.div>
           </div>
@@ -396,7 +396,7 @@ const PressKitPage: React.FC = () => {
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mx-auto max-w-6xl">
               <div className="mb-16 text-center">
                 <h2 className="mb-6 text-3xl sm:text-5xl font-black">{t('presskit.media.title')}</h2>
-                <p className="mx-auto max-w-2xl text-xl text-white/50">{t('presskit.media.subtitle')}</p>
+                <p className="mx-auto max-w-2xl text-xl text-text/50">{t('presskit.media.subtitle')}</p>
               </div>
 
               <div className="grid gap-8 md:grid-cols-3">
@@ -415,7 +415,7 @@ const PressKitPage: React.FC = () => {
                 <h2 className="mb-6 text-3xl sm:text-5xl font-black uppercase tracking-tighter">
                   {t('presskit.gallery.title')}
                 </h2>
-                <p className="text-xl text-white/50">{t('presskit.gallery.subtitle')}</p>
+                <p className="text-xl text-text/50">{t('presskit.gallery.subtitle')}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
@@ -429,7 +429,7 @@ const PressKitPage: React.FC = () => {
                 ].map((photo, index) => (
                   <motion.div
                     key={index}
-                    className="group aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl border border-white/5 transition-all hover:border-primary/50"
+                    className="group aspect-[4/5] cursor-pointer overflow-hidden rounded-2xl border border-border/5 transition-all hover:border-primary/50"
                     whileHover={GALLERY_ITEM_HOVER}
                   >
                     <img
@@ -467,9 +467,9 @@ const PressKitPage: React.FC = () => {
               viewport={{ once: true }}
               className="mx-auto max-w-4xl text-center"
             >
-              <div className="rounded-[2rem] sm:rounded-[3rem] border border-white/10 bg-gradient-to-br from-primary/10 via-surface/50 to-accent/10 p-6 sm:p-16 shadow-3xl">
+              <div className="rounded-[2rem] sm:rounded-[3rem] border border-border/10 bg-gradient-to-br from-primary/10 via-surface/50 to-accent/10 p-6 sm:p-16 shadow-3xl">
                 <h2 className="mb-6 sm:mb-8 text-3xl sm:text-5xl font-black uppercase tracking-tighter md:text-6xl">{t('presskit.contact.title')}</h2>
-                <p className="mx-auto mb-8 sm:mb-12 max-w-2xl text-base sm:text-xl leading-relaxed text-white/60">{t('presskit.contact.subtitle')}</p>
+                <p className="mx-auto mb-8 sm:mb-12 max-w-2xl text-base sm:text-xl leading-relaxed text-text/60">{t('presskit.contact.subtitle')}</p>
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-lg flex items-center justify-center gap-3">
@@ -485,15 +485,15 @@ const PressKitPage: React.FC = () => {
                   )}
                 </div>
 
-                <div className="mt-8 sm:mt-16 border-t border-white/10 pt-6 sm:pt-10">
+                <div className="mt-8 sm:mt-16 border-t border-border/10 pt-6 sm:pt-10">
                   <div className="mb-12 grid gap-10 text-left md:grid-cols-3">
                     <div className="flex items-start gap-4">
                       <div className="rounded-lg bg-primary/20 p-2">
                         <MapPin className="text-primary" size={24} />
                       </div>
                       <div>
-                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">{t('presskit.contact.base')}</div>
-                        <div className="text-white/60">{ARTIST.contact.location.displayArea}</div>
+                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-text">{t('presskit.contact.base')}</div>
+                        <div className="text-text/60">{ARTIST.contact.location.displayArea}</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
@@ -501,8 +501,8 @@ const PressKitPage: React.FC = () => {
                         <Calendar className="text-primary" size={24} />
                       </div>
                       <div>
-                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">{t('presskit.contact.availability')}</div>
-                        <div className="text-white/60">{t('presskit.contact.availability_value')}</div>
+                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-text">{t('presskit.contact.availability')}</div>
+                        <div className="text-text/60">{t('presskit.contact.availability_value')}</div>
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
@@ -510,14 +510,14 @@ const PressKitPage: React.FC = () => {
                         <Globe className="text-primary" size={24} />
                       </div>
                       <div>
-                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-white">{t('presskit.contact.booking_label')}</div>
-                        <div className="text-white/60">{t('presskit.contact.availability_value')}</div>
+                        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-text">{t('presskit.contact.booking_label')}</div>
+                        <div className="text-text/60">{t('presskit.contact.availability_value')}</div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="border-t border-white/5 pt-8">
-                    <h3 className="mb-6 text-sm uppercase tracking-widest text-white/40">{t('presskit.contact.links')}</h3>
+                  <div className="border-t border-border/5 pt-8">
+                    <h3 className="mb-6 text-sm uppercase tracking-widest text-text/40">{t('presskit.contact.links')}</h3>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                       {relevantLinks.map((link, index) => (
                         <a
@@ -525,7 +525,7 @@ const PressKitPage: React.FC = () => {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 rounded-xl bg-white/5 px-4 py-3 min-h-[44px] transition-all duration-300 hover:bg-primary/20 hover:text-primary"
+                          className="flex items-center justify-center gap-2 rounded-xl bg-text/5 px-4 py-3 min-h-[44px] transition-all duration-300 hover:bg-primary/20 hover:text-primary"
                         >
                           {link.icon}
                           <span className="text-sm font-semibold">{link.name}</span>

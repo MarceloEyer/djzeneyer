@@ -120,7 +120,7 @@ const TermsPage: React.FC = () => {
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
               {t('legal.terms_page.title').split(' ')[0]} <span className="text-primary">{t('legal.terms_page.title').split(' ').slice(1).join(' ')}</span>
             </h1>
-            <p className="text-white/70">
+            <p className="text-text/70">
               {t('legal.terms_page.last_updated')}: <span className="text-primary font-semibold">{t('legal.terms_page.last_updated_date')}</span>
             </p>
           </motion.div>
@@ -132,10 +132,10 @@ const TermsPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="card p-8 mb-8 border-l-4 border-primary"
           >
-            <p className="text-lg text-white/80 leading-relaxed mb-4">
+            <p className="text-lg text-text/80 leading-relaxed mb-4">
               {t('legal.terms_page.introduction')}
             </p>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-text/70 leading-relaxed">
               {t('legal.terms_page.introduction_agreement')}
             </p>
           </motion.div>
@@ -155,7 +155,7 @@ const TermsPage: React.FC = () => {
                 </div>
                 <h2 className="text-2xl font-display font-bold mt-1">{`${index + 1}. ${section.title}`}</h2>
               </div>
-              <p className="text-white/70 leading-relaxed ml-16">{section.content}</p>
+              <p className="text-text/70 leading-relaxed ml-16">{section.content}</p>
             </motion.div>
           ))}
 
@@ -173,7 +173,7 @@ const TermsPage: React.FC = () => {
                 {term.points.map((point, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <span className="text-primary mt-1.5">•</span>
-                    <span className="text-white/70 leading-relaxed">{point}</span>
+                    <span className="text-text/70 leading-relaxed">{point}</span>
                   </li>
                 ))}
               </ul>
@@ -188,10 +188,10 @@ const TermsPage: React.FC = () => {
             className="card p-8 mb-6"
           >
             <h2 className="text-2xl font-display font-bold mb-4">10. {t('legal.terms_page.governing_law')}</h2>
-            <p className="text-white/70 leading-relaxed mb-4">
+            <p className="text-text/70 leading-relaxed mb-4">
               {t('legal.terms_page.law_brazil')}
             </p>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-text/70 leading-relaxed">
               {t('legal.terms_page.law_consent')}
             </p>
           </motion.div>
@@ -204,7 +204,7 @@ const TermsPage: React.FC = () => {
             className="card p-8 mb-6"
           >
             <h2 className="text-2xl font-display font-bold mb-4">11. {t('legal.terms_page.modifications')}</h2>
-            <p className="text-white/70 leading-relaxed">
+            <p className="text-text/70 leading-relaxed">
               {t('legal.terms_page.modifications_desc')}
             </p>
           </motion.div>
@@ -217,10 +217,10 @@ const TermsPage: React.FC = () => {
             className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
           >
             <h2 className="text-2xl font-display font-bold mb-4">{t('legal.terms_page.questions')}</h2>
-            <p className="text-white/70 mb-6">
+            <p className="text-text/70 mb-6">
               {t('legal.terms_page.questions_desc')}
             </p>
-            <div className="space-y-2 text-white/80">
+            <div className="space-y-2 text-text/80">
               <p><strong>{t('common.artist_name')}</strong></p>
               <p>{t('legal.terms_page.contact_company')}</p>
               <p>{t('media_page.cnpj')}: {t('common.cnpj')}</p>
@@ -239,7 +239,7 @@ const TermsPage: React.FC = () => {
             initial={FADE_IN_UP_INITIAL}
             animate={FADE_IN_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.4 }}
-            className="text-center text-white/50 text-sm mt-8"
+            className="text-center text-text/50 text-sm mt-8"
           >
             <p>{t('legal.terms_page.acceptance_footer')}</p>
           </motion.div>

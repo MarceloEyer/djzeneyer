@@ -85,18 +85,18 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
         aria-expanded={isOpen}
         className="w-full relative overflow-hidden rounded-2xl p-[2px] bg-gradient-to-r from-primary/40 via-primary/60 to-primary/40 shadow-lg shadow-primary/10"
       >
-        <div className="flex items-center justify-between bg-black/60 backdrop-blur-xl rounded-2xl p-5">
+        <div className="flex items-center justify-between bg-background/60 backdrop-blur-xl rounded-2xl p-5">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center">
-              <Headphones className="w-5 h-5 text-white" />
+              <Headphones className="w-5 h-5 text-text" />
             </div>
             <div className="text-left">
-              <h3 className="text-white font-bold text-lg">{t('zenlink.listen_now')}</h3>
-              <p className="text-gray-400 text-sm">{t('zenlink.choose_platform')}</p>
+              <h3 className="text-text font-bold text-lg">{t('zenlink.listen_now')}</h3>
+              <p className="text-text/50 text-sm">{t('zenlink.choose_platform')}</p>
             </div>
           </div>
           <motion.div variants={CHEVRON_VARIANTS} animate={isOpen ? 'open' : 'closed'}>
-            <ChevronDown className="w-5 h-5 text-gray-400" />
+            <ChevronDown className="w-5 h-5 text-text/50" />
           </motion.div>
         </div>
       </motion.button>
@@ -116,15 +116,15 @@ const SmartMusicCard = ({ platforms }: { platforms: { name: string; url: string;
                   href={platform.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-4 hover:bg-white/10"
+                  className="flex items-center justify-between bg-text/5 backdrop-blur-sm border border-border/10 rounded-xl p-4 hover:bg-text/10"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${platform.color}20` }}>
                       <span style={{ color: platform.color }}>{platform.icon}</span>
                     </div>
-                    <span className="text-white font-medium">{platform.name}</span>
+                    <span className="text-text font-medium">{platform.name}</span>
                   </div>
-                  <ExternalLinkIcon className="w-4 h-4 text-gray-500" />
+                  <ExternalLinkIcon className="w-4 h-4 text-text/40" />
                 </motion.a>
               ))}
             </div>
@@ -197,7 +197,7 @@ const ZenLinkPageComponent = () => {
                   <img
                     src={`${artist.site.baseUrl}/images/zen-eyer-profile.jpg`}
                     alt={artist.identity.stageName}
-                    className="relative h-20 w-20 rounded-2xl border border-white/20 object-cover"
+                    className="relative h-20 w-20 rounded-2xl border border-border/20 object-cover"
                     loading="eager"
                     decoding="sync"
                     width="80"
@@ -207,7 +207,7 @@ const ZenLinkPageComponent = () => {
                 </div>
 
                 <div className="min-w-0">
-                  <h1 className="truncate text-2xl font-black tracking-tight text-white uppercase italic">
+                  <h1 className="truncate text-2xl font-black tracking-tight text-text uppercase italic">
                     {artist.identity.stageName}
                   </h1>
                   <p className="text-sm text-zinc-200/90">{artist.identity.fullName}</p>
@@ -215,7 +215,7 @@ const ZenLinkPageComponent = () => {
               </div>
 
               {artist.philosophy.slogan && (
-                <p className="mt-4 rounded-xl border border-white/5 bg-black/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
+                <p className="mt-4 rounded-xl border border-border/5 bg-background/40 px-3 py-2 text-sm italic text-zinc-300 leading-relaxed font-light">
                   &ldquo;{artist.philosophy.slogan}&rdquo;
                 </p>
               )}
@@ -229,7 +229,7 @@ const ZenLinkPageComponent = () => {
               className="mb-6 flex gap-2"
             >
               {microFacts.map((fact) => (
-                <div key={fact.label} className="flex items-center gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-zinc-300 backdrop-blur-md">
+                <div key={fact.label} className="flex items-center gap-2 rounded-xl border border-border/10 bg-background/20 px-3 py-2 text-xs text-zinc-300 backdrop-blur-md">
                   <span className="text-primary">{fact.icon}</span>
                   <span className="truncate">{fact.label}</span>
                 </div>
@@ -242,11 +242,11 @@ const ZenLinkPageComponent = () => {
             {MAIN_LINKS.map((link) => {
               const InnerContent = (
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/60 border border-white/5 text-primary">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-background/60 border border-border/5 text-primary">
                     {link.icon}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-base font-bold text-white tracking-tight">{link.title}</p>
+                    <p className="truncate text-base font-bold text-text tracking-tight">{link.title}</p>
                     <p className="truncate text-xs text-zinc-500 group-hover:text-zinc-400 transition-colors">{link.subtitle}</p>
                   </div>
                   <ArrowUpRight className="h-4 w-4 shrink-0 text-zinc-600 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary" />
@@ -255,7 +255,7 @@ const ZenLinkPageComponent = () => {
               
               const className = `group block rounded-2xl border p-4 transition-all duration-300 ${link.highlight
                   ? 'border-primary/40 bg-gradient-to-r from-primary/15 to-transparent hover:border-primary/60 shadow-lg shadow-primary/5'
-                  : 'border-white/5 bg-black/20 hover:bg-black/40 hover:border-white/20'
+                  : 'border-border/5 bg-background/20 hover:bg-background/40 hover:border-border/20'
                   }`;
 
               if (link.internal) {
@@ -299,7 +299,7 @@ const ZenLinkPageComponent = () => {
           >
             <a
               href={artist.site.baseUrl}
-              className="flex items-center justify-center gap-2 rounded-xl border border-white/5 bg-gray-900/50 px-4 py-3 text-xs text-zinc-400 hover:text-white transition-all"
+              className="flex items-center justify-center gap-2 rounded-xl border border-border/5 bg-background/50 px-4 py-3 text-xs text-zinc-400 hover:text-text transition-all"
             >
               <Sparkles className="h-4 w-4 text-amber-400" />
               Website Oficial: {artist.site.baseUrl.replace('https://', '')}
