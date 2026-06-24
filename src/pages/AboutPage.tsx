@@ -437,9 +437,7 @@ const AboutPage: React.FC = () => {
               viewport={VIEWPORT_ONCE}
               className="text-2xl sm:text-4xl md:text-5xl font-display font-bold text-center mb-16"
             >
-              <Trans i18nKey="about.timeline.title" ns="about">
-                Moments that <span className="text-primary">Changed Everything</span>
-              </Trans>
+              <Trans i18nKey="about.timeline.title" ns="about" components={{ 1: <span className="text-primary" /> }} />
             </motion.h2>
 
             <div className="space-y-12">
@@ -489,9 +487,7 @@ const AboutPage: React.FC = () => {
             >
               <Heart className="w-16 h-16 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-                <Trans i18nKey="about.philosophy.title" ns="about">
-                  My <span className="text-primary">Philosophy</span>
-                </Trans>
+                <Trans i18nKey="about.philosophy.title" ns="about" components={{ 1: <span className="text-primary" /> }} />
               </h2>
               <p className="text-lg text-text/80 leading-relaxed italic">
                 {t('about.philosophy.quote')}
@@ -513,9 +509,7 @@ const AboutPage: React.FC = () => {
             >
               <Sparkles className="w-12 h-12 mx-auto mb-6 text-primary" />
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6">
-                <Trans i18nKey="about.cta.title" ns="about">
-                  Let's <span className="text-primary">Talk?</span>
-                </Trans>
+                <Trans i18nKey="about.cta.title" ns="about" components={{ 1: <span className="text-primary" /> }} />
               </h2>
               <p className="text-base sm:text-xl text-text/80 mb-8 max-w-2xl mx-auto">
                 {t('about.cta.desc')}

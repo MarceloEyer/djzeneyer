@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Users, Shield, AlertTriangle, Ban, Mail } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
@@ -130,7 +130,7 @@ const CodeOfConductPage: React.FC = () => {
               <Heart size={40} className="text-primary" />
             </div>
             <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-text leading-tight">
-              Código de <span className="text-primary">Conduta</span>
+              <Trans i18nKey="conduct_page.title_rich" ns="conduct" components={{ 1: <span className="text-primary" /> }} />
             </h1>
             <p className="text-text/70">
               {t('conduct_page.last_updated')}: <span className="text-primary font-semibold">{lastUpdated}</span>

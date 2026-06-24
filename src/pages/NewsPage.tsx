@@ -315,7 +315,7 @@ const NewsPage: React.FC = () => {
                 <Trans i18nKey="news.title" components={{ 1: <span className="text-primary" /> }} />
               </h1>
             </div>
-            <div className="text-right text-text/50 text-sm hidden md:block">
+            <div className="text-right text-text/75 text-sm hidden md:block">
               <p>{t('news.curatorship')}</p>
               <p>{t('news.zouk_production')}</p>
               <p>{getDateTimeFormatter(i18n.language, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</p>
@@ -506,7 +506,7 @@ const NewsPage: React.FC = () => {
                 ))}
               </div>
               {!featuredPost && (
-                <div className="rounded-2xl border border-border/10 bg-text/5 px-6 py-12 text-center text-text/60">
+                <div className="rounded-2xl border border-border/10 bg-text/5 px-6 py-12 text-center text-text/75">
                   {t('news.no_posts_for_filter')}
                 </div>
               )}

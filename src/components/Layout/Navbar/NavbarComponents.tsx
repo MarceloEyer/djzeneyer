@@ -54,9 +54,9 @@ export const LanguageSelector: React.FC = React.memo(() => {
 
     return (
         <div className="flex items-center gap-2 border-r border-border/20 pr-4 mr-2">
-            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-text/60 hover:text-text'}`}>PT</button>
+            <button onClick={() => changeLanguage('pt')} className={`text-sm font-bold transition-colors ${currentLang === 'pt' ? 'text-primary' : 'text-text/75 hover:text-text'}`}>PT</button>
             <span className="text-text/20">|</span>
-            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-text/60 hover:text-text'}`}>EN</button>
+            <button onClick={() => changeLanguage('en')} className={`text-sm font-bold transition-colors ${currentLang === 'en' ? 'text-primary' : 'text-text/75 hover:text-text'}`}>EN</button>
         </div>
     );
 });

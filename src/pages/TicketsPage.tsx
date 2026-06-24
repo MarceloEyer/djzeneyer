@@ -85,8 +85,8 @@ const TicketsPage: React.FC = () => {
                     <div className="absolute bottom-4 left-4 right-4">
                       <h3 className="text-2xl font-bold font-display leading-tight mb-2">{ticket.name}</h3>
                       <div className="flex items-center gap-4 text-sm text-text/80">
-                        <span className="flex items-center gap-1"><Calendar size={14} /> TBD</span>
-                        <span className="flex items-center gap-1"><MapPin size={14} /> Online/TBD</span>
+                        <span className="flex items-center gap-1"><Calendar size={14} /> {t('tickets.tbd')}</span>
+                        <span className="flex items-center gap-1"><MapPin size={14} /> {t('tickets.location_online_tbd')}</span>
                       </div>
                     </div>
                   </Link>

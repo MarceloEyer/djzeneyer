@@ -613,6 +613,7 @@
     "page_title": "Shop",
     "page_meta_desc": "Event tickets, exclusive merchandise, and more",
     "title": "Zen Tribe Shop",
+    "hero_title_rich": "Zen <1>Store</1>",
     "subtitle": "Exclusive merchandise and event tickets",
     "all_products": "All Products",
     "featured_title": "Featured Products",
@@ -1274,6 +1275,10 @@
   },
   "share_event": "Share {{title}}",
   "event_default_title": "Zen Eyer Event",
+  "tickets": {
+    "tbd": "TBD",
+    "location_online_tbd": "Online/TBD"
+  },
   "countries": {
     "Brazil": "Brazil",
     "Netherlands": "Netherlands",
