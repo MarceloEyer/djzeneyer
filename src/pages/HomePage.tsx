@@ -14,7 +14,6 @@ import { ARTIST } from '../data/artistData';
 import { ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { useBranding } from '../contexts/BrandingContext';
-import { useCurrentTheme } from '../hooks/useCurrentTheme';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
 
@@ -105,14 +104,11 @@ const HomePage: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
   const { data: seoSettings } = useZenSeoSettings();
   const { artist } = useBranding();
-  const currentTheme = useCurrentTheme();
 
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = currentLang === 'pt' ? '/pt' : '/';
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
-  
-  const heroImagePrefix = currentTheme === 'zen-night' ? 'hero-background' : `hero-background-${currentTheme}`;
 
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
   const stats = useMemo(() => ([
@@ -215,30 +211,23 @@ const HomePage: React.FC = () => {
               <picture>
                 <source
                   media="(max-width: 768px)"
-                  srcSet={`/images/${heroImagePrefix}-mobile.webp`}
+                  srcSet="/images/hero-background-mobile.webp"
                   sizes="100vw"
                 />
                 <source
                   media="(min-width: 769px)"
-                  srcSet={`/images/${heroImagePrefix}-1440.webp 1440w, /images/${heroImagePrefix}.webp 1920w`}
+                  srcSet="/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
                   sizes="100vw"
               />
               <img
-                src={`/images/${heroImagePrefix}.webp`}
-                alt="Zen Eyer performing a live Brazilian Zouk set with immersive lighting at an international festival"
+                src="/images/hero-background.webp"
+                alt={t('og.image_alt.home')}
                 className="w-full h-full object-cover object-center opacity-65"
                 width="1920"
                 height="1080"
                 loading="eager"
                 fetchPriority="high"
                 decoding="async"
-                onError={(e) => {
-                  // Fallback to original image if theme image doesn't exist
-                  const target = e.target as HTMLImageElement;
-                  if (!target.src.includes('hero-background.webp')) {
-                    target.src = '/images/hero-background.webp';
-                  }
-                }}
               />
             </picture>
           </motion.div>

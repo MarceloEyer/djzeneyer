@@ -5,12 +5,17 @@ import { Mail, Lock, Loader2, AlertCircle, CheckCircle, ArrowLeft, Eye, EyeOff }
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/UserContext';
 import { HeadlessSEO } from '../components/HeadlessSEO';
+import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 const ResetPasswordPage: React.FC = () => {
     const { t, i18n } = useTranslation();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const { requestPasswordReset, resetPassword, loading, error, clearError } = useAuth();
+    const currentLang = normalizeLanguage(i18n.language);
+    const homeRoute = getLocalizedRoute('home', currentLang);
+    const [brandFirstName, ...brandRest] = t('artist_name').split(' ');
+    const brandLastName = brandRest.join(' ');
 
     // Query Params
     const key = searchParams.get('key');
@@ -61,8 +66,7 @@ const ResetPasswordPage: React.FC = () => {
             await resetPassword(key!, login!, password);
             setSuccess(true);
             // Redirecionar após alguns segundos respeitando o idioma
-            const homePath = i18n.language.startsWith('pt') ? '/pt/' : '/';
-            setTimeout(() => navigate(homePath), 5000);
+            setTimeout(() => navigate(homeRoute), 5000);
         } catch {
             // Erro já tratado pelo context
         }
@@ -86,9 +90,9 @@ const ResetPasswordPage: React.FC = () => {
             >
                 {/* Logo/Header */}
                 <div className="text-center mb-8">
-                    <Link to={i18n.language.startsWith('pt') ? '/pt/' : '/'} className="inline-block mb-6">
+                    <Link to={homeRoute} className="inline-block mb-6">
                         <h1 className="text-2xl font-black tracking-tighter text-text uppercase italic">
-                            Zen<span className="text-primary italic">Eyer</span>
+                            {brandFirstName}<span className="text-primary italic">{brandLastName}</span>
                         </h1>
                     </Link>
                     <h2 className="text-3xl font-black text-text mb-2 font-display tracking-tight">
@@ -120,7 +124,7 @@ const ResetPasswordPage: React.FC = () => {
                                         : t('auth.reset_password.success_request')}
                                 </p>
                                 <Link
-                                    to={i18n.language.startsWith('pt') ? '/pt/' : '/'}
+                                    to={homeRoute}
                                     className="inline-flex items-center gap-2 text-primary hover:text-text transition-colors font-bold"
                                 >
                                     <ArrowLeft size={18} />
@@ -221,7 +225,7 @@ const ResetPasswordPage: React.FC = () => {
                                 )}
 
                                 <div className="mt-8 text-center pt-6 border-t border-border/5">
-                                    <Link to={i18n.language.startsWith('pt') ? '/pt/' : '/'} className="text-text/40 hover:text-text transition-colors text-sm font-medium">
+                                    <Link to={homeRoute} className="text-text/40 hover:text-text transition-colors text-sm font-medium">
                                         {t('auth.reset_password.back_login')}
                                     </Link>
                                 </div>
