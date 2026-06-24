@@ -26,6 +26,7 @@ class Rest_Routes
     const NAMESPACE = 'zeneyer-auth/v1';
     private const MAILPOET_ZEN_TRIBE_LIST_TRANSIENT = 'zeneyer_mailpoet_zen_tribe_list_id';
     private const MAILPOET_ZEN_TRIBE_LIST_MISSING = -1;
+    private const MAILPOET_ZEN_TRIBE_LIST_MISSING_TTL = 300;
     private const MAILPOET_ZEN_TRIBE_LIST_TTL = 43200;
 
     public static function register_routes()
@@ -762,7 +763,7 @@ class Rest_Routes
             }
         }
 
-        set_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT, self::MAILPOET_ZEN_TRIBE_LIST_MISSING, self::MAILPOET_ZEN_TRIBE_LIST_TTL);
+        set_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT, self::MAILPOET_ZEN_TRIBE_LIST_MISSING, self::MAILPOET_ZEN_TRIBE_LIST_MISSING_TTL);
         return null;
     }
 
@@ -832,12 +833,13 @@ class Rest_Routes
                             'last_name' => $user->last_name ?: '',
                         ], [$zen_list_id]);
                     } catch (\Exception $e) {
-                        $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+                        $refreshed_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
 
-                        if (!$zen_list_id) {
+                        if (!$refreshed_list_id || $refreshed_list_id === $zen_list_id) {
                             throw $e;
                         }
 
+                        $zen_list_id = $refreshed_list_id;
                         $subscriber = $mailpoet_api->addSubscriber([
                             'email' => $user->user_email,
                             'first_name' => $user->first_name ?: $user->display_name,
@@ -849,12 +851,13 @@ class Rest_Routes
                     try {
                         $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
                     } catch (\Exception $e) {
-                        $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+                        $refreshed_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
 
-                        if (!$zen_list_id) {
+                        if (!$refreshed_list_id || $refreshed_list_id === $zen_list_id) {
                             throw $e;
                         }
 
+                        $zen_list_id = $refreshed_list_id;
                         $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
                     }
                 }
@@ -865,12 +868,13 @@ class Rest_Routes
                     try {
                         $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
                     } catch (\Exception $e) {
-                        $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+                        $refreshed_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
 
-                        if (!$zen_list_id) {
+                        if (!$refreshed_list_id || $refreshed_list_id === $zen_list_id) {
                             throw $e;
                         }
 
+                        $zen_list_id = $refreshed_list_id;
                         $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
                     }
                 }
@@ -954,6 +958,10 @@ class Rest_Routes
             }
 
             $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api);
+
+            if (!$zen_list_id) {
+                $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+            }
 
             if (!$zen_list_id) {
                 return rest_ensure_response([
