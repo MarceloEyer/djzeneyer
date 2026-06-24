@@ -19,7 +19,7 @@ interface BreadcrumbProps {
   className?: string;
 }
 
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' }) => {
+const BreadcrumbInner: React.FC<BreadcrumbProps> = ({ items, className = '' }) => {
   const { t, i18n } = useTranslation();
   const currentLang = normalizeLanguage(i18n.language);
 
@@ -62,3 +62,8 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, className = '' })
     </motion.nav>
   );
 };
+
+// ⚡ Bolt: Wrapped Breadcrumb with React.memo to prevent unnecessary re-renders.
+// This component is frequently used via PageHeader and its props (items) rarely change
+// within the same page view, preventing O(N) recalculations on layout renders.
+export const Breadcrumb = React.memo(BreadcrumbInner);
