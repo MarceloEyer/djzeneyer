@@ -24,6 +24,10 @@ class Rest_Routes
 {
 
     const NAMESPACE = 'zeneyer-auth/v1';
+    private const MAILPOET_ZEN_TRIBE_LIST_TRANSIENT = 'zeneyer_mailpoet_zen_tribe_list_id';
+    private const MAILPOET_ZEN_TRIBE_LIST_MISSING = -1;
+    private const MAILPOET_ZEN_TRIBE_LIST_MISSING_TTL = 300;
+    private const MAILPOET_ZEN_TRIBE_LIST_TTL = 43200;
 
     public static function register_routes()
     {
@@ -732,6 +736,38 @@ class Rest_Routes
     }
 
     /**
+     * Resolve the MailPoet list used for Zen Tribe newsletter subscriptions.
+     *
+     * MailPoet list names can be changed in wp-admin, so the cache is short-lived
+     * and refreshed through one helper instead of duplicating getLists() searches.
+     */
+    private static function get_zen_tribe_mailpoet_list_id($mailpoet_api, $force_refresh = false)
+    {
+        $cached_id = $force_refresh ? false : get_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT);
+
+        if ((int) $cached_id === self::MAILPOET_ZEN_TRIBE_LIST_MISSING) {
+            return null;
+        }
+
+        if (false !== $cached_id && (int) $cached_id > 0) {
+            return (int) $cached_id;
+        }
+
+        $lists = $mailpoet_api->getLists();
+
+        foreach ($lists as $list) {
+            if (isset($list['id'], $list['name']) && stripos((string) $list['name'], 'Zen Tribe') !== false) {
+                $list_id = (int) $list['id'];
+                set_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT, $list_id, self::MAILPOET_ZEN_TRIBE_LIST_TTL);
+                return $list_id;
+            }
+        }
+
+        set_transient(self::MAILPOET_ZEN_TRIBE_LIST_TRANSIENT, self::MAILPOET_ZEN_TRIBE_LIST_MISSING, self::MAILPOET_ZEN_TRIBE_LIST_MISSING_TTL);
+        return null;
+    }
+
+    /**
      * Toggle newsletter subscription (MailPoet integration)
      */
     public static function toggle_newsletter($request)
@@ -773,16 +809,7 @@ class Rest_Routes
                 // Subscriber doesn't exist, will create if enabling
             }
 
-            // Find "Zen Tribe Newsletter" list
-            $lists = $mailpoet_api->getLists();
-            $zen_list_id = null;
-
-            foreach ($lists as $list) {
-                if (stripos($list['name'], 'Zen Tribe') !== false) {
-                    $zen_list_id = $list['id'];
-                    break;
-                }
-            }
+            $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api);
 
             if (!$zen_list_id) {
                 // Fallback to user meta if list not found
@@ -799,20 +826,57 @@ class Rest_Routes
             if ($enabled) {
                 if (!$subscriber) {
                     // Create new subscriber and add to list
-                    $subscriber = $mailpoet_api->addSubscriber([
-                        'email' => $user->user_email,
-                        'first_name' => $user->first_name ?: $user->display_name,
-                        'last_name' => $user->last_name ?: '',
-                    ], [$zen_list_id]);
+                    try {
+                        $subscriber = $mailpoet_api->addSubscriber([
+                            'email' => $user->user_email,
+                            'first_name' => $user->first_name ?: $user->display_name,
+                            'last_name' => $user->last_name ?: '',
+                        ], [$zen_list_id]);
+                    } catch (\Exception $e) {
+                        $refreshed_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+
+                        if (!$refreshed_list_id || $refreshed_list_id === $zen_list_id) {
+                            throw $e;
+                        }
+
+                        $zen_list_id = $refreshed_list_id;
+                        $subscriber = $mailpoet_api->addSubscriber([
+                            'email' => $user->user_email,
+                            'first_name' => $user->first_name ?: $user->display_name,
+                            'last_name' => $user->last_name ?: '',
+                        ], [$zen_list_id]);
+                    }
                 } else {
                     // Add existing subscriber to list
-                    $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
+                    try {
+                        $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
+                    } catch (\Exception $e) {
+                        $refreshed_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+
+                        if (!$refreshed_list_id || $refreshed_list_id === $zen_list_id) {
+                            throw $e;
+                        }
+
+                        $zen_list_id = $refreshed_list_id;
+                        $mailpoet_api->subscribeToList($subscriber['id'], $zen_list_id);
+                    }
                 }
                 $message = 'Successfully subscribed to newsletter';
             } else {
                 if ($subscriber) {
                     // Remove from list
-                    $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
+                    try {
+                        $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
+                    } catch (\Exception $e) {
+                        $refreshed_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
+
+                        if (!$refreshed_list_id || $refreshed_list_id === $zen_list_id) {
+                            throw $e;
+                        }
+
+                        $zen_list_id = $refreshed_list_id;
+                        $mailpoet_api->unsubscribeFromList($subscriber['id'], $zen_list_id);
+                    }
                 }
                 $message = 'Successfully unsubscribed from newsletter';
             }
@@ -893,15 +957,10 @@ class Rest_Routes
                 ]);
             }
 
-            // Find Zen Tribe list
-            $lists = $mailpoet_api->getLists();
-            $zen_list_id = null;
+            $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api);
 
-            foreach ($lists as $list) {
-                if (stripos($list['name'], 'Zen Tribe') !== false) {
-                    $zen_list_id = $list['id'];
-                    break;
-                }
+            if (!$zen_list_id) {
+                $zen_list_id = self::get_zen_tribe_mailpoet_list_id($mailpoet_api, true);
             }
 
             if (!$zen_list_id) {
