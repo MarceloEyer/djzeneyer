@@ -115,7 +115,7 @@ jobs:
             mkdir -p "${NEXT_DIST_PATH}"
 
       - name: 🚀 Deploy dist/
-        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
+        uses: burnett01/rsync-deployments@4d419d1dc46d4a8a2b6ceab2f951f0f93b2da8f5 # 9
         with:
           switches: -avzr --delete --checksum
           path: dist/
@@ -140,7 +140,7 @@ jobs:
             mv "${THEME_PATH}/dist-new" "${THEME_PATH}/dist"
 
       - name: 📄 Deploy public assets
-        uses: burnett01/rsync-deployments@66257cad6bfeb2171d3b6bfa6c9a22279dd9c3a1 # 8.0.5
+        uses: burnett01/rsync-deployments@4d419d1dc46d4a8a2b6ceab2f951f0f93b2da8f5 # 9
         with:
           switches: -avz --ignore-missing-args
           path: public/
