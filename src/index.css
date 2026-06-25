@@ -296,6 +296,9 @@
         0 0 60px rgba(var(--color-primary), 0.5);
     }
   }
+  .font-hero-display {
+    font-family: var(--font-hero-display);
+  }
   .no-select {
     user-select: none;
     -webkit-user-select: none;

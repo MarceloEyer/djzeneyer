@@ -27,6 +27,9 @@ interface StatCardProps {
   value: string;
   label: string;
   icon: React.ElementType;
+  iconClass?: string;
+  cardClass?: string;
+  valueClass?: string;
 }
 
 interface FeatureCardProps {
@@ -97,10 +100,10 @@ const HOME_HERO_IMAGES: Record<SiteTheme, {
 // 3. SUB-COMPONENTES MEMOIZADOS
 // ============================================================================
 
-const StatCard = React.memo(({ value, label, icon: Icon }: StatCardProps) => (
-  <motion.div className="text-center p-4" variants={ITEM_VARIANTS} whileHover={STAT_CARD_HOVER}>
-    <Icon className="w-6 h-6 mx-auto mb-2 text-primary" aria-hidden="true" />
-    <div className="text-3xl md:text-4xl font-bold text-text font-display">{value}</div>
+const StatCard = React.memo(({ value, label, icon: Icon, iconClass = 'text-primary', cardClass = '', valueClass = 'font-display' }: StatCardProps) => (
+  <motion.div className={`text-center p-4 ${cardClass}`} variants={ITEM_VARIANTS} whileHover={STAT_CARD_HOVER}>
+    <Icon className={`w-6 h-6 mx-auto mb-2 ${iconClass}`} aria-hidden="true" />
+    <div className={`text-3xl md:text-4xl font-bold text-text ${valueClass}`}>{value}</div>
     <div className="text-sm text-text/70 uppercase tracking-wider">{label}</div>
   </motion.div>
 ));
@@ -136,6 +139,10 @@ const HomePage: React.FC = () => {
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
   const heroImages = HOME_HERO_IMAGES[currentTheme];
+  const translatedHeroTitle = t('home.hero_title');
+  const heroTitle = translatedHeroTitle === 'home.hero_title' ? ARTIST.identity.shortName : translatedHeroTitle;
+  const [heroTitleLead, ...heroTitleRestParts] = heroTitle.split(' ');
+  const heroTitleRest = heroTitleRestParts.join(' ');
 
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
   const stats = useMemo(() => ([
@@ -264,29 +271,52 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10 w-full">
           <div className="max-w-4xl mx-auto md:ml-0 md:mr-auto">
             {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
-              <span className="text-text">Zen</span> <span className="text-primary">Eyer</span>
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-3 font-hero-display">
+              <span className="text-text">{heroTitleLead}</span>{' '}
+              <span className="text-primary">{heroTitleRest}</span>
             </h1>
 
-          <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
-            <motion.div variants={ITEM_VARIANTS} className="mb-6">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full text-primary text-sm font-bold tracking-widest uppercase">
-                <Trophy size={16} />
-                <span className="font-semibold">{t('home.hero_badge')}</span>
+            {currentTheme === 'mediterranean-dusk' && (
+              <div className="flex items-center gap-3 mb-6 max-w-[260px]" aria-hidden="true">
+                <div className="h-px bg-secondary/60 flex-1" />
+                <span className="text-secondary/80 text-base leading-none select-none">✦</span>
+                <div className="h-px bg-secondary/60 flex-1" />
               </div>
-            </motion.div>
+            )}
 
-            <motion.p id="artist-voice-bio" variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-text mb-2 font-light" data-speakable>
+          <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
+            <motion.p id="artist-voice-bio" variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-text mb-1 font-light" data-speakable>
               {t('home.hero_subtitle')}
               <span id="pronunciation-faq-summary" className="sr-only">{t('home.pronunciation_summary')}</span>
             </motion.p>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-8">
-              "{t('home.hero_slogan')}"
+            <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-5">
+              &ldquo;{t('home.hero_slogan')}&rdquo;
             </motion.p>
 
+            <motion.div variants={ITEM_VARIANTS} className="mb-8">
+              <div className={`inline-flex items-center gap-2 rounded-full text-sm font-medium ${
+                currentTheme === 'mediterranean-dusk'
+                  ? 'px-3 py-1.5 bg-surface/80 border border-border/20 text-text/80 backdrop-blur-sm shadow-sm'
+                  : 'px-4 py-2 bg-primary/10 border border-primary/20 text-primary font-bold tracking-widest uppercase'
+              }`}>
+                <Trophy size={16} />
+                <span>{t('home.hero_badge')}</span>
+              </div>
+            </motion.div>
+
             <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto md:mx-0 mb-10">
-              {stats.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as unknown as Parameters<typeof t>[0])} icon={stat.icon} />)}
+              {stats.map(stat => (
+                <StatCard
+                  key={stat.labelKey}
+                  value={stat.value}
+                  label={t(stat.labelKey as unknown as Parameters<typeof t>[0])}
+                  icon={stat.icon}
+                  iconClass={currentTheme === 'mediterranean-dusk' ? 'text-secondary' : 'text-primary'}
+                  cardClass={currentTheme === 'mediterranean-dusk' ? 'bg-surface/60 border border-border/20 rounded-xl backdrop-blur-sm' : ''}
+                  valueClass={currentTheme === 'mediterranean-dusk' ? '' : 'font-display'}
+                />
+              ))}
             </motion.div>
 
             <motion.div variants={ITEM_VARIANTS} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center md:justify-start mb-6">
