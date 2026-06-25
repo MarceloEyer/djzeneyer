@@ -16,6 +16,8 @@ import { useZenSeoSettings } from '../hooks/useQueries';
 import { useBranding } from '../contexts/BrandingContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { safeUrl, sanitizeHtml } from '../utils/sanitize';
+import { useCurrentTheme } from '../hooks/useCurrentTheme';
+import type { SiteTheme } from '../utils/theme';
 
 // ============================================================================
 // 1. INTERFACES (Type Safety)
@@ -68,6 +70,29 @@ const LazyEventsList = React.lazy(() =>
   import('../components/EventsList').then((module) => ({ default: module.EventsList }))
 );
 
+const HOME_HERO_IMAGES: Record<SiteTheme, {
+  defaultSrc: string;
+  mobileSrc: string;
+  desktopSrcSet: string;
+  preloadDesktop: string;
+  imageClassName: string;
+}> = {
+  'mediterranean-dusk': {
+    defaultSrc: '/images/hero-background-mediterranean.webp',
+    mobileSrc: '/images/hero-background-mediterranean-mobile.webp',
+    desktopSrcSet: '/images/hero-background-mediterranean-1440.webp 1440w, /images/hero-background-mediterranean.webp 1920w',
+    preloadDesktop: '/images/hero-background-mediterranean-1440.webp',
+    imageClassName: 'opacity-90',
+  },
+  'zen-night': {
+    defaultSrc: '/images/hero-background.webp',
+    mobileSrc: '/images/hero-background-mobile.webp',
+    desktopSrcSet: '/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w',
+    preloadDesktop: '/images/hero-background-1440.webp',
+    imageClassName: 'opacity-65',
+  },
+};
+
 // ============================================================================
 // 3. SUB-COMPONENTES MEMOIZADOS
 // ============================================================================
@@ -104,11 +129,13 @@ const HomePage: React.FC = () => {
   const shouldReduceMotion = useReducedMotion();
   const { data: seoSettings } = useZenSeoSettings();
   const { artist } = useBranding();
+  const currentTheme = useCurrentTheme();
 
   const currentLang = normalizeLanguage(i18n.language);
   const currentPath = currentLang === 'pt' ? '/pt' : '/';
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
+  const heroImages = HOME_HERO_IMAGES[currentTheme];
 
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
   const stats = useMemo(() => ([
@@ -188,16 +215,16 @@ const HomePage: React.FC = () => {
         leadAnswer={t('home.seo.lead_answer')}
         preload={[
           {
-            href: '/images/hero-background-mobile.webp',
+            href: heroImages.mobileSrc,
             as: 'image',
             media: '(max-width: 768px)',
             fetchPriority: 'high',
           },
           {
-            href: '/images/hero-background-1440.webp',
+            href: heroImages.preloadDesktop,
             as: 'image',
             media: '(min-width: 769px)',
-            imageSrcSet: '/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w',
+            imageSrcSet: heroImages.desktopSrcSet,
             imageSizes: '100vw',
             fetchPriority: 'high',
           },
@@ -211,18 +238,18 @@ const HomePage: React.FC = () => {
               <picture>
                 <source
                   media="(max-width: 768px)"
-                  srcSet="/images/hero-background-mobile.webp"
+                  srcSet={heroImages.mobileSrc}
                   sizes="100vw"
                 />
                 <source
                   media="(min-width: 769px)"
-                  srcSet="/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
+                  srcSet={heroImages.desktopSrcSet}
                   sizes="100vw"
               />
               <img
-                src="/images/hero-background.webp"
+                src={heroImages.defaultSrc}
                 alt={t('og.image_alt.home')}
-                className="w-full h-full object-cover object-center opacity-65"
+                className={`w-full h-full object-cover object-center ${heroImages.imageClassName}`}
                 width="1920"
                 height="1080"
                 loading="eager"
