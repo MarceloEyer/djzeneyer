@@ -118,7 +118,7 @@ function djz_spa_send_success_headers(): void
     header_remove('Expires');
     header_remove('Pragma');
     header_remove('Cache-Control');
-    header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
+    header('Cache-Control: public, max-age=60, s-maxage=3600, stale-while-revalidate=86400');
 }
 
 function djz_spa_request_path(): string

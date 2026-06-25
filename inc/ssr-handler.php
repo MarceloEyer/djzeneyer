@@ -84,6 +84,8 @@ function djz_serve_ssr()
 
         // Headers SEO-friendly
         header('Content-Type: text/html; charset=UTF-8');
+        header('Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=3600');
+        header('Vary: Accept-Encoding');
         header('X-Prerendered: true');
         header('X-Prerender-File: ' . $display_filename);
 

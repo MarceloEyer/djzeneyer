@@ -158,7 +158,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
                         <span className="truncate">{loc.venue || loc.city}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock size={14} className="flex-shrink-0 text-text/40" />
+                        <Clock size={14} className="flex-shrink-0 text-text/60" />
                         <span className="truncate">{event.locationString} • {event.time}</span>
                       </div>
                     </div>
@@ -224,7 +224,7 @@ function EventsListInner({ limit = 10, showTitle = true, variant = 'full' }: Eve
 
                     <div className="flex items-center gap-3">
                       <div className="h-8 w-8 rounded-full bg-text/5 flex items-center justify-center flex-shrink-0">
-                        <Clock size={14} className="text-text/40" />
+                        <Clock size={14} className="text-text/60" />
                       </div>
                       <div className="text-xs uppercase tracking-wider font-medium text-text/80">
                         {event.time}

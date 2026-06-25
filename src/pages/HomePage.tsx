@@ -29,6 +29,7 @@ interface StatCardProps {
   icon: React.ElementType;
   iconClass?: string;
   cardClass?: string;
+  valueClass?: string;
 }
 
 interface FeatureCardProps {
@@ -99,10 +100,10 @@ const HOME_HERO_IMAGES: Record<SiteTheme, {
 // 3. SUB-COMPONENTES MEMOIZADOS
 // ============================================================================
 
-const StatCard = React.memo(({ value, label, icon: Icon, iconClass = 'text-primary', cardClass = '' }: StatCardProps) => (
+const StatCard = React.memo(({ value, label, icon: Icon, iconClass = 'text-primary', cardClass = '', valueClass = 'font-display' }: StatCardProps) => (
   <motion.div className={`text-center p-4 ${cardClass}`} variants={ITEM_VARIANTS} whileHover={STAT_CARD_HOVER}>
     <Icon className={`w-6 h-6 mx-auto mb-2 ${iconClass}`} aria-hidden="true" />
-    <div className="text-3xl md:text-4xl font-bold text-text font-display">{value}</div>
+    <div className={`text-3xl md:text-4xl font-bold text-text ${valueClass}`}>{value}</div>
     <div className="text-sm text-text/70 uppercase tracking-wider">{label}</div>
   </motion.div>
 ));
@@ -308,6 +309,7 @@ const HomePage: React.FC = () => {
                   icon={stat.icon}
                   iconClass={currentTheme === 'mediterranean-dusk' ? 'text-secondary' : 'text-primary'}
                   cardClass={currentTheme === 'mediterranean-dusk' ? 'bg-surface/60 border border-border/20 rounded-xl backdrop-blur-sm' : ''}
+                  valueClass={currentTheme === 'mediterranean-dusk' ? '' : 'font-display'}
                 />
               ))}
             </motion.div>

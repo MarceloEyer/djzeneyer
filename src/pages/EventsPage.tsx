@@ -188,7 +188,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
 
               <button
                 onClick={share}
-                className="btn btn-outline border-border/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-text/5 transition-all text-text/50 hover:text-text font-bold uppercase tracking-widest text-xs"
+                className="btn btn-outline border-border/10 w-full py-4 rounded-2xl flex items-center justify-center gap-2 hover:bg-text/5 transition-all text-text/70 hover:text-text font-bold uppercase tracking-widest text-xs"
                 aria-label={t('share_event', { title: cleanEventTitle || t('event_default_title') })}
               >
                 <Share2 size={18} /> {t('share')}
@@ -250,7 +250,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
   if (events.length === 0) {
     return (
       <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5 animate-in fade-in duration-500">
-        <p className="text-text/40">{t('events_no_results')}</p>
+        <p className="text-text/70">{t('events_no_results')}</p>
       </div>
     );
   }
@@ -270,7 +270,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
         <div className="flex flex-wrap justify-center gap-2 mb-12">
           <button
             onClick={() => setSelectedRegion('all')}
-            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
+            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/70 border-border/10 hover:border-border/20'}`}
           >
             {t('common.all')}
           </button>
@@ -278,7 +278,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/40 border-border/10 hover:border-border/20'}`}
+              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/70 border-border/10 hover:border-border/20'}`}
             >
               {region}
             </button>
@@ -288,7 +288,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
       {filteredEvents.length === 0 ? (
         <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5">
-          <p className="text-text/40">{t('events_no_results_filter')}</p>
+          <p className="text-text/70">{t('events_no_results_filter')}</p>
         </div>
       ) : (
         groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
