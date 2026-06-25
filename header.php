@@ -22,7 +22,7 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
     
     <link rel="preload" as="image"
-      imagesrcset="/images/hero-background-mobile.webp 768w, /images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w"
+      imagesrcset="/images/hero-background-mediterranean-mobile.webp 900w, /images/hero-background-mediterranean-1440.webp 1440w, /images/hero-background-mediterranean.webp 1920w"
       imagesizes="100vw"
       fetchpriority="high">
     <!-- Preconnect para Google Fonts — carregamento async gerenciado pelo LiteSpeed Cache (optm-ggfonts_async) -->
@@ -35,10 +35,10 @@
         html { margin-top: 0 !important; }
         
         body {
-            background-color: #0A0E27;
+            background-color: #F1E7D6;
             margin: 0; padding: 0;
             font-family: 'Inter', sans-serif;
-            color: white;
+            color: #16110E;
             overflow-x: hidden;
         }
 
