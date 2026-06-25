@@ -139,7 +139,9 @@ const HomePage: React.FC = () => {
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
   const heroImages = HOME_HERO_IMAGES[currentTheme];
-  const [heroTitleLead, ...heroTitleRestParts] = t('home.hero_title').split(' ');
+  const translatedHeroTitle = t('home.hero_title');
+  const heroTitle = translatedHeroTitle === 'home.hero_title' ? ARTIST.identity.shortName : translatedHeroTitle;
+  const [heroTitleLead, ...heroTitleRestParts] = heroTitle.split(' ');
   const heroTitleRest = heroTitleRestParts.join(' ');
 
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
