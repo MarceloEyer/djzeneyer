@@ -1080,22 +1080,24 @@
     },
     "seo": {
       "title": "Apoie Zen Eyer | Informações de Pagamento",
-      "description": "Informações oficiais de pagamento para apoiar Zen Eyer ou pagar valores relacionados a booking em BRL, USD, Wise e PayPal.",
+      "description": "Informações oficiais de pagamento para apoiar Zen Eyer ou pagar valores relacionados a booking em EUR, BRL, USD, Wise e PayPal.",
       "keywords": "apoiar artista, contratar dj, métodos de pagamento, pagamentos internacionais, brazilian zouk dj"
     },
     "header": {
       "title": "Apoie o DJ <1>Zen Eyer</1>",
       "description_p1": "Se você é do tipo de pessoa que acredita que dançar pode ser mais do que passos, se você quer mais conexão, música humana e presença de verdade, apoiar o meu trabalho custa menos que uma garrafinha de água em uma festa de zouk.",
-      "description_p2": "Para você é quase nada. Para mim, faz uma grande diferença no fim do mês.",
+      "description_p2": "Para você é quase nada. Para mim, faz toda a diferença.",
       "description_p3": "Considere colaborar e ajudar esse projeto a continuar existindo, com novas músicas, sets e experiências feitas para quem não quer ficar só na superfície."
     },
     "payment": {
       "title": "Métodos de Pagamento",
       "by_currency": "Escolha sua Moeda",
+      "eur_title": "Euro (EUR)",
       "brl_title": "Real (BRL/PIX)",
       "usd_title": "Dólar (USD)",
       "global_title": "Global (Wise/PayPal)",
-      "global_note": "Use Wise para EUR, AUD, PayID e outras moedas quando o pagador preferir dados locais, link ou QR code. Para USD, o Inter continua sendo o caminho preferencial.",
+      "eur_note": "Use estes dados para receber pagamentos em euro pela Wise, especialmente da zona SEPA e de países que trabalham melhor com IBAN.",
+      "global_note": "Use Wise, PayID ou PayPal para AUD e outras moedas quando o pagador preferir dados locais, link ou QR code. Para EUR, BRL e USD, use as opções específicas acima.",
       "wise_title": "Wise",
       "wise_eur_title": "Wise EUR",
       "wise_aud_payid_title": "Wise AUD / PayID",
