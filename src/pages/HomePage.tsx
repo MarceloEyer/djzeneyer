@@ -139,6 +139,8 @@ const HomePage: React.FC = () => {
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
   const heroImages = HOME_HERO_IMAGES[currentTheme];
+  const [heroTitleLead, ...heroTitleRestParts] = t('home.hero_title').split(' ');
+  const heroTitleRest = heroTitleRestParts.join(' ');
 
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
   const stats = useMemo(() => ([
@@ -267,8 +269,9 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10 w-full">
           <div className="max-w-4xl mx-auto md:ml-0 md:mr-auto">
             {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
-            <h1 className={`text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-3 ${currentTheme === 'mediterranean-dusk' ? 'font-hero-display' : 'font-display'}`}>
-              <span className="text-text">Zen</span> <span className="text-primary">Eyer</span>
+            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-3 font-hero-display">
+              <span className="text-text">{heroTitleLead}</span>{' '}
+              <span className="text-primary">{heroTitleRest}</span>
             </h1>
 
             {currentTheme === 'mediterranean-dusk' && (
@@ -286,7 +289,7 @@ const HomePage: React.FC = () => {
             </motion.p>
 
             <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-5">
-              "{t('home.hero_slogan')}"
+              &ldquo;{t('home.hero_slogan')}&rdquo;
             </motion.p>
 
             <motion.div variants={ITEM_VARIANTS} className="mb-8">
