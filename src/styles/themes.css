@@ -58,6 +58,7 @@
     repeating-linear-gradient(90deg, rgba(92, 76, 61, 0.026) 0 1px, transparent 1px 9px),
     repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.24) 0 1px, transparent 1px 12px);
   --theme-color-scheme: light;
+  --font-hero-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
 }
 
 :root[data-theme='zen-night'] {
@@ -130,4 +131,5 @@
 
   --theme-page-background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
   --theme-color-scheme: dark;
+  --font-hero-display: 'Orbitron', sans-serif;
 }
