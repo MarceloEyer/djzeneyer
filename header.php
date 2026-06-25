@@ -70,9 +70,9 @@
         }
 
         .ssr-links a {
-            color: rgba(255,255,255,0.8);
+            color: #16110E;
             text-decoration: none;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(92,76,61,0.28);
             padding: 10px 20px;
             border-radius: 30px;
             transition: all 0.2s;
