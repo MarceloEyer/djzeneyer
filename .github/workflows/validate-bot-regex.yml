@@ -8,6 +8,7 @@ on:
     paths:
       - 'inc/ssr-handler.php'
       - 'verification/generate_regex.php'
+      - 'verification/validate_regex.php'
 
 jobs:
   validate:
@@ -19,10 +20,4 @@ jobs:
         with:
           php-version: '8.2'
       - name: Compare Regex
-        run: |
-          GENERATED=$(php verification/generate_regex.php)
-          STATIC=$(grep -oP "\$pattern = '\K[^']+" inc/ssr-handler.php)
-          if [ "$GENERATED" != "$STATIC" ]; then
-            echo "Error: Static regex in inc/ssr-handler.php does not match generator output!"
-            exit 1
-          fi
+        run: php verification/validate_regex.php
