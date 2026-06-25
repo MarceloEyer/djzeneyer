@@ -139,7 +139,7 @@ const EventDetailContent = ({ id, lang }: { id: string; lang: string }) => {
       <div className="grid lg:grid-cols-12 gap-12 items-start">
         {/* Event Poster/Image */}
         <div className="lg:col-span-5 relative group">
-          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-600/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-[2.5rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
           <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden border border-border/10 shadow-2xl">
             <img 
               src={event.image || '/images/default-event-poster.png'} 

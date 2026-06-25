@@ -3,7 +3,7 @@
 @config "../tailwind.config.js";
 
 @font-face {
-  font-family: 'Orbitron';
+  font-family: Orbitron;
   font-style: normal;
   font-weight: 700;
   font-display: swap;
@@ -40,7 +40,7 @@
   h4,
   h5,
   h6 {
-    font-family: 'Segoe UI', ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-hero-display);
     @apply font-bold;
   }
   body {
@@ -313,6 +313,9 @@
     }
   }
   .font-hero-display {
+    font-family: var(--font-hero-display);
+  }
+  .font-display {
     font-family: var(--font-hero-display);
   }
   .no-select {

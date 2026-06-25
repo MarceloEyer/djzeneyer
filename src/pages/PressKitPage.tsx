@@ -129,25 +129,25 @@ const PressKitPage: React.FC = () => {
         number: artist.stats.countriesPlayed.toString(),
         label: t('presskit.stats.countries'),
         icon: <Globe size={32} />,
-        color: 'bg-gradient-to-br from-blue-500/80 to-blue-700/80'
+        color: 'bg-gradient-to-br from-primary/80 to-primary/60'
       },
       {
         number: `${new Date().getFullYear() - artist.stats.startingYear}+`,
         label: t('presskit.stats.years'),
         icon: <Calendar size={32} />,
-        color: 'bg-gradient-to-br from-purple-500/80 to-purple-700/80'
+        color: 'bg-gradient-to-br from-secondary/80 to-secondary/60'
       },
       {
         number: '2',
         label: t('presskit.stats.titles'),
         icon: <Award size={32} />,
-        color: 'bg-gradient-to-br from-pink-500/80 to-pink-700/80'
+        color: 'bg-gradient-to-br from-accent/80 to-accent/60'
       },
       {
         number: 'Mensa',
         label: t('presskit.stats.mensa'),
         icon: <Star size={32} />,
-        color: 'bg-gradient-to-br from-green-500/80 to-green-700/80'
+        color: 'bg-gradient-to-br from-success/80 to-success/60'
       }
     ],
     [t, artist]
@@ -173,7 +173,7 @@ const PressKitPage: React.FC = () => {
       {
         title: t('presskit.bio.quickStats.global'),
         desc: t('presskit.bio.quickStats.global_desc'),
-        icon: <Globe size={20} className="text-purple-400" />
+        icon: <Globe size={20} className="text-secondary" />
       }
     ],
     [t]

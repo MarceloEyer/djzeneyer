@@ -226,7 +226,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
           )}
 
           <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs text-text/60">
-            <span className={isInStock ? 'text-green-400 font-bold' : 'text-error font-bold'}>
+            <span className={isInStock ? 'text-success font-bold' : 'text-error font-bold'}>
               {isInStock ? t('shop.in_stock') : t('shop.out_of_stock')}
             </span>
             <span className="border border-border/30 px-1.5 rounded-sm uppercase tracking-tighter">
@@ -495,7 +495,7 @@ const ShopPage: React.FC = () => {
     <div className="min-h-screen bg-background text-text relative overflow-x-clip">
       <div className="pointer-events-none absolute inset-0 opacity-70">
         <div className="absolute -top-40 left-[-15%] h-[460px] w-[460px] rounded-full bg-primary/15 blur-3xl" />
-        <div className="absolute top-[28%] right-[-12%] h-[420px] w-[420px] rounded-full bg-cyan-500/10 blur-3xl" />
+        <div className="absolute top-[28%] right-[-12%] h-[420px] w-[420px] rounded-full bg-primary/10 blur-3xl" />
       </div>
       <HeadlessSEO
         title={`${t('shop.page_title')} | ${t('common.artist_name')}`}

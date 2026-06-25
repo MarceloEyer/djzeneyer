@@ -383,6 +383,7 @@
     "hero_badge": "Best DJ Performance + Best Remix - 2022 Brazilian Zouk DJ World Championship",
     "hero_title": "Zen Eyer",
     "hero_subtitle": "Brazilian Zouk DJ & Music Producer",
+    "introduction_aria": "Zen Eyer introduction",
     "pronunciation_summary": " (Phonetic: /zɛn ˈaɪər/. Eyer sounds like Buyer without the B, or like 'Eye' followed by 'er').",
     "hero_slogan": "Haste is the enemy of creaminess",
     "hero_cta_text": "Full sets and remixes. For more streaming and download options, go to <0>Music</0>.",
@@ -404,7 +405,7 @@
     "booking_cta": "REQUEST QUOTE",
     "authority_title": "Verified Profiles",
     "tribe": {
-      "title": "Join the <1>Zen Tribe</1>",
+      "title": "Join the <0>Zen Tribe</0>",
       "subtitle": "No rush here. Just prolonged melting.",
       "desc": "Access exclusive content, behind-the-scenes, and be part of the official DJ Zen Eyer community.",
       "cta": "Join the Tribe"

@@ -52,12 +52,12 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
             >
               {/* Timeline Indicator */}
               <div className={`absolute left-4 top-1 h-4 w-4 rounded-full border-2 bg-background z-10 transition-colors group-hover:scale-110 shadow-neon-sm ${
-                log.points >= 0 ? 'border-primary' : 'border-red-500'
+                log.points >= 0 ? 'border-primary' : 'border-error'
               }`} />
               
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-text/5 border border-border/5 hover:border-border/10 hover:bg-text/10 transition-all hover:translate-x-1 shadow-sm">
                 <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
-                  log.points >= 0 ? 'bg-primary/10 text-primary' : 'bg-red-500/10 text-red-400'
+                  log.points >= 0 ? 'bg-primary/10 text-primary' : 'bg-error/10 text-error'
                 }`}>
                   {log.points >= 0 ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
                 </div>
@@ -70,7 +70,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = memo(({ logs, hideH
                 </div>
                 
                 <div className={`text-sm font-black font-display px-2 py-1 rounded-lg bg-background/40 ${
-                  log.points >= 0 ? 'text-primary' : 'text-red-400'
+                  log.points >= 0 ? 'text-primary' : 'text-error'
                 }`}>
                   {log.points >= 0 ? '+' : ''}{log.points}
                 </div>

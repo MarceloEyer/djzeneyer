@@ -123,7 +123,7 @@ const UserMenu: React.FC = () => {
           <div className="mt-2 pt-2 border-t border-border/5 px-2">
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-400/10 rounded-xl transition-colors text-left"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm text-error hover:bg-error/10 rounded-xl transition-colors text-left"
             >
               <LogOut size={18} />
               <span>{t('nav.logout')}</span>

@@ -224,7 +224,7 @@ const HomePage: React.FC = () => {
       />
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12 text-center md:text-left" aria-label="Introduction">
+      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12 text-center md:text-left" aria-label={t('home.introduction_aria')}>
         <div className="absolute inset-0 z-0 bg-background">
             <div className="w-full h-full">
               <picture>
@@ -405,7 +405,7 @@ const HomePage: React.FC = () => {
       {/* FEATURES GRID */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <ul role="list" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <ul className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {FEATURES_DATA.map(feature => (
               <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as unknown as Parameters<typeof t>[0])} description={t(feature.descKey as unknown as Parameters<typeof t>[0])} />
             ))}
@@ -443,12 +443,12 @@ const HomePage: React.FC = () => {
                 {t('home.press.cta')} →
               </Link>
             </div>
-            <div className="p-4 sm:p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="bookers-card-title">
+            <div className="p-4 sm:p-8 bg-surface border-l-4 border-success rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="bookers-card-title">
               <h3 id="bookers-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
-                <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
+                <Calendar size={20} className="text-success" /> {t('home.bookers.title')}
               </h3>
               <p className="text-text/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
-              <Link to={routes.booking} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
+              <Link to={routes.booking} className="inline-flex items-center gap-2 text-success hover:text-success/80 font-semibold transition-colors">
                 {t('home.bookers.cta')} →
               </Link>
             </div>
@@ -462,23 +462,21 @@ const HomePage: React.FC = () => {
           <div>
             <p className="text-xs font-semibold text-text/55 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
-              <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
-              <a href={safeUrl(ARTIST.social.spotify.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
+              <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">{t('social.musicbrainz')} <ExternalLink size={10} /></a>
+              <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">{t('social.wikidata')} <ExternalLink size={10} /></a>
+              <a href={safeUrl(ARTIST.social.spotify.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">{t('social.spotify')} <ExternalLink size={10} /></a>
             </div>
           </div>
         </div>
       </section>
 
       {/* FINAL CTA - ZEN TRIBE */}
-      <section className="py-24 relative overflow-hidden bg-background">
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
+      <section className="py-24 relative overflow-hidden bg-surface">
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-surface/50 to-surface opacity-60" />
 
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-6 font-display">
-            <Trans i18nKey="home.tribe.title">
-              Junte-se à <span className="text-primary">Zen Tribe</span>
-            </Trans>
+            <Trans i18nKey="home.tribe.title" components={[<span className="text-primary" />]} />
           </h2>
           <p className="text-xl text-text/70 mb-10 max-w-2xl mx-auto">
             {t('home.tribe.subtitle')}

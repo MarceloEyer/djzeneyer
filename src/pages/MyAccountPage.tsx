@@ -204,7 +204,7 @@ const MyAccountContent: React.FC = () => {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md">
-          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <AlertCircle className="w-16 h-16 text-error mx-auto mb-4" />
           <p className="text-xl font-semibold text-text/90 mb-2">{t('dashboard.error_loading')}</p>
           <p className="text-sm text-text/40 mb-6">{errorGP}</p>
           <button
@@ -462,7 +462,7 @@ const MyAccountContent: React.FC = () => {
 
               <button
                 onClick={handleLogout}
-                className="btn bg-text/5 hover:bg-red-500/20 hover:text-red-500 border border-border/5 hover:border-red-500/30 px-10 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-xs transition-all"
+                className="btn bg-text/5 hover:bg-error/20 hover:text-error border border-border/5 hover:border-error/30 px-10 py-5 rounded-2xl font-black uppercase tracking-[0.3em] text-xs transition-all"
               >
                 <LogOut size={18} className="mr-3" />
                 {t('nav.logout')}

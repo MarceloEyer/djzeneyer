@@ -123,8 +123,8 @@ const ResetPasswordPage: React.FC = () => {
                                 animate={{ opacity: 1, scale: 1 }}
                                 className="text-center py-6"
                             >
-                                <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/30">
-                                    <CheckCircle className="text-green-500" size={32} />
+                                <div className="w-16 h-16 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-success/30">
+                                    <CheckCircle className="text-success" size={32} />
                                 </div>
                                 <h3 className="text-xl font-bold text-text mb-3">{t('auth.reset_password.success_title')}</h3>
                                 <p className="text-text/60 mb-6 underline-offset-4 decoration-primary/50">
@@ -143,7 +143,7 @@ const ResetPasswordPage: React.FC = () => {
                         ) : (
                             <motion.div key="form" exit={{ opacity: 0, x: -20 }}>
                                 {(error || fieldError) && (
-                                    <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm flex items-start gap-3">
+                                    <div className="mb-6 p-3 bg-error/10 border border-error/20 rounded-lg text-error text-sm flex items-start gap-3">
                                         <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
                                         <span>{fieldError || error}</span>
                                     </div>

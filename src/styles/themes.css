@@ -19,8 +19,10 @@
   --color-accent-light: 216, 154, 126;
   /* #D89A7E - washed clay */
 
-  --color-success: 88, 123, 95;
-  --color-success-light: 149, 176, 142;
+  --color-success: 96, 118, 82;
+  /* #607652 - muted olive */
+  --color-success-light: 151, 166, 125;
+  /* #97A67D - sun-faded sage */
   --color-warning: 184, 130, 64;
   --color-warning-light: 224, 184, 118;
   --color-error: 176, 74, 70;
@@ -131,5 +133,5 @@
 
   --theme-page-background: linear-gradient(135deg, rgb(var(--color-background)), rgb(var(--color-surface)));
   --theme-color-scheme: dark;
-  --font-hero-display: 'Orbitron', sans-serif;
+  --font-hero-display: Orbitron, sans-serif;
 }
