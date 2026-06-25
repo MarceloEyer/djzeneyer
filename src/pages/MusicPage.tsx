@@ -244,18 +244,18 @@ const MusicPage: React.FC = () => {
               variants={CARD_VARIANTS(0.7)}
               initial={prefersReducedMotion ? false : 'hidden'}
               animate={prefersReducedMotion ? undefined : 'visible'}
-              className="bg-red-500/5 border border-red-500/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
+              className="bg-error/5 border border-error/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <Download size={160} />
               </div>
               <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
-                <Download className="text-red-500" /> {t('music.steal_button')}
+                <Download className="text-error" /> {t('music.steal_button')}
               </h3>
               <p className="text-text/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
               <button
                 onClick={() => handleTrackInteraction('download_hub', 0, 'https://download.djzeneyer.com')}
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-text font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-600/20"
+                className="inline-flex items-center gap-2 bg-error hover:bg-error/80 text-text font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-error/20"
               >
                 {t('music.steal_cta')} <ExternalLink size={16} />
               </button>

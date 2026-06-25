@@ -196,8 +196,8 @@ const CodeOfConductPage: React.FC = () => {
             className="mb-12"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center">
-                <Ban size={24} className="text-red-400" />
+              <div className="w-12 h-12 rounded-lg bg-error/20 flex items-center justify-center">
+                <Ban size={24} className="text-error" />
               </div>
               <h2 className="text-3xl font-display font-bold">{t('conduct_page.prohibited')}</h2>
             </div>
@@ -211,13 +211,13 @@ const CodeOfConductPage: React.FC = () => {
                   initial={FADE_UP_INITIAL}
                   animate={FADE_UP_ANIMATE}
                   transition={{ duration: 0.6, delay: 0.7 + index * 0.1 }}
-                  className="card p-6 border-l-4 border-red-500/50"
+                  className="card p-6 border-l-4 border-error/50"
                 >
-                  <h3 className="text-xl font-bold mb-4 text-red-400">{category.title}</h3>
+                  <h3 className="text-xl font-bold mb-4 text-error">{category.title}</h3>
                   <ul className="space-y-2">
                     {category.items.map((item, i) => (
                       <li key={i} className="flex items-start gap-3 text-text/70">
-                        <span className="text-red-400 mt-1">×</span>
+                        <span className="text-error mt-1">×</span>
                         <span>{item}</span>
                       </li>
                     ))}

@@ -226,7 +226,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                 <motion.div
                   initial={ERROR_INITIAL}
                   animate={ERROR_ANIMATE}
-                  className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-200 text-sm flex items-start gap-3"
+                  className="mb-6 p-3 bg-error/10 border border-error/20 rounded-lg text-error text-sm flex items-start gap-3"
                 >
                   <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
                   <span>{error}</span>
@@ -293,14 +293,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                           setUsername(e.target.value);
                           if (formErrors.username) setFormErrors({ ...formErrors, username: undefined });
                         }}
-                        className={`w-full bg-background/40 text-text border ${formErrors.username ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
+                        className={`w-full bg-background/40 text-text border ${formErrors.username ? 'border-error/50' : 'border-border/10 group-focus-within:border-primary/50'
                           } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                         placeholder={t('auth.placeholders.name')}
                         disabled={loading}
                         autoComplete="username"
                       />
                     </div>
-                    {formErrors.username && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.username}</p>}
+                    {formErrors.username && <p className="mt-1 text-xs text-error ml-1">{formErrors.username}</p>}
                   </div>
                 )}
 
@@ -317,14 +317,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setEmail(e.target.value);
                         if (formErrors.email) setFormErrors({ ...formErrors, email: undefined });
                       }}
-                      className={`w-full bg-background/40 text-text border ${formErrors.email ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
+                      className={`w-full bg-background/40 text-text border ${formErrors.email ? 'border-error/50' : 'border-border/10 group-focus-within:border-primary/50'
                         } rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                       placeholder={t('auth.placeholders.email')}
                       disabled={loading}
                       autoComplete="email"
                     />
                   </div>
-                  {formErrors.email && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.email}</p>}
+                  {formErrors.email && <p className="mt-1 text-xs text-error ml-1">{formErrors.email}</p>}
                 </div>
 
                 <div>
@@ -351,7 +351,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         setPassword(e.target.value);
                         if (formErrors.password) setFormErrors({ ...formErrors, password: undefined });
                       }}
-                      className={`w-full bg-background/40 text-text border ${formErrors.password ? 'border-red-500/50' : 'border-border/10 group-focus-within:border-primary/50'
+                      className={`w-full bg-background/40 text-text border ${formErrors.password ? 'border-error/50' : 'border-border/10 group-focus-within:border-primary/50'
                         } rounded-lg py-3 pl-10 pr-10 focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-text/30`}
                       placeholder={t('auth.placeholders.password')}
                       disabled={loading}
@@ -366,7 +366,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  {formErrors.password && <p className="mt-1 text-xs text-red-400 ml-1">{formErrors.password}</p>}
+                  {formErrors.password && <p className="mt-1 text-xs text-error ml-1">{formErrors.password}</p>}
                 </div>
 
                 {mode === 'register' && (

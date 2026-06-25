@@ -160,7 +160,7 @@ const Footer: React.FC = () => {
               </button>
             </form>
             {submitMessage && (
-              <p className={`mt-3 text-sm ${submitSuccess ? 'text-green-400' : 'text-red-400'}`}>
+              <p className={`mt-3 text-sm ${submitSuccess ? 'text-success' : 'text-error'}`}>
                 {submitMessage}
               </p>
             )}

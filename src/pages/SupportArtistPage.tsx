@@ -237,8 +237,8 @@ const SupportArtistPage: React.FC = () => {
               onToggle={() => handleToggle('GLOBAL')}
             >
               <div className="space-y-6">
-                <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
+                <div className="p-6 bg-success/5 rounded-2xl border border-success/20">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-success uppercase text-sm tracking-widest">
                     <Globe size={18} /> {t('support.payment.wise_eur_title')}
                   </h4>
                   <p className="mb-4 text-sm leading-relaxed text-text/65">
@@ -253,8 +253,8 @@ const SupportArtistPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="p-6 bg-green-500/5 rounded-2xl border border-green-500/20">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-green-400 uppercase text-sm tracking-widest">
+                <div className="p-6 bg-success/5 rounded-2xl border border-success/20">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-success uppercase text-sm tracking-widest">
                     <Globe size={18} /> {t('support.payment.wise_aud_payid_title')}
                   </h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
@@ -269,7 +269,7 @@ const SupportArtistPage: React.FC = () => {
                     href={ARTIST.payment.wise.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn border-green-500/50 hover:bg-green-500/10 w-full justify-center py-4 text-lg text-green-400 font-bold"
+                    className="btn border-success/50 hover:bg-success/10 w-full justify-center py-4 text-lg text-success font-bold"
                   >
                     {t('support.sendPaymentProvider', { provider: t('support.payment.wise_title') })}
                   </a>

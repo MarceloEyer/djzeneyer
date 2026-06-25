@@ -152,7 +152,7 @@ const DashboardContent = () => {
     return (
       <div className="pt-24 pb-16 min-h-screen flex items-center justify-center bg-background">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-md px-4">
-          <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+          <AlertCircle className="w-16 h-16 text-error mx-auto mb-4" />
           <h2 className="text-2xl font-black text-text mb-2 font-display">{t('dashboard.error_loading')}</h2>
           <p className="text-sm text-text/40 mb-8">{gamiError}</p>
           <button onClick={gamiRefresh} className="btn btn-primary btn-lg rounded-2xl w-full">
@@ -451,7 +451,7 @@ const DashboardContent = () => {
             </GlassCard>
 
             {/* REWARDS CARD */}
-            <GlassCard glowColor="secondary" className="bg-gradient-to-br from-indigo-900/40 to-surface/20">
+            <GlassCard glowColor="secondary" className="bg-gradient-to-br from-secondary/30 to-surface/20">
                <div className="flex items-center gap-4">
                   <div className="h-12 w-12 sm:h-14 sm:w-14 shrink-0 rounded-2xl bg-secondary/20 flex items-center justify-center border border-secondary/30 shadow-neon-sm">
                      <Gift size={26} className="text-secondary" />

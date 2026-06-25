@@ -68,10 +68,10 @@ export default defineConfig(({ command, mode }) => {
           chunkFileNames: 'assets/[name]-[hash].js',
           entryFileNames: 'assets/[name]-[hash].js',
           manualChunks(id) {
+            if (id.includes('framer-motion')) return;
             if (id.includes('node_modules')) {
               if (id.includes('react-dom') || id.includes('react-router')) return 'vendor-react';
               if (id.includes('react')) return 'vendor-react';
-              if (id.includes('framer-motion')) return 'vendor-motion';
               if (id.includes('i18next')) return 'vendor-i18n';
               if (id.includes('@tanstack')) return 'vendor-query';
               if (id.includes('lucide')) return 'vendor-icons';

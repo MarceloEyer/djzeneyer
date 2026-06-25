@@ -197,12 +197,12 @@ const PhilosophyPage: React.FC = () => {
               <motion.div
                 variants={CARD_ITEM_VARIANTS}
                 whileHover={CARD_HOVER}
-                className="group card p-6 sm:p-8 bg-surface/50 border border-border/10 hover:border-cyan-500/50 transition-colors duration-300 rounded-3xl"
+                className="group card p-6 sm:p-8 bg-surface/50 border border-border/10 hover:border-primary/50 transition-colors duration-300 rounded-3xl"
               >
-                <div className="w-12 h-12 rounded-2xl bg-cyan-500/15 flex items-center justify-center mb-6 group-hover:bg-cyan-500/25 transition-colors duration-300">
-                  <Sparkles className="w-6 h-6 text-cyan-500" />
+                <div className="w-12 h-12 rounded-2xl bg-primary/15 flex items-center justify-center mb-6 group-hover:bg-primary/25 transition-colors duration-300">
+                  <Sparkles className="w-6 h-6 text-primary" />
                 </div>
-                <div className="text-xs font-bold text-cyan-500/50 uppercase tracking-[0.3em] mb-2">03</div>
+                <div className="text-xs font-bold text-primary/50 uppercase tracking-[0.3em] mb-2">03</div>
                 <h2 className="text-xl font-black uppercase tracking-[0.15em] text-text mb-4">
                   {t('philosophy_page.flow')}
                 </h2>

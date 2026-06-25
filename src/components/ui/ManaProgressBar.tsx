@@ -75,8 +75,8 @@ const ManaProgressBar: React.FC<ManaProgressBarProps> = ({
 
           {clampedProgress > 0 && (
             <div className="absolute right-0 top-0 z-30 h-full w-[10px]">
-              <div className="h-full w-full bg-gradient-to-l from-white via-cyan-200 to-transparent blur-[1px]" />
-              <div className="absolute right-[-2px] top-1/2 h-6 w-4 -translate-y-1/2 animate-pulse rounded-full bg-cyan-300/40 blur-xl" />
+              <div className="h-full w-full bg-gradient-to-l from-white via-primary-light to-transparent blur-[1px]" />
+              <div className="absolute right-[-2px] top-1/2 h-6 w-4 -translate-y-1/2 animate-pulse rounded-full bg-primary-light/40 blur-xl" />
             </div>
           )}
 

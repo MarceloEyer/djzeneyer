@@ -60,6 +60,9 @@ jobs:
       - name: UTF-8 content check
         run: npm run utf8:check
 
+      - name: Workflow name contract check
+        run: npm run workflow-names:check
+
       - name: SEO invariant check
         run: npm run seo:check
 
