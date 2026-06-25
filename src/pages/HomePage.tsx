@@ -3,7 +3,6 @@
 
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, Variants, useReducedMotion } from 'framer-motion';
 import { Trans, useTranslation } from 'react-i18next';
 import {
   PlayCircle, Calendar, Users, Music, Award, Trophy,
@@ -36,7 +35,6 @@ interface FeatureCardProps {
   icon: React.ElementType;
   title: string;
   description: string;
-  variants: Variants;
 }
 
 interface FestivalBadgeProps {
@@ -56,18 +54,6 @@ const FEATURES_DATA = [
 ] as const;
 
 const STATS_BASE = [{ value: '2×', labelKey: 'home.stat_champion', icon: Trophy }] as const;
-
-const CONTAINER_VARIANTS: Variants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.1 } }
-};
-
-const ITEM_VARIANTS: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } }
-};
-
-const STAT_CARD_HOVER = { scale: 1.05 };
 
 const LazyEventsList = React.lazy(() =>
   import('../components/EventsList').then((module) => ({ default: module.EventsList }))
@@ -101,19 +87,19 @@ const HOME_HERO_IMAGES: Record<SiteTheme, {
 // ============================================================================
 
 const StatCard = React.memo(({ value, label, icon: Icon, iconClass = 'text-primary', cardClass = '', valueClass = 'font-display' }: StatCardProps) => (
-  <motion.div className={`text-center p-4 ${cardClass}`} variants={ITEM_VARIANTS} whileHover={STAT_CARD_HOVER}>
+  <div className={`text-center p-4 transition-transform duration-200 hover:scale-[1.03] ${cardClass}`}>
     <Icon className={`w-6 h-6 mx-auto mb-2 ${iconClass}`} aria-hidden="true" />
     <div className={`text-3xl md:text-4xl font-bold text-text ${valueClass}`}>{value}</div>
     <div className="text-sm text-text/70 uppercase tracking-wider">{label}</div>
-  </motion.div>
+  </div>
 ));
 
-const FeatureCard = React.memo(({ icon: Icon, title, description, variants }: FeatureCardProps) => (
-  <motion.li className="card p-5 sm:p-8 text-center bg-text/5 border border-border/10 rounded-xl hover:bg-text/10 transition-colors" variants={variants}>
+const FeatureCard = React.memo(({ icon: Icon, title, description }: FeatureCardProps) => (
+  <li className="card p-5 sm:p-8 text-center bg-text/5 border border-border/10 rounded-xl hover:bg-text/10 transition-colors">
     <div className="text-primary inline-block p-4 bg-primary/10 rounded-full mb-4"><Icon size={32} aria-hidden="true" /></div>
     <h3 className="text-xl font-semibold mb-2">{title}</h3>
     <p className="text-text/70">{description}</p>
-  </motion.li>
+  </li>
 ));
 
 const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
@@ -129,7 +115,6 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 
 const HomePage: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const shouldReduceMotion = useReducedMotion();
   const { data: seoSettings } = useZenSeoSettings();
   const { artist } = useBranding();
   const currentTheme = useCurrentTheme();
@@ -241,7 +226,7 @@ const HomePage: React.FC = () => {
       {/* HERO SECTION */}
       <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12 text-center md:text-left" aria-label="Introduction">
         <div className="absolute inset-0 z-0 bg-background">
-            <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
+            <div className="w-full h-full">
               <picture>
                 <source
                   media="(max-width: 768px)"
@@ -264,7 +249,7 @@ const HomePage: React.FC = () => {
                 decoding="async"
               />
             </picture>
-          </motion.div>
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/20" />
         </div>
 
@@ -284,17 +269,17 @@ const HomePage: React.FC = () => {
               </div>
             )}
 
-          <motion.div animate="visible" initial="hidden" variants={CONTAINER_VARIANTS}>
-            <motion.p id="artist-voice-bio" variants={ITEM_VARIANTS} className="text-base sm:text-xl md:text-2xl text-text mb-1 font-light" data-speakable>
+          <div>
+            <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-text mb-1 font-light" data-speakable>
               {t('home.hero_subtitle')}
               <span id="pronunciation-faq-summary" className="sr-only">{t('home.pronunciation_summary')}</span>
-            </motion.p>
+            </p>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-lg md:text-xl italic text-primary/90 mb-5">
+            <p className="text-lg md:text-xl italic text-primary/90 mb-5">
               &ldquo;{t('home.hero_slogan')}&rdquo;
-            </motion.p>
+            </p>
 
-            <motion.div variants={ITEM_VARIANTS} className="mb-8">
+            <div className="mb-8">
               <div className={`inline-flex items-center gap-2 rounded-full text-sm font-medium ${
                 currentTheme === 'mediterranean-dusk'
                   ? 'px-3 py-1.5 bg-surface/80 border border-border/20 text-text/80 backdrop-blur-sm shadow-sm'
@@ -303,9 +288,9 @@ const HomePage: React.FC = () => {
                 <Trophy size={16} />
                 <span>{t('home.hero_badge')}</span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto md:mx-0 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto md:mx-0 mb-10">
               {stats.map(stat => (
                 <StatCard
                   key={stat.labelKey}
@@ -317,9 +302,9 @@ const HomePage: React.FC = () => {
                   valueClass={currentTheme === 'mediterranean-dusk' ? '' : 'font-display'}
                 />
               ))}
-            </motion.div>
+            </div>
 
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center md:justify-start mb-6">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center md:justify-start mb-6">
               <a
                 href={safeUrl(ARTIST.social.soundcloud.url, '/')}
                 target="_blank"
@@ -338,9 +323,9 @@ const HomePage: React.FC = () => {
                 <Mail size={22} />
                 <span>{t('home.cta_booking')}</span>
               </Link>
-            </motion.div>
+            </div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-text/60 max-w-2xl mx-auto md:mx-0 leading-relaxed">
+            <p className="text-sm md:text-base text-text/60 max-w-2xl mx-auto md:mx-0 leading-relaxed">
               <Trans
                 i18nKey="home.hero_cta_text"
                 components={[
@@ -351,43 +336,43 @@ const HomePage: React.FC = () => {
                   />
                 ]}
               />
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
           </div>
         </div>
 
-        <motion.div className="absolute bottom-8 left-1/2 -translate-x-1/2" animate={{ y: shouldReduceMotion ? 0 : [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }} aria-hidden="true">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 motion-safe:animate-bounce" aria-hidden="true">
           <div className="w-6 h-10 border-2 border-border/30 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1.5 h-3 bg-text/50 rounded-full mt-2" />
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* BIO SECTION */}
       <section className="py-20 bg-surface" id="about">
         <div className="container mx-auto px-4">
-          <motion.div className="max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
-            <motion.article variants={ITEM_VARIANTS} className="prose prose-invert prose-lg max-w-none safe-html-contrast">
+          <div className="max-w-4xl mx-auto">
+            <article className="prose prose-invert prose-lg max-w-none safe-html-contrast">
               <h2 className="text-3xl font-bold mb-6 text-text font-display">{t('home.bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-text/90">
                 <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_intro')) }} />
               </div>
               <p className="text-lg leading-relaxed text-text/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_style')) }} />
               <p className="text-lg leading-relaxed text-text/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_mensa')) }} />
-            </motion.article>
-          </motion.div>
+            </article>
+          </div>
         </div>
       </section>
 
       {/* UPCOMING EVENTS PREVIEW */}
       <section className="py-16 bg-background border-y border-border/5">
         <div className="container mx-auto px-4">
-          <motion.div className="max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS}>
-            <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-3 font-display">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3 font-display">
               {t('home.shows.title')}
-            </motion.h2>
+            </h2>
 
-            <motion.div variants={ITEM_VARIANTS} className="mb-8">
+            <div className="mb-8">
               <React.Suspense
                 fallback={
                   <div className="space-y-3" aria-hidden="true">
@@ -399,9 +384,9 @@ const HomePage: React.FC = () => {
               >
                 <LazyEventsList limit={3} showTitle={false} variant="compact" />
               </React.Suspense>
-            </motion.div>
+            </div>
 
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
               <Link to={routes.events} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
                 <span>{t('home.shows.cta')}</span>
@@ -412,36 +397,36 @@ const HomePage: React.FC = () => {
                   <span>{t('social.bandsintown')}</span>
                 </a>
               )}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* FEATURES GRID */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <motion.ul role="list" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto" variants={CONTAINER_VARIANTS} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }}>
+          <ul role="list" className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {FEATURES_DATA.map(feature => (
-              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as unknown as Parameters<typeof t>[0])} description={t(feature.descKey as unknown as Parameters<typeof t>[0])} variants={ITEM_VARIANTS} />
+              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as unknown as Parameters<typeof t>[0])} description={t(feature.descKey as unknown as Parameters<typeof t>[0])} />
             ))}
-          </motion.ul>
+          </ul>
         </div>
       </section>
 
       {/* FESTIVALS / SOCIAL PROOF */}
       <section className="py-20 bg-surface">
         <div className="container mx-auto px-4">
-          <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={CONTAINER_VARIANTS} className="text-center">
-            <motion.h2 variants={ITEM_VARIANTS} className="text-2xl md:text-3xl font-bold mb-2 font-display">
+          <div className="text-center">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 font-display">
               {t('home.festivals.presence')}
-            </motion.h2>
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-3 mt-8">
+            </h2>
+            <div className="flex flex-wrap justify-center gap-3 mt-8">
               {festivalsHighlight.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
                 <span>+{t('home.festivals.many_more')}</span>
               </span>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -449,7 +434,7 @@ const HomePage: React.FC = () => {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="p-4 sm:p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="press-card-title">
+            <div className="p-4 sm:p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="press-card-title">
               <h3 id="press-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Download size={20} className="text-primary" /> {t('home.press.title')}
               </h3>
@@ -457,8 +442,8 @@ const HomePage: React.FC = () => {
               <Link to={routes.booking} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
                 {t('home.press.cta')} →
               </Link>
-            </motion.div>
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className="p-4 sm:p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="bookers-card-title">
+            </div>
+            <div className="p-4 sm:p-8 bg-surface border-l-4 border-green-500 rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="bookers-card-title">
               <h3 id="bookers-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
                 <Calendar size={20} className="text-green-500" /> {t('home.bookers.title')}
               </h3>
@@ -466,7 +451,7 @@ const HomePage: React.FC = () => {
               <Link to={routes.booking} className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 font-semibold transition-colors">
                 {t('home.bookers.cta')} →
               </Link>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -474,14 +459,14 @@ const HomePage: React.FC = () => {
       {/* AUTHORITY LINKS */}
       <section className="py-12 bg-background border-t border-border/5">
         <div className="container mx-auto px-4 text-center">
-          <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <div>
             <p className="text-xs font-semibold text-text/55 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">MusicBrainz <ExternalLink size={10} /></a>
               <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">Wikidata <ExternalLink size={10} /></a>
               <a href={safeUrl(ARTIST.social.spotify.url, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">Spotify <ExternalLink size={10} /></a>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -489,21 +474,21 @@ const HomePage: React.FC = () => {
       <section className="py-24 relative overflow-hidden bg-background">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background/50 to-background opacity-60" />
 
-        <motion.div className="container mx-auto px-4 text-center relative z-10" initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.5 }} variants={CONTAINER_VARIANTS}>
-          <motion.h2 variants={ITEM_VARIANTS} className="text-2xl sm:text-4xl md:text-6xl font-bold mb-6 font-display">
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-6 font-display">
             <Trans i18nKey="home.tribe.title">
               Junte-se à <span className="text-primary">Zen Tribe</span>
             </Trans>
-          </motion.h2>
-          <motion.p variants={ITEM_VARIANTS} className="text-xl text-text/70 mb-10 max-w-2xl mx-auto">
+          </h2>
+          <p className="text-xl text-text/70 mb-10 max-w-2xl mx-auto">
             {t('home.tribe.subtitle')}
-          </motion.p>
-          <motion.div variants={ITEM_VARIANTS} className="flex flex-wrap justify-center gap-4">
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
             <Link to={routes.zentribe} className="btn btn-primary btn-lg min-w-[200px]">
               {t('nav.tribe')}
             </Link>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </section>
     </>
   );
