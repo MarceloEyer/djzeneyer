@@ -78,10 +78,10 @@ const HOME_HERO_IMAGES: Record<SiteTheme, {
   imageClassName: string;
 }> = {
   'mediterranean-dusk': {
-    defaultSrc: '/images/hero-background-mediterranean.webp',
+    defaultSrc: '/images/zen_na_europa.png',
     mobileSrc: '/images/hero-background-mediterranean-mobile.webp',
-    desktopSrcSet: '/images/hero-background-mediterranean-1440.webp 1440w, /images/hero-background-mediterranean.webp 1920w',
-    preloadDesktop: '/images/hero-background-mediterranean-1440.webp',
+    desktopSrcSet: '/images/zen_na_europa.png 1440w, /images/zen_na_europa.png 1920w',
+    preloadDesktop: '/images/zen_na_europa.png',
     imageClassName: 'opacity-90',
   },
   'zen-night': {
