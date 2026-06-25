@@ -142,6 +142,10 @@ final class REST_Handler
         $types = \function_exists('gamipress_get_points_types') ? \gamipress_get_points_types() : [];
         $leaderboard = [];
 
+        // ⚡ Bolt: Batch queries using UNION ALL to optimize N+1 WordPress database queries with per-group limits
+        $queries = [];
+        $args = [];
+
         foreach ($types as $type_key => $type) {
             // GamiPress keys the array by slug; 'slug' sub-field may not be present.
             $slug = (string) ($type['slug'] ?? $type_key);
@@ -150,35 +154,38 @@ final class REST_Handler
             }
 
             $meta_key = "_gamipress_{$slug}_points";
+            $leaderboard[$slug] = []; // Initialize here so empty lists are returned
 
-            $results = $wpdb->get_results($wpdb->prepare(
-                "
-                SELECT user_id, meta_value as points, u.display_name
+            $queries[] = "(
+                SELECT %s AS slug, user_id, meta_value as points, u.display_name
                 FROM {$wpdb->usermeta} m
                 INNER JOIN {$wpdb->users} u ON m.user_id = u.ID
                 WHERE meta_key = %s AND meta_value > 0
                 ORDER BY CAST(meta_value AS UNSIGNED) DESC LIMIT %d
-                ",
-                $meta_key,
-                $limit
-            ));
+            )";
+            $args[] = $slug;
+            $args[] = $meta_key;
+            $args[] = $limit;
+        }
 
-            if (!$results) {
-                continue;
-            }
+        if (!empty($queries)) {
+            $sql = \implode(" UNION ALL ", $queries);
+            $results = $wpdb->get_results($wpdb->prepare($sql, ...$args));
 
-            // Prime WP object cache for all users in one query — prevents N+1 on get_avatar_url
-            $user_ids = \array_map(fn($r) => (int) $r->user_id, $results);
-            \cache_users($user_ids);
+            if ($results) {
+                // Prime WP object cache for all users across all types in one query
+                $user_ids = \array_unique(\array_map(fn($r) => (int) $r->user_id, $results));
+                \cache_users($user_ids);
 
-            $leaderboard[$slug] = [];
-            foreach ($results as $row) {
-                $leaderboard[$slug][] = [
-                    'user_id' => (int) $row->user_id,
-                    'display_name' => \esc_html($row->display_name),
-                    'points' => (int) $row->points,
-                    'avatar' => \get_avatar_url((int) $row->user_id, ['size' => 64]),
-                ];
+                foreach ($results as $row) {
+                    $slug = $row->slug;
+                    $leaderboard[$slug][] = [
+                        'user_id' => (int) $row->user_id,
+                        'display_name' => \esc_html($row->display_name),
+                        'points' => (int) $row->points,
+                        'avatar' => \get_avatar_url((int) $row->user_id, ['size' => 64]),
+                    ];
+                }
             }
         }
 
