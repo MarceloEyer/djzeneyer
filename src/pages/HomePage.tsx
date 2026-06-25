@@ -232,7 +232,7 @@ const HomePage: React.FC = () => {
       />
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center justify-center text-center overflow-hidden pt-20 pb-12" aria-label="Introduction">
+      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12 text-center md:text-left" aria-label="Introduction">
         <div className="absolute inset-0 z-0 bg-background">
             <motion.div initial={{ scale: 1.1 }} animate={{ scale: 1 }} transition={{ duration: 12, ease: "linear" }} className="w-full h-full">
               <picture>
@@ -261,8 +261,8 @@ const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-background/20" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto">
+        <div className="container mx-auto px-4 relative z-10 w-full">
+          <div className="max-w-4xl mx-auto md:ml-0 md:mr-auto">
             {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
             <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold font-display tracking-tight mb-4">
               <span className="text-text">Zen</span> <span className="text-primary">Eyer</span>
@@ -285,11 +285,11 @@ const HomePage: React.FC = () => {
               "{t('home.hero_slogan')}"
             </motion.p>
 
-            <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
+            <motion.div variants={ITEM_VARIANTS} className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto md:mx-0 mb-10">
               {stats.map(stat => <StatCard key={stat.labelKey} value={stat.value} label={t(stat.labelKey as unknown as Parameters<typeof t>[0])} icon={stat.icon} />)}
             </motion.div>
 
-            <motion.div variants={ITEM_VARIANTS} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center mb-6">
+            <motion.div variants={ITEM_VARIANTS} className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center md:justify-start mb-6">
               <a
                 href={safeUrl(ARTIST.social.soundcloud.url, '/')}
                 target="_blank"
@@ -310,7 +310,7 @@ const HomePage: React.FC = () => {
               </Link>
             </motion.div>
 
-            <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-text/60 max-w-2xl mx-auto leading-relaxed">
+            <motion.p variants={ITEM_VARIANTS} className="text-sm md:text-base text-text/60 max-w-2xl mx-auto md:mx-0 leading-relaxed">
               <Trans
                 i18nKey="home.hero_cta_text"
                 components={[
