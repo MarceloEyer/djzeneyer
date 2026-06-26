@@ -603,17 +603,17 @@ const ShopPage: React.FC = () => {
       <section className="px-6 md:px-12 lg:px-20 py-20 bg-background border-t border-border/5">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
           {[
-            { icon: Truck, title: t('shop.benefits.instant_delivery'), desc: t('shop.benefits.instant_delivery_desc') },
-            { icon: Shield, title: t('shop.benefits.secure_payment'), desc: t('shop.benefits.secure_payment_desc') },
-            { icon: Gift, title: t('shop.benefits.tribe_perks'), desc: t('shop.benefits.tribe_perks_desc') },
-            { icon: Zap, title: t('shop.benefits.vip_support'), desc: t('shop.benefits.vip_support_desc') },
+            { icon: Truck, title: t('shop.benefits.instant_delivery'), desc: t('shop.benefits.instant_delivery_desc'), color: 'text-[#2D728F]', bg: 'bg-[#2D728F]/12', border: 'border-[#2D728F]/25' },
+            { icon: Shield, title: t('shop.benefits.secure_payment'), desc: t('shop.benefits.secure_payment_desc'), color: 'text-[#6F8F4E]', bg: 'bg-[#6F8F4E]/12', border: 'border-[#6F8F4E]/25' },
+            { icon: Gift, title: t('shop.benefits.tribe_perks'), desc: t('shop.benefits.tribe_perks_desc'), color: 'text-[#C4863A]', bg: 'bg-[#C4863A]/14', border: 'border-[#C4863A]/25' },
+            { icon: Zap, title: t('shop.benefits.vip_support'), desc: t('shop.benefits.vip_support_desc'), color: 'text-[#B85C38]', bg: 'bg-[#B85C38]/12', border: 'border-[#B85C38]/25' },
           ].map((item, idx) => (
-            <div key={idx} className="flex flex-col space-y-3 group cursor-default">
-              <div className="text-primary group-hover:scale-110 transition-transform duration-300 w-fit">
+            <div key={idx} className="group cursor-default rounded-2xl border border-border/10 bg-surface/45 p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-border/25 hover:bg-surface/70 hover:shadow-xl">
+              <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border ${item.border} ${item.bg} ${item.color} shadow-sm transition-transform duration-300 group-hover:scale-105`}>
                 <item.icon size={32} />
               </div>
-              <h3 className="font-bold text-lg md:text-xl text-text group-hover:text-primary transition-colors">{item.title}</h3>
-              <p className="text-sm text-text/40 leading-relaxed">{item.desc}</p>
+              <h3 className="font-bold text-lg md:text-xl text-text transition-colors group-hover:text-primary">{item.title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-text/60">{item.desc}</p>
             </div>
           ))}
         </div>
