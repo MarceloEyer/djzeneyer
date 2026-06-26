@@ -48,12 +48,12 @@ interface FestivalBadgeProps {
 // ============================================================================
 
 const FEATURES_DATA = [
-  { id: 'music', icon: Music as React.ElementType, titleKey: 'home.feat_exclusive_title', descKey: 'home.feat_exclusive_desc' },
-  { id: 'achievements', icon: Award as React.ElementType, titleKey: 'home.feat_achievements_title', descKey: 'home.feat_achievements_desc' },
-  { id: 'community', icon: Users as React.ElementType, titleKey: 'home.feat_community_title', descKey: 'home.feat_community_desc' },
+  { id: 'music', icon: Music as React.ElementType, titleKey: 'feat_exclusive_title', descKey: 'feat_exclusive_desc' },
+  { id: 'achievements', icon: Award as React.ElementType, titleKey: 'feat_achievements_title', descKey: 'feat_achievements_desc' },
+  { id: 'community', icon: Users as React.ElementType, titleKey: 'feat_community_title', descKey: 'feat_community_desc' },
 ] as const;
 
-const STATS_BASE = [{ value: '2×', labelKey: 'home.stat_champion', icon: Trophy }] as const;
+const STATS_BASE = [{ value: '2×', labelKey: 'stat_champion', icon: Trophy }] as const;
 
 const LazyEventsList = React.lazy(() =>
   import('../components/EventsList').then((module) => ({ default: module.EventsList }))
@@ -114,7 +114,8 @@ const FestivalBadge = React.memo(({ name, flag }: FestivalBadgeProps) => (
 // ============================================================================
 
 const HomePage: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t: th, i18n } = useTranslation('home');
+  const { t } = useTranslation();
   const { data: seoSettings } = useZenSeoSettings();
   const { artist } = useBranding();
   const currentTheme = useCurrentTheme();
@@ -124,16 +125,16 @@ const HomePage: React.FC = () => {
   const baseUrl = artist?.site?.baseUrl || ARTIST.site.baseUrl;
   const currentUrl = `${baseUrl}${currentPath}`;
   const heroImages = HOME_HERO_IMAGES[currentTheme];
-  const translatedHeroTitle = t('home.hero_title');
-  const heroTitle = translatedHeroTitle === 'home.hero_title' ? ARTIST.identity.shortName : translatedHeroTitle;
+  const translatedHeroTitle = th('hero_title');
+  const heroTitle = translatedHeroTitle === 'hero_title' ? ARTIST.identity.shortName : translatedHeroTitle;
   const [heroTitleLead, ...heroTitleRestParts] = heroTitle.split(' ');
   const heroTitleRest = heroTitleRestParts.join(' ');
 
   const festivalsHighlight = useMemo(() => (artist?.festivals || ARTIST.festivals).slice(0, 6), [artist?.festivals]);
   const stats = useMemo(() => ([
     ...STATS_BASE,
-    { value: `${artist?.stats?.countriesPlayed || ARTIST.stats.countriesPlayed}+`, labelKey: 'home.stat_countries', icon: Globe },
-    { value: `${new Date().getFullYear() - (artist?.stats?.startingYear || ARTIST.stats.startingYear)}+`, labelKey: 'home.stat_years', icon: Sparkles },
+    { value: `${artist?.stats?.countriesPlayed || ARTIST.stats.countriesPlayed}+`, labelKey: 'stat_countries', icon: Globe },
+    { value: `${new Date().getFullYear() - (artist?.stats?.startingYear || ARTIST.stats.startingYear)}+`, labelKey: 'stat_years', icon: Sparkles },
   ]), [artist?.stats?.countriesPlayed, artist?.stats?.startingYear]);
 
   // ⚡ Bolt: Memoize localized routes to avoid O(N) recalculations on every render
@@ -154,7 +155,7 @@ const HomePage: React.FC = () => {
         "@id": `${baseUrl}/#website`,
         "url": baseUrl,
         "name": "Zen Eyer",
-        "description": t('home.site_desc'),
+        "description": th('site_desc'),
         "publisher": { "@id": `${baseUrl}/#artist` },
         "inLanguage": ["en", "pt-BR"],
         "potentialAction": {
@@ -172,8 +173,8 @@ const HomePage: React.FC = () => {
         "@type": "WebPage",
         "@id": `${currentUrl}#webpage`,
         "url": currentUrl,
-        "name": t('home.page_title'),
-        "description": t('home.page_meta_desc'),
+        "name": th('page_title'),
+        "description": th('page_meta_desc'),
         "isPartOf": { "@id": `${baseUrl}/#website` },
         "speakable": {
           "@type": "SpeakableSpecification",
@@ -191,20 +192,20 @@ const HomePage: React.FC = () => {
         }
       }
     ],
-  }), [seoSettings, t, currentUrl, routes.news, baseUrl]);
+  }), [seoSettings, th, currentUrl, routes.news, baseUrl]);
 
   return (
     <>
       <HeadlessSEO
-        title={t('home.page_title')}
-        description={t('home.page_meta_desc')}
+        title={th('page_title')}
+        description={th('page_meta_desc')}
         url={currentUrl}
         image={seoSettings?.default_og_image || `${baseUrl}/images/og/zen-eyer-home-og.jpg`}
         imageAlt={t('og.image_alt.home')}
         isHomepage={true}
         schema={schemaData}
-        keywords={t('home.seo.keywords')}
-        leadAnswer={t('home.seo.lead_answer')}
+        keywords={th('seo.keywords')}
+        leadAnswer={th('seo.lead_answer')}
         preload={[
           {
             href: heroImages.mobileSrc,
@@ -224,7 +225,7 @@ const HomePage: React.FC = () => {
       />
 
       {/* HERO SECTION */}
-      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12 text-center md:text-left" aria-label={t('home.introduction_aria')}>
+      <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12 text-center md:text-left" aria-label={th('introduction_aria')}>
         <div className="absolute inset-0 z-0 bg-background">
             <div className="w-full h-full">
               <picture>
@@ -271,12 +272,12 @@ const HomePage: React.FC = () => {
 
           <div>
             <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-text mb-1 font-light" data-speakable>
-              {t('home.hero_subtitle')}
-              <span id="pronunciation-faq-summary" className="sr-only">{t('home.pronunciation_summary')}</span>
+              {th('hero_subtitle')}
+              <span id="pronunciation-faq-summary" className="sr-only">{th('pronunciation_summary')}</span>
             </p>
 
             <p className="text-lg md:text-xl italic text-primary/90 mb-5">
-              &ldquo;{t('home.hero_slogan')}&rdquo;
+              &ldquo;{th('hero_slogan')}&rdquo;
             </p>
 
             <div className="mb-8">
@@ -286,7 +287,7 @@ const HomePage: React.FC = () => {
                   : 'px-4 py-2 bg-primary/10 border border-primary/20 text-primary font-bold tracking-widest uppercase'
               }`}>
                 <Trophy size={16} />
-                <span>{t('home.hero_badge')}</span>
+                <span>{th('hero_badge')}</span>
               </div>
             </div>
 
@@ -295,7 +296,7 @@ const HomePage: React.FC = () => {
                 <StatCard
                   key={stat.labelKey}
                   value={stat.value}
-                  label={t(stat.labelKey as unknown as Parameters<typeof t>[0])}
+                  label={th(stat.labelKey)}
                   icon={stat.icon}
                   iconClass={currentTheme === 'mediterranean-dusk' ? 'text-secondary' : 'text-primary'}
                   cardClass={currentTheme === 'mediterranean-dusk' ? 'bg-surface/60 border border-border/20 rounded-xl backdrop-blur-sm' : ''}
@@ -310,24 +311,25 @@ const HomePage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary btn-lg flex items-center gap-2 min-h-[44px] shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-shadow"
-                aria-label={t('home.cta_soundcloud')}
+                aria-label={th('cta_soundcloud')}
               >
                 <PlayCircle size={22} />
-                <span>{t('home.cta_soundcloud')}</span>
+                <span>{th('cta_soundcloud')}</span>
               </a>
               <Link
                 to={routes.booking}
                 className="btn btn-outline btn-lg flex items-center gap-2 min-h-[44px] backdrop-blur-sm"
-                aria-label={t('home.cta_booking')}
+                aria-label={th('cta_booking')}
               >
                 <Mail size={22} />
-                <span>{t('home.cta_booking')}</span>
+                <span>{th('cta_booking')}</span>
               </Link>
             </div>
 
             <p className="text-sm md:text-base text-text/60 max-w-2xl mx-auto md:mx-0 leading-relaxed">
               <Trans
-                i18nKey="home.hero_cta_text"
+                i18nKey="hero_cta_text"
+                ns="home"
                 components={[
                   <Link
                     key="music-link"
@@ -353,12 +355,12 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <article className="prose prose-invert prose-lg max-w-none safe-html-contrast">
-              <h2 className="text-3xl font-bold mb-6 text-text font-display">{t('home.bio_title')}</h2>
+              <h2 className="text-3xl font-bold mb-6 text-text font-display">{th('bio_title')}</h2>
               <div className="text-xl leading-relaxed mb-6 text-text/90">
-                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_intro')) }} />
+                <p dangerouslySetInnerHTML={{ __html: sanitizeHtml(th('bio_intro')) }} />
               </div>
-              <p className="text-lg leading-relaxed text-text/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_style')) }} />
-              <p className="text-lg leading-relaxed text-text/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(t('home.bio_mensa')) }} />
+              <p className="text-lg leading-relaxed text-text/80 mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(th('bio_style')) }} />
+              <p className="text-lg leading-relaxed text-text/80" dangerouslySetInnerHTML={{ __html: sanitizeHtml(th('bio_mensa')) }} />
             </article>
           </div>
         </div>
@@ -369,7 +371,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-3 font-display">
-              {t('home.shows.title')}
+              {th('shows.title')}
             </h2>
 
             <div className="mb-8">
@@ -389,10 +391,10 @@ const HomePage: React.FC = () => {
             <div className="flex flex-wrap justify-center gap-4">
               <Link to={routes.events} className="btn btn-primary btn-lg flex items-center gap-2">
                 <Calendar size={20} />
-                <span>{t('home.shows.cta')}</span>
+                <span>{th('shows.cta')}</span>
               </Link>
               {ARTIST.social.bandsintown?.url && (
-                <a href={safeUrl(ARTIST.social.bandsintown.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label={t('home.shows.bandsintown_aria')}>
+                <a href={safeUrl(ARTIST.social.bandsintown.url, '/')} target="_blank" rel="noopener noreferrer" className="btn btn-outline btn-lg flex items-center gap-2" aria-label={th('shows.bandsintown_aria')}>
                   <ExternalLink size={18} />
                   <span>{t('social.bandsintown')}</span>
                 </a>
@@ -407,7 +409,7 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <ul className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {FEATURES_DATA.map(feature => (
-              <FeatureCard key={feature.id} icon={feature.icon} title={t(feature.titleKey as unknown as Parameters<typeof t>[0])} description={t(feature.descKey as unknown as Parameters<typeof t>[0])} />
+              <FeatureCard key={feature.id} icon={feature.icon} title={th(feature.titleKey)} description={th(feature.descKey)} />
             ))}
           </ul>
         </div>
@@ -418,12 +420,12 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-2 font-display">
-              {t('home.festivals.presence')}
+              {th('festivals.presence')}
             </h2>
             <div className="flex flex-wrap justify-center gap-3 mt-8">
               {festivalsHighlight.map(festival => (<FestivalBadge key={festival.name} name={festival.name} flag={festival.flag} />))}
               <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-full text-sm text-primary">
-                <span>+{t('home.festivals.many_more')}</span>
+                <span>+{th('festivals.many_more')}</span>
               </span>
             </div>
           </div>
@@ -436,20 +438,20 @@ const HomePage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             <div className="p-4 sm:p-8 bg-surface border-l-4 border-primary rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="press-card-title">
               <h3 id="press-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
-                <Download size={20} className="text-primary" /> {t('home.press.title')}
+                <Download size={20} className="text-primary" /> {th('press.title')}
               </h3>
-              <p className="text-text/70 mb-4 text-sm">{t('home.press.desc')}</p>
+              <p className="text-text/70 mb-4 text-sm">{th('press.desc')}</p>
               <Link to={routes.booking} className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-semibold transition-colors">
-                {t('home.press.cta')} →
+                {th('press.cta')} →
               </Link>
             </div>
             <div className="p-4 sm:p-8 bg-surface border-l-4 border-success rounded-r-lg shadow-lg hover:bg-surface/80 transition-colors" role="group" aria-labelledby="bookers-card-title">
               <h3 id="bookers-card-title" className="text-xl font-bold mb-3 flex items-center gap-2 font-display">
-                <Calendar size={20} className="text-success" /> {t('home.bookers.title')}
+                <Calendar size={20} className="text-success" /> {th('bookers.title')}
               </h3>
-              <p className="text-text/70 mb-4 text-sm">{t('home.bookers.desc')}</p>
+              <p className="text-text/70 mb-4 text-sm">{th('bookers.desc')}</p>
               <Link to={routes.booking} className="inline-flex items-center gap-2 text-success hover:text-success/80 font-semibold transition-colors">
-                {t('home.bookers.cta')} →
+                {th('bookers.cta')} →
               </Link>
             </div>
           </div>
@@ -460,7 +462,7 @@ const HomePage: React.FC = () => {
       <section className="py-12 bg-background border-t border-border/5">
         <div className="container mx-auto px-4 text-center">
           <div>
-            <p className="text-xs font-semibold text-text/55 mb-4 uppercase tracking-widest">{t('home.verified')}</p>
+            <p className="text-xs font-semibold text-text/55 mb-4 uppercase tracking-widest">{th('verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">{t('social.musicbrainz')} <ExternalLink size={10} /></a>
               <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">{t('social.wikidata')} <ExternalLink size={10} /></a>
@@ -476,10 +478,10 @@ const HomePage: React.FC = () => {
 
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-6 font-display">
-            <Trans i18nKey="home.tribe.title" components={[<span className="text-primary" />]} />
+            <Trans i18nKey="tribe.title" ns="home" components={[<span className="text-primary" />]} />
           </h2>
           <p className="text-xl text-text/70 mb-10 max-w-2xl mx-auto">
-            {t('home.tribe.subtitle')}
+            {th('tribe.subtitle')}
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link to={routes.zentribe} className="btn btn-primary btn-lg min-w-[200px]">

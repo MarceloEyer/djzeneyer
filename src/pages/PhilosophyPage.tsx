@@ -73,7 +73,7 @@ const PhilosophyPage: React.FC = () => {
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: t('home'), item: `${ARTIST.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
+            { '@type': 'ListItem', position: 1, name: t('nav.home'), item: `${ARTIST.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
             { '@type': 'ListItem', position: 2, name: t('philosophy.page_title'), item: pageUrl },
           ],
         },

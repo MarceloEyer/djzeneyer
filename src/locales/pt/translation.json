@@ -216,7 +216,8 @@
     "title_part1": "Agenda de",
     "title_part2": "Eventos",
     "press_kit": "Kit de Imprensa",
-    "featured": "Evento em Destaque"
+    "featured": "Evento em Destaque",
+    "press_title": "Imprensa & Mídia"
   },
   "gamification": {
     "zenTribe": "Zen Tribe",
@@ -393,89 +394,6 @@
   "explore_music_button": "Explorar Músicas",
   "play_featured_mix": "Ouvir no SoundCloud",
   "upcoming_events": "Próximos Eventos",
-  "home": {
-    "site_desc": "Site oficial de Zen Eyer, DJ e produtor musical de Zouk Brasileiro, também conhecido como DJ Zen Eyer.",
-    "page_title": "Zen Eyer | DJ e Produtor de Zouk Brasileiro",
-    "page_meta_desc": "Zen Eyer, vencedor de Melhor Remix e Melhor Performance DJ no Campeonato Mundial de DJs de Zouk Brasileiro de 2022. Contrate para eventos internacionais.",
-    "headline": "Experiencie o <1>Zen</1> no Zouk Brasileiro",
-    "subheadline": "A pressa é inimiga da cremosidade. Mergulhe no som de Zen Eyer.",
-    "welcome": "Bem-vindo ao Zen Eyer",
-    "tagline": "DJ e Produtor de Zouk Brasileiro",
-    "cta": "Explorar Músicas",
-    "features_title": "Por Que Entrar na Zen Tribe?",
-    "features_subtitle": "Desbloqueie benefícios exclusivos e faça parte de uma comunidade engajada",
-    "feat_exclusive_title": "Música Exclusiva",
-    "feat_exclusive_desc": "Acesso antecipado a lançamentos e remixes exclusivos",
-    "feat_achievements_title": "Conquistas & Recompensas",
-    "feat_achievements_desc": "Ganhe XP, desbloqueie badges e suba de nível",
-    "feat_community_title": "Comunidade Ativa",
-    "feat_community_desc": "Conecte-se com amantes de música e Zen Eyer",
-    "cta_title": "Pronto para Entrar na <1>Zen Tribe</1>?",
-    "cta_subtitle": "Junte-se a milhares de membros e transforme sua experiência com o Zouk.",
-    "hero_badge": "Best DJ Performance + Best Remix - Campeonato Mundial de DJs de Zouk Brasileiro de 2022",
-    "hero_title": "Zen Eyer",
-    "hero_subtitle": "DJ e Produtor de Zouk Brasileiro",
-    "introduction_aria": "Introdução de Zen Eyer",
-    "pronunciation_summary": " (Fonética: /zɛn ˈaɪər/. Eyer soa como Buyer sem o B, ou 'Eye' seguido de 'er').",
-    "hero_slogan": "A pressa é inimiga da cremosidade",
-    "hero_cta_text": "Sets completos e remixes. Para mais opções de streaming e downloads, vá em <0>Músicas</0>.",
-    "stat_champion": "Prêmios no Campeonato",
-    "stat_countries": "Países",
-    "stat_events": "Eventos",
-    "stat_years": "Experiência",
-    "bio_p1": "é um DJ e produtor brasileiro focado em Brazilian Zouk. Em 2022, tive a honra de vencer Best Remix e Best DJ Performance no Campeonato Mundial de DJs de Zouk Brasileiro, consolidando uma jornada que começou cedo na pista e hoje me leva a tocar em 14 países.",
-    "bio_p2": "Conhecido por um som focado no 'flow' puro da dança — a vibe que a nossa comunidade chama de 'cremosidade' —, priorizo sets onde a energia cresce gradualmente, dando ao dançarino tempo e espaço para se conectar sem pressa.",
-    "bio_p3": "Seja na reZENha, no Rio Zouk Congress da Renata Peçanha (onde tenho a honra de tocar anualmente) ou em festivais pelo mundo, a missão é a mesma: criar o clima perfeito para quem ama o Zouk Brasileiro.",
-    "festivals_title": "Festivais & Eventos",
-    "festivals_subtitle": "Muito feliz de ter levado o Zouk para esses lugares",
-    "festivals_more": "e outras cidades incríveis",
-    "press_title": "Imprensa & Mídia",
-    "press_desc": "Fotos para divulgação, infos e rider técnico.",
-    "press_cta": "ACESSAR PRESS KIT",
-    "booking_title": "Bookings",
-    "booking_desc": "Quer levar o som da Tribo Zen para a sua cidade? Mande uma mensagem.",
-    "booking_cta": "ENTRAR EM CONTATO",
-    "authority_title": "Perfis Verificados",
-    "tribe": {
-      "title": "Junte-se à <0>Zen Tribe</0>",
-      "subtitle": "Sem pressa aqui. Apenas derretimento prolongado.",
-      "desc": "Não é só sobre música. É sobre vibração. Entre para a lista VIP.",
-      "cta": "Entrar na Tribo"
-    },
-    "cta_soundcloud": "Ouvir no SoundCloud",
-    "cta_booking": "Booking / Press Kit",
-    "cta_music": "Explorar Músicas",
-    "bio_title": "Quem é Zen Eyer?",
-    "bio_intro": "<strong>Zen Eyer</strong> (Marcelo Eyer Fernandes) é <strong>DJ de Brazilian Zouk</strong> e produtor musical. Em 2022, conquistou os prêmios de Melhor Remix e Melhor Performance DJ no Campeonato Mundial de DJs de Zouk Brasileiro, sendo reconhecido pela precisão técnica e sensibilidade musical.",
-    "bio_style": "Conhecido pelo estilo \"cremoso\" e envolvente, Zen prioriza a conexão. Sem pressa. Seu drop assinatura <em>\"Zen… Zen… Zen… Eyer… Eyer…\"</em> já é um clássico nos festivais.",
-    "bio_mensa": "Membro da <strong>Mensa International</strong>, ele cria jornadas emocionais perfeitas para o \"flow\" na dança. Frequenta palcos de peso como o Rio Zouk Congress.",
-    "verified": "Perfis Verificados",
-    "bookers": {
-      "title": "Bookings",
-      "desc": "Quer levar o som da Tribo Zen para a sua cidade? Mande uma mensagem.",
-      "cta": "ENTRAR EM CONTATO"
-    },
-    "seo": {
-      "title": "Zen Eyer | DJ e Produtor de Zouk Brasileiro",
-      "description": "Zen Eyer, DJ e produtor musical focado no Zouk Brasileiro.",
-      "keywords": "Zen Eyer, Brazilian Zouk DJ, Zouk Brasileiro, Best DJ Performance, Best Remix, Brazilian Zouk music, dance festival DJ, Zouk producer",
-      "lead_answer": "Zen Eyer é DJ e produtor musical especializado em Zouk Brasileiro, vencedor de Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022."
-    },
-    "festivals": {
-      "presence": "Presença Internacional",
-      "many_more": "muitos outros"
-    },
-    "shows": {
-      "title": "Próximos Shows",
-      "cta": "Agenda completa",
-      "bandsintown_aria": "Seguir Zen Eyer no Bandsintown"
-    },
-    "press": {
-      "title": "Imprensa & Mídia",
-      "desc": "Acesse fotos, bio e assets.",
-      "cta": "BAIXAR PRESS KIT"
-    }
-  },
   "music_catalog_title": "Catálogo Musical",
   "music_catalog_description": "Faixas, edits e lançamentos do Zen Eyer com metadados para DJs.",
   "track": {
