@@ -235,7 +235,7 @@ const PressKitPage: React.FC = () => {
               <div className="flex justify-center">
                 <Breadcrumb items={[{ label: t('nav.presskit') }]} className="mb-6" />
               </div>
-              <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-xs font-bold uppercase tracking-[0.28em] text-primary">
+              <div className="inline-flex items-center rounded-full border border-[#B1A47E]/70 bg-[#F3EBDD]/75 px-5 py-2 text-xs font-bold uppercase tracking-[0.28em] text-[#6F8F4E] shadow-sm shadow-[#B1A47E]/15">
                 {t('presskit.tag')}
               </div>
               <h1 className="mt-6 text-2xl sm:text-4xl font-black uppercase tracking-tight text-text md:text-6xl">
@@ -340,7 +340,7 @@ const PressKitPage: React.FC = () => {
                   </div>
                   <button
                     onClick={handleCopyBio}
-                    className="flex items-center gap-2 rounded-xl bg-primary/20 px-5 py-2.5 text-sm font-bold text-primary transition-all hover:bg-primary/30 min-h-[44px]"
+                    className="flex min-h-[44px] items-center gap-2 rounded-xl border border-[#B1A47E]/60 bg-[#F3EBDD]/80 px-5 py-2.5 text-sm font-bold text-[#2D728F] shadow-sm shadow-[#B1A47E]/15 transition-all hover:bg-[#EFE3CC] hover:text-[#B85C38]"
                   >
                     {isCopied ? <Check size={16} /> : <Copy size={16} />}
                     {isCopied ? t('presskit.canonical_bio.copied') : t('presskit.canonical_bio.copy_button')}
