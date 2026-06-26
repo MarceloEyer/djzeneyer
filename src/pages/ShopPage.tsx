@@ -91,7 +91,7 @@ const ShopHero = memo(({ product, onAddToCart, isAddingToCart, getProductPath }:
           className="max-w-3xl space-y-4 md:space-y-6"
         >
           <div className="flex items-center gap-3">
-            <div className="h-6 w-1 bg-primary rounded-full shadow-[0_0_10px_rgba(13,150,255,0.5)]" />
+            <div className="h-6 w-1 rounded-full bg-[#6F8F4E] shadow-[0_0_10px_rgba(111,143,78,0.35)]" />
             <span className="text-text font-black text-xs md:text-sm uppercase flex items-center gap-2 bg-background/35 border border-border/20 rounded-full px-3 py-1 backdrop-blur-sm">
               {t('shop.artist_badge')} <span className="text-text/60">{t('badge_featured')}</span>
             </span>

@@ -40,7 +40,7 @@ const CurrencyAccordion = memo(({
       aria-expanded={isOpen}
     >
       <div className="flex items-center gap-4">
-        <div className={`p-3 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 text-primary group-hover:scale-110 transition-transform`}>
+        <div className="icon-chip-mediterranean rounded-xl p-3 transition-transform group-hover:scale-110">
           <Icon size={28} />
         </div>
         <h3 className="text-xl md:text-2xl font-black text-text group-hover:text-primary transition-colors font-display uppercase tracking-tighter">
@@ -52,7 +52,7 @@ const CurrencyAccordion = memo(({
         transition={{ duration: 0.3 }}
         className="flex-shrink-0"
       >
-        <ChevronDown className="text-primary/70" size={24} />
+        <ChevronDown className="text-[#6F8F4E]" size={24} />
       </motion.div>
     </button>
 
@@ -135,7 +135,7 @@ const SupportArtistPage: React.FC = () => {
 
       <div className="container mx-auto px-4 max-w-5xl">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10 sm:mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20 mb-8 text-sm font-bold tracking-widest uppercase">
+          <div className="badge-mediterranean mb-8 text-sm">
             <Heart size={16} /> {t('common.footer_support_artist')}
           </div>
           <h1 className="text-3xl sm:text-5xl md:text-7xl font-black font-display mb-6 sm:mb-8 text-text tracking-tighter uppercase leading-[0.9]">
@@ -152,7 +152,7 @@ const SupportArtistPage: React.FC = () => {
           <div className="space-y-5">
             {supportActions.map((action) => (
               <div key={action.title} className="flex gap-4 rounded-xl border border-border/5 bg-background/15 p-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-2xl" aria-hidden="true">
+                <div className="icon-chip-mediterranean flex h-11 w-11 shrink-0 rounded-xl text-2xl" aria-hidden="true">
                   {action.emoji}
                 </div>
                 <div className="min-w-0">
@@ -214,8 +214,8 @@ const SupportArtistPage: React.FC = () => {
               onToggle={() => handleToggle('BRL')}
             >
               <div className="space-y-6">
-                <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20 shadow-inner">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-primary uppercase text-sm tracking-widest">
+                <div className="rounded-2xl border border-[#B1A47E]/35 bg-[#F3EBDD]/30 p-6 shadow-inner">
+                  <h4 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#6F8F4E]">
                     <Building2 size={18} /> {t('support.inter.brazil')}
                   </h4>
                   <div className="grid md:grid-cols-2 gap-4">
@@ -288,8 +288,8 @@ const SupportArtistPage: React.FC = () => {
                   </a>
                 </div>
 
-                <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-primary uppercase text-sm tracking-widest">
+                <div className="rounded-2xl border border-[#B1A47E]/35 bg-[#F3EBDD]/30 p-6">
+                  <h4 className="mb-4 flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-[#6F8F4E]">
                     <CreditCard size={18} /> {t('support.payment.paypal_title')}
                   </h4>
                   <div className="grid gap-4 sm:grid-cols-2">
@@ -317,7 +317,7 @@ const SupportArtistPage: React.FC = () => {
         </div>
 
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-20 text-center">
-          <Sparkles className="mx-auto mb-4 text-primary" size={24} />
+          <Sparkles className="mx-auto mb-4 text-[#6F8F4E]" size={24} />
           <p className="mx-auto max-w-3xl text-lg leading-relaxed text-text/70 sm:text-2xl">
             {t('support.thankYou')}
           </p>

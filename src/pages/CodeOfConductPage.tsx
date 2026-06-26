@@ -114,7 +114,7 @@ const CodeOfConductPage: React.FC = () => {
         {/* Background Decorations - Premium Glows */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-0">
           <div className="absolute top-[15%] left-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full animate-pulse" />
-          <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-blue-500/5 blur-[100px] rounded-full" />
+          <div className="absolute top-[10%] right-[10%] w-[30%] h-[30%] bg-[#D9A66A]/10 blur-[100px] rounded-full" />
           <div className="absolute bottom-[25%] right-[-5%] w-[35%] h-[35%] bg-secondary/10 blur-[110px] rounded-full" />
           <div className="absolute bottom-[10%] left-[5%] w-[25%] h-[25%] bg-primary/5 blur-[90px] rounded-full" />
         </div>
@@ -126,8 +126,8 @@ const CodeOfConductPage: React.FC = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
-              <Heart size={40} className="text-primary" />
+            <div className="icon-chip-mediterranean mb-6 h-20 w-20 rounded-full">
+              <Heart size={40} />
             </div>
             <h1 className="text-4xl md:text-6xl font-black font-display mb-6 text-text leading-tight">
               <Trans i18nKey="conduct_page.title_rich" ns="conduct" components={{ 1: <span className="text-primary" /> }} />
@@ -170,8 +170,8 @@ const CodeOfConductPage: React.FC = () => {
                   transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
                   className="card p-6 text-center"
                 >
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-4">
-                    <principle.icon size={32} className="text-primary" />
+                  <div className="icon-chip-mediterranean mb-4 h-16 w-16 rounded-full">
+                    <principle.icon size={32} />
                   </div>
                   <h3 className="text-xl font-bold mb-3">{principle.title}</h3>
                   <p className="text-text/70 mb-4 leading-relaxed">{principle.description}</p>
@@ -232,11 +232,11 @@ const CodeOfConductPage: React.FC = () => {
             initial={FADE_UP_INITIAL}
             animate={FADE_UP_ANIMATE}
             transition={{ duration: 0.6, delay: 1.0 }}
-            className="card p-8 mb-8 bg-gradient-to-br from-primary/10 to-transparent"
+            className="card mb-8 bg-gradient-to-br from-[#F3EBDD]/45 to-transparent p-8"
           >
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
-                <AlertTriangle size={24} className="text-primary" />
+              <div className="icon-chip-mediterranean h-12 w-12 rounded-lg">
+                <AlertTriangle size={24} />
               </div>
               <h2 className="text-2xl font-display font-bold">{t('conduct_page.reporting')}</h2>
             </div>
@@ -305,7 +305,7 @@ const CodeOfConductPage: React.FC = () => {
                   transition={{ duration: 0.6, delay: 1.2 + index * 0.1 }}
                   className="card p-6 flex items-start gap-4"
                 >
-                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold">
+                  <div className="icon-chip-mediterranean h-10 w-10 flex-shrink-0 rounded-full font-bold">
                     {index + 1}
                   </div>
                   <div className="flex-1">
@@ -360,8 +360,8 @@ const CodeOfConductPage: React.FC = () => {
             transition={{ duration: 0.6, delay: 1.6 }}
             className="card p-8 text-center"
           >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/20 mb-4">
-              <Mail size={32} className="text-primary" />
+            <div className="icon-chip-mediterranean mb-4 h-16 w-16 rounded-full">
+              <Mail size={32} />
             </div>
             <h2 className="text-2xl font-display font-bold mb-4">{t('conduct_page.contact')}</h2>
             <p className="text-text/70 mb-6">

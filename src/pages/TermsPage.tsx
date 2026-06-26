@@ -105,8 +105,8 @@ const TermsPage: React.FC = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
           <div className="text-center mb-12 motion-safe:animate-fade-up">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
-              <FileText size={40} className="text-primary" />
+            <div className="icon-chip-mediterranean mb-6 h-20 w-20 rounded-full">
+              <FileText size={40} />
             </div>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
               {t('legal.terms_page.title').split(' ')[0]} <span className="text-primary">{t('legal.terms_page.title').split(' ').slice(1).join(' ')}</span>
@@ -130,8 +130,8 @@ const TermsPage: React.FC = () => {
           {sections.map((section, index) => (
             <div key={index} className="card p-8 mb-6 motion-safe:animate-fade-up">
               <div className="flex items-start gap-4 mb-4">
-                <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <section.icon size={24} className="text-primary" />
+                <div className="icon-chip-mediterranean h-12 w-12 flex-shrink-0 rounded-lg">
+                  <section.icon size={24} />
                 </div>
                 <h2 className="text-2xl font-display font-bold mt-1">{`${index + 1}. ${section.title}`}</h2>
               </div>
@@ -174,7 +174,7 @@ const TermsPage: React.FC = () => {
           </div>
 
           {/* Contact */}
-          <div className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent motion-safe:animate-fade-up">
+          <div className="card bg-gradient-to-br from-[#F3EBDD]/45 to-transparent p-8 text-center motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">{t('legal.terms_page.questions')}</h2>
             <p className="text-text/70 mb-6">
               {t('legal.terms_page.questions_desc')}
