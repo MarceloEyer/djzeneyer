@@ -28,7 +28,11 @@ const EncyclopediaHubPage: React.FC = () => {
   const [query, setQuery] = useState('');
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const prefersReducedMotion = useReducedMotion();
-  const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', currentLang)}/`;
+  // ⚡ Bolt: Cache localized route to a local constant to prevent O(N) recalculations
+  // of getLocalizedRoute inside the component render body (specifically inside lists mapping)
+  // on every reconciliation cycle. No need for useMemo here as getLocalizedRoute is fast, but we want to avoid O(N) loop calls.
+  const encyclopediaRoute = getLocalizedRoute('encyclopedia', currentLang);
+  const pageUrl = `${ARTIST.site.baseUrl}${encyclopediaRoute}/`;
 
   const visibleTerms = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -181,7 +185,7 @@ const EncyclopediaHubPage: React.FC = () => {
                             </div>
                             <h3 className="font-display text-2xl font-black text-text">
                               <Link
-                                to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(item.key)}`}
+                                to={`${encyclopediaRoute}/${toEncyclopediaTermSlug(item.key)}`}
                                 className="transition-colors hover:text-primary"
                               >
                                 {t(`terms.${item.key}.term`, { ns: 'encyclopedia' })}
@@ -205,7 +209,7 @@ const EncyclopediaHubPage: React.FC = () => {
                             {item.relatedTerms.map((related) => (
                               <Link
                                 key={related}
-                                to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(related)}`}
+                                to={`${encyclopediaRoute}/${toEncyclopediaTermSlug(related)}`}
                                 className="inline-flex items-center gap-1 rounded-lg bg-text/5 px-2.5 py-1.5 text-xs font-bold text-primary/75 transition-colors hover:bg-primary/10 hover:text-primary"
                               >
                                 <ChevronRight size={12} />
