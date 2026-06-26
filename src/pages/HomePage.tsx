@@ -69,7 +69,7 @@ const HOME_HERO_IMAGES: Record<SiteTheme, {
   'mediterranean-dusk': {
     defaultSrc: '/images/hero-background-mediterranean-1440.webp',
     mobileSrc: '/images/hero-background-mediterranean-mobile.webp',
-    desktopSrcSet: '/images/hero-background-mediterranean-1440.webp 1440w',
+    desktopSrcSet: '/images/hero-background-mediterranean-1440.webp 1440w, /images/hero-background-mediterranean.webp?v=2 1920w',
     preloadDesktop: '/images/hero-background-mediterranean-1440.webp',
     imageClassName: 'opacity-90',
   },
@@ -210,13 +210,13 @@ const HomePage: React.FC = () => {
           {
             href: heroImages.mobileSrc,
             as: 'image',
-            media: '(max-width: 768px)',
+            media: '(max-width: 768px), (orientation: portrait)',
             fetchPriority: 'high',
           },
           {
             href: heroImages.preloadDesktop,
             as: 'image',
-            media: '(min-width: 769px)',
+            media: '(min-width: 769px) and (orientation: landscape)',
             imageSrcSet: heroImages.desktopSrcSet,
             imageSizes: '100vw',
             fetchPriority: 'high',
@@ -230,12 +230,12 @@ const HomePage: React.FC = () => {
             <div className="w-full h-full">
               <picture>
                 <source
-                  media="(max-width: 768px)"
+                  media="(max-width: 768px), (orientation: portrait)"
                   srcSet={heroImages.mobileSrc}
                   sizes="100vw"
                 />
                 <source
-                  media="(min-width: 769px)"
+                  media="(min-width: 769px) and (orientation: landscape)"
                   srcSet={heroImages.desktopSrcSet}
                   sizes="100vw"
               />

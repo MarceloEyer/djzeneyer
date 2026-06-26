@@ -145,6 +145,20 @@ describe('HomePage — render', () => {
     renderPage();
     expect(screen.getByText('2×')).toBeDefined();
   });
+
+  it('uses portrait and landscape hero sources for responsive windows', () => {
+    const { container } = renderPage();
+    const sources = container.querySelectorAll('picture source');
+    const image = container.querySelector('picture img');
+
+    expect(sources).toHaveLength(2);
+    expect(sources[0].getAttribute('media')).toBe('(max-width: 768px), (orientation: portrait)');
+    expect(sources[0].getAttribute('srcset')).toBe('/images/hero-background-mediterranean-mobile.webp');
+    expect(sources[1].getAttribute('media')).toBe('(min-width: 769px) and (orientation: landscape)');
+    expect(sources[1].getAttribute('srcset')).toContain('/images/hero-background-mediterranean-1440.webp 1440w');
+    expect(sources[1].getAttribute('srcset')).toContain('/images/hero-background-mediterranean.webp?v=2 1920w');
+    expect(image?.getAttribute('src')).toBe('/images/hero-background-mediterranean-1440.webp');
+  });
 });
 
 // ── SEO / schema tests ────────────────────────────────────────────────────────
