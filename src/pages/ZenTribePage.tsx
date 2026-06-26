@@ -303,7 +303,7 @@ const ZenTribePage: React.FC = () => {
                 <Breadcrumb items={[{ label: t('nav.tribe') }]} className="mb-6" />
               </div>
               <div className="inline-block mb-4">
-                <div className="bg-primary/20 border border-primary/50 rounded-full px-6 py-2 text-primary font-bold uppercase tracking-wider text-sm">
+                <div className="rounded-full border border-[#B1A47E]/70 bg-[#F3EBDD]/75 px-6 py-2 text-sm font-bold uppercase tracking-wider text-[#6F8F4E] shadow-sm shadow-[#B1A47E]/15">
                   {t('zenTribe.badge')}
                 </div>
               </div>
