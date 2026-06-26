@@ -54,15 +54,15 @@ Antes de abrir PR, confirme todos os itens:
 2. O diff resolve uma causa real, não apenas uma hipótese genérica extraída de comentário ou learning.
 3. O PR é pequeno, tem um domínio único e não duplica PR aberto.
 4. Existe validação proporcional ao risco (`npm run lint`, teste específico, diff manual ou benchmark reproduzível).
-5. Para performance, existe evidência objetiva de impacto: profiler, benchmark, Core Web Vitals, endpoint lento, lista grande, render frequente em hot path, N+1 real, ou regressão visível.
+5. Para desempenho, existe evidência objetiva de impacto: profiler, benchmark, Core Web Vitals, endpoint lento, lista grande, render frequente em hot path, N+1 real, ou regressão visível.
 
 Não abrir PR automaticamente para:
 
 - Limpeza de comentários, docblocks, changelog ou palavras como `FIX`, `CRITICAL`, `TODO`, salvo pedido humano explícito.
 - Micro-otimizações de renderização sem evidência de profiler, hot path ou regressão visível.
 - Trocar chamadas locais repetidas por constantes, `useMemo`, `useCallback`, arrays estáveis ou mapas quando o valor não atravessa fronteira de memoização, não alimenta dependência de hook, não roda sobre lista grande e não tem métrica antes/depois.
-- PRs com título/body que vendem melhoria como `memoize`, `O(N)`, `N+1`, `GC pressure` ou `performance bottleneck` sem demonstrar a cardinalidade real e o custo medido no código atual.
-- Refactors de performance em PHP/GamiPress/WooCommerce sem benchmark, fixture ou revisão manual planejada.
+- PRs com título/descrição que vendem melhoria como `memoize`, `O(N)`, `N+1`, `GC pressure` ou `gargalo de desempenho` sem demonstrar a cardinalidade real e o custo medido no código atual.
+- Refactors de desempenho em PHP/GamiPress/WooCommerce sem benchmark, fixture ou revisão manual planejada.
 - Mudanças em arquivos de contexto, workflows, autenticação, SEO/head, rotas ou deploy sem pedido explícito.
 - Alterações geradas apenas por `.jules/bolt.md`. Esse arquivo é memória, não backlog; em auditorias programadas ele pode orientar a busca, mas não substitui evidência no código.
 
@@ -72,7 +72,7 @@ Em rotina programada de auditoria, abrir PR apenas para achados relevantes:
 - Cache ausente, cache mal invalidado ou transiente que causa resposta errada/lenta.
 - Segurança: input sem sanitização, redirect inseguro, nonce/auth incorreto, exposição de dado privado.
 - SEO técnico: soft 404, canonical incorreto, rotas inválidas, head duplicado, schema falso/invisível.
-- Performance frontend em hot path comprovado por lista grande, render frequente, profiler, métrica ou custo algorítmico claro.
+- Desempenho frontend em hot path comprovado por lista grande, render frequente, profiler, métrica ou custo algorítmico claro.
 
 Regra de escala: micro-otimização de render no cliente não aumenta a capacidade de tráfego do site. Cada visitante executa seu próprio JavaScript; mais usuários simultâneos afetam principalmente backend, CDN, cache, payload, imagens, Core Web Vitals e APIs. Otimize render local somente quando a experiência de um usuário real for afetada.
 

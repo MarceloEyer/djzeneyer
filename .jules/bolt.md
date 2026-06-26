@@ -115,6 +115,7 @@
 **Action:** Do not open standalone PRs just to hoist repeated `getLocalizedRoute` calls or similar cheap deterministic helpers. Fold this cleanup into nearby feature work only when it improves readability, or require profiler/benchmark evidence that the render path is actually hot.
 
 ## 2026-06-27 - Inline Spread of Arrays in React Render Cycles
+
 **Learning:** Inline array spreads allocate a new array, but that is only meaningful for large arrays, frequent renders, memoized child boundaries, or measured UI stutter.
 **Action:** Prefer clarity for small arrays. Use `useMemo` for array combinations only when the array is large, passed as a stable prop/dependency, or a profiler/benchmark shows material cost.
 
@@ -124,6 +125,7 @@
 **Action:** Extract static arrays or replace allocating string operations only for large/measured render paths, shared constants, or code touched for another reason. Do not create standalone PRs for this pattern without evidence.
 
 ## 2024-05-18 - Replacing `String.prototype.split()` with zero-allocation alternatives
+
 **Learning:** `String.prototype.split()` creates an intermediate array, which adds overhead and garbage collection pressure, particularly in hot paths like routing maps or render loops.
 **Action:** When extracting substrings or indices in performance-critical code paths, utilize zero-allocation native string methods like `indexOf()` combined with `slice()` instead of chained `.split()` calls. Focus primarily on hot paths and leave isolated, infrequent calls alone.
 
