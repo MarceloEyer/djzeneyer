@@ -463,7 +463,7 @@ const HomePage: React.FC = () => {
       <section className="py-12 bg-background border-t border-border/5">
         <div className="container mx-auto px-4 text-center">
           <div>
-            <p className="text-xs font-semibold text-text/55 mb-4 uppercase tracking-widest">{th('verified')}</p>
+            <p className="text-xs font-semibold text-text/75 mb-4 uppercase tracking-widest">{th('verified')}</p>
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <a href={safeUrl(`https://musicbrainz.org/artist/${ARTIST.identifiers.musicbrainz}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">{t('social.musicbrainz')} <ExternalLink size={10} /></a>
               <a href={safeUrl(`https://www.wikidata.org/wiki/${ARTIST.identifiers.wikidata}`, '/')} target="_blank" rel="noopener noreferrer" className="text-text/65 hover:text-primary transition-colors flex items-center gap-1">{t('social.wikidata')} <ExternalLink size={10} /></a>
