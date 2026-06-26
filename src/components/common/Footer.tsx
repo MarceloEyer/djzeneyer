@@ -6,21 +6,20 @@ import { Music, Music2, MessageCircle, SendHorizontal, Heart } from 'lucide-reac
 import { FacebookIcon, InstagramIcon, YouTubeIcon } from '../icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
-import { useSubscriptionMutation } from '../../hooks/useQueries';
+import { subscribeToNewsletter } from '../../services/newsletterService';
 import { safeUrl } from '../../utils/sanitize';
 
 
 const Footer: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<boolean | null>(null);
   const currentLang = normalizeLanguage(i18n.language);
   const location = useLocation();
   const footerSignatures = [t('footer_signature_cremosidade'), t('footer_signature_terror')];
   const footerSignature = footerSignatures[location.pathname.length % footerSignatures.length];
-
-  const { mutate: subscribe, isPending: isSubmitting } = useSubscriptionMutation();
 
   // This avoids recalculating static footer hrefs on every render cycle.
   const routes = useMemo(() => ({
@@ -40,7 +39,7 @@ const Footer: React.FC = () => {
     terms: getLocalizedRoute('terms', currentLang),
   }), [currentLang]);
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitMessage(null);
     setSubmitSuccess(null);
@@ -51,18 +50,19 @@ const Footer: React.FC = () => {
       return;
     }
 
-    subscribe(email, {
-      onSuccess: (data) => {
-        setSubmitMessage(data.message || t('footer_subscribe_success'));
-        setSubmitSuccess(true);
-        setEmail('');
-      },
-      onError: (err: unknown) => {
-        const error = err as Error;
-        setSubmitMessage(error.message || t('footer_subscribe_error'));
-        setSubmitSuccess(false);
-      },
-    });
+    setIsSubmitting(true);
+    try {
+      const data = await subscribeToNewsletter(email);
+      setSubmitMessage(data.message || t('footer_subscribe_success'));
+      setSubmitSuccess(true);
+      setEmail('');
+    } catch (err) {
+      const error = err as Error;
+      setSubmitMessage(error.message || t('footer_subscribe_error'));
+      setSubmitSuccess(false);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const whatsappLink = `https://wa.me/${ARTIST.contact.whatsapp.number}`;

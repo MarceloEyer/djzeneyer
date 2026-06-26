@@ -1,11 +1,5 @@
 import React from 'react';
 import { Breadcrumb, type BreadcrumbItem } from '../Breadcrumb';
-import { motion } from 'framer-motion';
-
-// Issue B — Framer Motion inline objects extracted to module scope (Style Rule 6)
-const PAGE_HEADER_INITIAL = { opacity: 0, y: 20 };
-const PAGE_HEADER_ANIMATE = { opacity: 1, y: 0 };
-const PAGE_HEADER_TRANSITION = { duration: 0.6 };
 
 interface PageHeaderProps {
   /** First part of the title (rendered with the semantic text token) */
@@ -39,17 +33,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       )}
 
       {/* Title - Standardized Display Font, Blue and White */}
-      <motion.h1
-        initial={PAGE_HEADER_INITIAL}
-        animate={PAGE_HEADER_ANIMATE}
-        transition={PAGE_HEADER_TRANSITION}
+      <h1
         className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black font-display uppercase tracking-tighter text-text ${
           hasBreadcrumbs ? 'pt-16' : ''
-        } ${centerTitle ? 'text-center' : 'text-left'}`}
+        } ${centerTitle ? 'text-center' : 'text-left'} motion-safe:animate-fade-up`}
       >
         {titlePart1}{' '}
         {titlePart2 && <span className="text-primary">{titlePart2}</span>}
-      </motion.h1>
+      </h1>
     </header>
   );
 };
