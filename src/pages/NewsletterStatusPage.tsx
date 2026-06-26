@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { CheckCircle2, HeartHandshake, MailCheck, MailQuestion, Settings2, ShieldCheck, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -13,9 +12,6 @@ type NewsletterLang = 'en' | 'pt';
 interface NewsletterStatusPageProps {
   mode?: NewsletterPageMode;
 }
-
-const FADE_IN_UP_INITIAL = { opacity: 0, y: 20 };
-const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
 
 const getCurrentLangFromPath = (pathname: string): NewsletterLang => (
   pathname === '/pt' || pathname.startsWith('/pt/') ? 'pt' : 'en'
@@ -47,12 +43,7 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
 
       <main className="min-h-screen bg-background text-text pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">
-          <motion.section
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6 }}
-            className="relative overflow-hidden rounded-[2rem] border border-border/10 bg-gradient-to-br from-primary/20 via-surface/80 to-background p-6 md:p-12 shadow-2xl"
-          >
+          <section className="relative overflow-hidden rounded-[2rem] border border-border/10 bg-gradient-to-br from-primary/20 via-surface/80 to-background p-6 md:p-12 shadow-2xl motion-safe:animate-fade-up">
             <div className="absolute -right-24 -top-24 h-64 w-64 rounded-full bg-primary/20 blur-3xl" aria-hidden="true" />
             <div className="absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-text/5 blur-3xl" aria-hidden="true" />
 
@@ -97,13 +88,11 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                 </ol>
               </div>
             </div>
-          </motion.section>
+          </section>
 
-          <motion.section
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 0.12 }}
-            className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.85fr]"
+          <section
+            className="mt-8 grid gap-6 lg:grid-cols-[1fr_0.85fr] motion-safe:animate-fade-up"
+            style={{ animationDelay: '120ms' }}
           >
             <div className="card p-6 md:p-8">
               <div className="mb-5 flex items-center gap-3">
@@ -133,20 +122,18 @@ const NewsletterStatusPage: React.FC<NewsletterStatusPageProps> = ({ mode = 'con
                 {t(`${mode}.note`)}
               </div>
             </aside>
-          </motion.section>
+          </section>
 
           {mode === 'preferences' && (
-            <motion.div
-              initial={FADE_IN_UP_INITIAL}
-              animate={FADE_IN_UP_ANIMATE}
-              transition={{ duration: 0.6, delay: 0.18 }}
-              className="mt-6 flex items-center gap-3 rounded-2xl border border-border/10 bg-surface/50 p-5 text-text/70"
+            <div
+              className="mt-6 flex items-center gap-3 rounded-2xl border border-border/10 bg-surface/50 p-5 text-text/70 motion-safe:animate-fade-up"
+              style={{ animationDelay: '180ms' }}
             >
               <CheckCircle2 className="flex-shrink-0 text-primary" size={24} />
               <p className="leading-relaxed">
                 {t('preferences.recommended_standard')}
               </p>
-            </motion.div>
+            </div>
           )}
         </div>
       </main>

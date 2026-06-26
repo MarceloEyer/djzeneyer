@@ -1,14 +1,10 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import { FileText, AlertCircle, Scale, Ban, CheckCircle } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 
 
-// ⚡ Bolt: Extract static framer-motion variants to preserve object references and prevent unnecessary reallocations
-const FADE_IN_UP_INITIAL = { opacity: 0, y: 20 };
-const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
 
 const TermsPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'legal']);
@@ -108,12 +104,7 @@ const TermsPage: React.FC = () => {
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12 motion-safe:animate-fade-up">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
               <FileText size={40} className="text-primary" />
             </div>
@@ -123,32 +114,21 @@ const TermsPage: React.FC = () => {
             <p className="text-text/70">
               {t('legal.terms_page.last_updated')}: <span className="text-primary font-semibold">{t('legal.terms_page.last_updated_date')}</span>
             </p>
-          </motion.div>
+          </div>
 
           {/* Introduction */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="card p-8 mb-8 border-l-4 border-primary"
-          >
+          <div className="card p-8 mb-8 border-l-4 border-primary motion-safe:animate-fade-up">
             <p className="text-lg text-text/80 leading-relaxed mb-4">
               {t('legal.terms_page.introduction')}
             </p>
             <p className="text-text/70 leading-relaxed">
               {t('legal.terms_page.introduction_agreement')}
             </p>
-          </motion.div>
+          </div>
 
           {/* Main Sections */}
           {sections.map((section, index) => (
-            <motion.div
-              key={index}
-              initial={FADE_IN_UP_INITIAL}
-              animate={FADE_IN_UP_ANIMATE}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              className="card p-8 mb-6"
-            >
+            <div key={index} className="card p-8 mb-6 motion-safe:animate-fade-up">
               <div className="flex items-start gap-4 mb-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                   <section.icon size={24} className="text-primary" />
@@ -156,18 +136,12 @@ const TermsPage: React.FC = () => {
                 <h2 className="text-2xl font-display font-bold mt-1">{`${index + 1}. ${section.title}`}</h2>
               </div>
               <p className="text-text/70 leading-relaxed ml-16">{section.content}</p>
-            </motion.div>
+            </div>
           ))}
 
           {/* Additional Terms */}
           {additionalTerms.map((term, index) => (
-            <motion.div
-              key={index}
-              initial={FADE_IN_UP_INITIAL}
-              animate={FADE_IN_UP_ANIMATE}
-              transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-              className="card p-8 mb-6"
-            >
+            <div key={index} className="card p-8 mb-6 motion-safe:animate-fade-up">
               <h2 className="text-2xl font-display font-bold mb-4">{`${index + 5}. ${term.title}`}</h2>
               <ul className="space-y-3">
                 {term.points.map((point, i) => (
@@ -177,16 +151,11 @@ const TermsPage: React.FC = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
 
           {/* Governing Law */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 1.1 }}
-            className="card p-8 mb-6"
-          >
+          <div className="card p-8 mb-6 motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">10. {t('legal.terms_page.governing_law')}</h2>
             <p className="text-text/70 leading-relaxed mb-4">
               {t('legal.terms_page.law_brazil')}
@@ -194,28 +163,18 @@ const TermsPage: React.FC = () => {
             <p className="text-text/70 leading-relaxed">
               {t('legal.terms_page.law_consent')}
             </p>
-          </motion.div>
+          </div>
 
           {/* Modifications */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 1.2 }}
-            className="card p-8 mb-6"
-          >
+          <div className="card p-8 mb-6 motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">11. {t('legal.terms_page.modifications')}</h2>
             <p className="text-text/70 leading-relaxed">
               {t('legal.terms_page.modifications_desc')}
             </p>
-          </motion.div>
+          </div>
 
           {/* Contact */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 1.3 }}
-            className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
-          >
+          <div className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">{t('legal.terms_page.questions')}</h2>
             <p className="text-text/70 mb-6">
               {t('legal.terms_page.questions_desc')}
@@ -232,17 +191,12 @@ const TermsPage: React.FC = () => {
                 contact@djzeneyer.com
               </a>
             </div>
-          </motion.div>
+          </div>
 
           {/* Acceptance */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 1.4 }}
-            className="text-center text-text/50 text-sm mt-8"
-          >
+          <div className="text-center text-text/50 text-sm mt-8 motion-safe:animate-fade-up">
             <p>{t('legal.terms_page.acceptance_footer')}</p>
-          </motion.div>
+          </div>
         </div>
       </div>
     </>

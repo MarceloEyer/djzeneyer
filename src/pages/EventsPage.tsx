@@ -388,7 +388,7 @@ const EventsPage: React.FC = () => {
 
         <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-border/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
           <Music className="absolute -right-8 -bottom-8 text-text/5 w-48 h-48 rotate-12 z-10" />
-          <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('home.press_title')}</h2>
+          <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('events.press_title')}</h2>
           <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
             <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
             <a href={safeUrl(pressKitUrl, '/')} className="btn btn-outline border-border/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>

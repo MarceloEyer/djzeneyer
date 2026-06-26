@@ -1,14 +1,8 @@
 import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Shield, Lock, Eye, Database, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-
-
-// ⚡ Bolt: Module-scoped constants to prevent unnecessary object reallocation on every render cycle.
-const FADE_IN_UP_INITIAL = { opacity: 0, y: 20 };
-const FADE_IN_UP_ANIMATE = { opacity: 1, y: 0 };
 
 const PrivacyPolicyPage: React.FC = () => {
   const { t, i18n } = useTranslation(['translation', 'privacy']);
@@ -59,12 +53,7 @@ const PrivacyPolicyPage: React.FC = () => {
       <div className="min-h-screen pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-4xl">
           {/* Header */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
+          <div className="text-center mb-12 motion-safe:animate-fade-up">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-primary/20 mb-6">
               <Shield size={40} className="text-primary" />
             </div>
@@ -74,32 +63,21 @@ const PrivacyPolicyPage: React.FC = () => {
             <p className="text-text/70">
               {t('privacy_page.last_updated')}: <span className="text-primary font-semibold">{t('privacy_page.last_updated_date')}</span>
             </p>
-          </motion.div>
+          </div>
 
           {/* Introduction */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="card p-8 mb-8"
-          >
+          <div className="card p-8 mb-8 motion-safe:animate-fade-up">
             <p className="text-lg text-text/80 leading-relaxed mb-4">
               {t('privacy_page.intro_p1')}
             </p>
             <p className="text-text/70 leading-relaxed">
               {t('privacy_page.intro_p2')}
             </p>
-          </motion.div>
+          </div>
 
           {/* Sections */}
           {sections.map((section, index) => (
-            <motion.div
-              key={index}
-              initial={FADE_IN_UP_INITIAL}
-              animate={FADE_IN_UP_ANIMATE}
-              transition={{ duration: 0.6, delay: 0.2 + index * 0.1 }}
-              className="card p-8 mb-6"
-            >
+            <div key={index} className="card p-8 mb-6 motion-safe:animate-fade-up">
               <div className="flex items-start gap-4 mb-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
                   <section.icon size={24} className="text-primary" />
@@ -114,16 +92,11 @@ const PrivacyPolicyPage: React.FC = () => {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
 
           {/* Cookies */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 0.7 }}
-            className="card p-8 mb-6"
-          >
+          <div className="card p-8 mb-6 motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.cookies_title')}</h2>
             <p className="text-text/70 leading-relaxed mb-4">
               {t('privacy_page.cookies_p1')}
@@ -131,15 +104,10 @@ const PrivacyPolicyPage: React.FC = () => {
             <p className="text-text/70 leading-relaxed">
               {t('privacy_page.cookies_p2')}
             </p>
-          </motion.div>
+          </div>
 
           {/* Third-Party Services */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="card p-8 mb-6"
-          >
+          <div className="card p-8 mb-6 motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.third_party_title')}</h2>
             <p className="text-text/70 leading-relaxed mb-4">
               {t('privacy_page.third_party_p1')}
@@ -149,15 +117,10 @@ const PrivacyPolicyPage: React.FC = () => {
               <p className="text-text/80"><strong>{t('privacy_page.third_party_payments').split(':')[0]}:</strong>{t('privacy_page.third_party_payments').split(':')[1]}</p>
               <p className="text-text/80"><strong>{t('privacy_page.third_party_email').split(':')[0]}:</strong>{t('privacy_page.third_party_email').split(':')[1]}</p>
             </div>
-          </motion.div>
+          </div>
 
           {/* LGPD Compliance */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 0.9 }}
-            className="card p-8 mb-6 border-l-4 border-primary"
-          >
+          <div className="card p-8 mb-6 border-l-4 border-primary motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.lgpd_title')}</h2>
             <p className="text-text/70 leading-relaxed mb-4">
               {t('privacy_page.lgpd_p1')}
@@ -170,28 +133,18 @@ const PrivacyPolicyPage: React.FC = () => {
                 </li>
               ))}
             </ul>
-          </motion.div>
+          </div>
 
           {/* Changes to Policy */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 1.0 }}
-            className="card p-8 mb-6"
-          >
+          <div className="card p-8 mb-6 motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.changes_title')}</h2>
             <p className="text-text/70 leading-relaxed">
               {t('privacy_page.changes_p1')}
             </p>
-          </motion.div>
+          </div>
 
           {/* Contact */}
-          <motion.div
-            initial={FADE_IN_UP_INITIAL}
-            animate={FADE_IN_UP_ANIMATE}
-            transition={{ duration: 0.6, delay: 1.1 }}
-            className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent"
-          >
+          <div className="card p-8 text-center bg-gradient-to-br from-primary/10 to-transparent motion-safe:animate-fade-up">
             <h2 className="text-2xl font-display font-bold mb-4">{t('privacy_page.contact_title')}</h2>
             <p className="text-text/70 mb-6">
               {t('privacy_page.contact_p1')}
@@ -208,7 +161,7 @@ const PrivacyPolicyPage: React.FC = () => {
                 contact@djzeneyer.com
               </a>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     </>

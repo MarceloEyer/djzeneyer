@@ -1,13 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
-
-const BREADCRUMB_INITIAL = { opacity: 0, y: -8 };
-const BREADCRUMB_ANIMATE = { opacity: 1, y: 0 };
-const BREADCRUMB_TRANSITION = { duration: 0.4, ease: 'easeOut' };
 
 export interface BreadcrumbItem {
   label: string;
@@ -24,12 +19,9 @@ const BreadcrumbInner: React.FC<BreadcrumbProps> = ({ items, className = '' }) =
   const currentLang = normalizeLanguage(i18n.language);
 
   return (
-    <motion.nav
+    <nav
       aria-label={t('nav.breadcrumb')}
-      className={`${className} w-full text-left`}
-      initial={BREADCRUMB_INITIAL}
-      animate={BREADCRUMB_ANIMATE}
-      transition={BREADCRUMB_TRANSITION}
+      className={`${className} w-full text-left motion-safe:animate-fade-down`}
     >
       <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-text/75">
         <li>
@@ -59,7 +51,7 @@ const BreadcrumbInner: React.FC<BreadcrumbProps> = ({ items, className = '' }) =
           </li>
         ))}
       </ol>
-    </motion.nav>
+    </nav>
   );
 };
 
