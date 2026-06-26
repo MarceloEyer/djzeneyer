@@ -180,6 +180,32 @@ const SupportArtistPage: React.FC = () => {
           </h2>
 
           <div className="max-w-4xl mx-auto">
+            {/* EUR / EURO */}
+            <CurrencyAccordion
+              title={t('support.payment.eur_title')}
+              icon={Globe}
+              isOpen={openCurrency === 'EUR'}
+              onToggle={() => handleToggle('EUR')}
+            >
+              <div className="space-y-6">
+                <div className="p-6 bg-success/5 rounded-2xl border border-success/20">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-success uppercase text-sm tracking-widest">
+                    <Globe size={18} /> {t('support.payment.wise_eur_title')}
+                  </h4>
+                  <p className="mb-4 text-sm leading-relaxed text-text/65">
+                    {t('support.payment.eur_note')}
+                  </p>
+                  <div className="grid md:grid-cols-2 gap-4 mb-4">
+                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.eur.accountName} />
+                    <DetailCard label={t('support.iban')} value={ARTIST.payment.wise.eur.iban} />
+                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.wise.eur.swiftCode} />
+                    <DetailCard label={t('support.bank')} value={ARTIST.payment.wise.eur.bankName} />
+                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.wise.eur.bankAddress} />
+                  </div>
+                </div>
+              </div>
+            </CurrencyAccordion>
+
             {/* BRL / REAL */}
             <CurrencyAccordion
               title={t('support.payment.brl_title')}
@@ -239,24 +265,11 @@ const SupportArtistPage: React.FC = () => {
               <div className="space-y-6">
                 <div className="p-6 bg-success/5 rounded-2xl border border-success/20">
                   <h4 className="flex items-center gap-2 font-bold mb-4 text-success uppercase text-sm tracking-widest">
-                    <Globe size={18} /> {t('support.payment.wise_eur_title')}
+                    <Globe size={18} /> {t('support.payment.wise_aud_payid_title')}
                   </h4>
                   <p className="mb-4 text-sm leading-relaxed text-text/65">
                     {t('support.payment.global_note')}
                   </p>
-                  <div className="grid md:grid-cols-2 gap-4 mb-4">
-                    <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.eur.accountName} />
-                    <DetailCard label={t('support.iban')} value={ARTIST.payment.wise.eur.iban} />
-                    <DetailCard label={t('support.swiftCode')} value={ARTIST.payment.wise.eur.swiftCode} />
-                    <DetailCard label={t('support.bank')} value={ARTIST.payment.wise.eur.bankName} />
-                    <DetailCard label={t('support.bankAddress')} value={ARTIST.payment.wise.eur.bankAddress} />
-                  </div>
-                </div>
-
-                <div className="p-6 bg-success/5 rounded-2xl border border-success/20">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-success uppercase text-sm tracking-widest">
-                    <Globe size={18} /> {t('support.payment.wise_aud_payid_title')}
-                  </h4>
                   <div className="grid md:grid-cols-2 gap-4 mb-4">
                     <DetailCard label={t('support.accountName')} value={ARTIST.payment.wise.aud.accountName} />
                     <DetailCard label={t('support.payIdPhone')} value={ARTIST.payment.wise.aud.payIdPhone} />
@@ -275,8 +288,8 @@ const SupportArtistPage: React.FC = () => {
                   </a>
                 </div>
 
-                <div className="p-6 bg-blue-500/5 rounded-2xl border border-blue-500/20">
-                  <h4 className="flex items-center gap-2 font-bold mb-4 text-blue-400 uppercase text-sm tracking-widest">
+                <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20">
+                  <h4 className="flex items-center gap-2 font-bold mb-4 text-primary uppercase text-sm tracking-widest">
                     <CreditCard size={18} /> {t('support.payment.paypal_title')}
                   </h4>
                   <div className="grid gap-4 sm:grid-cols-2">

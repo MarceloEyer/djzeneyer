@@ -262,7 +262,7 @@ const HomePage: React.FC = () => {
             </h1>
 
             {currentTheme === 'mediterranean-dusk' && (
-              <div className="flex items-center gap-3 mb-6 max-w-[260px]" aria-hidden="true">
+              <div className="mx-auto md:mx-0 flex w-full max-w-[34rem] items-center gap-3 mb-6" aria-hidden="true">
                 <div className="h-px bg-secondary/60 flex-1" />
                 <span className="text-secondary/80 text-base leading-none select-none">✦</span>
                 <div className="h-px bg-secondary/60 flex-1" />
