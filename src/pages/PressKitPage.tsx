@@ -62,11 +62,11 @@ const MediaKitCard = memo<{
     href={path}
     target="_blank"
     rel="noopener noreferrer"
-    className="group flex h-full flex-col rounded-2xl border border-border/10 bg-surface/50 p-8 backdrop-blur-sm transition-all hover:border-primary hover:bg-surface/80"
+    className="group flex h-full flex-col rounded-2xl border border-border/10 bg-surface/50 p-8 backdrop-blur-sm transition-all hover:border-[#B1A47E]/70 hover:bg-surface/80"
     whileHover={MEDIA_CARD_HOVER}
     transition={{ type: 'spring', stiffness: 300 }}
   >
-    <div className="mx-auto mb-4 inline-block rounded-full bg-primary/10 p-4 text-primary transition-transform group-hover:scale-110">
+    <div className="icon-chip-mediterranean mx-auto mb-4 rounded-full p-4 transition-transform group-hover:scale-110">
       {icon}
     </div>
     <h3 className="mb-2 text-xl font-bold text-text">{title}</h3>
@@ -129,7 +129,7 @@ const PressKitPage: React.FC = () => {
         number: artist.stats.countriesPlayed.toString(),
         label: t('presskit.stats.countries'),
         icon: <Globe size={32} />,
-        color: 'bg-gradient-to-br from-primary/65 to-primary/40'
+        color: 'bg-gradient-to-br from-[#6F8F4E]/65 to-[#B1A47E]/45'
       },
       {
         number: `${new Date().getFullYear() - artist.stats.startingYear}+`,
@@ -158,7 +158,7 @@ const PressKitPage: React.FC = () => {
       {
         title: t('presskit.bio.quickStats.cremosidade'),
         desc: t('presskit.bio.quickStats.cremosidade_desc'),
-        icon: <Star size={20} className="text-primary" />
+        icon: <Star size={20} className="text-[#6F8F4E]" />
       },
       {
         title: t('presskit.bio.quickStats.repertoire'),
@@ -235,7 +235,7 @@ const PressKitPage: React.FC = () => {
               <div className="flex justify-center">
                 <Breadcrumb items={[{ label: t('nav.presskit') }]} className="mb-6" />
               </div>
-              <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-5 py-2 text-xs font-bold uppercase tracking-[0.28em] text-primary">
+              <div className="badge-mediterranean px-5 tracking-[0.28em]">
                 {t('presskit.tag')}
               </div>
               <h1 className="mt-6 text-2xl sm:text-4xl font-black uppercase tracking-tight text-text md:text-6xl">
@@ -287,7 +287,7 @@ const PressKitPage: React.FC = () => {
                     />
                     <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
                     <div className="absolute bottom-6 left-6 right-6">
-                      <span className="text-xs font-bold uppercase tracking-widest text-primary">{t('presskit.bio.photo_label', { year: ARTIST.titles.year })}</span>
+                      <span className="text-xs font-bold uppercase tracking-widest text-[#6F8F4E]">{t('presskit.bio.photo_label', { year: ARTIST.titles.year })}</span>
                       <h3 className="text-2xl font-bold">{t('presskit.bio.role')}</h3>
                     </div>
                   </motion.div>
@@ -295,7 +295,7 @@ const PressKitPage: React.FC = () => {
 
                 <div>
                   <h2 className="mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4 text-3xl sm:text-5xl font-black">
-                    <Music2 className="text-primary w-8 h-8 sm:w-12 sm:h-12" />
+                    <Music2 className="h-8 w-8 text-[#6F8F4E] sm:h-12 sm:w-12" />
                     {t('presskit.bio.title')}
                   </h2>
 
@@ -308,7 +308,7 @@ const PressKitPage: React.FC = () => {
                   <div className="mt-12 grid grid-cols-2 gap-6 rounded-3xl border border-border/5 bg-surface/50 p-4 sm:p-8">
                     {quickStatsItems.map((item, index) => (
                       <div key={index} className="flex items-start gap-3">
-                        <div className="rounded-xl bg-primary/10 p-3">{item.icon}</div>
+                        <div className="icon-chip-mediterranean rounded-xl p-3">{item.icon}</div>
                         <div>
                           <div className="text-base font-bold leading-tight text-text">{item.title}</div>
                           <div className="text-sm text-text/50">{item.desc}</div>
@@ -340,7 +340,7 @@ const PressKitPage: React.FC = () => {
                   </div>
                   <button
                     onClick={handleCopyBio}
-                    className="flex items-center gap-2 rounded-xl bg-primary/20 px-5 py-2.5 text-sm font-bold text-primary transition-all hover:bg-primary/30 min-h-[44px]"
+                    className="btn-mediterranean-soft min-h-[44px]"
                   >
                     {isCopied ? <Check size={16} /> : <Copy size={16} />}
                     {isCopied ? t('presskit.canonical_bio.copied') : t('presskit.canonical_bio.copy_button')}
@@ -467,7 +467,7 @@ const PressKitPage: React.FC = () => {
               viewport={{ once: true }}
               className="mx-auto max-w-4xl text-center"
             >
-              <div className="rounded-[2rem] sm:rounded-[3rem] border border-border/10 bg-gradient-to-br from-primary/10 via-surface/50 to-accent/10 p-6 sm:p-16 shadow-3xl">
+              <div className="rounded-[2rem] border border-[#B1A47E]/30 bg-gradient-to-br from-[#F3EBDD]/70 via-surface/50 to-accent/10 p-6 shadow-3xl sm:rounded-[3rem] sm:p-16">
                 <h2 className="mb-6 sm:mb-8 text-3xl sm:text-5xl font-black uppercase tracking-tighter md:text-6xl">{t('presskit.contact.title')}</h2>
                 <p className="mx-auto mb-8 sm:mb-12 max-w-2xl text-base sm:text-xl leading-relaxed text-text/60">{t('presskit.contact.subtitle')}</p>
 
@@ -488,8 +488,8 @@ const PressKitPage: React.FC = () => {
                 <div className="mt-8 sm:mt-16 border-t border-border/10 pt-6 sm:pt-10">
                   <div className="mb-12 grid gap-10 text-left md:grid-cols-3">
                     <div className="flex items-start gap-4">
-                      <div className="rounded-lg bg-primary/20 p-2">
-                        <MapPin className="text-primary" size={24} />
+                      <div className="icon-chip-mediterranean rounded-lg p-2">
+                        <MapPin size={24} />
                       </div>
                       <div>
                         <div className="mb-1 text-xs font-bold uppercase tracking-wider text-text">{t('presskit.contact.base')}</div>
@@ -497,8 +497,8 @@ const PressKitPage: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="rounded-lg bg-primary/20 p-2">
-                        <Calendar className="text-primary" size={24} />
+                      <div className="icon-chip-mediterranean rounded-lg p-2">
+                        <Calendar size={24} />
                       </div>
                       <div>
                         <div className="mb-1 text-xs font-bold uppercase tracking-wider text-text">{t('presskit.contact.availability')}</div>
@@ -506,8 +506,8 @@ const PressKitPage: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-start gap-4">
-                      <div className="rounded-lg bg-primary/20 p-2">
-                        <Globe className="text-primary" size={24} />
+                      <div className="icon-chip-mediterranean rounded-lg p-2">
+                        <Globe size={24} />
                       </div>
                       <div>
                         <div className="mb-1 text-xs font-bold uppercase tracking-wider text-text">{t('presskit.contact.booking_label')}</div>

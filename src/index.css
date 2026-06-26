@@ -186,6 +186,31 @@
   .badge-error {
     @apply bg-error/20 text-[rgb(var(--color-error-light))] border border-error/30;
   }
+  .badge-mediterranean {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-widest shadow-sm;
+    background: rgba(243, 235, 221, 0.78);
+    border-color: rgba(177, 164, 126, 0.7);
+    color: #6f8f4e;
+    box-shadow: 0 1px 8px rgba(177, 164, 126, 0.15);
+  }
+  .icon-chip-mediterranean {
+    @apply inline-flex items-center justify-center border shadow-sm;
+    background: rgba(243, 235, 221, 0.82);
+    border-color: rgba(177, 164, 126, 0.55);
+    color: #2d728f;
+    box-shadow: 0 1px 8px rgba(177, 164, 126, 0.12);
+  }
+  .btn-mediterranean-soft {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-sm font-bold shadow-sm transition-all;
+    background: rgba(243, 235, 221, 0.82);
+    border-color: rgba(177, 164, 126, 0.6);
+    color: #2d728f;
+    box-shadow: 0 1px 8px rgba(177, 164, 126, 0.15);
+  }
+  .btn-mediterranean-soft:hover {
+    background: #efe3cc;
+    color: #b85c38;
+  }
 
   /* ========== INPUTS ========== */
   .input {

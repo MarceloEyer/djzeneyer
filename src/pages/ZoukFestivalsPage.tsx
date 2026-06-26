@@ -114,7 +114,7 @@ const ZoukFestivalsPage: React.FC = () => {
             animate={prefersReducedMotion ? undefined : 'visible'}
             className="mb-14"
           >
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary">
+            <div className="badge-mediterranean mb-4">
               <Globe size={14} />
               {t('hub_pages.zouk_festivals.breadcrumb')}
             </div>

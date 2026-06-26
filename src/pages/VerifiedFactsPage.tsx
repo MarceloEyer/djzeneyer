@@ -82,7 +82,7 @@ const VerifiedFactsPage: React.FC = () => {
           <Breadcrumb items={[{ label: t('verified_facts.nav_label') }]} className="mb-10" />
 
           <header className="mb-12 text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary">
+            <div className="badge-mediterranean mb-6">
               <ShieldCheck size={14} />
               {t('verified_facts.badge')}
             </div>
