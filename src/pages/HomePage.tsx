@@ -67,9 +67,9 @@ const HOME_HERO_IMAGES: Record<SiteTheme, {
   imageClassName: string;
 }> = {
   'mediterranean-dusk': {
-    defaultSrc: '/images/hero-background-mediterranean.webp',
+    defaultSrc: '/images/hero-background-mediterranean-1440.webp',
     mobileSrc: '/images/hero-background-mediterranean-mobile.webp',
-    desktopSrcSet: '/images/hero-background-mediterranean-1440.webp 1440w, /images/hero-background-mediterranean.webp 1920w',
+    desktopSrcSet: '/images/hero-background-mediterranean-1440.webp 1440w',
     preloadDesktop: '/images/hero-background-mediterranean-1440.webp',
     imageClassName: 'opacity-90',
   },
