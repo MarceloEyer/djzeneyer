@@ -87,7 +87,7 @@ Padronização obrigatória:
 - **URL canônica em páginas:** Nunca hardcodar paths como `/about`. Usar `getLocalizedRoute('about', currentLang)`.
 - **Class components:** Não podem usar `useTranslation()` — usar `withTranslation()` HOC.
 - **Jules PRs duplicados:** Jules tende a criar PRs duplicados. Verificar antes de mergear.
-- **Jules/Bolt micro-otimizacoes:** Jules le este `AGENTS.md` automaticamente. Nao abrir PR autonomo para trocar chamadas locais repetidas, mover constantes, adicionar `useMemo` ou reduzir alocacoes pequenas sem profiler, hot path comprovado, lista grande, regressao visivel ou benchmark reproduzivel. Se a melhoria for apenas higiene local, registrar como sugestao e aguardar pedido humano.
+- **Jules/Bolt micro-otimizações:** Jules lê este `AGENTS.md` automaticamente. Não abrir PR autônomo para trocar chamadas locais repetidas, mover constantes, adicionar `useMemo` ou reduzir alocações pequenas sem profiler, hot path comprovado, lista grande, regressão visível ou benchmark reproduzível. Se a melhoria for apenas higiene local, registrar como sugestão e aguardar pedido humano.
 - **`social.YouTube` / `social.YouTubeMusic`:** Em `src/data/artistData.ts`, ambas as chaves usam Y e T maiusculos. Nao usar `social.youtube` nem `social.youtubeMusic` — essas variantes em lowercase nao existem no objeto e causam silently undefined.
 
 ---
