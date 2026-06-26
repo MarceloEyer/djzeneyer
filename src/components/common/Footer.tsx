@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Music, Music2, MessageCircle, SendHorizontal, Heart } from 'lucide-react';
+import { Music2, MessageCircle, SendHorizontal, Heart } from 'lucide-react';
 import { FacebookIcon, InstagramIcon, YouTubeIcon } from '../icons/BrandIcons';
 import { ARTIST, CURRENT_YEAR } from '../../data/artistData';
 import { getLocalizedRoute, normalizeLanguage } from '../../config/routes';
@@ -74,10 +74,7 @@ const Footer: React.FC = () => {
 
           {/* 1. Logo, Bio & Social Icons */}
           <div className="lg:col-span-1">
-            <Link to={routes.home} className="flex items-center space-x-2 mb-4 hover:opacity-80 transition-opacity" aria-label={`DJ Zen Eyer - ${t('footer_home')}`}>
-              <div className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20">
-                <Music size={20} className="text-primary" />
-              </div>
+            <Link to={routes.home} className="inline-flex items-center mb-4 hover:opacity-80 transition-opacity" aria-label={`DJ Zen Eyer - ${t('footer_home')}`}>
               <span className="text-xl font-display font-bold tracking-wide">
                 <span className="text-primary">DJ</span> Zen Eyer
               </span>
