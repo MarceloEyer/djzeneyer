@@ -245,7 +245,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                         <GoogleLogin
                           onSuccess={handleGoogleSuccess}
                           onError={() => setError(t('auth.errors.google_connect_error'))}
-                          theme="filled_black"
+                          theme="outline"
                           size="large"
                           text={mode === 'login' ? 'signin_with' : 'signup_with'}
                           width={368}
