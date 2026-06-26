@@ -83,7 +83,7 @@ i18n
     debug: false,
     showSupportNotice: false,
     supportedLngs: ['en', 'pt'],
-    ns: ['translation', 'quiz', 'encyclopedia', 'faq', 'legal', 'conduct', 'privacy', 'about', 'home', 'zentribe', 'newsletter'],
+    ns: ['translation', 'quiz', 'encyclopedia', 'faq', 'legal', 'conduct', 'privacy', 'about', 'zentribe', 'newsletter'],
     defaultNS: 'translation',
     load: 'languageOnly',
     nonExplicitSupportedLngs: true,

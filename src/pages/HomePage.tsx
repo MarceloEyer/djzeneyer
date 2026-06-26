@@ -330,6 +330,7 @@ const HomePage: React.FC = () => {
               <Trans
                 i18nKey="hero_cta_text"
                 ns="home"
+                t={th}
                 components={[
                   <Link
                     key="music-link"
@@ -478,7 +479,7 @@ const HomePage: React.FC = () => {
 
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-6 font-display">
-            <Trans i18nKey="tribe.title" ns="home" components={[<span className="text-primary" />]} />
+            <Trans i18nKey="tribe.title" ns="home" t={th} components={[<span className="text-primary" />]} />
           </h2>
           <p className="text-xl text-text/70 mb-10 max-w-2xl mx-auto">
             {th('tribe.subtitle')}
