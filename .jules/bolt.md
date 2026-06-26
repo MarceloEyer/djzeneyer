@@ -111,19 +111,21 @@
 
 ## 2026-06-26 - Prevent redundant function calls during render cycles
 
-**Learning:** Repeatedly calling a deterministic function like `getLocalizedRoute` with the same dynamic arguments multiple times within a component's render body (e.g. passing it to multiple `<Link to={...}>` elements) leads to redundant O(N) calculations on every React reconciliation cycle.
-**Action:** Consolidate these multiple calls into a single object map wrapped in `useMemo` with the dynamic argument as its dependency. This evaluates the localized paths only once when the language changes, rather than recalculating them on every unrelated state or context update.
+**Learning:** Repeated local helper calls inside render can be worth consolidating only when the helper is expensive, the call sits in a large or frequently updated loop, or the result participates in memoized child props/hook dependencies. In the current router, `getLocalizedRoute` already uses lookup maps; a few repeated calls for the same route are not a standalone performance problem.
+**Action:** Do not open standalone PRs just to hoist repeated `getLocalizedRoute` calls or similar cheap deterministic helpers. Fold this cleanup into nearby feature work only when it improves readability, or require profiler/benchmark evidence that the render path is actually hot.
 
 ## 2026-06-27 - Inline Spread of Arrays in React Render Cycles
-**Learning:** Using the spread operator (e.g., `[...array1, ...array2]`) inline directly within a component's render body (like for `.map()` iteration) forces JavaScript to allocate a completely new array object on *every single render cycle*, regardless of whether the source arrays have changed. In highly re-rendered components, this causes significant garbage collection overhead and potential performance stutters.
-**Action:** Always extract dynamic array combinations/spreads into a `useMemo` hook, using the source arrays (or their parent objects) as the dependency array, to preserve reference equality and eliminate O(N) reallocation overhead.
+
+**Learning:** Inline array spreads allocate a new array, but that is only meaningful for large arrays, frequent renders, memoized child boundaries, or measured UI stutter.
+**Action:** Prefer clarity for small arrays. Use `useMemo` for array combinations only when the array is large, passed as a stable prop/dependency, or a profiler/benchmark shows material cost.
 
 ## 2026-06-28 - Render Loop Overhead via Inline Array Allocation and Split
 
-**Learning:** Allocating a static array (`['jan', 'feb', ...]`) and performing string splitting (`key.split('-')`) inside the callback of a `.map()` iteration forces continuous garbage collection overhead on every React rendering cycle, significantly impacting performance on large lists.
-**Action:** Always extract static array configurations to the module scope (outside the component) and replace allocating string operations like `split()` with non-allocating alternatives like `slice()` when iterating over datasets in render loops.
+**Learning:** Static arrays and `split()` inside render loops can be wasteful in large datasets, but are not automatically a performance issue in small UI lists.
+**Action:** Extract static arrays or replace allocating string operations only for large/measured render paths, shared constants, or code touched for another reason. Do not create standalone PRs for this pattern without evidence.
 
 ## 2024-05-18 - Replacing `String.prototype.split()` with zero-allocation alternatives
+
 **Learning:** `String.prototype.split()` creates an intermediate array, which adds overhead and garbage collection pressure, particularly in hot paths like routing maps or render loops.
 **Action:** When extracting substrings or indices in performance-critical code paths, utilize zero-allocation native string methods like `indexOf()` combined with `slice()` instead of chained `.split()` calls. Focus primarily on hot paths and leave isolated, infrequent calls alone.
 
