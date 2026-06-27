@@ -258,7 +258,7 @@ const HomePage: React.FC = () => {
           <div className="max-w-4xl mx-auto md:ml-0 md:mr-auto">
             {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
             <div className="mx-auto w-fit max-w-full md:mx-0">
-              <h1 className="mb-3 whitespace-nowrap font-hero-display text-4xl font-bold tracking-tight sm:text-5xl md:text-7xl lg:text-8xl">
+              <h1 className="mb-3 font-hero-display text-4xl font-bold tracking-tight sm:whitespace-nowrap sm:text-5xl md:text-7xl lg:text-8xl">
                 <span className="text-text">{heroTitleLead}</span>{' '}
                 <span className="text-primary">{heroTitleRest}</span>
               </h1>
