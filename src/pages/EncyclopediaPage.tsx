@@ -28,7 +28,9 @@ const EncyclopediaHubPage: React.FC = () => {
   const [query, setQuery] = useState('');
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const prefersReducedMotion = useReducedMotion();
-  const pageUrl = `${ARTIST.site.baseUrl}${getLocalizedRoute('encyclopedia', currentLang)}/`;
+  // ⚡ Bolt: Hoisted and memoized invariant route calculation to prevent O(N) recalculations of getLocalizedRoute inside nested mapping loops (categories, terms, and related terms).
+  const hubPath = useMemo(() => getLocalizedRoute('encyclopedia', currentLang), [currentLang]);
+  const pageUrl = `${ARTIST.site.baseUrl}${hubPath}/`;
 
   const visibleTerms = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -181,7 +183,7 @@ const EncyclopediaHubPage: React.FC = () => {
                             </div>
                             <h3 className="font-display text-2xl font-black text-text">
                               <Link
-                                to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(item.key)}`}
+                                to={`${hubPath}/${toEncyclopediaTermSlug(item.key)}`}
                                 className="transition-colors hover:text-primary"
                               >
                                 {t(`terms.${item.key}.term`, { ns: 'encyclopedia' })}
@@ -205,7 +207,7 @@ const EncyclopediaHubPage: React.FC = () => {
                             {item.relatedTerms.map((related) => (
                               <Link
                                 key={related}
-                                to={`${getLocalizedRoute('encyclopedia', currentLang)}/${toEncyclopediaTermSlug(related)}`}
+                                to={`${hubPath}/${toEncyclopediaTermSlug(related)}`}
                                 className="inline-flex items-center gap-1 rounded-lg bg-text/5 px-2.5 py-1.5 text-xs font-bold text-primary/75 transition-colors hover:bg-primary/10 hover:text-primary"
                               >
                                 <ChevronRight size={12} />
