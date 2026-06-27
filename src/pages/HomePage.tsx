@@ -257,18 +257,20 @@ const HomePage: React.FC = () => {
         <div className="container mx-auto px-4 relative z-10 w-full">
           <div className="max-w-4xl mx-auto md:ml-0 md:mr-auto">
             {/* H1 fora do container animado — sempre visível para crawlers e LCP */}
-            <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-3 font-hero-display">
-              <span className="text-text">{heroTitleLead}</span>{' '}
-              <span className="text-primary">{heroTitleRest}</span>
-            </h1>
+            <div className="mx-auto w-fit max-w-full md:mx-0">
+              <h1 className="mb-3 font-hero-display text-4xl font-bold tracking-tight sm:whitespace-nowrap sm:text-5xl md:text-7xl lg:text-8xl">
+                <span className="text-text">{heroTitleLead}</span>{' '}
+                <span className="text-primary">{heroTitleRest}</span>
+              </h1>
 
-            {currentTheme === 'mediterranean-dusk' && (
-              <div className="mx-auto md:mx-0 flex w-full max-w-[34rem] items-center gap-3 mb-6" aria-hidden="true">
-                <div className="h-px bg-secondary/60 flex-1" />
-                <span className="text-secondary/80 text-base leading-none select-none">✦</span>
-                <div className="h-px bg-secondary/60 flex-1" />
-              </div>
-            )}
+              {currentTheme === 'mediterranean-dusk' && (
+                <div className="mb-6 flex w-full items-center gap-3" aria-hidden="true">
+                  <div className="h-px flex-1 bg-secondary/60" />
+                  <span className="select-none text-base leading-none text-secondary/80">✦</span>
+                  <div className="h-px flex-1 bg-secondary/60" />
+                </div>
+              )}
+            </div>
 
           <div>
             <p id="artist-voice-bio" className="text-base sm:text-xl md:text-2xl text-text mb-1 font-light" data-speakable>
