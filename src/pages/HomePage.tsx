@@ -9,7 +9,7 @@ import {
   Globe, Mail, ExternalLink, Sparkles, Download
 } from 'lucide-react';
 import { HeadlessSEO } from '../components/HeadlessSEO';
-import { ARTIST } from '../data/artistData';
+import { ARTIST, CURRENT_YEAR } from '../data/artistData';
 import { ARTIST_SCHEMA_BASE, MUSICGROUP_SCHEMA } from '../data/artist.schema';
 import { useZenSeoSettings } from '../hooks/useQueries';
 import { useBranding } from '../contexts/BrandingContext';
@@ -134,7 +134,8 @@ const HomePage: React.FC = () => {
   const stats = useMemo(() => ([
     ...STATS_BASE,
     { value: `${artist?.stats?.countriesPlayed || ARTIST.stats.countriesPlayed}+`, labelKey: 'stat_countries', icon: Globe },
-    { value: `${new Date().getFullYear() - (artist?.stats?.startingYear || ARTIST.stats.startingYear)}+`, labelKey: 'stat_years', icon: Sparkles },
+    // ⚡ Bolt: Replace new Date() with static CURRENT_YEAR to prevent GC overhead during renders
+    { value: `${CURRENT_YEAR - (artist?.stats?.startingYear || ARTIST.stats.startingYear)}+`, labelKey: 'stat_years', icon: Sparkles },
   ]), [artist?.stats?.countriesPlayed, artist?.stats?.startingYear]);
 
   // ⚡ Bolt: Memoize localized routes to avoid O(N) recalculations on every render

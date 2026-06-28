@@ -26,7 +26,7 @@ import {
   Check
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
-import { ARTIST } from '../data/artistData';
+import { ARTIST, CURRENT_YEAR } from '../data/artistData';
 
 // ⚡ Bolt: Stable module-scoped empty array to prevent unnecessary re-allocations and preserve reference equality in render loops
 const EMPTY_FESTIVAL_ARRAY: { name: string; country: string; date: string; flag: string }[] = [];
@@ -132,7 +132,8 @@ const PressKitPage: React.FC = () => {
         color: 'bg-gradient-to-br from-[#6F8F4E]/65 to-[#B1A47E]/45'
       },
       {
-        number: `${new Date().getFullYear() - artist.stats.startingYear}+`,
+        // ⚡ Bolt: Replace new Date() with static CURRENT_YEAR to prevent GC overhead during renders
+        number: `${CURRENT_YEAR - artist.stats.startingYear}+`,
         label: t('presskit.stats.years'),
         icon: <Calendar size={32} />,
         color: 'bg-gradient-to-br from-secondary/65 to-secondary/40'
