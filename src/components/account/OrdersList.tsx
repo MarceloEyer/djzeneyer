@@ -5,7 +5,7 @@
  * Extraído de MyAccountPage para melhor organização
  */
 
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,9 @@ interface OrdersListProps {
 export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) => {
   const { t, i18n } = useTranslation();
   const currentLang = normalizeLanguage(i18n.language);
+
+  // ⚡ Bolt: Cached shop route to prevent O(N) string recalculations inside the render cycle.
+  const shopRoute = useMemo(() => getLocalizedRoute('shop', currentLang), [currentLang]);
 
   const getOrderStatusClass = (status: string) => {
     switch (status) {
@@ -71,7 +74,7 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
         <p className="text-text/60 mb-8 max-w-md mx-auto">
           {t('account.orders.no_orders_desc')}
         </p>
-        <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary">
+        <Link to={shopRoute} className="btn btn-primary">
           {t('account.orders.browse_shop')}
         </Link>
       </div>
@@ -82,7 +85,7 @@ export const OrdersList: React.FC<OrdersListProps> = memo(({ orders, loading }) 
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">{t('account.orders.title')}</h2>
-        <Link to={getLocalizedRoute('shop', currentLang)} className="btn btn-primary">
+        <Link to={shopRoute} className="btn btn-primary">
           {t('account.orders.continue_shopping')}
         </Link>
       </div>
