@@ -1,6 +1,6 @@
 # JULES.md - DJ Zen Eyer
 
-> Override local para Jules (Google Labs). Atualizado após ciclo de revisão de PRs automáticas — 2026-06-02.
+> Override local para Jules (Google Labs). Atualizado após ciclo de revisão de PRs automáticas — 2026-06-30.
 > Base canônica: `AI_CONTEXT_INDEX.md`.
 > Tom preferido: factual, curto, sem marketing, sem autoelogio.
 
@@ -27,12 +27,25 @@ Jules pode abrir PRs sem aprovação prévia apenas nestas categorias:
 
 | Categoria | Exemplos válidos |
 |-----------|-----------------|
-| Micro-otimizações de frontend documentadas | Extrair variantes Framer Motion inline para constantes de módulo, memoizar callbacks estáveis com `useCallback` |
-| PHP: comentários explicativos em código complexo | Documentar por que uma query usa determinada estrutura |
+| Correções de performance com evidência | Hot path confirmado por Profiler, benchmark reproduzível, lista grande ou regressão visível |
 | Atualização de dependências sem breaking change | Bump de patch/minor com `npm audit` limpo |
 | Correção de typo em strings não-visíveis | Comentários, nomes de variável, docblocks |
 
 **Fora deste escopo → abrir Issue, não PR.** Se a mudança toca lógica de negócio, schema JSON-LD, rotas, autenticação, SEO ou políticas de produto, parar e abrir uma Issue descrevendo o problema encontrado.
+
+PR autônomo que altera apenas comentários não é permitido. Comentários explicativos podem acompanhar uma correção substantiva, mas não justificam um PR isolado.
+
+### Mudanças que NÃO justificam PR autônomo
+
+Não abrir PR apenas para:
+
+- trocar uma chamada local repetida por `useMemo`;
+- mover `new Date().getFullYear()` para uma constante existente;
+- adicionar `React.memo`, `useMemo` ou `useCallback` sem evidência de re-render caro;
+- reduzir pequenas alocações de string, array ou objeto em render comum;
+- adicionar comentários do tipo `Bolt:` explicando micro-otimização óbvia.
+
+Se a investigação concluir que o código já está otimizado, encerrar a tarefa com essa análise e não abrir PR. Se o ganho for apenas higiene local, registrar como sugestão em Issue ou comentário e aguardar pedido humano.
 
 ---
 
@@ -69,8 +82,8 @@ Usar `wc_get_orders()`, nunca SQL em `wp_posts` para pedidos.
 
 ### O que Jules pode melhorar
 
-- Extrair objetos de animação Framer Motion inline para constantes de módulo (confirmar que são estáticos).
-- Extrair `useMemo`/`useCallback` onde a instabilidade de referência causa re-renders desnecessários e isso é verificável pelo Profiler.
+- Extrair objetos de animação Framer Motion inline para constantes de módulo quando a instabilidade de referência afeta componentes memoizados ou animações reutilizadas.
+- Extrair `useMemo`/`useCallback` somente quando a instabilidade de referência causa re-renders desnecessários e isso é verificável pelo Profiler, benchmark ou bug reproduzível.
 - Remover `console.log` de debug esquecidos em produção.
 
 ### O que Jules não deve tocar sem Issue aprovada

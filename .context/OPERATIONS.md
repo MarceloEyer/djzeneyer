@@ -53,6 +53,7 @@ gh pr view <number> --json body,comments,reviews,reviewThreads,reviewRequests,me
 - CodeQL deve ser tratado como sinal forte de segurança.
 - Qodo pode ser útil para bugs de lógica.
 - Jules pode gerar PRs bons, mas tende a duplicar PRs; verificar duplicidade antes de mergear.
+- Jules/Bolt não deve abrir PR autônomo contendo apenas comentários, alterações sem efeito prático (no-op) ou micro-otimizações cosméticas como trocar chamada local por `useMemo`, mover `new Date().getFullYear()` para constante, adicionar `React.memo` ou reduzir pequenas alocações sem Profiler, benchmark reproduzível, hot path comprovado, lista grande ou regressão visível. Fechar esses PRs sem merge e explicar que a sugestão deve virar Issue/comentário se não houver evidência.
 - Gemini pode resumir agressivamente arquivos de contexto e apagar detalhes técnicos. Revisar com cuidado qualquer mudança em `AGENTS.md`, `AI_CONTEXT_INDEX.md`, `LEARNINGS.md`, `.agents/` e `.context/`.
 - Se um achado parecer segurança/privacidade, mas puder ser comportamento intencional de produto, pergunte ao usuário antes de agir.
 - **Anti-padrão crítico de revisão por IA:** Nunca aceitar uma sugestão de bot que altere a semântica de uma função pura ou de contrato de API sem primeiro rodar os testes existentes. Bots otimizam para aparência de correção, não para contrato real. Se o projeto tem testes: `npm test` é o árbitro, não o parecer do bot.
