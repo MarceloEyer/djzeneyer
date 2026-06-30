@@ -566,7 +566,10 @@ class Zen_SEO_Admin
         }
 
         // Handle cache clear action
-        if (isset($_POST['zen_seo_clear_cache']) && \check_admin_referer('zen_seo_clear_cache')) {
+        $clear_cache_requested = isset($_POST['zen_seo_clear_cache'])
+            ? (bool) \sanitize_text_field(\wp_unslash($_POST['zen_seo_clear_cache']))
+            : false;
+        if ($clear_cache_requested && \check_admin_referer('zen_seo_clear_cache')) {
             $cleared = Zen_SEO_Cache::clear_all();
             echo '<div class="notice notice-success"><p>'
                 . \sprintf(__('Cleared %d cache entries.', 'zen-seo'), $cleared)
@@ -681,12 +684,16 @@ class Zen_SEO_Admin
      */
     public function handle_export_import()
     {
-        if (!isset($_GET['page']) || $_GET['page'] !== 'zen-seo-tools') {
+        $page = isset($_GET['page']) ? \sanitize_key(\wp_unslash($_GET['page'])) : '';
+        if ('zen-seo-tools' !== $page) {
             return;
         }
 
         // 1. Handle Export
-        if (isset($_POST['zen_seo_export']) && \check_admin_referer('zen_seo_export_action')) {
+        $export_requested = isset($_POST['zen_seo_export'])
+            ? (bool) \sanitize_text_field(\wp_unslash($_POST['zen_seo_export']))
+            : false;
+        if ($export_requested && \check_admin_referer('zen_seo_export_action')) {
             $settings = Zen_SEO_Helpers::get_global_settings();
             $filename = 'zen-seo-backup-' . \date('Y-m-d') . '.json';
             
@@ -700,13 +707,19 @@ class Zen_SEO_Admin
         }
 
         // 2. Handle Import
-        if (isset($_POST['zen_seo_import']) && \check_admin_referer('zen_seo_import_action')) {
-            if (empty($_FILES['import_file']['tmp_name'])) {
+        $import_requested = isset($_POST['zen_seo_import'])
+            ? (bool) \sanitize_text_field(\wp_unslash($_POST['zen_seo_import']))
+            : false;
+        if ($import_requested && \check_admin_referer('zen_seo_import_action')) {
+            $import_file = isset($_FILES['import_file']['tmp_name'])
+                ? \sanitize_text_field(\wp_unslash($_FILES['import_file']['tmp_name']))
+                : '';
+            if (empty($import_file)) {
                 \add_settings_error('zen_seo_tools', 'no_file', __('Please select a file to import.', 'zen-seo'), 'error');
                 return;
             }
 
-            $file_content = \file_get_contents($_FILES['import_file']['tmp_name']);
+            $file_content = \file_get_contents($import_file);
             $data = \json_decode($file_content, true);
 
             if (!$data || !\is_array($data)) {

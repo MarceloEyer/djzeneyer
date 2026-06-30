@@ -343,7 +343,8 @@ class Zen_SEO_Meta_Box
     public function save_meta_data($post_id, $post)
     {
         // Security checks
-        if (!isset($_POST['zen_seo_nonce']) || !\wp_verify_nonce($_POST['zen_seo_nonce'], 'zen_seo_meta_box')) {
+        $nonce = isset($_POST['zen_seo_nonce']) ? \sanitize_text_field(\wp_unslash($_POST['zen_seo_nonce'])) : '';
+        if (!$nonce || !\wp_verify_nonce($nonce, 'zen_seo_meta_box')) {
             return;
         }
 
@@ -361,10 +362,12 @@ class Zen_SEO_Meta_Box
         }
 
         // Sanitize and save data
-        if (isset($_POST['zen_seo'])) {
+        $zen_seo_data = isset($_POST['zen_seo']) ? \wp_unslash($_POST['zen_seo']) : [];
+        if (\is_array($zen_seo_data)) {
             $sanitized = [];
 
-            foreach ($_POST['zen_seo'] as $key => $value) {
+            foreach ($zen_seo_data as $key => $value) {
+                $key = \sanitize_key($key);
                 switch ($key) {
                     case 'noindex':
                         $sanitized[$key] = !empty($value) ? 1 : 0;
