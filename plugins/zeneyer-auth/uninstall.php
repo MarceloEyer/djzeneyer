@@ -10,8 +10,23 @@ delete_option('zeneyer_auth_audit_log');
 
 // Delete user meta
 global $wpdb;
-$wpdb->query("DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE 'zeneyer_%'");
+$wpdb->query(
+    $wpdb->prepare(
+        "DELETE FROM {$wpdb->usermeta} WHERE meta_key LIKE %s",
+        'zeneyer_%'
+    )
+);
 
 // Delete transients
-$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_zeneyer_%'");
-$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_zeneyer_%'");
+$wpdb->query(
+    $wpdb->prepare(
+        "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+        '_transient_zeneyer_%'
+    )
+);
+$wpdb->query(
+    $wpdb->prepare(
+        "DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+        '_transient_timeout_zeneyer_%'
+    )
+);

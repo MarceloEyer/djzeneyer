@@ -566,7 +566,8 @@ class Zen_SEO_Admin
         }
 
         // Handle cache clear action
-        if (isset($_POST['zen_seo_clear_cache']) && \check_admin_referer('zen_seo_clear_cache')) {
+        $clear_cache_requested = isset($_POST['zen_seo_clear_cache']);
+        if ($clear_cache_requested && \check_admin_referer('zen_seo_clear_cache')) {
             $cleared = Zen_SEO_Cache::clear_all();
             echo '<div class="notice notice-success"><p>'
                 . \sprintf(__('Cleared %d cache entries.', 'zen-seo'), $cleared)
@@ -681,12 +682,18 @@ class Zen_SEO_Admin
      */
     public function handle_export_import()
     {
-        if (!isset($_GET['page']) || $_GET['page'] !== 'zen-seo-tools') {
+        $page = isset($_GET['page']) ? \sanitize_key(\wp_unslash($_GET['page'])) : '';
+        if ('zen-seo-tools' !== $page) {
+            return;
+        }
+
+        if (!\current_user_can('manage_options')) {
             return;
         }
 
         // 1. Handle Export
-        if (isset($_POST['zen_seo_export']) && \check_admin_referer('zen_seo_export_action')) {
+        $export_requested = isset($_POST['zen_seo_export']);
+        if ($export_requested && \check_admin_referer('zen_seo_export_action')) {
             $settings = Zen_SEO_Helpers::get_global_settings();
             $filename = 'zen-seo-backup-' . \date('Y-m-d') . '.json';
             
@@ -700,13 +707,26 @@ class Zen_SEO_Admin
         }
 
         // 2. Handle Import
-        if (isset($_POST['zen_seo_import']) && \check_admin_referer('zen_seo_import_action')) {
-            if (empty($_FILES['import_file']['tmp_name'])) {
+        $import_requested = isset($_POST['zen_seo_import']);
+        if ($import_requested && \check_admin_referer('zen_seo_import_action')) {
+            $import_file = isset($_FILES['import_file']) && \is_array($_FILES['import_file'])
+                ? $_FILES['import_file']
+                : [];
+            $import_file_path = isset($import_file['tmp_name']) && \is_string($import_file['tmp_name'])
+                ? $import_file['tmp_name']
+                : '';
+            $upload_error = isset($import_file['error']) ? (int) $import_file['error'] : \UPLOAD_ERR_NO_FILE;
+
+            if (\UPLOAD_ERR_OK !== $upload_error || '' === $import_file_path || !\is_uploaded_file($import_file_path)) {
                 \add_settings_error('zen_seo_tools', 'no_file', __('Please select a file to import.', 'zen-seo'), 'error');
                 return;
             }
 
-            $file_content = \file_get_contents($_FILES['import_file']['tmp_name']);
+            $file_content = \file_get_contents($import_file_path);
+            if (false === $file_content) {
+                \add_settings_error('zen_seo_tools', 'invalid_file', __('Unable to read the backup file.', 'zen-seo'), 'error');
+                return;
+            }
             $data = \json_decode($file_content, true);
 
             if (!$data || !\is_array($data)) {
