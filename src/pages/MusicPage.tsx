@@ -92,17 +92,18 @@ const MusicPage: React.FC = () => {
     }
   };
 
+  // ⚡ Bolt: Top-level localized route evaluation to prevent redundant evaluations within render and nested useMemos, adhering to Rules of Hooks
+  const releaseDetailRoute = useMemo(() => getLocalizedRoute('release-detail', currentLang), [currentLang]);
+  const musicPageUrl = useMemo(() => `${ARTIST.site.baseUrl}${getLocalizedRoute('music', currentLang)}`, [currentLang]);
+
   const releaseCards = useMemo(() => {
-    const releaseDetailRoute = getLocalizedRoute('release-detail', currentLang);
     return buildReleaseCards(DISCOGRAPHY, currentLang, (releaseId) =>
       generatePath(releaseDetailRoute, { id: releaseId }),
     );
-  }, [currentLang]);
+  }, [currentLang, releaseDetailRoute]);
 
   const musicListingSchema = useMemo(() => {
     const baseUrl = ARTIST.site.baseUrl;
-    const pageUrl = `${baseUrl}${getLocalizedRoute('music', currentLang)}`;
-    const newsDetailRoute = getLocalizedRoute('release-detail', currentLang);
     const artistSocialUrls = new Set<string>(
       Object.values(ARTIST.social)
         .map((s) => s?.url)
@@ -111,7 +112,7 @@ const MusicPage: React.FC = () => {
 
     const releaseListItems = buildDiscographyListItems(DISCOGRAPHY, {
       baseUrl,
-      getNewsDetailPath: (id) => generatePath(newsDetailRoute, { id }),
+      getNewsDetailPath: (id) => generatePath(releaseDetailRoute, { id }),
       lang: currentLang,
       artistSocialUrls,
     });
@@ -124,8 +125,8 @@ const MusicPage: React.FC = () => {
         MUSICGROUP_SCHEMA,
         {
           '@type': 'CollectionPage',
-          '@id': `${pageUrl}#webpage`,
-          url: pageUrl,
+          '@id': `${musicPageUrl}#webpage`,
+          url: musicPageUrl,
           name: t('music_page_title'),
           description: t('music_page_meta_desc'),
           isPartOf: { '@id': `${baseUrl}/#website` },
@@ -134,30 +135,30 @@ const MusicPage: React.FC = () => {
             '@type': 'BreadcrumbList',
             itemListElement: [
               { '@type': 'ListItem', position: 1, name: 'Home', item: baseUrl },
-              { '@type': 'ListItem', position: 2, name: t('music_page_title'), item: pageUrl },
+              { '@type': 'ListItem', position: 2, name: t('music_page_title'), item: musicPageUrl },
             ],
           },
         },
         // ItemList de releases — conecta o catálogo ao grafo
         ...(releaseListItems.length > 0 ? [{
           '@type': 'ItemList',
-          '@id': `${pageUrl}#discography`,
+          '@id': `${musicPageUrl}#discography`,
           name: t('music.discography_schema_name'),
           description: t('music.discography_schema_desc'),
-          url: pageUrl,
+          url: musicPageUrl,
           numberOfItems: releaseListItems.length,
           itemListElement: releaseListItems,
         }] : []),
       ],
     };
-  }, [t, currentLang]);
+  }, [t, currentLang, musicPageUrl, releaseDetailRoute]);
 
   return (
     <>
       <HeadlessSEO
         title={`${t('music_page_title')} | Zen Eyer`}
         description={t('music_page_meta_desc')}
-        url={`${ARTIST.site.baseUrl}${getLocalizedRoute('music', currentLang)}`}
+        url={musicPageUrl}
         image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-music-og.jpg`}
         imageAlt={t('og.image_alt.music')}
         schema={musicListingSchema}
