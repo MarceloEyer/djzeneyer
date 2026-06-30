@@ -101,6 +101,7 @@ final class Engine
                 $unique_pids = \array_unique(\array_column($rows, 'product_id'));
                 \update_meta_cache('post', $unique_pids);
                 $is_downloadable = [];
+                // ⚡ Bolt: [performance improvement] update_meta_cache primes the cache, preventing N+1 queries.
                 foreach ($unique_pids as $pid) {
                     $is_downloadable[(int) $pid] = \get_post_meta((int) $pid, '_downloadable', true) === 'yes';
                 }
