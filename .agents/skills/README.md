@@ -40,6 +40,7 @@ O objetivo e reduzir dispersao sem apagar especializacao util.
 | `wp-project-triage` | Inspecao deterministica de estrutura WP | Manter, usar quando estrutura mudar |
 | `wp-headless` | Arquitetura WordPress headless + SPA | Manter |
 | `wp-plugin-development` | Desenvolvimento de plugins | Manter |
+| `wp-plugin-code-reviewer` | Review de PHP em plugins WordPress com WPCS/security | Manter como skill fina de review |
 | `wp-rest-api` | Endpoints REST | Manter |
 | `wp-performance` | Performance backend/WordPress | Manter |
 | `wp-wpcli-and-ops` | Operacoes WP-CLI/SSH/cache | Manter com cuidado em producao |

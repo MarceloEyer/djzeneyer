@@ -70,6 +70,16 @@ Guidelines:
 - Do not introduce a new architecture style into an existing plugin without need.
 - Preserve plugin headers and activation hooks.
 
+### 1.5) WordPress coding standards priority
+
+For plugin PHP, WordPress Coding Standards are the primary style authority for this project. PSR-1/PSR-12 can inform readability, but do not override WordPress conventions when they conflict.
+
+- Prefer tabs for indentation and spaces for alignment, matching WPCS.
+- Preserve existing plugin naming style instead of forcing generic PSR naming.
+- Use WordPress-style prefixes for functions, hooks, options, transients, nonces and cache keys.
+- Use translation functions with the correct plugin text domain for visible strings.
+- Treat PHPCS/WPCS findings as actionable when tooling is configured or the violation is clear from the diff.
+
 ### 2) Project-specific ownership
 
 | Domain | Preferred owner |
@@ -145,6 +155,16 @@ echo esc_attr($value);
 echo esc_url($url);
 echo wp_kses_post($html);
 ```
+
+### 5.5) Plugin review mode
+
+When the user asks for review of WordPress plugin PHP, use `wp-plugin-code-reviewer` first. In that mode:
+
+- Lead with findings by severity and file/line.
+- Check WPCS before PSR style preferences.
+- Check capabilities, nonces, REST permissions, sanitization, escaping and SQL safety.
+- Apply project laws: GamiPress arrays are associative; WooCommerce orders use CRUD APIs; artist-owned support/payment data can be public by design.
+- Include validation commands run and commands still needed.
 
 ### 6) Data storage and cache
 

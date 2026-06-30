@@ -50,6 +50,7 @@ Read the detailed tree when necessary at `.agents/skills/wordpress-router/refere
 | If the task involves... | Use skill/context |
 |---|---|
 | Plugins (`zen-bit`, `zengame`, `zeneyer-auth`, `zen-seo-lite`, `zen-mailer`) | `wp-plugin-development` + `backend-security-coder` |
+| Review of WordPress plugin PHP, PRs, diffs or snippets | `wp-plugin-code-reviewer` |
 | REST API routes (`zen-bit/v2`, `zengame/v1`, `zeneyer-auth/v1`, `zen-seo/v1`, `djzeneyer/v1`) | `wp-rest-api` |
 | Headless architecture, CORS, JWT, React SPA integration | `wp-headless` |
 | Performance issues, N+1, transients, APCu, LiteSpeed cache | `wp-performance` |
@@ -71,6 +72,7 @@ Ask: where is the change happening?
 
 ```text
 plugin PHP code?        -> wp-plugin-development
+plugin PHP review?      -> wp-plugin-code-reviewer
 REST endpoint PHP?      -> wp-rest-api
 React/TS frontend?      -> react-best-practices / typescript-pro
 headless arch decision? -> wp-headless
