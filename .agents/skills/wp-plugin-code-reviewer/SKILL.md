@@ -25,6 +25,8 @@ Use alongside:
 
 Lead with actionable findings, ordered by severity. Do not summarize first. Each finding should include file/line, risk, and a concrete fix direction.
 
+Verify every automated or checklist finding against the actual runtime semantics before recommending a change. Do not manufacture a code change merely to satisfy a scanner or style rule; a defensive-looking rewrite can still introduce a regression.
+
 Severity guide:
 
 - **P0**: exploitable security issue, fatal error, data loss, broken auth/permissions.
@@ -58,7 +60,10 @@ Severity guide:
 ### Security and data handling
 
 - Validate/sanitize input early; escape output late.
-- Use `wp_unslash()` before sanitizing superglobals.
+- Use `wp_unslash()` before sanitizing values read from request superglobals.
+- Presence checks such as `isset($_POST['submit'])` do not read the value and do not require unslashing or sanitization. Preserve presence semantics for valueless submit buttons.
+- Validate input shape before sanitizing. Functions such as `sanitize_text_field()` can throw a `TypeError` when given arrays on PHP 8+.
+- Do not sanitize PHP-generated `$_FILES['tmp_name']` paths. Check the upload error and validate with `is_uploaded_file()` before reading, or use the appropriate WordPress upload API.
 - Use context-specific escaping: `esc_html`, `esc_attr`, `esc_url`, `esc_textarea`, `wp_kses`.
 - Admin actions need capability checks and nonces; nonce-only is not authorization.
 - REST routes need explicit `permission_callback`.
@@ -103,12 +108,12 @@ If there are no findings, say so clearly and list residual risks or checks not r
 
 Use what exists in the repo; do not invent mandatory tooling.
 
-```powershell
-# PHP syntax check with bundled PHP if available.
-& "$env:USERPROFILE\.codex\tools\php-8.4.21\php.exe" -l path\to\file.php
+```shell
+# Use PHP from PATH or the PHP executable configured by the project toolchain.
+php -l path/to/file.php
 
 # Project checks when relevant.
 npm run utf8:check
 ```
 
-When PHPCS/PHPStan are configured for the touched plugin, run the local configured command. If not configured, report that limitation instead of pretending compliance was machine-verified.
+If `php` is not on PATH, use the PHP executable exposed by the existing project or workspace toolchain without hardcoding a user-specific path in the skill. When PHPCS/PHPStan are configured for the touched plugin, run the local configured command. If tooling or dependencies are unavailable, report that limitation instead of pretending compliance was machine-verified.
