@@ -687,6 +687,10 @@ class Zen_SEO_Admin
             return;
         }
 
+        if (!\current_user_can('manage_options')) {
+            return;
+        }
+
         // 1. Handle Export
         $export_requested = isset($_POST['zen_seo_export']);
         if ($export_requested && \check_admin_referer('zen_seo_export_action')) {
