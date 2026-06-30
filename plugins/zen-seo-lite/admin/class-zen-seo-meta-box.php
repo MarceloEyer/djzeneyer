@@ -368,6 +368,10 @@ class Zen_SEO_Meta_Box
 
             foreach ($zen_seo_data as $key => $value) {
                 $key = \sanitize_key($key);
+                if (!\is_scalar($value)) {
+                    continue;
+                }
+
                 switch ($key) {
                     case 'noindex':
                         $sanitized[$key] = !empty($value) ? 1 : 0;
