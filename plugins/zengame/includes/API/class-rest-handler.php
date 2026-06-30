@@ -661,6 +661,7 @@ final class REST_Handler
 
         $formatted = [];
         foreach ($batch as $post) {
+            // ⚡ Bolt: Meta caches are preloaded via update_meta_cache above, preventing N+1 queries here.
             $formatted[] = [
                 'id' => (int) $post->ID,
                 'type' => (string) \get_post_meta($post->ID, '_gamipress_log_type', true),
