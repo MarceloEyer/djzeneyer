@@ -18,6 +18,7 @@ Não é:
 | Intent keywords | Skill |
 |-----------------|-------|
 | Plugin bug, plugin feature, hooks, `add_action`, `add_filter` | `wp-plugin-development` |
+| Plugin code review, PR review, PHPCS/WPCS, PHP snippet review | `wp-plugin-code-reviewer` |
 | REST route, `register_rest_route`, `permission_callback`, 401/403/404 | `wp-rest-api` |
 | Slow endpoint, N+1, transient, cache, TTFB | `wp-performance` |
 | `wp` command, SSH, cache flush, DB export, rewrite | `wp-wpcli-and-ops` |

@@ -21,6 +21,8 @@ Apply secure backend coding practices to the real project stack:
 
 This skill is for secure implementation and review. For CodeQL-specific findings, use `codeql-security` first. For REST endpoint design, use `wp-rest-api`. For auth architecture, use `auth-implementation-patterns` + `wp-headless`.
 
+For WordPress plugin code review, use `wp-plugin-code-reviewer` first and this skill as its security checklist. WordPress Coding Standards are the primary style authority for plugin PHP in this project.
+
 ## Project-specific security posture
 
 Do not treat intentional public product surfaces as leaks:
@@ -80,6 +82,7 @@ Use this skill when:
 - Always use `$wpdb->prepare()`.
 - Prefer WordPress APIs over raw SQL.
 - For WooCommerce HPOS, use `wc_get_orders()`, not SQL over `wp_posts`.
+- GamiPress helpers such as `gamipress_get_rank_types()` return associative arrays. Use `array_values()` or `reset()` for the first element, never `$array[0]`.
 
 ### REST API
 
