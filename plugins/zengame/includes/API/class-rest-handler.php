@@ -276,6 +276,7 @@ final class REST_Handler
 
         $attachment_ids = [];
         foreach ($post_ids as $id) {
+            // ⚡ Bolt: Cache is already primed by update_meta_cache, preventing N+1 queries here.
             $thumbnail_id = (int) \get_post_meta($id, '_thumbnail_id', true);
             if ($thumbnail_id > 0) {
                 $attachment_ids[] = $thumbnail_id;
