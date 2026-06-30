@@ -368,6 +368,9 @@ async function generateSitemaps() {
     const routesData = JSON.parse(fs.readFileSync(ROUTES_DATA_PATH, 'utf-8'));
     const date = new Date().toISOString();
 
+    // ⚡ Bolt: Convert routes array to a Map for O(1) lookups to optimize subsequent route searches
+    const routesByKey = new Map(routesData.routes.map(route => [route.key, route]));
+
     // 1. Pages Sitemap
     let pagesXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -407,7 +410,7 @@ async function generateSitemaps() {
       pageCount += 2;
     }
 
-    const encyclopediaRoute = routesData.routes.find(route => route.key === 'encyclopedia');
+    const encyclopediaRoute = routesByKey.get('encyclopedia');
     let encyclopediaTerms = [];
     try {
       const parsed = JSON.parse(fs.readFileSync(ENCYCLOPEDIA_TERMS_PATH, 'utf-8'));
@@ -434,7 +437,7 @@ async function generateSitemaps() {
       }
     }
 
-    const releaseDetailRoute = routesData.routes.find(route => route.key === 'release-detail');
+    const releaseDetailRoute = routesByKey.get('release-detail');
     let releaseData = { releases: [] };
     try {
       releaseData = JSON.parse(fs.readFileSync(RELEASE_SLUGS_PATH, 'utf-8'));
@@ -477,7 +480,7 @@ async function generateSitemaps() {
     const events = await fetchEvents();
 
     // Obter slugs canônicos de eventos do routes-slugs.json
-    const eventsRoute = routesData.routes.find(r => r.key === 'events');
+    const eventsRoute = routesByKey.get('events');
     if (!eventsRoute?.en || !eventsRoute?.pt) {
       throw new Error('routes-slugs.json precisa conter a rota "events" com slugs EN/PT antes de gerar o sitemap.');
     }
@@ -535,7 +538,7 @@ async function generateSitemaps() {
 
     // 3. Posts Sitemap
     const posts = await fetchPosts();
-    const newsRoute = routesData.routes.find(r => r.key === 'news');
+    const newsRoute = routesByKey.get('news');
     if (!newsRoute?.en || !newsRoute?.pt) {
       throw new Error('routes-slugs.json precisa conter a rota "news" com slugs EN/PT antes de gerar o sitemap de posts.');
     }
