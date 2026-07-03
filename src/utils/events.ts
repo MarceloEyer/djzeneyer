@@ -47,19 +47,25 @@ export const getLocalISODate = (now: Date | number = Date.now()): string => {
   const current = typeof now === 'number' ? new Date(now) : now;
   const offsetMs = current.getTimezoneOffset() * 60 * 1000;
   const localDate = new Date(current.getTime() - offsetMs);
-  return localDate.toISOString().split('T')[0];
+  // ⚡ Bolt: Replace split('T')[0] with substring(0, 10) to prevent intermediate array allocation
+  return localDate.toISOString().substring(0, 10);
 };
 
 export function isEventUpcoming(
   event: Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string },
   now: Date | number = Date.now(),
+  precalculatedLocalNow?: string // ⚡ Bolt: Pass precalculated date to avoid N+1 allocations in loops
 ): boolean {
   // Use ends_at if available, else starts_at, else fallbacks (for schema)
   const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
   if (!comparableString) return true; // Safety fallback
   
-  const dateOnly = comparableString.split('T')[0];
-  return dateOnly >= getLocalISODate(now);
+  // ⚡ Bolt: Replace split('T')[0] with zero-allocation indexOf and substring
+  const tIndex = comparableString.indexOf('T');
+  const dateOnly = tIndex !== -1 ? comparableString.substring(0, tIndex) : comparableString;
+
+  const comparisonDate = precalculatedLocalNow ?? getLocalISODate(now);
+  return dateOnly >= comparisonDate;
 }
 
 export function filterEventsByTemporalMode<T extends Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string }>(
@@ -68,8 +74,10 @@ export function filterEventsByTemporalMode<T extends Pick<ZenBitEventListItem, '
   now: Date | number = Date.now(),
 ): T[] {
   if (mode === 'all') return events;
+  // ⚡ Bolt: Hoist getLocalISODate() outside the loop to prevent O(N) Date allocations and string recalculations
+  const localIsoNow = getLocalISODate(now);
   return events.filter((event) => {
-    const upcoming = isEventUpcoming(event, now);
+    const upcoming = isEventUpcoming(event, now, localIsoNow);
     return mode === 'upcoming' ? upcoming : !upcoming;
   });
 }
