@@ -2,7 +2,7 @@
 // No React dependency — fully testable without rendering.
 import { ARTIST_SCHEMA_SAME_AS } from '../data/artist.schema';
 import { safeUrl } from '../utils/sanitize';
-import { getPlainTitle, isEventUpcoming } from '../utils/events';
+import { getPlainTitle, isEventUpcoming, getLocalISODate } from '../utils/events';
 import { stripHtml } from '../utils/text';
 import type { EventSchemaData, VideoSchemaData } from '../components/HeadlessSEO';
 
@@ -77,11 +77,13 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
 
   // 3. MusicEvent / EventSeries
   if (events && events.length > 0) {
+    // ⚡ Bolt: Hoist date generation outside the filter loop to prevent N+1 Date allocations and recalculations
+    const currentDate = getLocalISODate(Date.now());
     const schemaEvents = events.length > 1
       ? events.filter((event) => isEventUpcoming({
           starts_at: ((event.starts_at as string) || (event.event_date as string) || (event.start_date as string) || ''),
           ends_at: ((event.ends_at as string) || (event.end_date as string) || undefined),
-        }))
+        }, currentDate))
       : events;
     const now = Date.now();
     const threeHoursMs = 3 * 60 * 60 * 1000;
