@@ -224,19 +224,38 @@ final class Engine
     {
         $user_id = $user->ID;
         $today = \current_time('Y-m-d');
-        $last = (string) \get_user_meta($user_id, 'zen_last_login', true);
-        $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
 
-        if ($last === $today) return;
+        // wp_login (login normal) e rest_pre_dispatch (retorno via JWT) podem disparar
+        // quase ao mesmo tempo em requisições paralelas (ex: várias abas abrindo juntas).
+        // Sem lock, ambas leriam o mesmo streak antigo e a contagem ficaria errada
+        // (double count ou update perdido). GET_LOCK é atômico no MySQL e não exige Redis.
+        global $wpdb;
+        $lock_name = 'zengame_streak_' . $user_id;
+        $lock_acquired = (bool) $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, 5)', $lock_name));
 
-        // Calcular "ontem" a partir de $today (já no timezone do WP) para evitar
-        // discrepância entre date() (PHP/UTC) e current_time() (WP timezone).
-        $yesterday = \date('Y-m-d', \strtotime($today . ' -1 day'));
-        $streak = ($last === $yesterday) ? $streak + 1 : 1;
+        if (!$lock_acquired) {
+            // Outra requisição já está atualizando o streak deste usuário agora;
+            // preferimos pular a atualizar do que arriscar uma contagem incorreta.
+            return;
+        }
 
-        \update_user_meta($user_id, 'zen_last_login', $today);
-        \update_user_meta($user_id, 'zen_login_streak', $streak);
-        $this->clear_user_cache($user_id);
+        try {
+            $last = (string) \get_user_meta($user_id, 'zen_last_login', true);
+            if ($last === $today) return;
+
+            $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
+
+            // Calcular "ontem" a partir de $today (já no timezone do WP) para evitar
+            // discrepância entre date() (PHP/UTC) e current_time() (WP timezone).
+            $yesterday = \date('Y-m-d', \strtotime($today . ' -1 day'));
+            $streak = ($last === $yesterday) ? $streak + 1 : 1;
+
+            \update_user_meta($user_id, 'zen_last_login', $today);
+            \update_user_meta($user_id, 'zen_login_streak', $streak);
+            $this->clear_user_cache($user_id);
+        } finally {
+            $wpdb->query($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock_name));
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -258,11 +277,8 @@ final class Engine
         \delete_transient('djz_stats_events_' . $user_id);
         \delete_transient('djz_stats_tracks_' . $user_id);
 
-        // Leaderboard rankings change whenever any user's points change.
-        // Clear the most common limit variants so the next request fetches fresh data.
-        foreach ([5, 10, 25, 50] as $limit) {
-            \delete_transient('djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $limit);
-        }
+        // Leaderboard (top 5) muda sempre que os pontos de qualquer usuário mudam.
+        \delete_transient('djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION);
     }
 
     /**

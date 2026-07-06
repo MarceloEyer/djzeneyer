@@ -64,6 +64,13 @@ class Rate_Limiter {
         $ip = self::get_client_ip();
         $key = self::get_transient_key($ip, $action);
 
+        // Sem lock, requisições paralelas do mesmo IP (ex: brute force automatizado)
+        // poderiam ler a mesma contagem antiga e a tentativa acabaria não sendo contada
+        // para todas. GET_LOCK é atômico no MySQL e não exige Redis.
+        global $wpdb;
+        $lock_name = 'zeneyer_rl_' . \md5($ip . $action);
+        $lock_acquired = (bool) $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, 3)', $lock_name));
+
         $attempts = (int) get_transient($key);
         $attempts++;
 
@@ -72,6 +79,10 @@ class Rate_Limiter {
         $duration = apply_filters('zeneyer_auth_lockout_duration', $duration, $action);
 
         set_transient($key, $attempts, $duration);
+
+        if ($lock_acquired) {
+            $wpdb->query($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock_name));
+        }
 
         do_action('zeneyer_auth_rate_limit_incremented', $ip, $action, $attempts);
 
