@@ -64,23 +64,36 @@ class Rate_Limiter {
         $ip = self::get_client_ip();
         $key = self::get_transient_key($ip, $action);
 
+        $options = get_option('zeneyer_auth_settings', []);
+        $max_attempts = isset($options['rate_limit_attempts']) ? (int) $options['rate_limit_attempts'] : self::MAX_ATTEMPTS;
+        $max_attempts = apply_filters('zeneyer_auth_max_attempts', $max_attempts, $action);
+        $duration = isset($options['rate_limit_duration']) ? (int) $options['rate_limit_duration'] : self::LOCKOUT_DURATION;
+        $duration = apply_filters('zeneyer_auth_lockout_duration', $duration, $action);
+
         // Sem lock, requisições paralelas do mesmo IP (ex: brute force automatizado)
         // poderiam ler a mesma contagem antiga e a tentativa acabaria não sendo contada
         // para todas. GET_LOCK é atômico no MySQL e não exige Redis.
         global $wpdb;
         $lock_name = 'zeneyer_rl_' . \md5($ip . $action);
-        $lock_acquired = (bool) $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, 3)', $lock_name));
+        $lock_acquired = (bool) $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, 1)', $lock_name));
 
-        $attempts = (int) get_transient($key);
-        $attempts++;
+        if (!$lock_acquired) {
+            \wp_cache_delete('_transient_' . $key, 'options');
+            \wp_cache_delete('_transient_timeout_' . $key, 'options');
+            set_transient($key, $max_attempts, $duration);
+            self::log_audit_event('rate_limit_lock_timeout', 0, $ip, ['action' => $action]);
+            return;
+        }
 
-        $options = get_option('zeneyer_auth_settings', []);
-        $duration = isset($options['rate_limit_duration']) ? (int) $options['rate_limit_duration'] : self::LOCKOUT_DURATION;
-        $duration = apply_filters('zeneyer_auth_lockout_duration', $duration, $action);
+        try {
+            \wp_cache_delete('_transient_' . $key, 'options');
+            \wp_cache_delete('_transient_timeout_' . $key, 'options');
 
-        set_transient($key, $attempts, $duration);
+            $attempts = (int) get_transient($key);
+            $attempts++;
 
-        if ($lock_acquired) {
+            set_transient($key, $attempts, $duration);
+        } finally {
             $wpdb->query($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock_name));
         }
 

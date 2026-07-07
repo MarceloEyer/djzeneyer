@@ -123,23 +123,16 @@ final class REST_Handler
     }
 
     /**
-     * Global Leaderboard Endpoint.
-     *
-     * Site pequeno (DJ), sem tráfego de e-commerce em escala — top 5 cobre o uso real
-     * (única chamada no frontend é `useLeaderboardQuery(5)`). Fixar o limite simplifica
-     * a chave de cache (uma só, em vez de uma por variante de limit) e reduz o custo
-     * do UNION ALL sobre wp_usermeta a cada cache-miss.
+     * Global Leaderboard Endpoint
      */
-    private const LEADERBOARD_LIMIT = 5;
-
     public static function get_leaderboard($request)
     {
         if (!\defined('GAMIPRESS_VER')) {
             return new WP_Error('engine_off', 'GamiPress not found', ['status' => 503]);
         }
 
-        $limit = self::LEADERBOARD_LIMIT;
-        $cache_key = 'djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION;
+        $limit = \max(1, \min(50, (int) ($request->get_param('limit') ?: 10)));
+        $cache_key = 'djz_gamipress_leaderboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $limit;
         $cached = \get_transient($cache_key);
         if (false !== $cached) {
             return \rest_ensure_response($cached);
