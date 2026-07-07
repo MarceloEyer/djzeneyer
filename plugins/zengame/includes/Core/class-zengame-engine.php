@@ -224,19 +224,50 @@ final class Engine
     {
         $user_id = $user->ID;
         $today = \current_time('Y-m-d');
-        $last = (string) \get_user_meta($user_id, 'zen_last_login', true);
-        $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
 
-        if ($last === $today) return;
+        if ((string) \get_user_meta($user_id, 'zen_last_login', true) === $today) {
+            return;
+        }
 
-        // Calcular "ontem" a partir de $today (já no timezone do WP) para evitar
-        // discrepância entre date() (PHP/UTC) e current_time() (WP timezone).
-        $yesterday = \date('Y-m-d', \strtotime($today . ' -1 day'));
-        $streak = ($last === $yesterday) ? $streak + 1 : 1;
+        // wp_login (login normal) e rest_pre_dispatch (retorno via JWT) podem disparar
+        // quase ao mesmo tempo em requisições paralelas (ex: várias abas abrindo juntas).
+        // Sem lock, ambas leriam o mesmo streak antigo e a contagem ficaria errada
+        // (double count ou update perdido). GET_LOCK é atômico no MySQL e não exige Redis.
+        global $wpdb;
+        $lock_name = 'zengame_streak_' . $user_id;
+        $lock_acquired = (bool) $wpdb->get_var($wpdb->prepare('SELECT GET_LOCK(%s, 5)', $lock_name));
 
-        \update_user_meta($user_id, 'zen_last_login', $today);
-        \update_user_meta($user_id, 'zen_login_streak', $streak);
-        $this->clear_user_cache($user_id);
+        if (!$lock_acquired) {
+            // Outra requisição já está atualizando o streak deste usuário agora;
+            // preferimos pular a atualizar do que arriscar uma contagem incorreta.
+            return;
+        }
+
+        $updated = false;
+
+        try {
+            \wp_cache_delete($user_id, 'user_meta');
+
+            $last = (string) \get_user_meta($user_id, 'zen_last_login', true);
+            if ($last === $today) return;
+
+            $streak = (int) \get_user_meta($user_id, 'zen_login_streak', true);
+
+            // Calcular "ontem" a partir de $today (já no timezone do WP) para evitar
+            // discrepância entre date() (PHP/UTC) e current_time() (WP timezone).
+            $yesterday = \date('Y-m-d', \strtotime($today . ' -1 day'));
+            $streak = ($last === $yesterday) ? $streak + 1 : 1;
+
+            \update_user_meta($user_id, 'zen_last_login', $today);
+            \update_user_meta($user_id, 'zen_login_streak', $streak);
+            $updated = true;
+        } finally {
+            $wpdb->query($wpdb->prepare('SELECT RELEASE_LOCK(%s)', $lock_name));
+        }
+
+        if ($updated) {
+            $this->clear_user_cache($user_id);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
