@@ -146,3 +146,6 @@
 
 **Learning:** Instantiating `new Date(string)` inside an `Array.prototype.sort()` comparator function (e.g. `festivals.sort((a,b) => new Date(a).getTime() - new Date(b).getTime())`) is exceptionally slow. Since sort callbacks execute $O(N \log N)$ times, this repeatedly allocates and garbage-collects objects for the exact same values, severely degrading frontend performance.
 **Action:** When filtering or sorting lists by dates in ISO 8601 format (like `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm:ssZ`), completely eliminate `new Date()` from the loop. Standardize the target comparison threshold to a matching string format and use lightweight string operators (`<`, `>=`) and `String.prototype.localeCompare()` to guarantee zero-allocation chronological ordering.
+## 2024-05-18 - Optimized Array Rendering in SupportArtistPage
+**Learning:** React components (e.g., `SupportArtistPage`) were creating static arrays inside the component body, meaning `getLocalizedRoute` was being recalculated and the array re-allocated every single render loop.
+**Action:** Always extract static configurations that depend on `useTranslation` hooks (like localized routes and translated strings) into `useMemo` hooks, keeping the dependency array explicit (e.g. `[t, currentLang]`). This saves CPU overhead and Garbage Collection (GC) pressure.

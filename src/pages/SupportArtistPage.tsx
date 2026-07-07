@@ -91,7 +91,8 @@ const SupportArtistPage: React.FC = () => {
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const [openCurrency, setOpenCurrency] = useState<string | null>(null);
 
-  const supportActions = [
+  // ⚡ Bolt: Wrapped supportActions array in useMemo to prevent O(N) recalculations of getLocalizedRoute and array reallocations on every render cycle.
+  const supportActions = useMemo(() => [
     {
       emoji: '🎵',
       title: t('support.actions.streaming.title'),
@@ -116,7 +117,7 @@ const SupportArtistPage: React.FC = () => {
       title: t('support.actions.engagement.title'),
       description: t('support.actions.engagement.description'),
     },
-  ];
+  ], [t, currentLang]);
 
   const handleToggle = (currency: string) => {
     setOpenCurrency(openCurrency === currency ? null : currency);
