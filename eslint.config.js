@@ -8,6 +8,7 @@ export default tseslint.config(
     ignores: [
       'dist',
       'dist-debug',
+      'vendor',
       // Agent/tool workspace directories — each contains its own full TS project
       // and would cause typescript-eslint to find multiple tsconfigRootDir candidates
       '.claude',

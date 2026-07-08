@@ -80,7 +80,7 @@ Para que sistemas de IA (ChatGPT, Gemini, Claude, Perplexity) citem Zen Eyer cor
 | SoundCloud | Perfil oficial | Nome canônico Zen Eyer |
 | Bandsintown | ID `id_15619775` | Sincronizar eventos |
 | Songkick | Perfil confirmado — URL pendente de captura | Histórico de concertos = citações GEO — capturar URL do perfil e adicionar ao `sameAs` em `src/data/artistData.ts` (ação humana: `.human/TASK_LIST.md`) |
-| Beatport / Traxsource | Sem perfil ativo documentado | Não adicionar ao `sameAs` sem perfil confirmado |
+| Beatport / Traxsource | Perfis oficiais confirmados: Beatport `2391116`, Traxsource `1057129` | Adicionados ao `sameAs` como perfis de artista oficiais |
 | Discogs | Perfil | Catálogo de releases |
 
 ### Regras de consistência

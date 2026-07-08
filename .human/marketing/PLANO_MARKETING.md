@@ -204,7 +204,7 @@ A única vantagem real do DistroKid — escolher o segundo exato que toca no Ins
 
 **Para o Beatport:** Lançar uma faixa lá separadamente (Beatport aceita envio direto via distribuidoras compatíveis). Verificar se a Soundrop distribui para Beatport — se não, considerar envio pontual via Record Union ou similar, sem migrar tudo.
 
-#### 2.4 Beatport — lançar ao menos uma faixa (🔴 AÇÃO MANUAL)
+#### 2.4 Beatport — lançar ao menos uma faixa (✅ CONCLUÍDO)
 
 O Beatport é a principal plataforma de referência para DJs europeus. Ter uma faixa lá cria credencial automática no ecossistema de DJs profissionais. Foco: nicho eletrônico (Deep House, Afro House) com reinterpretação em mood Zouk Cremosidade.
 
@@ -681,7 +681,7 @@ A estratégia de IA não é um truque técnico. É garantir que quando alguém p
 - [ ] 🔴 Iniciar rascunho da Wikipedia PT com base nas entrevistas publicadas
 - [ ] 🔴 Iniciar sequência de outreach com organizadores europeus
 - [ ] 🔴 Aparecer em 1–2 podcasts de Zouk/dança (com transcrição publicada no site)
-- [ ] 🔴 Lançar faixa no Beatport (via distribuidora compatível, sem migrar da Soundrop)
+- [x] ✅ Lançar faixa no Beatport (via distribuidora compatível, sem migrar da Soundrop)
 
 ---
 

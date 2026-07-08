@@ -243,6 +243,7 @@ class Zen_SEO_Admin
 
         $social_platforms = [
             'beatport',
+            'traxsource',
             'spotify',
             'apple_music',
             'shazam',
@@ -358,6 +359,7 @@ class Zen_SEO_Admin
                 'musicbrainz',
                 'wikidata',
                 'beatport',
+                'traxsource',
                 'spotify',
                 'apple_music',
                 'shazam',

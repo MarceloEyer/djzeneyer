@@ -183,6 +183,8 @@ export const ARTIST = {
     bandsintown: { url: 'https://www.bandsintown.com/a/15619775' },
     mixcloud: { url: 'https://www.mixcloud.com/djzeneyer' },
     bandcamp: { url: 'https://djzeneyer.bandcamp.com' },
+    beatport: { url: 'https://www.beatport.com/artist/zen-eyer/2391116' },
+    traxsource: { url: 'https://www.traxsource.com/artist/1057129/zen-eyer' },
     lastfm: { url: 'https://www.last.fm/music/Zen+Eyer' },
     songkick: { url: 'https://www.songkick.com/artists/8815204-zen-eyer' },
     tidal: { url: 'https://tidal.com/artist/10492592' },
