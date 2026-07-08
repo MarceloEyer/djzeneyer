@@ -14,6 +14,7 @@ const PRERENDER_PORT = parsePrerenderPort(process.env.PRERENDER_PORT);
 const PRERENDER_HOME_EVENTS_LIMIT = 3;
 const PRERENDER_EVENTS_LIST_LIMIT = 50;
 const PRERENDER_EVENTS_DAYS = 365;
+const THEME_DIST_PUBLIC_PATH = '/wp-content/themes/zentheme/dist/';
 const INTERNAL_API_EVENTS = `${SITE_BASE_URL}/wp-json/zen-bit/v2/events?mode=upcoming&days=${PRERENDER_EVENTS_DAYS}&limit=${PRERENDER_EVENTS_LIST_LIMIT}`;
 const EVENTS_ROUTE_EN = '/zouk-events';
 const EVENTS_ROUTE_PT = '/pt/eventos-zouk';
@@ -253,6 +254,19 @@ function dedupePrerenderHead(html) {
   cleaned = dedupeJsonLdScripts(cleaned);
 
   return cleaned;
+}
+
+function normalizePrerenderAssetUrls(html) {
+  return html
+    .replace(/https?:\/\/(?:localhost|127\.0\.0\.1):\d+\/wp-content\/themes\/zentheme\/dist\//g, THEME_DIST_PUBLIC_PATH)
+    .replace(/https?:\/\/(?:localhost|127\.0\.0\.1):\d+\/assets\//g, `${THEME_DIST_PUBLIC_PATH}assets/`);
+}
+
+function assertNoLocalhostUrls(html, route) {
+  const match = html.match(/https?:\/\/(?:localhost|127\.0\.0\.1):\d+[^"'<\s]*/);
+  if (match) {
+    throw new Error(`Prerender leaked local URL on ${route}: ${match[0]}`);
+  }
 }
 
 function buildCanonicalPath(event, lang = 'en') {
@@ -799,7 +813,9 @@ async function prerender() {
               finalHtml = finalHtml.replace('</head>', `${prerenderInlineScript}\n</head>`);
             }
 
+            finalHtml = normalizePrerenderAssetUrls(finalHtml);
             finalHtml = dedupePrerenderHead(finalHtml);
+            assertNoLocalhostUrls(finalHtml, route);
 
             writeFileSync(outputPath, finalHtml, 'utf8');
             console.log(`✅ ${route} (${finalHtml.length}b)`);
