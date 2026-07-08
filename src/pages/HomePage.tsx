@@ -63,21 +63,18 @@ const HOME_HERO_IMAGES: Record<SiteTheme, {
   defaultSrc: string;
   mobileSrc: string;
   desktopSrcSet: string;
-  preloadDesktop: string;
   imageClassName: string;
 }> = {
   'mediterranean-dusk': {
     defaultSrc: '/images/hero-background-mediterranean-1440.webp',
     mobileSrc: '/images/hero-background-mediterranean-mobile.webp',
     desktopSrcSet: '/images/hero-background-mediterranean-1440.webp 1440w, /images/hero-background-mediterranean.webp?v=2 1920w',
-    preloadDesktop: '/images/hero-background-mediterranean-1440.webp',
     imageClassName: 'opacity-90',
   },
   'zen-night': {
     defaultSrc: '/images/hero-background.webp',
     mobileSrc: '/images/hero-background-mobile.webp',
     desktopSrcSet: '/images/hero-background-1440.webp 1440w, /images/hero-background.webp 1920w',
-    preloadDesktop: '/images/hero-background-1440.webp',
     imageClassName: 'opacity-65',
   },
 };
@@ -211,14 +208,6 @@ const HomePage: React.FC = () => {
             href: heroImages.mobileSrc,
             as: 'image',
             media: '(max-width: 768px), (orientation: portrait)',
-            fetchPriority: 'high',
-          },
-          {
-            href: heroImages.preloadDesktop,
-            as: 'image',
-            media: '(min-width: 769px) and (orientation: landscape)',
-            imageSrcSet: heroImages.desktopSrcSet,
-            imageSizes: '100vw',
             fetchPriority: 'high',
           },
         ]}

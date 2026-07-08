@@ -20,11 +20,6 @@
     
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-    
-    <link rel="preload" as="image"
-      imagesrcset="/images/hero-background-mediterranean-mobile.webp 900w, /images/hero-background-mediterranean-1440.webp 1440w, /images/hero-background-mediterranean.webp 1920w"
-      imagesizes="100vw"
-      fetchpriority="high">
     <!-- Preconnect para Google Fonts — carregamento async gerenciado pelo LiteSpeed Cache (optm-ggfonts_async) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
