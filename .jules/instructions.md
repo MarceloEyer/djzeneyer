@@ -14,6 +14,7 @@
 - Seu papel: implementar tarefas explicitamente solicitadas e executar auditorias proativas programadas de qualidade, performance e segurança.
 - Em auditorias proativas, você pode abrir PR sozinho quando o achado passar pelo gate de qualidade abaixo.
 - Se encontrar uma oportunidade fraca, cosmética ou sem evidência objetiva, registre como sugestão no resumo da tarefa. Não abra PR para esse caso.
+- Tarefas "Bolt" ou tarefas iniciadas manualmente pelo mantenedor também passam pelo mesmo gate. Se a tarefa pedir uma micro-otimização sem evidência objetiva, conclua com "não vale PR" e explique por quê.
 
 ---
 
@@ -43,6 +44,7 @@ Em caso de divergência, siga esta ordem:
 - Nunca crie PRs que mexam em mais de um domínio ao mesmo tempo (ex: frontend + PHP juntos). Separe em PRs focados.
 - O título do PR deve descrever o que o diff realmente muda. Não use `fix`, `perf` ou `N+1` se o diff só altera comentário, documentação ou lint.
 - A descrição do PR deve listar validações executadas. Se uma validação relevante não foi executada, explique por quê.
+- Não adicione comentários no código mencionando "Bolt", "Jules", "otimização" ou a razão do PR. Comentários no código devem explicar somente comportamento de domínio que não seja óbvio.
 
 ---
 
@@ -55,6 +57,7 @@ Antes de abrir PR, confirme todos os itens:
 3. O PR é pequeno, tem um domínio único e não duplica PR aberto.
 4. Existe validação proporcional ao risco (`npm run lint`, teste específico, diff manual ou benchmark reproduzível).
 5. Para desempenho, existe evidência objetiva de impacto: profiler, benchmark, Core Web Vitals, endpoint lento, lista grande, render frequente em hot path, N+1 real, ou regressão visível.
+6. Se a tarefa foi gerada a partir de `.jules/bolt.md`, cite no resumo a evidência concreta encontrada no código atual. Sem evidência concreta, não abra PR.
 
 Não abrir PR automaticamente para:
 
@@ -62,13 +65,16 @@ Não abrir PR automaticamente para:
 - Micro-otimizações de renderização sem evidência de profiler, hot path ou regressão visível.
 - Trocar chamadas locais repetidas por constantes, `useMemo`, `useCallback`, arrays estáveis ou mapas quando o valor não atravessa fronteira de memoização, não alimenta dependência de hook, não roda sobre lista grande e não tem métrica antes/depois.
 - PRs com título/descrição que vendem melhoria como `memoize`, `O(N)`, `N+1`, `GC pressure` ou `gargalo de desempenho` sem demonstrar a cardinalidade real e o custo medido no código atual.
+- PRs que apenas envolvem arrays pequenos, `split()` vs `substring()`, chamada local barata, `getLocalizedRoute`, alocação de objeto/array em componente pequeno, ou `useMemo` para dados visíveis pequenos. Esses casos só podem entrar junto com outro trabalho funcional quando melhorarem legibilidade, sem vender como performance.
 - Refactors de desempenho em PHP/GamiPress/WooCommerce sem benchmark, fixture ou revisão manual planejada.
 - Mudanças em arquivos de contexto, workflows, autenticação, SEO/head, rotas ou deploy sem pedido explícito.
 - Alterações geradas apenas por `.jules/bolt.md`. Esse arquivo é memória, não backlog; em auditorias programadas ele pode orientar a busca, mas não substitui evidência no código.
+- Alterações em `.jules/bolt.md` dentro do mesmo PR que implementa código, salvo pedido humano explícito para registrar uma learning operacional.
 
 Em rotina programada de auditoria, abrir PR apenas para achados relevantes:
 
 - N+1 real ou chamada remota dentro de loop com cardinalidade variável.
+- Em frontend, "N+1" significa chamadas remotas, acesso caro repetido ou trabalho em lista grande/medida. Não use "N+1" para alocação local de `Date`, `split`, arrays pequenos ou chamadas puras baratas.
 - Cache ausente, cache mal invalidado ou transiente que causa resposta errada/lenta.
 - Segurança: input sem sanitização, redirect inseguro, nonce/auth incorreto, exposição de dado privado.
 - SEO técnico: soft 404, canonical incorreto, rotas inválidas, head duplicado, schema falso/invisível.
@@ -193,6 +199,8 @@ Regra de escala: micro-otimização de render no cliente não aumenta a capacida
 
 - Não use entradas do Bolt, isoladamente, como autorização para abrir PR.
 - Não propague datas futuras ou fora de ordem; use apenas a data real do dia.
+- Não adicione learning retroativa nem invente data antiga para justificar mudança nova.
+- Não registre como learning uma micro-otimização local sem profiler, benchmark reproduzível ou bug real. O Bolt deve registrar aprendizados duráveis, não justificativas de PR.
 - Se uma learning parecer aplicável, primeiro prove que o padrão existe no código atual e que o benefício compensa o risco. Em auditoria programada, essa prova é o que autoriza o PR.
 - Em caso de conflito entre Bolt e código real, o código real vence.
 - Se a mudança for apenas cosmética, comentário ou micro-otimização, deixe como sugestão e aguarde pedido humano.

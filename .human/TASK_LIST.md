@@ -15,6 +15,7 @@ Este diretório contém tarefas que exigem acesso humano a plataformas externas,
 - [x] **MusicBrainz:** Perfil de artista criado/verificado com nome, sort name, releases, aliases (DJ Zen Eyer), links para Wikidata e djzeneyer.com. URL/ID adicionado ao `src/data/artistData.ts` e ao `sameAs`.
 - [x] **Bandsintown:** Eventos sincronizados, nome canônico "Zen Eyer" e website `djzeneyer.com` conferidos (manager ID: `id_15619775`).
 - [x] **Songkick:** Perfil verificado — nome, website e histórico de eventos conferidos. URL do perfil presente em `src/data/artistData.ts`.
+- [x] **Beatport / Traxsource:** Perfis oficiais de artista confirmados e adicionados ao `src/data/artistData.ts`, ao schema frontend/backend e ao `sameAs`.
 - [x] **FAQ audit:** revisão humana aplicada; FAQ focado em Zen Eyer e conteúdo técnico direcionado para a Enciclopédia.
 
 ---

@@ -411,7 +411,7 @@ class Zen_SEO_REST_API
         $social = [];
         $platforms = [
             'instagram', 'youtube', 'facebook', 'spotify', 'soundcloud',
-            'mixcloud', 'bandcamp', 'apple_music', 'beatport', 'shazam', 'songkick', 'bandsintown'
+            'mixcloud', 'bandcamp', 'apple_music', 'beatport', 'traxsource', 'shazam', 'songkick', 'bandsintown'
         ];
 
         foreach ($platforms as $platform) {
