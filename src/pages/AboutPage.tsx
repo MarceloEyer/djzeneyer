@@ -91,7 +91,14 @@ const AboutPage: React.FC = () => {
   const prefersReducedMotion = useReducedMotion();
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const currentLocale = currentLang === 'pt' ? 'pt-BR' : 'en-US';
-  const currentPath = `/${getLocalizedRoute('about', currentLang).replace(/^\//, '')}`;
+
+  // ⚡ Bolt: Memoize localized routes to avoid O(N) recalculations on every render
+  const routes = useMemo(() => ({
+    home: getLocalizedRoute('home', currentLang),
+    about: getLocalizedRoute('about', currentLang),
+  }), [currentLang]);
+
+  const currentPath = `/${routes.about.replace(/^\//, '')}`;
   const currentUrl = `${artist.site.baseUrl}${currentPath}`;
   const birthDate = useMemo(() => new Date(`${ARTIST.identity.birthDate}T00:00:00`), []);
   const birthDateFormatter = useMemo(
@@ -121,13 +128,13 @@ const AboutPage: React.FC = () => {
         breadcrumb: {
           '@type': 'BreadcrumbList',
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'Home', item: `${artist.site.baseUrl}${getLocalizedRoute('home', currentLang)}` },
+            { '@type': 'ListItem', position: 1, name: 'Home', item: `${artist.site.baseUrl}${routes.home}` },
             { '@type': 'ListItem', position: 2, name: t('about.seo.name'), item: currentUrl },
           ],
         },
       },
     ],
-  }), [t, artist, currentUrl, currentLang]);
+  }), [t, artist, currentUrl, routes.home]);
 
   const MILESTONES = useMemo(() => [
     {
