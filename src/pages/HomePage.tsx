@@ -366,7 +366,7 @@ const HomePage: React.FC = () => {
               {th('shows.title')}
             </h2>
 
-            <div className="mb-8">
+            <div className="mb-8 min-h-[350px]">
               <React.Suspense
                 fallback={
                   <div className="space-y-3" aria-hidden="true">
