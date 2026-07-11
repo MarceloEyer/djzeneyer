@@ -47,29 +47,35 @@ export const getLocalISODate = (now: Date | number = Date.now()): string => {
   const current = typeof now === 'number' ? new Date(now) : now;
   const offsetMs = current.getTimezoneOffset() * 60 * 1000;
   const localDate = new Date(current.getTime() - offsetMs);
-  return localDate.toISOString().split('T')[0];
+  return localDate.toISOString().substring(0, 10);
 };
 
 export function isEventUpcoming(
   event: Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string },
-  now: Date | number = Date.now(),
+  now: Date | number | string = Date.now(),
 ): boolean {
   // Use ends_at if available, else starts_at, else fallbacks (for schema)
   const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
   if (!comparableString) return true; // Safety fallback
   
-  const dateOnly = comparableString.split('T')[0];
-  return dateOnly >= getLocalISODate(now);
+  // ⚡ Bolt: Prevent array allocation by using substring instead of split
+  const dateOnly = comparableString.substring(0, 10);
+  const targetDateStr = typeof now === 'string' ? now : getLocalISODate(now);
+  return dateOnly >= targetDateStr;
 }
 
 export function filterEventsByTemporalMode<T extends Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string }>(
   events: T[],
   mode: EventTemporalMode = 'upcoming',
-  now: Date | number = Date.now(),
+  now: Date | number | string = Date.now(),
 ): T[] {
   if (mode === 'all') return events;
+
+  // ⚡ Bolt: Hoist invariant local date calculation outside the loop to prevent O(N) redundant Date instantiations
+  const targetDateStr = typeof now === 'string' ? now : getLocalISODate(now);
+
   return events.filter((event) => {
-    const upcoming = isEventUpcoming(event, now);
+    const upcoming = isEventUpcoming(event, targetDateStr);
     return mode === 'upcoming' ? upcoming : !upcoming;
   });
 }
