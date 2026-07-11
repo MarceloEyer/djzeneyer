@@ -23,19 +23,19 @@ const BreadcrumbInner: React.FC<BreadcrumbProps> = ({ items, className = '' }) =
       aria-label={t('nav.breadcrumb')}
       className={`${className} w-full text-left motion-safe:animate-fade-down`}
     >
-      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-text/75">
+      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-text/90">
         <li>
           <Link
             to={getLocalizedRoute('home', currentLang)}
             className="inline-flex items-center gap-1.5 py-1 font-medium tracking-wide transition-colors hover:text-primary"
           >
-            <Home size={14} className="text-primary/70" aria-hidden="true" />
+            <Home size={14} className="text-primary" aria-hidden="true" />
             <span>{t('nav.home')}</span>
           </Link>
         </li>
         {items.map((item, index) => (
           <li key={`${item.label}-${index}`} className="flex min-w-0 items-center gap-2">
-            <ChevronRight size={14} className="flex-shrink-0 text-text/20" aria-hidden="true" />
+            <ChevronRight size={14} className="flex-shrink-0 text-text/45" aria-hidden="true" />
             {item.path ? (
               <Link
                 to={item.path}

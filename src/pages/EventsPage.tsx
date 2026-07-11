@@ -11,7 +11,7 @@ import { extractRegions, filterEventsByRegion, groupEventsByMonth, getPlainTitle
 import { logger } from '../lib/logger';
 import { ARTIST } from '../data/artistData';
 import { useBranding } from '../contexts/BrandingContext';
-import { MapPin, Share2, ArrowLeft, Music, Calendar } from 'lucide-react';
+import { MapPin, Share2, ArrowLeft, Music, Calendar, Clock } from 'lucide-react';
 import AddCalendarMenu from '../components/Events/AddCalendarMenu';
 import { PageHeader } from '../components/ui/PageHeader';
 import { getDateTimeFormatter } from '../utils/date';
@@ -220,6 +220,8 @@ const EventListContent = ({ lang }: { lang: string }) => {
   const [selectedRegion, setSelectedRegion] = useState<string>('all');
   const [showToast, setShowToast] = useState(false);
   const eventsDetailRoute = useMemo(() => getLocalizedRoute('events-detail', lang as Language), [lang]);
+  const monthBadgeFormatter = useMemo(() => getDateTimeFormatter(lang, { month: 'short' }), [lang]);
+  const timeFormatter = useMemo(() => getDateTimeFormatter(lang, { hour: '2-digit', minute: '2-digit' }), [lang]);
 
   useEffect(() => {
     if (error) {
@@ -256,7 +258,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
   }
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-500">
+    <div className="mx-auto max-w-5xl animate-in fade-in duration-500">
       <HeadlessSEO
         title={t('events_page_title')}
         description={t('events_page_meta_desc')}
@@ -265,12 +267,14 @@ const EventListContent = ({ lang }: { lang: string }) => {
         imageAlt={t('og.image_alt.events_list')}
         events={events as EventSchemaData[]}
       />
+      <div className="rounded-[2rem] border border-border/10 bg-surface/35 p-4 shadow-2xl shadow-black/10 sm:p-7 md:p-9">
       {/* Filter Bar */}
       {regions.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
+        <div className="mb-10 flex justify-center">
+          <div className="inline-flex max-w-full flex-wrap justify-center gap-2 rounded-2xl border border-border/10 bg-background/45 p-2 shadow-lg shadow-black/5">
           <button
             onClick={() => setSelectedRegion('all')}
-            className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === 'all' ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/70 border-border/10 hover:border-border/20'}`}
+            className={`min-h-[44px] rounded-xl border px-5 py-3 text-xs font-bold uppercase tracking-widest transition-all ${selectedRegion === 'all' ? 'border-primary/20 bg-surface text-primary shadow-md shadow-black/5' : 'border-transparent bg-transparent text-text/70 hover:border-border/20 hover:bg-surface/75 hover:text-text'}`}
           >
             {t('common.all')}
           </button>
@@ -278,16 +282,17 @@ const EventListContent = ({ lang }: { lang: string }) => {
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-6 py-3 min-h-[44px] rounded-full text-xs font-black uppercase tracking-widest transition-all border ${selectedRegion === region ? 'bg-primary text-[rgb(var(--color-primary-fg))] border-primary shadow-lg shadow-primary/20' : 'bg-text/5 text-text/70 border-border/10 hover:border-border/20'}`}
+              className={`min-h-[44px] rounded-xl border px-5 py-3 text-xs font-bold uppercase tracking-widest transition-all ${selectedRegion === region ? 'border-primary/20 bg-surface text-primary shadow-md shadow-black/5' : 'border-transparent bg-transparent text-text/70 hover:border-border/20 hover:bg-surface/75 hover:text-text'}`}
             >
               {region}
             </button>
           ))}
+          </div>
         </div>
       )}
 
       {filteredEvents.length === 0 ? (
-        <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5">
+        <div className="rounded-3xl border border-border/5 bg-background/45 py-20 text-center">
           <p className="text-text/70">{t('events_no_results_filter')}</p>
         </div>
       ) : (
@@ -299,13 +304,17 @@ const EventListContent = ({ lang }: { lang: string }) => {
           const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
           return (
             <section key={key}>
-              <h2 className="text-2xl font-black text-primary uppercase tracking-widest mb-6 flex items-center gap-4">
-                {name} <span className="text-text/60 drop-shadow-sm">{y}</span>
-                <div className="h-px flex-1 bg-text/5" />
+              <h2 className="mb-6 flex items-center gap-4 text-xl font-bold text-text sm:text-2xl">
+                <span>{name}</span>
+                <span className="rounded-full border border-border/10 bg-background/55 px-3 py-1 text-sm font-medium text-text/60 shadow-sm">{y}</span>
+                <span className="h-px flex-1 bg-border/20" />
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-5">
                 {monthEvents.map((e) => {
-                  const dayStr = e.starts_at && e.starts_at.length >= 10 ? e.starts_at.substring(8, 10) : '??';
+                  const hasStartDate = Boolean(e.starts_at && e.starts_at.length >= 10);
+                  const dayStr = hasStartDate ? e.starts_at.substring(8, 10) : '??';
+                  const eventDate = hasStartDate ? new Date(e.starts_at) : null;
+                  const hasValidDate = eventDate !== null && !isNaN(eventDate.getTime());
                   const identifier = e.canonical_path
                     ? extractLastPathSegment(e.canonical_path) || e.event_id
                     : e.event_id;
@@ -314,27 +323,59 @@ const EventListContent = ({ lang }: { lang: string }) => {
                   const detailUrl = e.canonical_url || `${ARTIST.site.baseUrl}${detailHref}`;
                   const loc = e.location;
                   const cleanEventTitle = getPlainTitle(e.title);
+                  const cityRegion = [loc?.city, loc?.region].filter(Boolean).join(', ');
+                  const countryLabel = loc?.country ? getLocalizedCountry(loc.country, t) : '';
+                  const locationLabel = [cityRegion, countryLabel].filter(Boolean).join(', ');
 
                   return (
-                    <div key={e.event_id} className="flex flex-col md:flex-row md:items-center gap-4 p-6 bg-surface/30 border border-border/5 rounded-2xl hover:border-primary/20 transition-all group">
-                      <div className="text-3xl font-black min-w-[50px]">{dayStr}</div>
-                      <div className="flex-1">
-                        <div className="text-xs text-primary font-bold uppercase tracking-widest mb-1 flex items-center gap-1"><MapPin size={10} /> {loc.city}{loc.region ? `, ${loc.region}` : ''}{loc.country ? ` (${getLocalizedCountry(loc.country, t)})` : ''}</div>
-                        <Link to={detailHref}>
-                          <h3 className="text-xl font-bold uppercase group-hover:text-primary transition-colors" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
-                        </Link>
+                    <article key={e.event_id} className="card group overflow-hidden rounded-xl border border-border/5 bg-background/45 shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/20 hover:bg-background/60 hover:shadow-xl hover:shadow-black/10">
+                      <div className="flex flex-col gap-5 p-5 sm:p-6 md:flex-row md:items-center">
+                        <time dateTime={e.starts_at || undefined} className="flex w-[86px] shrink-0 flex-col items-center justify-center rounded-lg border border-border/10 bg-surface px-3 py-4 text-center shadow-sm">
+                          <span className="text-4xl font-bold leading-none text-primary">{dayStr}</span>
+                          <span className="mt-1 text-xs font-medium uppercase tracking-wide text-text/60">
+                            {hasValidDate && eventDate ? monthBadgeFormatter.format(eventDate) : t('tba')}
+                          </span>
+                        </time>
+
+                        <div className="min-w-0 flex-1">
+                          <Link to={detailHref} className="inline-block">
+                            <h3 className="font-display text-xl font-bold leading-tight text-text transition-colors group-hover:text-primary sm:text-2xl" dangerouslySetInnerHTML={{ __html: sanitizeHtml(e.title) }} />
+                          </Link>
+                          <div className="mt-3 space-y-1.5 text-sm text-text/70 sm:text-base">
+                            {loc?.venue && (
+                              <div className="flex items-center gap-2">
+                                <MapPin size={15} className="shrink-0 text-primary" />
+                                {loc.venue}
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2">
+                              <Clock size={15} className="shrink-0 text-text/55" />
+                              <span>
+                                {locationLabel}
+                                {hasValidDate && eventDate ? ` - ${timeFormatter.format(eventDate)}` : ''}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex shrink-0 items-center gap-2 border-t border-border/10 pt-4 md:border-l md:border-t-0 md:pl-5 md:pt-0">
+                          <Link
+                            to={detailHref}
+                            className="inline-flex h-10 items-center justify-center rounded-lg border border-border/10 bg-surface px-4 text-xs font-bold uppercase tracking-widest text-text/65 shadow-sm transition-all hover:border-primary/25 hover:bg-primary/10 hover:text-primary"
+                          >
+                            {t('events_view_details')}
+                          </Link>
+                          <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" eventUrl={detailUrl} />
+                          <button
+                            onClick={() => share(e)}
+                            className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface text-text/65 shadow-sm transition-all hover:bg-primary/10 hover:text-primary"
+                            aria-label={t('share_event', { title: cleanEventTitle || t('event_default_title') })}
+                          >
+                            <Share2 size={16} />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <AddCalendarMenu event={e as unknown as ZenBitEventDetail} variant="ghost" eventUrl={detailUrl} />
-                        <button
-                          onClick={() => share(e)}
-                          className="w-11 h-11 rounded-xl bg-text/5 flex items-center justify-center hover:bg-primary/20 transition-all"
-                          aria-label={t('share_event', { title: cleanEventTitle || t('event_default_title') })}
-                        >
-                          <Share2 size={16} />
-                        </button>
-                      </div>
-                    </div>
+                    </article>
                   );
                 })}
               </div>
@@ -342,6 +383,7 @@ const EventListContent = ({ lang }: { lang: string }) => {
           );
         })
       )}
+      </div>
 
       <Toast
         message={t('link_copied')}
@@ -386,12 +428,14 @@ const EventsPage: React.FC = () => {
           <EventListContent lang={lang} />
         </React.Suspense>
 
-        <section className="mt-16 p-6 md:p-10 text-center bg-surface border border-border/5 rounded-3xl relative overflow-hidden group max-w-4xl mx-auto">
-          <Music className="absolute -right-8 -bottom-8 text-text/5 w-48 h-48 rotate-12 z-10" />
-          <h2 className="text-2xl md:text-3xl font-black mb-4 uppercase tracking-tighter relative z-20">{t('events.press_title')}</h2>
-          <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-20">
-            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary px-10 py-3 min-h-[44px] rounded-xl font-bold uppercase text-sm">{t('contact')}</Link>
-            <a href={safeUrl(pressKitUrl, '/')} className="btn btn-outline border-border/10 px-10 py-3 min-h-[44px] rounded-xl font-bold text-sm">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
+        <section className="mx-auto mt-16 max-w-4xl overflow-hidden rounded-3xl border border-border/10 bg-surface/40 p-6 text-center shadow-xl shadow-black/5 backdrop-blur-md md:p-10">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
+            <Music size={22} />
+          </div>
+          <h2 className="relative z-20 mb-6 text-2xl font-black uppercase tracking-tight md:text-3xl">{t('events.press_title')}</h2>
+          <div className="relative z-20 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link to={getLocalizedRoute('booking', lang as Language)} className="btn btn-primary min-h-[44px] rounded-xl px-10 py-3 text-sm font-bold uppercase">{t('contact')}</Link>
+            <a href={safeUrl(pressKitUrl, '/')} className="btn btn-outline min-h-[44px] rounded-xl border-border/10 px-10 py-3 text-sm font-bold">{t('events.press_kit', { defaultValue: 'Press Kit' })}</a>
           </div>
         </section>
       </div>
