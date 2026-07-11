@@ -296,15 +296,15 @@ const EventListContent = ({ lang }: { lang: string }) => {
           <p className="text-text/70">{t('events_no_results_filter')}</p>
         </div>
       ) : (
-        groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]]) => {
+        groupedEvents.map(([key, monthEvents]: [string, ZenBitEventListItem[]], groupIndex) => {
           const y = key.slice(0, 4);
           const m = key.slice(5, 7);
 
           const monthShort = MONTH_NAMES[Number(m) - 1];
           const name = t(`events_month_${monthShort}` as unknown as Parameters<typeof t>[0]);
           return (
-            <section key={key}>
-              <h2 className="mb-6 flex items-center gap-4 text-xl font-bold text-text sm:text-2xl">
+            <section key={key} className={groupIndex > 0 ? 'mt-12' : ''}>
+              <h2 className="mb-8 flex items-center gap-4 text-xl font-bold text-text sm:text-2xl">
                 <span>{name}</span>
                 <span className="rounded-full border border-border/10 bg-background/55 px-3 py-1 text-sm font-medium text-text/60 shadow-sm">{y}</span>
                 <span className="h-px flex-1 bg-border/20" />
