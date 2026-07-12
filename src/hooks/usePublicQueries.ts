@@ -18,7 +18,7 @@ import {
 import type { ZenBitEventListItem, ZenBitEventDetail, FetchEventsParams } from '../types/events';
 import { ProductImage, ProductCategory } from '../types/product';
 import { logger } from '../lib/logger';
-import { filterEventsByTemporalMode } from '../utils/events';
+import { filterEventsByTemporalMode, getLocalISODate } from '../utils/events';
 
 // ----------------------------------------------------------------------------
 // TYPES
@@ -251,7 +251,9 @@ const getPrerenderEventsForParams = ({
     limit <= payload.eventsLimit;
 
   if (!canUsePrerenderEvents || !prerenderEvents || prerenderEvents.length === 0) return undefined;
-  const filteredEvents = filterEventsByTemporalMode(prerenderEvents, requestedMode);
+  // ⚡ Bolt: Precalculate the local date threshold string once before the render loop
+      const thresholdDate = getLocalISODate();
+      const filteredEvents = filterEventsByTemporalMode(prerenderEvents, requestedMode, thresholdDate);
   return withProcessedEvents(filteredEvents.slice(0, limit), lang);
 };
 
@@ -304,7 +306,7 @@ export const fetchEventsFn = async ({
     }
 
     const requestedMode = mode ?? (upcomingOnly === false ? 'all' : 'upcoming');
-    return withProcessedEvents(filterEventsByTemporalMode(events, requestedMode), lang);
+    return withProcessedEvents(filterEventsByTemporalMode(events, requestedMode, getLocalISODate()), lang);
   } catch (err) {
     logger.error('EVENTS_FETCH_FAILED', 'Failed to fetch events', { error: String(err) });
     throw err;

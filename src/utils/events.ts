@@ -47,29 +47,36 @@ export const getLocalISODate = (now: Date | number = Date.now()): string => {
   const current = typeof now === 'number' ? new Date(now) : now;
   const offsetMs = current.getTimezoneOffset() * 60 * 1000;
   const localDate = new Date(current.getTime() - offsetMs);
-  return localDate.toISOString().split('T')[0];
+  return localDate.toISOString().substring(0, 10);
 };
 
 export function isEventUpcoming(
   event: Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string },
-  now: Date | number = Date.now(),
+  now: Date | number | string = Date.now(),
 ): boolean {
   // Use ends_at if available, else starts_at, else fallbacks (for schema)
   const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
   if (!comparableString) return true; // Safety fallback
   
-  const dateOnly = comparableString.split('T')[0];
-  return dateOnly >= getLocalISODate(now);
+  // ⚡ Bolt: Use zero-allocation string slicing instead of .split('T')[0] to eliminate garbage collection overhead
+  const dateOnly = comparableString.substring(0, 10);
+  const threshold = typeof now === 'string' ? now : getLocalISODate(now);
+  return dateOnly >= threshold;
 }
 
 export function filterEventsByTemporalMode<T extends Pick<ZenBitEventListItem, 'starts_at'> & { ends_at?: string; event_date?: string; start_date?: string }>(
   events: T[],
   mode: EventTemporalMode = 'upcoming',
-  now: Date | number = Date.now(),
+  now: Date | number | string = Date.now(),
 ): T[] {
   if (mode === 'all') return events;
+  // ⚡ Bolt: Hoist invariant local date calculation outside the loop to prevent N+1 Date instantiations
+  const thresholdDate = typeof now === 'string' ? now : getLocalISODate(now);
   return events.filter((event) => {
-    const upcoming = isEventUpcoming(event, now);
+    // Compare directly to avoid calling isEventUpcoming with the thresholdDate string, but we can just use the same logic
+    // Use ends_at if available, else starts_at, else fallbacks (for schema)
+    const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
+    const upcoming = !comparableString ? true : comparableString.substring(0, 10) >= thresholdDate;
     return mode === 'upcoming' ? upcoming : !upcoming;
   });
 }
