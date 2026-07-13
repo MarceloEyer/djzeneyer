@@ -170,6 +170,10 @@ class Zen_SEO_Sitemap
             }
         }
 
+        // ⚡ Bolt: Hoisted invariant language fetching outside the loop to prevent N+1 overhead.
+        $default_lang = Zen_SEO_Helpers::get_default_language();
+        $default_hreflang = Zen_SEO_Helpers::convert_lang_to_hreflang($default_lang);
+
         foreach ($posts as $post) {
             $translations = Zen_SEO_Helpers::get_translations($post->ID);
 
@@ -179,8 +183,6 @@ class Zen_SEO_Sitemap
             }
 
             // Get primary URL (default language)
-            $default_lang = Zen_SEO_Helpers::get_default_language();
-            $default_hreflang = Zen_SEO_Helpers::convert_lang_to_hreflang($default_lang);
             $primary_url = $translations[$default_hreflang] ?? \reset($translations);
 
             if (!$primary_url) {
