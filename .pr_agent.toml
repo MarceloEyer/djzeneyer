@@ -1,0 +1,7 @@
+# Qodo remains available through explicit slash commands, but must not post
+# automatic reviews, summaries, suggestions, or CI feedback on every PR.
+[github_app]
+pr_commands = []
+
+[checks]
+enable_auto_checks_feedback = false

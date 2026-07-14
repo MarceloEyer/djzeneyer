@@ -6,16 +6,21 @@ language: 'pt-BR'
 
 tone_instructions: |
   Responda sempre em Português Brasileiro.
-  Seja direto e conciso. Priorize bugs reais, riscos de segurança e violações das
-  regras do projeto. Evite elogios genéricos ou comentários sobre style sem impacto.
+  Seja direto e conciso. Comente somente quando houver bug funcional, risco de
+  segurança, regressão, quebra de contrato ou violação explícita das regras do
+  projeto. Não comente estilo, preferências, renomeações, micro-otimizações,
+  elogios genéricos ou oportunidades hipotéticas. Antes de reportar N+1 em
+  WordPress, verifique se update_meta_cache() ou _prime_post_caches() já aquece
+  o cache. Antes de sugerir Promise.all(), confirme que a execução sequencial
+  não implementa failover, rate limit, bounded concurrency ou early return.
 
 reviews:
-  profile: 'assertive'
+  profile: 'chill'
   request_changes_workflow: true
   auto_review:
     enabled: true
     auto_incremental_review: true
-  high_level_summary: true
+  high_level_summary: false
   high_level_summary_placeholder: '@coderabbitai resumo'
   poem: false
   collapse_walkthrough: true
@@ -119,4 +124,4 @@ reviews:
         - Puppeteer: .puppeteerrc.cjs tem skipDownload:true — Chrome só é instalado no CI via `npx puppeteer browsers install chrome`.
 
 chat:
-  auto_reply: true
+  auto_reply: false

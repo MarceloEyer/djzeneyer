@@ -12,6 +12,11 @@ updates:
       dependencies:
         patterns:
           - "*"
+        # Routine automation must never hide a major toolchain migration inside
+        # a patch/minor bundle. Major updates remain isolated PRs for review.
+        update-types:
+          - "patch"
+          - "minor"
 
   - package-ecosystem: "composer"
     directory: "/plugins/zeneyer-auth"
