@@ -47,7 +47,8 @@ export const getLocalISODate = (now: Date | number = Date.now()): string => {
   const current = typeof now === 'number' ? new Date(now) : now;
   const offsetMs = current.getTimezoneOffset() * 60 * 1000;
   const localDate = new Date(current.getTime() - offsetMs);
-  return localDate.toISOString().split('T')[0];
+  // ⚡ Bolt: Replaced .split('T')[0] with .substring(0, 10) to eliminate array allocation
+  return localDate.toISOString().substring(0, 10);
 };
 
 export function isEventUpcoming(
@@ -58,7 +59,8 @@ export function isEventUpcoming(
   const comparableString = event.ends_at ?? event.starts_at ?? event.event_date ?? event.start_date;
   if (!comparableString) return true; // Safety fallback
   
-  const dateOnly = comparableString.split('T')[0];
+  // ⚡ Bolt: Replaced .split('T')[0] with .substring(0, 10) to eliminate array allocation
+  const dateOnly = comparableString.substring(0, 10);
   return dateOnly >= getLocalISODate(now);
 }
 

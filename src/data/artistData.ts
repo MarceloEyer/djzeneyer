@@ -57,7 +57,8 @@ export const ARTIST = {
     yearsActive: CURRENT_YEAR - START_YEAR,
     countriesPlayed: 14, // Brazil, Netherlands, Germany, Poland, Portugal, Spain, Australia, Switzerland, Ireland, Slovenia, United States, Czech Republic, Lithuania, Latvia
     continentsPlayed: 4, // América do Sul, América do Norte, Europa, Oceania (Austrália)
-    lastUpdated: new Date().toISOString().split('T')[0],
+    // ⚡ Bolt: Replaced .split('T')[0] with .substring(0, 10) to eliminate array allocation
+    lastUpdated: new Date().toISOString().substring(0, 10),
   },
 
   // 🌍 Festivais de Destaque
