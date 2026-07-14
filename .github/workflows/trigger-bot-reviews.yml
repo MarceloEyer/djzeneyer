@@ -2,12 +2,12 @@ name: Trigger Bot Reviews
 
 # CodeRabbit needs an explicit prompt on bot-created PRs, but repeated prompts
 # create noisy review loops. This workflow posts at most one CodeRabbit trigger
-# comment per PR. Codex is intentionally not auto-triggered here until the
-# GitHub connector is configured; otherwise it only replies with setup noise.
+# comment per PR. Codex remains an on-demand deep reviewer until its GitHub
+# connector is configured; otherwise automatic mentions only create setup noise.
 
 on:
   pull_request_target:
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [opened, reopened, synchronize, ready_for_review, labeled]
   workflow_dispatch:
     inputs:
       pr_number:
@@ -26,7 +26,18 @@ concurrency:
 jobs:
   trigger-reviews:
     name: Trigger CodeRabbit
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.actor != 'dependabot[bot]' && github.actor != 'github-actions[bot]' && contains(github.event.pull_request.labels.*.name, 'needs-ai-review')) }}
+    if: >-
+      ${{
+        github.event_name == 'workflow_dispatch' ||
+        (
+          github.actor != 'github-actions[bot]' &&
+          (
+            contains(github.event.pull_request.labels.*.name, 'needs-ai-review') ||
+            github.actor == 'dependabot[bot]' ||
+            github.actor == 'google-labs-jules[bot]'
+          )
+        )
+      }}
     runs-on: ubuntu-latest
     steps:
       - name: Trigger CodeRabbit review once
@@ -65,6 +76,6 @@ jobs:
                 marker,
                 '@coderabbitai review',
                 '',
-                'Revisar bugs, regressoes, performance, SEO e aderencia as regras do projeto.',
+                'Revisar somente bugs funcionais, regressoes, seguranca, quebra de contrato, SEO e violacoes explicitas das regras do projeto. Ignorar estilo, elogios, renomeacoes, micro-otimizacoes e oportunidades hipoteticas.',
               ].join('\n'),
             });
