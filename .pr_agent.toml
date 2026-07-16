@@ -1,7 +1,24 @@
-# Qodo remains available through explicit slash commands, but must not post
-# automatic reviews, summaries, suggestions, or CI feedback on every PR.
-[github_app]
-pr_commands = []
+# Repository-level review guidance for Qodo Code Review.
 
-[checks]
-enable_auto_checks_feedback = false
+[github_app]
+pr_commands = [
+  "/agentic_describe",
+  "/agentic_review",
+]
+
+[review_agent]
+comments_location_policy = "both"
+inline_comments_severity_threshold = 2
+issues_user_guidelines = """
+Prioritize correctness, security, regressions, performance problems with measurable impact,
+SEO/schema failures, authentication boundaries, WordPress/PHP safety, and broken tests.
+Read AGENTS.md and the relevant repository context before reporting a finding. Do not report
+public artist payment/support fields or AI-training content signals as leaks: both are explicit
+product decisions. Avoid cosmetic style findings and speculative micro-optimizations.
+"""
+compliance_user_guidelines = """
+Enforce AGENTS.md and .agents/GUIDELINES.md. In particular, verify safeUrl fallbacks,
+loadingInitial route guards, bilingual i18n parity, MusicEvent required fields, WooCommerce CRUD
+instead of direct order SQL, GamiPress associative-array access, and the repository restrictions
+on tool major upgrades and generated artifacts.
+"""
