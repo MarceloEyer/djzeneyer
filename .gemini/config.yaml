@@ -8,9 +8,9 @@ memory_config:
   disabled: false
 
 code_review:
-  # CodeRabbit is the automatic reviewer. Keep Gemini available for explicit
-  # prompts outside the automatic PR review loop to avoid duplicate summaries.
-  disable: true
+  # Automatic second opinion for every ready PR. MEDIUM threshold keeps the
+  # feedback actionable while CodeRabbit supplies the broader summary.
+  disable: false
   # Postar apenas problemas de severidade MEDIUM ou superior.
   # LOW = style nit; MEDIUM = bug potencial; HIGH = bug confirmado; CRITICAL = segurança/dados
   comment_severity_threshold: MEDIUM
@@ -19,7 +19,7 @@ code_review:
   pull_request_opened:
     help: false
     summary: false
-    code_review: false
+    code_review: true
     # Não revisar drafts — aguardar o PR estar pronto
     include_drafts: false
 
@@ -27,12 +27,6 @@ code_review:
 ignore_patterns:
   - 'dist/**'
   - 'dist-debug/**'
-  - '.claude/**'
-  - '.agents/**'
-  - '.bolt/**'
-  - '.gemini/**'
-  - '.jules/**'
-  - '.devcontainer/**'
   - 'plugins/gamipress/**'
   - '**/*.lock'
   - 'public/sitemap*.xml'

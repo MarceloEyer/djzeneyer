@@ -5,14 +5,9 @@
 language: 'pt-BR'
 
 tone_instructions: |
-  Responda sempre em Português Brasileiro.
-  Seja direto e conciso. Comente somente quando houver bug funcional, risco de
-  segurança, regressão, quebra de contrato ou violação explícita das regras do
-  projeto. Não comente estilo, preferências, renomeações, micro-otimizações,
-  elogios genéricos ou oportunidades hipotéticas. Antes de reportar N+1 em
-  WordPress, verifique se update_meta_cache() ou _prime_post_caches() já aquece
-  o cache. Antes de sugerir Promise.all(), confirme que a execução sequencial
-  não implementa failover, rate limit, bounded concurrency ou early return.
+  Responda em português brasileiro. Comente apenas bugs, regressões, segurança,
+  contratos ou regras explícitas do projeto. Ignore estilo, elogios, renomeações,
+  micro-otimizações e hipóteses sem evidência.
 
 reviews:
   profile: 'chill'
@@ -20,7 +15,7 @@ reviews:
   auto_review:
     enabled: true
     auto_incremental_review: true
-  high_level_summary: false
+  high_level_summary: true
   high_level_summary_placeholder: '@coderabbitai resumo'
   poem: false
   collapse_walkthrough: true
@@ -28,9 +23,6 @@ reviews:
   path_filters:
     - '!dist/**'
     - '!dist-debug/**'
-    - '!.claude/**'
-    - '!.bolt/**'
-    - '!.gemini/**'
     - '!plugins/gamipress/**'
     - '!**/*.lock'
     - '!public/sitemap*.xml'
