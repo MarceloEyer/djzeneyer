@@ -48,10 +48,12 @@ Antes de alterar, fechar, mergear ou recomendar merge de PR, ler:
 gh pr view <number> --json body,comments,reviews,reviewThreads,reviewRequests,mergeStateStatus,mergeable,files
 ```
 
-- CodeRabbit, CodeQL, Gemini, Copilot e outros bots podem postar em `reviews` e `reviewThreads`, não apenas em `comments`.
+- CodeRabbit, CodeQL, Qodo, Copilot e outros bots podem postar em `reviews` e `reviewThreads`, não apenas em `comments`.
 - CodeRabbit costuma ser o revisor de IA mais acionável.
+- CodeRabbit está configurado para revisar automaticamente PRs prontos, inclusive os criados por bots. Não criar workflows que comentem `@coderabbitai review`: comentários de `github-actions[bot]` não substituem o auto-review nativo e só geram ruído. O comando manual continua sendo um fallback humano.
 - CodeQL deve ser tratado como sinal forte de segurança.
 - Qodo pode ser útil para bugs de lógica.
+- O Gemini Code Assist para reviews de PR no GitHub foi encerrado pelo Google em 17/07/2026; `.gemini/config.yaml` mantém o review desativado. Não contar com essa integração como revisor.
 - Jules pode gerar PRs bons, mas tende a duplicar PRs; verificar duplicidade antes de mergear.
 - Jules/Bolt não deve abrir PR autônomo contendo apenas comentários, alterações sem efeito prático (no-op) ou micro-otimizações cosméticas como trocar chamada local por `useMemo`, mover `new Date().getFullYear()` para constante, adicionar `React.memo` ou reduzir pequenas alocações sem Profiler, benchmark reproduzível, hot path comprovado, lista grande ou regressão visível. Fechar esses PRs sem merge e explicar que a sugestão deve virar Issue/comentário se não houver evidência.
 - Gemini pode resumir agressivamente arquivos de contexto e apagar detalhes técnicos. Revisar com cuidado qualquer mudança em `AGENTS.md`, `AI_CONTEXT_INDEX.md`, `LEARNINGS.md`, `.agents/` e `.context/`.

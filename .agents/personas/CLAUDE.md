@@ -174,7 +174,7 @@ Esses pontos ja aparecem em PRs, reviews, docs ou codigos atuais e nao devem ser
 - Copy de clipboard em Press Kit precisa de `catch` e reset de estado.
 - Dependencia vulneravel sem lockfile sincronizado nao e remediacao completa.
 - Em sitemaps, listas e schema, single-pass e cache priming reduziram retrabalho e N+1.
-- O workflow de review automatizado depende de `@coderabbitai review`, `@codex review` e `@jules` nos eventos certos.
+- Reviews automáticos dependem das integrações nativas instaladas. CodeRabbit usa o auto-review de `.coderabbit.yaml`; menções publicadas por `github-actions[bot]` não são um substituto confiável.
 
 ## Validacao local
 

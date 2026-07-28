@@ -8,9 +8,9 @@ memory_config:
   disabled: false
 
 code_review:
-  # Automatic second opinion for every ready PR. MEDIUM threshold keeps the
-  # feedback actionable while CodeRabbit supplies the broader summary.
-  disable: false
+  # O Gemini Code Assist para reviews no GitHub foi encerrado em 2026-07-17.
+  # Manter a integração desativada evita uma promessa silenciosa de review.
+  disable: true
   # Postar apenas problemas de severidade MEDIUM ou superior.
   # LOW = style nit; MEDIUM = bug potencial; HIGH = bug confirmado; CRITICAL = segurança/dados
   comment_severity_threshold: MEDIUM
@@ -19,7 +19,7 @@ code_review:
   pull_request_opened:
     help: false
     summary: false
-    code_review: true
+    code_review: false
     # Não revisar drafts — aguardar o PR estar pronto
     include_drafts: false
 
