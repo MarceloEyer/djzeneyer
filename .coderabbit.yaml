@@ -15,6 +15,10 @@ reviews:
   auto_review:
     enabled: true
     auto_incremental_review: true
+    drafts: false
+    # Revisar também PRs de Dependabot/Jules/Bolt. A lista vazia é explícita
+    # para não herdar exclusões de autores configuradas fora do repositório.
+    ignore_usernames: []
   high_level_summary: true
   high_level_summary_placeholder: '@coderabbitai resumo'
   poem: false
