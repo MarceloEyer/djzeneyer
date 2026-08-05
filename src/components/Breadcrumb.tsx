@@ -23,7 +23,7 @@ const BreadcrumbInner: React.FC<BreadcrumbProps> = ({ items, className = '' }) =
       aria-label={t('nav.breadcrumb')}
       className={`${className} w-full text-left motion-safe:animate-fade-down`}
     >
-      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs sm:text-sm text-text/90">
+      <ol className="flex flex-wrap items-center justify-start gap-2 text-xs text-text sm:text-sm">
         <li>
           <Link
             to={getLocalizedRoute('home', currentLang)}

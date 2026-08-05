@@ -20,14 +20,25 @@ const LISTING_FALLBACK_PATHS = [
   '/pt/lancamentos',
 ];
 
+export const getRouteFallbackHeight = (pathname: string) => {
+  if (pathname === '/' || pathname === '/pt' || pathname === '/pt/') {
+    return 'min-h-[3600px]';
+  }
+
+  if (LISTING_FALLBACK_PATHS.some((path) => pathname.startsWith(path))) {
+    return 'min-h-[1600px]';
+  }
+
+  return 'min-h-[60vh]';
+};
+
 const RouteFallback = () => {
   const { t } = useTranslation();
   const { pathname } = useLocation();
-  const reservesListingHeight = LISTING_FALLBACK_PATHS.some((path) => pathname.startsWith(path));
 
   return (
     <div
-      className={`${reservesListingHeight ? 'min-h-[1600px]' : 'min-h-[60vh]'} flex items-start justify-center bg-background pt-32`}
+      className={`${getRouteFallbackHeight(pathname)} flex items-start justify-center bg-background pt-32`}
       role="status"
       aria-label={t('common.loading_page', { defaultValue: 'Loading page' })}
     >
