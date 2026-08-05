@@ -1,0 +1,43 @@
+name: Cloudflare Edge Cache
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Verify the managed rule or apply the project definition
+        required: true
+        default: check
+        type: choice
+        options:
+          - check
+          - apply
+
+permissions:
+  contents: read
+
+jobs:
+  configure:
+    name: ${{ inputs.mode == 'apply' && 'Apply cache rule' || 'Verify cache rule' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+
+      - name: Validate security boundaries
+        run: |
+          node --test scripts/cloudflare-cache-rule.node-test.mjs
+          npm run security:check
+
+      - name: Configure Cloudflare
+        env:
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/configure-cloudflare-cache.mjs --${{ inputs.mode }}

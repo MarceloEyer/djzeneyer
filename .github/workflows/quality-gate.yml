@@ -66,6 +66,11 @@ jobs:
       - name: SEO invariant check
         run: npm run seo:check
 
+      - name: Security invariant check
+        run: |
+          node --test scripts/cloudflare-cache-rule.node-test.mjs
+          npm run security:check
+
       - name: Generate sitemaps
         run: npm run generate-sitemaps
 
