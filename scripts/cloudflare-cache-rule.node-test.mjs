@@ -44,3 +44,11 @@ test('prerender fails closed when the CSP placeholder is absent', () => {
     /script-src missing/,
   );
 });
+
+test('prerender hashes inline scripts with whitespace in the closing tag', () => {
+  const html = '<meta http-equiv="Content-Security-Policy" content="script-src \'self\' \'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=\'"><script>window.a=1;</script >';
+  const result = applyPrerenderScriptHashes(html, '/test');
+
+  assert.match(result, /'sha256-[A-Za-z0-9+/=]+'/);
+  assert.doesNotMatch(result, /sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=/);
+});

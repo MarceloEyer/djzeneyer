@@ -4,7 +4,7 @@ export const CSP_SCRIPT_HASH_PLACEHOLDER = "'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
 export function applyPrerenderScriptHashes(html, route = 'unknown route') {
   const hashes = new Set();
-  const scriptPattern = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+  const scriptPattern = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
   for (const match of html.matchAll(scriptPattern)) {
     const attributes = match[1];
     const body = match[2];
