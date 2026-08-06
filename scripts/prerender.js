@@ -4,6 +4,7 @@ import { createServer } from 'net';
 import { join, dirname } from 'path';
 import { fileURLToPath, URL } from 'url';
 import puppeteer from 'puppeteer';
+import { applyPrerenderScriptHashes } from './csp-hashes.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -815,6 +816,7 @@ async function prerender() {
 
             finalHtml = normalizePrerenderAssetUrls(finalHtml);
             finalHtml = dedupePrerenderHead(finalHtml);
+            finalHtml = applyPrerenderScriptHashes(finalHtml, route);
             assertNoLocalhostUrls(finalHtml, route);
 
             writeFileSync(outputPath, finalHtml, 'utf8');

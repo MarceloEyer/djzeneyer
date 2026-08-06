@@ -25,6 +25,13 @@ if (!cspMatch) {
     if (!policy.includes(directive)) failures.push(`SSG CSP missing: ${directive}`);
   }
   if (policy.includes("'unsafe-eval'")) failures.push("SSG CSP must not allow 'unsafe-eval'");
+  const scriptPolicy = policy.match(/(?:^|;)\s*script-src\s+([^;]+)/)?.[1] ?? '';
+  if (scriptPolicy.includes("'unsafe-inline'")) {
+    failures.push("SSG script-src must not allow 'unsafe-inline'");
+  }
+  if (!scriptPolicy.includes("'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='")) {
+    failures.push('SSG script-src must contain the prerender hash placeholder');
+  }
 }
 
 try {
