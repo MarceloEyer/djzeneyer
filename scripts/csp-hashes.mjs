@@ -1,14 +1,14 @@
 import { createHash } from 'node:crypto';
+import { JSDOM } from 'jsdom';
 
 export const CSP_SCRIPT_HASH_PLACEHOLDER = "'sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA='";
 
 export function applyPrerenderScriptHashes(html, route = 'unknown route') {
   const hashes = new Set();
-  const scriptPattern = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
-  for (const match of html.matchAll(scriptPattern)) {
-    const attributes = match[1];
-    const body = match[2];
-    if (/\bsrc\s*=/i.test(attributes) || body.length === 0) continue;
+  const document = new JSDOM(html).window.document;
+  for (const script of document.querySelectorAll('script:not([src])')) {
+    const body = script.textContent ?? '';
+    if (body.length === 0) continue;
     const digest = createHash('sha256').update(body, 'utf8').digest('base64');
     hashes.add(`'sha256-${digest}'`);
   }
