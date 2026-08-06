@@ -5,6 +5,7 @@ import {
 } from './cloudflare-cache-rule.mjs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const wordpressIndex = readFileSync(new URL('../index.php', import.meta.url), 'utf8');
 const failures = [];
 
 const cspMatch = html.match(
@@ -38,6 +39,15 @@ try {
   assertCacheRuleSafety(buildPublicHtmlCacheRule());
 } catch (error) {
   failures.push(error.message);
+}
+
+for (const requiredNonceFragment of [
+  `$wp_data_script = '<script nonce="' . esc_attr($csp_nonce)`,
+  `"script-src 'self' 'nonce-" . esc_attr($csp_nonce)`,
+]) {
+  if (!wordpressIndex.includes(requiredNonceFragment)) {
+    failures.push('WordPress SSG bridge must share the request CSP nonce');
+  }
 }
 
 if (failures.length) {

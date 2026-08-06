@@ -161,7 +161,18 @@ if ($serve_file) {
             'userId'   => get_current_user_id(),
             'themeUrl' => get_template_directory_uri(),
         ];
-        $wp_data_script = '<script>window.wpData=' . wp_json_encode($wp_data, JSON_UNESCAPED_SLASHES) . ';</script>';
+        // The SSG shell has a hash-based meta CSP, while this bridge is generated
+        // per request. Authorize it with the same nonce used by inc/csp.php.
+        $csp_nonce = djz_csp_nonce();
+        $wp_data_script = '<script nonce="' . esc_attr($csp_nonce) . '">window.wpData=' . wp_json_encode($wp_data, JSON_UNESCAPED_SLASHES) . ';</script>';
+
+        // A meta CSP is enforced in addition to the HTTP header, so both policies
+        // must authorize the request-scoped bootstrap script.
+        $html_content = str_replace(
+            "script-src 'self'",
+            "script-src 'self' 'nonce-" . esc_attr($csp_nonce) . "'",
+            $html_content
+        );
 
         if (strpos($html_content, 'window.wpData') === false) {
             $html_content = str_replace('</body>', $wp_data_script . "\n</body>", $html_content);
