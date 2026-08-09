@@ -55,10 +55,17 @@ interface NavbarProps {
     onLoginClick: () => void;
 }
 
+// Samsung Smart TV browsers report a narrow innerWidth (~360px) despite having
+// a 1920px physical screen, causing the mobile layout to activate incorrectly.
+// Detect this by comparing screen.width (physical) vs innerWidth (CSS viewport).
+const detectTV = () =>
+    typeof window !== 'undefined' && window.screen.width >= 1280 && window.innerWidth < 768;
+
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     const { t, i18n } = useTranslation();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isTVLayout, setIsTVLayout] = useState(detectTV);
     const { user } = useUser();
     const location = useLocation();
 
@@ -79,6 +86,12 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
         const handleScroll = () => setIsScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    useEffect(() => {
+        const handleResize = () => setIsTVLayout(detectTV());
+        window.addEventListener('resize', handleResize, { passive: true });
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     const handleLoginButtonClick = useCallback(() => {
@@ -102,13 +115,13 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
 
     return (
         <>
-            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen ? 'bg-background/95 backdrop-blur-md shadow-lg py-3 border-b border-border/10' : 'bg-transparent py-5'}`}>
+            <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen || isTVLayout ? 'bg-background/95 backdrop-blur-md shadow-lg py-3 border-b border-border/10' : 'bg-transparent py-5'}`}>
                 <div className="container mx-auto px-4 md:px-6 flex items-center justify-between h-14">
                     <Link to={getLocalizedRoute('', currentLang)} className="flex items-center z-50 group font-display font-bold text-xl">
                         <span className="text-primary mr-1">DJ</span> Zen Eyer
                     </Link>
 
-                    <nav className="hidden md:flex items-center space-x-8">
+                    <nav className={isTVLayout ? 'flex items-center space-x-8' : 'hidden md:flex items-center space-x-8'}>
                         {processedMenuItems.map(item => (
                             <MenuItem
                                 key={item.ID}
@@ -120,7 +133,7 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         ))}
                     </nav>
 
-                    <div className="hidden md:flex items-center gap-4">
+                    <div className={isTVLayout ? 'flex items-center gap-4' : 'hidden md:flex items-center gap-4'}>
                         <LanguageSelector />
                         {user?.isLoggedIn ? <UserMenu /> : (
                             <button onClick={handleLoginButtonClick} className="btn btn-primary btn-sm flex items-center gap-2 shadow-lg shadow-primary/20">
@@ -129,13 +142,15 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
                         )}
                     </div>
 
-                    <button type="button" className="md:hidden text-text z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label={t('nav.toggle_menu')}>
-                        {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
-                    </button>
+                    {!isTVLayout && (
+                        <button type="button" className="md:hidden text-text z-50" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label={t('nav.toggle_menu')}>
+                            {isMenuOpen ? <X size={26} /> : <Menu size={26} />}
+                        </button>
+                    )}
                 </div>
             </header>
 
-            {isMenuOpen && (
+            {isMenuOpen && !isTVLayout && (
                 <>
                     <div
                         onClick={() => setIsMenuOpen(false)}
