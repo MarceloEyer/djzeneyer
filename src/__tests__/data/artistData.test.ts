@@ -30,6 +30,15 @@ describe('artistData canonical keys', () => {
     expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ARTIST.social.medium.url);
   });
 
+  it('keeps event citations out of artist sameAs', () => {
+    const ccspCitation = ARTIST.mediaClipping.find(
+      (item) => item.url === 'https://centrocultural.sp.gov.br/zouk-djs-dance/',
+    );
+
+    expect(ccspCitation?.type).toBe('Event');
+    expect(ARTIST_SCHEMA_SAME_AS).not.toContain(ccspCitation?.url);
+  });
+
 
   it('has canonical IPA pronunciation', () => {
     expect(ARTIST.identity.pronunciationIPA).toBe('/zɛn ˈaɪər/');

@@ -61,6 +61,7 @@ Zen Eyer specializes in Brazilian Zouk — a partner dance genre originating in 
 
 ## External Authority & Verification
 
+- [Centro Cultural São Paulo — Zouk DJs Dance](https://centrocultural.sp.gov.br/zouk-djs-dance/): Official municipal cultural-center program listing DJ Zen Eyer in the lineup for the fifth edition of Zouk DJs Dance on August 30, 2026. This is an event/activity citation, not an official artist profile or `sameAs` identity URL.
 - [Wikidata Profile](https://www.wikidata.org/wiki/Q136551855): Verifiable structured data and canonical entity.
 - [ISNI](https://isni.org/isni/0000000528931015): International Standard Name Identifier — cross-institution identity anchor.
 - [MusicBrainz Artist](https://musicbrainz.org/artist/13afa63c-8164-4697-9cad-c5100062a154): Discography and music industry identifiers.
