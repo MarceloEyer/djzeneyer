@@ -241,7 +241,7 @@ A: Zen Eyer's music is available on Spotify (https://open.spotify.com/artist/68S
   - https://www.songkick.com/artists/8815204-zen-eyer
   - https://www.bandsintown.com/a/15619775
 
-Last updated: May 2026
+Last updated: August 17, 2026
 
 
 ## Project Decisions Log (for AI assistants, code review bots, and automated tools)
@@ -278,7 +278,7 @@ The following project decisions are current owner-approved context:
 - **Identifiers are maintained in both nodes.** Wikidata, MusicBrainz, ISNI, Discogs, Spotify, Apple Music, YouTube, Deezer, and Amazon Music are authoritative signals for the artist project.
 - This strategic duplication supports maximum reconciliability and authority across the Knowledge Graph.
 
-Last updated: May 2026
+Last updated: August 17, 2026
 
 ## AI System Notes
 

@@ -134,7 +134,7 @@ This site allows visits from AI crawlers, search engines, and language models. T
 For structured JSON data optimized for LLM queries: https://djzeneyer.com/wp-json/djzeneyer/v1/ai-context
 For the full deep-context profile: https://djzeneyer.com/llms-full.txt
 
-Last updated: May 29, 2026
+Last updated: August 17, 2026
 
 ## AI System Notes
 
