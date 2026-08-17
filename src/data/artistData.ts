@@ -206,6 +206,14 @@ export const ARTIST = {
   // 📰 Clipping / Na Mídia
   mediaClipping: [
     {
+      title: 'Zouk DJs Dance at Centro Cultural São Paulo',
+      description: 'Official Centro Cultural São Paulo program listing DJ Zen Eyer in the lineup for the fifth edition of Zouk DJs Dance.',
+      url: 'https://centrocultural.sp.gov.br/zouk-djs-dance/',
+      source: 'Centro Cultural São Paulo',
+      date: '2026-08-30',
+      type: 'Event'
+    },
+    {
       title: 'All About Jazz Musician Profile',
       description: 'Independent musician profile for Zen Eyer, connecting the artist name to DJ and music production work.',
       url: 'https://www.allaboutjazz.com/musicians/zen-eyer',
