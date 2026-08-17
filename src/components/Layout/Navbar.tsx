@@ -55,11 +55,15 @@ interface NavbarProps {
     onLoginClick: () => void;
 }
 
-// Samsung Smart TV browsers report a narrow innerWidth (~360px) despite having
-// a 1920px physical screen, causing the mobile layout to activate incorrectly.
-// Detect this by comparing screen.width (physical) vs innerWidth (CSS viewport).
-const detectTV = () =>
-    typeof window !== 'undefined' && window.screen.width >= 1280 && window.innerWidth < 768;
+// Samsung TV browsers can report a narrow CSS viewport on a full-HD screen.
+// Require a TV-specific user-agent signal so narrow desktop windows keep the
+// normal responsive navigation.
+const detectTV = () => {
+    if (typeof window === 'undefined') return false;
+
+    const isSamsungTVBrowser = /Tizen|SMART-TV|Maple/i.test(window.navigator.userAgent);
+    return isSamsungTVBrowser && window.screen.width >= 1280 && window.innerWidth < 768;
+};
 
 const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     const { t, i18n } = useTranslation();
@@ -73,9 +77,9 @@ const Navbar: React.FC<NavbarProps> = React.memo(({ onLoginClick }) => {
     const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
 
     useEffect(() => {
-        document.body.style.overflow = isMenuOpen ? 'hidden' : 'unset';
+        document.body.style.overflow = isMenuOpen && !isTVLayout ? 'hidden' : 'unset';
         return () => { document.body.style.overflow = 'unset'; };
-    }, [isMenuOpen]);
+    }, [isMenuOpen, isTVLayout]);
 
     useEffect(() => {
         const timeoutId = window.setTimeout(() => setIsMenuOpen(false), 0);
