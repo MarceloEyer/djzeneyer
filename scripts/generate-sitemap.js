@@ -335,15 +335,26 @@ async function fetchPostsForLang(lang) {
   }
 
   const concurrencyLimit = 5;
-  for (let i = 2; i <= totalPages; i += concurrencyLimit) {
-    const batch = [];
-    for (let j = 0; j < concurrencyLimit && (i + j) <= totalPages; j++) {
-      batch.push(fetchPostPage(i + j));
+  const promises = [];
+  const active = new Set();
+
+  // ⚡ Bolt: Implemented unbatched parallel execution using Promise.race
+  for (let i = 2; i <= totalPages; i++) {
+    const p = fetchPostPage(i).then(res => {
+      active.delete(p);
+      return res;
+    });
+    active.add(p);
+    promises.push(p);
+
+    if (active.size >= concurrencyLimit) {
+      await Promise.race(active);
     }
-    const batchResults = await Promise.all(batch);
-    for (const pageResult of batchResults) {
-      posts.push(...pageResult.posts);
-    }
+  }
+
+  const results = await Promise.all(promises);
+  for (const pageResult of results) {
+    posts.push(...pageResult.posts);
   }
   return posts;
 }
