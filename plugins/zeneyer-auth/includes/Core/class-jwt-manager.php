@@ -232,23 +232,24 @@ class JWT_Manager
 
         $token_hash = wp_hash($token);
         $found = false;
-        $updated_sessions = [];
 
-        foreach ($sessions as $session) {
+        $now = time();
+        foreach ($sessions as $key => &$session) {
             // Clean up expired sessions while iterating
-            if ($session['expires'] < time()) {
+            if ($session['expires'] < $now) {
+                unset($sessions[$key]);
                 continue;
             }
 
             if ($session['token_hash'] === $token_hash) {
-                $session['last_used_at'] = time();
+                $session['last_used_at'] = $now;
                 $session['ip'] = self::get_client_ip();
                 $found = true;
             }
-            $updated_sessions[] = $session;
         }
+        unset($session); // break reference
 
-        update_user_meta($user_id, 'zeneyer_sessions', $updated_sessions);
+        update_user_meta($user_id, 'zeneyer_sessions', array_values($sessions));
         return $found;
     }
 
