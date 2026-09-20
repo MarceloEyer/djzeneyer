@@ -578,23 +578,30 @@ final class REST_Handler
             }
 
             // Fase 2: prime caches em lote para evitar N+1 em thumbnail e meta
+            $meta_cache = [];
             if (!empty($batch)) {
                 $batch_ids = \array_values(\array_unique(\array_map(static fn($e) => $e['post']->ID, $batch)));
                 \_prime_post_caches($batch_ids, false, true);
-                \update_meta_cache('post', $batch_ids);
+                $meta_cache = \update_meta_cache('post', $batch_ids);
                 self::prime_thumbnail_attachment_caches($batch_ids);
             }
 
             // Fase 3: monta resultado com cache quente
             foreach ($batch as $entry) {
                 $post = $entry['post'];
+
+                // ⚡ Bolt: avoid get_post_meta overhead inside loop by reading directly from bulk meta cache array
+                $points_awarded = isset($meta_cache[$post->ID]['_gamipress_points_awarded'][0])
+                    ? (int) $meta_cache[$post->ID]['_gamipress_points_awarded'][0]
+                    : (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true);
+
                 $all[] = [
                     'id' => (int) $post->ID,
                     'title' => (string) $post->post_title,
                     'description' => (string) ($post->post_excerpt ?: $post->post_content ?: ''),
                     'image' => \get_the_post_thumbnail_url($post->ID, 'thumbnail') ?: '',
                     'earned' => $status === 'earned',
-                    'points_awarded' => (int) \get_post_meta($post->ID, '_gamipress_points_awarded', true),
+                    'points_awarded' => $points_awarded,
                     'date_earned' => $entry['date_earned'],
                 ];
             }
