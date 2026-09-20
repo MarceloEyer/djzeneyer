@@ -33,7 +33,11 @@ const SCAN_DIRS = [
 function walkPhp(dir) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+  const entries = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...walkPhp(full));
@@ -458,6 +462,14 @@ for (const file of files) {
 
   allRoutes.push(...routes);
 }
+
+allRoutes.sort((a, b) => (
+  a.namespace.localeCompare(b.namespace) ||
+  a.route.localeCompare(b.route) ||
+  a.methods.localeCompare(b.methods) ||
+  a.file.localeCompare(b.file) ||
+  a.callback.localeCompare(b.callback)
+));
 
 // Group by namespace — strip the " ⚠" suffix so guessed and canonical namespaces
 // are merged into the same group instead of creating duplicate sections.
