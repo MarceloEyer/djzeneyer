@@ -333,6 +333,10 @@ function extractForeachPairs(content) {
   return result;
 }
 
+function projectPath(filePath) {
+  return path.relative(root, filePath).replace(/\\/g, '/');
+}
+
 // ---------------------------------------------------------------------------
 // Main extractor
 // ---------------------------------------------------------------------------
@@ -396,7 +400,7 @@ function extractRoutes(content, filePath) {
           methods: iterMethods,
           callback: iterCb,
           permission,
-          file: path.relative(root, filePath),
+          file: projectPath(filePath),
         });
       }
       continue;
@@ -410,7 +414,7 @@ function extractRoutes(content, filePath) {
       methods: methods.toUpperCase(),
       callback,
       permission,
-      file: path.relative(root, filePath),
+      file: projectPath(filePath),
     });
   }
 
