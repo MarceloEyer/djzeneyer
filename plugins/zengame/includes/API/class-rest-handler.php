@@ -661,6 +661,7 @@ final class REST_Handler
 
         $formatted = [];
         foreach ($batch as $post) {
+            // ⚡ Bolt: Meta cache is already primed above via update_meta_cache, making get_post_meta an O(1) memory read and preventing DB N+1 queries.
             $formatted[] = [
                 'id' => (int) $post->ID,
                 'type' => (string) \get_post_meta($post->ID, '_gamipress_log_type', true),
