@@ -4,8 +4,8 @@
  * Plugin URI:        https://djzeneyer.com
  * Description:       The High-Performance Bridge for GamiPress + Headless React. Optimized SQL queries, advanced caching, and elite game logic.
  * Version:           1.4.0
- * Requires at least: 6.0
- * Requires PHP:      8.0
+ * Requires at least: 7.1.1
+ * Requires PHP:      8.5
  * Author:            DJ Zen Eyer
  * Author URI:        https://djzeneyer.com
  * License:           GPL v2 or later

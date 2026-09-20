@@ -68,6 +68,7 @@ Detalhes estrategicos por pagina ficam em `.context/SITE_PAGES_STRATEGY.md`.
 | Frontend React | `src/` | UI, rotas, hooks, i18n, HeadlessSEO |
 | Theme WordPress | `inc/` | Bootstrap, CSP, rotas leves, AI endpoints |
 | Auth | `plugins/zeneyer-auth/` | Login, JWT, Google OAuth, perfil, newsletter, orders |
+| Private music delivery | `plugins/zen-private-music-delivery/` | Entregas privadas de MP3 para usuarios autenticados; arquivos fora de `public/`, Git, build e midia publica |
 | Events | `plugins/zen-bit/` | Eventos, cache, canonical paths, MusicEvent schema |
 | SEO Headless | `plugins/zen-seo-lite/` | Metadata, schema, sitemap, release metadata |
 | Gamification | `plugins/zengame/` | Pontos, ranks, achievements, leaderboard |

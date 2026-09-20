@@ -772,10 +772,20 @@
     "start_journey": "Começar Jornada",
     "tabs": {
       "overview": "Visão Geral",
+      "music": "Minhas músicas",
       "orders": "Pedidos",
       "achievements": "Conquistas",
       "settings": "Configurações",
       "not_found": "Aba não encontrada"
+    },
+    "private_music": {
+      "title": "Minhas músicas",
+      "subtitle": "Entregas privadas de MP3 liberadas para a sua conta.",
+      "loading": "Carregando músicas",
+      "error": "Não foi possível carregar suas músicas privadas",
+      "empty_title": "Nenhuma música disponível ainda",
+      "empty_desc": "Quando Zen Eyer liberar MP3s privados para você, elas aparecerão aqui.",
+      "download": "Baixar"
     },
     "stats": {
       "level_title": "Nível",
@@ -794,7 +804,8 @@
       "real_name_hint": "para certificados e ingressos",
       "preferred_name": "Nome Artístico / Preferido",
       "preferred_name_hint": "como a Tribo te vê",
-      "email": "Canal de Contato",
+      "email": "E-mail",
+      "email_placeholder": "voce@exemplo.com",
       "facebook": "Perfil Facebook",
       "facebook_placeholder": "URL ou Usuário",
       "instagram": "Instagram",

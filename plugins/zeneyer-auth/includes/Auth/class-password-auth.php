@@ -25,13 +25,13 @@ class Password_Auth {
      * @return \WP_User|WP_Error
      */
     public static function login($email, $password) {
-        $email = sanitize_email($email);
+        $identifier = sanitize_text_field($email);
         $password = trim($password);
         
-        if (empty($email) || empty($password)) {
+        if (empty($identifier) || empty($password)) {
             return new WP_Error(
                 'missing_credentials',
-                __('Email and password are required', 'zeneyer-auth'),
+                __('Username or email and password are required', 'zeneyer-auth'),
                 ['status' => 400]
             );
         }
@@ -42,14 +42,16 @@ class Password_Auth {
             return $rate_limit;
         }
         
-        // Find user by email
-        $user = get_user_by('email', $email);
+        // Find user by email or username. Invited private-music recipients may not have an email yet.
+        $user = is_email($identifier)
+            ? get_user_by('email', sanitize_email($identifier))
+            : get_user_by('login', sanitize_user($identifier, true));
         
         if (!$user) {
             \ZenEyer\Auth\Core\Rate_Limiter::increment('login');
             return new WP_Error(
                 'invalid_credentials',
-                __('Invalid email or password', 'zeneyer-auth'),
+                __('Invalid username/email or password', 'zeneyer-auth'),
                 ['status' => 401]
             );
         }
@@ -57,15 +59,20 @@ class Password_Auth {
         // Verify password
         if (!wp_check_password($password, $user->user_pass, $user->ID)) {
             \ZenEyer\Auth\Core\Rate_Limiter::increment('login');
-            \ZenEyer\Auth\Core\Rate_Limiter::log_audit_event('failed_login', $user->ID, '', ['email' => $email]);
+            \ZenEyer\Auth\Core\Rate_Limiter::log_audit_event('failed_login', $user->ID, '', ['login' => $identifier]);
             
-            do_action('zeneyer_auth_failed_login', $user->ID, $email);
+            do_action('zeneyer_auth_failed_login', $user->ID, $identifier);
             
             return new WP_Error(
                 'invalid_credentials',
-                __('Invalid email or password', 'zeneyer-auth'),
+                __('Invalid username/email or password', 'zeneyer-auth'),
                 ['status' => 401]
             );
+        }
+
+        $authenticated = apply_filters('authenticate', $user, $user->user_login, $password);
+        if (is_wp_error($authenticated)) {
+            return $authenticated;
         }
         
         // Success: Reset rate limit

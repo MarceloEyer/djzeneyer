@@ -50,7 +50,7 @@ Check `package.json`, lockfiles, and deployment workflows before assuming exact 
 |---|---|
 | Frontend | React 19, TypeScript 6, Vite 8, Tailwind 4, React Query v5, React Router 7, i18next |
 | Build | ESLint, Prettier, Puppeteer prerender, OXC via Vite 8 |
-| Backend | WordPress 6.9+, PHP 8.3+, WooCommerce with HPOS, GamiPress |
+| Backend | WordPress 7.1.1+, PHP 8.5+, WooCommerce with HPOS, GamiPress |
 | Infra | Hostinger VPS, LiteSpeed, Cloudflare, GitHub Actions |
 
 ## Main areas

@@ -110,9 +110,7 @@ class Zen_Commerce_Product_Formatter {
                 }
             }
 
-            if (!empty($img_sizes)) {
-                $img_data['sizes'] = $img_sizes;
-            }
+            $img_data['sizes'] = $img_sizes;
 
             $images[] = $img_data;
         }

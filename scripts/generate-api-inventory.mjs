@@ -33,7 +33,11 @@ const SCAN_DIRS = [
 function walkPhp(dir) {
   const results = [];
   if (!fs.existsSync(dir)) return results;
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+  const entries = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  for (const entry of entries) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...walkPhp(full));
@@ -329,6 +333,10 @@ function extractForeachPairs(content) {
   return result;
 }
 
+function projectPath(filePath) {
+  return path.relative(root, filePath).replace(/\\/g, '/');
+}
+
 // ---------------------------------------------------------------------------
 // Main extractor
 // ---------------------------------------------------------------------------
@@ -392,7 +400,7 @@ function extractRoutes(content, filePath) {
           methods: iterMethods,
           callback: iterCb,
           permission,
-          file: path.relative(root, filePath),
+          file: projectPath(filePath),
         });
       }
       continue;
@@ -406,7 +414,7 @@ function extractRoutes(content, filePath) {
       methods: methods.toUpperCase(),
       callback,
       permission,
-      file: path.relative(root, filePath),
+      file: projectPath(filePath),
     });
   }
 
@@ -458,6 +466,14 @@ for (const file of files) {
 
   allRoutes.push(...routes);
 }
+
+allRoutes.sort((a, b) => (
+  a.namespace.localeCompare(b.namespace) ||
+  a.route.localeCompare(b.route) ||
+  a.methods.localeCompare(b.methods) ||
+  a.file.localeCompare(b.file) ||
+  a.callback.localeCompare(b.callback)
+));
 
 // Group by namespace — strip the " ⚠" suffix so guessed and canonical namespaces
 // are merged into the same group instead of creating duplicate sections.

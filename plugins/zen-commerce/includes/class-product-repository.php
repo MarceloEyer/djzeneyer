@@ -59,7 +59,26 @@ class Zen_Commerce_Product_Repository {
         $tax_query = self::build_tax_query($category, $exclude_category, $featured);
         if (!empty($tax_query)) $args['tax_query'] = $tax_query;
 
-        if (function_exists('pll_get_post_language')) $args['lang'] = $lang;
+        if (function_exists('pll_get_post_language')) {
+            $args['lang'] = $lang;
+        }
+
+        if (function_exists('wc_get_product_visibility_term_ids')) {
+            $visibility_terms = wc_get_product_visibility_term_ids();
+            $exclude_terms = array_filter([
+                $visibility_terms['exclude-from-catalog'] ?? null,
+                $visibility_terms['exclude-from-search'] ?? null,
+            ]);
+
+            if (!empty($exclude_terms)) {
+                $args['tax_query'][] = [
+                    'taxonomy' => 'product_visibility',
+                    'field'    => 'term_taxonomy_id',
+                    'terms'    => $exclude_terms,
+                    'operator' => 'NOT IN',
+                ];
+            }
+        }
 
         if ($on_sale === true) {
             // wc_get_product_ids_on_sale() handles both simple and variable products.
