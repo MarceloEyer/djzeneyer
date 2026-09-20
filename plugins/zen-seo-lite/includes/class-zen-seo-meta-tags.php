@@ -22,7 +22,7 @@ class Zen_SEO_Meta_Tags
     {
         // Remove default WordPress SEO
         \remove_action('wp_head', 'rel_canonical');
-        \remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
+        \remove_action('wp_head', 'wp_shortlink_wp_head', 10);
         \remove_action('wp_head', '_wp_render_title_tag', 1);
         \add_filter('document_title_parts', '__return_empty_array', 9999);
 

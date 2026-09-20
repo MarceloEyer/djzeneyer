@@ -36,6 +36,7 @@ Arquivos que precisam ficar na raiz do site em producao devem ter origem em `pub
 - Theme REST: `inc/api.php` e `inc/ai-llm.php` para rotas do tema e endpoints de contexto de IA.
 - SEO/GEO/AEO: `HeadlessSEO`, prerender, sitemap gerado, `llms.txt`, `llms-full.txt`, `.well-known/*`, `robots.txt` com Content Signals e dados estruturados.
 - Auth: plugin `zeneyer-auth`.
+- Entrega privada de MP3: plugin `zen-private-music-delivery`.
 - Eventos: plugin `zen-bit`.
 - SEO headless: plugin `zen-seo-lite`.
 - Gamificacao: plugin `zengame`.
@@ -79,6 +80,7 @@ Essa divisao evita over-fetch, reduz HTML inutil em paginas sem eventos, preserv
 ### `plugins/`
 
 - `zeneyer-auth`: login, session, JWT, Google OAuth, newsletter e orders.
+- `zen-private-music-delivery`: upload/admin de MP3 privado, convites de destinatarios e download autenticado.
 - `zen-bit`: eventos, schema e cache de eventos.
 - `zen-seo-lite`: metadados, canonical, sitemap e schema.
 - `zengame`: pontos, ranking, conquistas e dashboard.

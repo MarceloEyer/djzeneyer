@@ -151,6 +151,7 @@ export const QUERY_KEYS = {
     session: (hasToken: boolean) => ['user', 'session', hasToken] as const,
     profile: (userId?: number) => ['user', 'profile', userId] as const,
     orders: (userId?: number, limit?: number) => ['user', 'orders', userId, limit] as const,
+    privateMusic: (userId?: number) => ['user', 'private-music', userId] as const,
     gamipress: (userId: number) => ['user', 'gamipress', userId] as const,
     leaderboard: (limit?: number) => ['user', 'leaderboard', limit] as const,
     newsletter: () => ['user', 'newsletter'] as const,

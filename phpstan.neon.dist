@@ -1,0 +1,22 @@
+includes:
+    - vendor/szepeviktor/phpstan-wordpress/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 1
+    paths:
+        - plugins/zen-bit
+        - plugins/zen-commerce
+        - plugins/zen-mailer
+        - plugins/zen-seo-lite
+        - plugins/zeneyer-auth
+        - plugins/zengame
+    excludePaths:
+        analyse:
+            - plugins/*/vendor/*
+    scanFiles:
+        - vendor/php-stubs/woocommerce-stubs/woocommerce-stubs.php
+        - tools/phpstan/wordpress-plugin-stubs.php
+    tmpDir: var/phpstan
+    parallel:
+        maximumNumberOfProcesses: 1

@@ -35,8 +35,8 @@ class Activator {
         $errors = [];
         
         // Checagem de PHP
-        if (version_compare(PHP_VERSION, '7.4', '<')) {
-            $errors[] = 'PHP 7.4 or higher is required. Current version: ' . PHP_VERSION;
+        if (version_compare(PHP_VERSION, '8.5', '<')) {
+            $errors[] = 'PHP 8.5 or higher is required. Current version: ' . PHP_VERSION;
         }
         
         // Checagem de OpenSSL (Vital para segurança)

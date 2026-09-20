@@ -13,7 +13,7 @@ O site e diferente da maioria porque os arquivos publicos para IA (`llms.txt`, `
 ## Tech Stack
 
 - **Frontend:** React 19, TypeScript, Vite 8, Tailwind 4.
-- **Backend:** WordPress 6.9+ (Headless), PHP 8.3.
+- **Backend:** WordPress 7.1.1+ (Headless), PHP 8.5.
 - **Integracoes:** GamiPress, WooCommerce, MailPoet/newsletter, Google OAuth/JWT.
 - **SEO/AI Discovery:** Prerender via Puppeteer, HeadlessSEO, schema JSON-LD, sitemaps, `llms.txt`, `llms-full.txt`, `.well-known/*`, IndexNow e DNS-AID.
 - **Infra:** Hostinger VPS (Ubuntu), LiteSpeed Cache, Cloudflare, GitHub Actions.

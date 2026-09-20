@@ -528,7 +528,7 @@ class Rest_Routes
 
     /**
      * Update user profile
-     * Saves: real_name, preferred_name, facebook_url, instagram_url, dance_role, gender
+     * Saves: email, real_name, preferred_name, facebook_url, instagram_url, dance_role, gender
      */
     public static function update_profile($request)
     {
@@ -543,6 +543,28 @@ class Rest_Routes
 
         if ($request->has_param('real_name')) {
             $fields['zen_real_name'] = sanitize_text_field($request->get_param('real_name'));
+        }
+        if ($request->has_param('email')) {
+            $email = sanitize_email($request->get_param('email'));
+            if ($email !== '' && !is_email($email)) {
+                return new WP_Error('invalid_email', 'Invalid email address', ['status' => 400]);
+            }
+
+            if ($email !== '') {
+                $existing_user_id = email_exists($email);
+                if ($existing_user_id && (int) $existing_user_id !== (int) $user_id) {
+                    return new WP_Error('email_exists', 'This email is already registered', ['status' => 409]);
+                }
+            }
+
+            $user_update = wp_update_user([
+                'ID' => $user_id,
+                'user_email' => $email,
+            ]);
+
+            if (is_wp_error($user_update)) {
+                return $user_update;
+            }
         }
         if ($request->has_param('preferred_name')) {
             $fields['zen_preferred_name'] = sanitize_text_field($request->get_param('preferred_name'));

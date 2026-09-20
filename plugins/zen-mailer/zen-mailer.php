@@ -4,8 +4,8 @@
  * Plugin URI:        https://djzeneyer.com
  * Description:       SMTP transacional para djzeneyer.com. Configura wp_mail() via constantes em wp-config.php. Sem UI desnecessária, sem banco de dados.
  * Version:           1.0.0
- * Requires at least: 6.0
- * Requires PHP:      8.1
+ * Requires at least: 7.1.1
+ * Requires PHP:      8.5
  * Author:            DJ Zen Eyer
  * Author URI:        https://djzeneyer.com
  * License:           GPL v2 or later

@@ -9,6 +9,7 @@ if (!defined('ABSPATH')) exit;
 class Zen_Commerce_REST_Controller {
 
     const NAMESPACE = 'djzeneyer/v1';
+    const SUPPORTED_LANGUAGES = ['en', 'pt'];
 
     public static function register_routes(): void {
         register_rest_route(self::NAMESPACE, '/products', [
@@ -16,14 +17,14 @@ class Zen_Commerce_REST_Controller {
             'callback'            => [__CLASS__, 'get_products'],
             'permission_callback' => '__return_true',
             'args'                => [
-                'lang'             => ['sanitize_callback' => 'sanitize_text_field', 'default' => 'en'],
+                'lang'             => ['sanitize_callback' => [__CLASS__, 'sanitize_language'], 'validate_callback' => [__CLASS__, 'validate_language'], 'default' => 'en'],
                 'slug'             => ['sanitize_callback' => 'sanitize_title',      'default' => ''],
                 'category'         => ['sanitize_callback' => 'sanitize_title',      'default' => ''],
                 'exclude_category' => ['sanitize_callback' => 'sanitize_title',      'default' => ''],
-                'on_sale'          => ['default' => null],
-                'limit'            => ['sanitize_callback' => 'absint',              'default' => 100],
-                'orderby'          => ['sanitize_callback' => 'sanitize_key',        'default' => 'date'],
-                'order'            => ['sanitize_callback' => 'sanitize_text_field', 'default' => 'DESC'],
+                'on_sale'          => ['sanitize_callback' => [__CLASS__, 'sanitize_boolean_or_null'], 'default' => null],
+                'limit'            => ['sanitize_callback' => [__CLASS__, 'sanitize_limit'], 'default' => 100],
+                'orderby'          => ['sanitize_callback' => 'sanitize_key', 'validate_callback' => [__CLASS__, 'validate_orderby'], 'default' => 'date'],
+                'order'            => ['sanitize_callback' => [__CLASS__, 'sanitize_order'], 'validate_callback' => [__CLASS__, 'validate_order'], 'default' => 'DESC'],
             ],
         ]);
 
@@ -32,8 +33,8 @@ class Zen_Commerce_REST_Controller {
             'callback'            => [__CLASS__, 'get_collections'],
             'permission_callback' => '__return_true',
             'args'                => [
-                'lang'  => ['sanitize_callback' => 'sanitize_text_field', 'default' => 'en'],
-                'limit' => ['sanitize_callback' => 'absint',              'default' => 10],
+                'lang'  => ['sanitize_callback' => [__CLASS__, 'sanitize_language'], 'validate_callback' => [__CLASS__, 'validate_language'], 'default' => 'en'],
+                'limit' => ['sanitize_callback' => [__CLASS__, 'sanitize_limit'], 'default' => 10],
             ],
         ]);
 
@@ -42,16 +43,13 @@ class Zen_Commerce_REST_Controller {
             'callback'            => [__CLASS__, 'get_shop_page'],
             'permission_callback' => '__return_true',
             'args'                => [
-                'lang' => ['sanitize_callback' => 'sanitize_text_field', 'default' => 'en'],
+                'lang' => ['sanitize_callback' => [__CLASS__, 'sanitize_language'], 'validate_callback' => [__CLASS__, 'validate_language'], 'default' => 'en'],
             ],
         ]);
     }
 
     public static function get_products(WP_REST_Request $request): WP_REST_Response {
         $on_sale = $request->get_param('on_sale');
-        if ($on_sale !== null) {
-            $on_sale = filter_var($on_sale, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-        }
 
         $products = Zen_Commerce_Product_Repository::query([
             'lang'             => $request->get_param('lang'),
@@ -92,5 +90,38 @@ class Zen_Commerce_REST_Controller {
     public static function get_shop_page(WP_REST_Request $request): WP_REST_Response {
         $data = Zen_Commerce_Shop_View_Model::build($request->get_param('lang'));
         return rest_ensure_response($data);
+    }
+
+    public static function sanitize_language($value): string {
+        $lang = strtolower(sanitize_key((string) $value));
+        return in_array($lang, self::SUPPORTED_LANGUAGES, true) ? $lang : 'en';
+    }
+
+    public static function validate_language($value): bool {
+        return in_array(strtolower((string) $value), self::SUPPORTED_LANGUAGES, true);
+    }
+
+    public static function sanitize_boolean_or_null($value): ?bool {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+    }
+
+    public static function sanitize_limit($value): int {
+        return max(1, min(100, absint($value)));
+    }
+
+    public static function sanitize_order($value): string {
+        return strtoupper(sanitize_text_field((string) $value));
+    }
+
+    public static function validate_order($value): bool {
+        return in_array(strtoupper((string) $value), ['ASC', 'DESC'], true);
+    }
+
+    public static function validate_orderby($value): bool {
+        return in_array((string) $value, ['date', 'title', 'menu_order', 'modified', 'rand', 'meta_value_num'], true);
     }
 }

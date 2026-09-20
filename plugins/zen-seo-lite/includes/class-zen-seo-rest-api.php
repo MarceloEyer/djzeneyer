@@ -440,10 +440,9 @@ class Zen_SEO_REST_API
         $url = \strtok($url, '#');
         $url = \strtok($url, '?');
         $path = \trim((string) \wp_parse_url($url, \PHP_URL_PATH), '/');
-        
-        $parts = \explode('/', $path);
-        if (empty($parts)) return '';
+        if ('' === $path) return '';
 
+        $parts = \explode('/', $path);
         $handle = \end($parts);
 
         // Remove "user" or "channel" prefixes if they exist (common in Youtube)

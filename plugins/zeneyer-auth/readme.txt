@@ -1,9 +1,9 @@
 === ZenEyer Auth Pro ===
 Contributors: eyerm, djzeneyer
 Tags: authentication, jwt, headless, react, security, oauth, google
-Requires at least: 5.8
+Requires at least: 7.1.1
 Tested up to: 6.4
-Requires PHP: 7.4
+Requires PHP: 8.5
 Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

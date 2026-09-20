@@ -3,19 +3,27 @@
  * Plugin Name: Zen Commerce
  * Description: Headless read-model layer on top of WooCommerce. Provides optimized
  *              product and shop endpoints for the React frontend under djzeneyer/v1.
- * Version:     1.0.0
+ * Version:     1.1.0
  * Author:      Zen Eyer
  * Author URI:  https://djzeneyer.com
- * Requires at least: 6.4
- * Requires PHP: 8.1
+ * Requires at least: 7.1.1
+ * Requires PHP: 8.5
+ * Requires Plugins: woocommerce
  * License:     GPL v2 or later
  * Text Domain: zen-commerce
  */
 
 if (!defined('ABSPATH')) exit;
 
-define('ZEN_COMMERCE_VERSION',    '1.0.0');
+define('ZEN_COMMERCE_VERSION',    '1.1.0');
 define('ZEN_COMMERCE_PLUGIN_DIR', plugin_dir_path(__FILE__));
+
+add_action('before_woocommerce_init', static function (): void {
+    if (class_exists('\Automattic\WooCommerce\Utilities\FeaturesUtil')) {
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__, true);
+        \Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__, true);
+    }
+});
 
 // ---------------------------------------------------------------------------
 // Load classes
