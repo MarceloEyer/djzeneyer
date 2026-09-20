@@ -146,3 +146,7 @@
 
 **Learning:** Instantiating `new Date(string)` inside an `Array.prototype.sort()` comparator function (e.g. `festivals.sort((a,b) => new Date(a).getTime() - new Date(b).getTime())`) is exceptionally slow. Since sort callbacks execute $O(N \log N)$ times, this repeatedly allocates and garbage-collects objects for the exact same values, severely degrading frontend performance.
 **Action:** When filtering or sorting lists by dates in ISO 8601 format (like `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm:ssZ`), completely eliminate `new Date()` from the loop. Standardize the target comparison threshold to a matching string format and use lightweight string operators (`<`, `>=`) and `String.prototype.localeCompare()` to guarantee zero-allocation chronological ordering.
+## 2026-09-20 - Leveraging update_meta_cache return value for performance
+
+**Learning:** When trying to prevent N+1 queries for post metadata (like `_thumbnail_id`), `update_meta_cache('post', $ids)` already primes the cache, but calling `get_post_meta()` inside a loop still incurs function call overhead and internal cache lookup overhead. However, `update_meta_cache` actually returns the populated metadata cache array directly.
+**Action:** Instead of just calling `update_meta_cache` and then looping `get_post_meta`, assign the result of `update_meta_cache` to a variable and access the metadata array directly (e.g., `$meta_cache[$id]['_thumbnail_id'][0]`). This completely bypasses the WordPress meta API overhead for each item in the loop.
