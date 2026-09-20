@@ -146,3 +146,6 @@
 
 **Learning:** Instantiating `new Date(string)` inside an `Array.prototype.sort()` comparator function (e.g. `festivals.sort((a,b) => new Date(a).getTime() - new Date(b).getTime())`) is exceptionally slow. Since sort callbacks execute $O(N \log N)$ times, this repeatedly allocates and garbage-collects objects for the exact same values, severely degrading frontend performance.
 **Action:** When filtering or sorting lists by dates in ISO 8601 format (like `YYYY-MM-DD` or `YYYY-MM-DDTHH:mm:ssZ`), completely eliminate `new Date()` from the loop. Standardize the target comparison threshold to a matching string format and use lightweight string operators (`<`, `>=`) and `String.prototype.localeCompare()` to guarantee zero-allocation chronological ordering.
+## 2024-05-30 - Optimize get_post_meta inside loops after update_meta_cache
+**Learning:** Even though `update_meta_cache` loads data into the object cache, repeatedly calling `get_post_meta` inside a loop still incurs significant PHP function overhead (API layers, filter checks, object instantiation).
+**Action:** For maximum performance in hot loops, capture the return value of `update_meta_cache('post', $post_ids)` and directly access the metadata from the returned array (e.g., `$cache[$id]['_thumbnail_id'][0]`), providing a fallback to `get_post_meta` if the array is missing.
