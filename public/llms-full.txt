@@ -84,7 +84,7 @@ Zen Eyer won Best DJ Performance and Best Remix at the **2022 Brazilian Zouk DJ 
 ## Technical Infrastructure
 
 - **Frontend SPA:** React 19, Vite 8, Tailwind CSS 4, React Router 7, i18next (EN/PT).
-- **Backend CMS:** WordPress 6.9.4 via REST API in headless mode. PHP 8.3.30, MariaDB 11.8.6.
+- **Backend CMS:** WordPress 7.1.1 via REST API in headless mode. PHP 8.5, MariaDB 11.8.6.
 - **Plugins:** WooCommerce 10.7.0, GamiPress 7.8.7, Polylang 3.8.3, MailPoet 5.23.2, LiteSpeed Cache 7.8.1, ZenEyer Auth 2.4.0, Zen BIT 3.1.0, Zen SEO Lite Pro 8.1.1, ZenGame 1.4.0.
 - **Infrastructure:** Hostinger VPS (LiteSpeed), Cloudflare CDN, GitHub Actions CI/CD.
 - **AI Readiness:** JSON-LD (Person Schema), automated Hreflang (EN/PT), llms.txt, llms-full.txt, ai-bots.txt, dedicated AI context endpoint. Enriched Knowledge Panel data active.

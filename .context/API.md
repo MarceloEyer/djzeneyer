@@ -18,6 +18,7 @@ This is a curated map, not an exhaustive generated inventory. Verify anything st
 - `zen-bit/v2` - events and schema
 - `zengame/v1` - gamification
 - `zen-seo/v1` - headless SEO
+- `zen-private-music/v1` - authenticated private MP3 delivery
 
 ## Theme routes (`djzeneyer/v1`)
 
@@ -77,6 +78,13 @@ Consumption model:
 - `GET /me`
 - `GET /leaderboard`
 - `POST /track`
+
+## Private music delivery (`zen-private-music/v1`)
+
+- `GET /tracks` (authenticated JWT): lists only available tracks the current user can access.
+- `GET /tracks/{id}/download` (authenticated JWT): streams the original private MP3 after checking per-track authorization.
+
+Authorization is granted when the user is selected individually for the track, or when the track is enabled for the DJ delivery group and the user has the admin-managed `zen_receives_dj_music` user meta. These endpoints are private user data and must not be exposed through public AI/search resources.
 
 ## SEO (`zen-seo/v1`)
 

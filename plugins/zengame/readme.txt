@@ -1,9 +1,9 @@
 === ZenGame Pro ===
 Contributors: eyerm, djzeneyer
 Tags: gamipress, gamification, woocommerce, headless, react, api
-Requires at least: 6.0
+Requires at least: 7.1.1
 Tested up to: 6.4
-Requires PHP: 8.0
+Requires PHP: 8.5
 Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

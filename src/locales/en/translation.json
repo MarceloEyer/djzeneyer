@@ -765,10 +765,20 @@
   "account": {
     "tabs": {
       "overview": "Overview",
+      "music": "My Music",
       "orders": "Orders",
       "achievements": "Achievements",
       "settings": "Settings",
       "not_found": "Tab not found"
+    },
+    "private_music": {
+      "title": "My Music",
+      "subtitle": "Private MP3 deliveries shared with your account.",
+      "loading": "Loading tracks",
+      "error": "Could not load your private music",
+      "empty_title": "No tracks available yet",
+      "empty_desc": "When Zen Eyer shares private MP3s with you, they will appear here.",
+      "download": "Download"
     },
     "stats": {
       "level_title": "Level",
@@ -787,7 +797,8 @@
       "real_name_hint": "for certificates and tickets",
       "preferred_name": "Artist / Preferred Name",
       "preferred_name_hint": "how the Tribe sees you",
-      "email": "Email Frequency",
+      "email": "Email",
+      "email_placeholder": "you@example.com",
       "facebook": "Facebook Profile",
       "facebook_placeholder": "URL or Username",
       "instagram": "Instagram",

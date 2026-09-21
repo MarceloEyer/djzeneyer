@@ -1,0 +1,43 @@
+{
+    "name": "zeneyer/djzeneyer-quality",
+    "description": "Development-only PHP quality tooling for the djzeneyer WordPress plugins.",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.3"
+    },
+    "require-dev": {
+        "brain/monkey": "^2.7",
+        "firebase/php-jwt": "^7.0",
+        "php-stubs/woocommerce-stubs": "^10.9",
+        "phpstan/phpstan": "^2.2",
+        "phpunit/phpunit": "^11.5",
+        "szepeviktor/phpstan-wordpress": "^2.0",
+        "wp-coding-standards/wpcs": "^3.3"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ZenEyer\\Tests\\": "tests/php/"
+        }
+    },
+    "scripts": {
+        "php:lint": "@php scripts/php-lint.php",
+        "php:stan": "phpstan analyse --configuration=phpstan.neon.dist --no-progress --memory-limit=2G",
+        "php:cs": "@php scripts/phpcs-changed.php",
+        "php:test": "phpunit --configuration=phpunit.xml.dist",
+        "php:check": [
+            "@php:lint",
+            "@php:stan",
+            "@php:test"
+        ]
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "platform": {
+            "php": "8.3.0"
+        },
+        "sort-packages": true
+    }
+}

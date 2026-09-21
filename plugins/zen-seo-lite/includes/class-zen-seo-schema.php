@@ -527,7 +527,7 @@ class Zen_SEO_Schema
         ];
 
         if ($image) {
-            $article['image'] = \esc_url((string) ($image ?? ''));
+            $article['image'] = \esc_url((string) $image);
         }
 
         if (!empty($meta['release_type'])) {
@@ -612,7 +612,7 @@ class Zen_SEO_Schema
         $ticket_url = !empty($meta['event_ticket']) ? $meta['event_ticket'] : Zen_SEO_Helpers::get_frontend_url(\get_permalink($post));
         $event['offers'] = [
             '@type' => 'Offer',
-            'url' => \esc_url((string) ($ticket_url ?? '')),
+            'url' => \esc_url((string) $ticket_url),
             'availability' => $start_ts && $start_ts < \time() ? 'https://schema.org/Discontinued' : 'https://schema.org/InStock'
         ];
 
@@ -666,7 +666,7 @@ class Zen_SEO_Schema
         ];
 
         if ($image) {
-            $music['image'] = \esc_url((string) ($image ?? ''));
+            $music['image'] = \esc_url((string) $image);
         }
 
         if (!empty($meta['isrc_code']) && $schema_type === 'MusicRecording') {
@@ -760,7 +760,7 @@ class Zen_SEO_Schema
         ];
 
         if ($image) {
-            $music['image'] = \esc_url((string) ($image ?? ''));
+            $music['image'] = \esc_url((string) $image);
         }
 
         // Get audio URL from custom fields

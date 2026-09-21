@@ -4,8 +4,8 @@
  * Plugin URI:        https://djzeneyer.com
  * Description:       Enterprise-grade JWT Authentication for Headless WordPress + React. Secure, fast, and production-ready. Includes Anti-Bot Security Shield.
  * Version:           2.4.0
- * Requires at least: 6.0
- * Requires PHP:      8.0
+ * Requires at least: 7.1.1
+ * Requires PHP:      8.5
  * Author:            DJ Zen Eyer
  * Author URI:        https://djzeneyer.com
  * License:           GPL v2 or later

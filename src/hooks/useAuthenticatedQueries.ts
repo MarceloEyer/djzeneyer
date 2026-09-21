@@ -77,13 +77,20 @@ export interface WCOrder {
   line_items: Array<{ name: string; quantity: number; total: string }>;
 }
 
+export interface PrivateMusicTrack {
+  id: number;
+  title: string;
+  file_name: string;
+  file_size: number;
+}
+
 // ----------------------------------------------------------------------------
 // SCHEMAS
 // ----------------------------------------------------------------------------
 
 const UserProfileSchema = z.object({
   id: z.number(),
-  email: z.string().email(),
+  email: z.string().catch(''),
   display_name: z.string(),
   first_name: z.string().optional(),
   last_name: z.string().optional(),
@@ -94,6 +101,13 @@ const UserProfileSchema = z.object({
   instagram_url: z.string().optional(),
   dance_role: z.array(z.string()).optional(),
   gender: z.enum(['', 'male', 'female', 'non-binary']).optional(),
+}).catchall(z.unknown());
+
+const PrivateMusicTrackSchema = z.object({
+  id: z.number(),
+  title: z.string(),
+  file_name: z.string().catch(''),
+  file_size: z.number().catch(0),
 }).catchall(z.unknown());
 
 const AuthSessionResponseSchema = z.object({
@@ -228,6 +242,49 @@ export const useUserOrdersQuery = (
     staleTime: STALE_TIME.USER_PROFILE,
     retry: false,
   });
+
+export const usePrivateMusicTracksQuery = (
+  userId?: number,
+  token?: string,
+  options: { enabled?: boolean } = {}
+) =>
+  useQuery<PrivateMusicTrack[]>({
+    queryKey: [...QUERY_KEYS.user.privateMusic(userId), jwtSub(token)],
+    queryFn: async (): Promise<PrivateMusicTrack[]> => {
+      if (!token || !userId) return [];
+      const apiUrl = buildApiUrl('zen-private-music/v1/tracks');
+      const res = await fetch(apiUrl, { headers: getAuthHeaders(token) });
+      if (!res.ok) throw new Error('Failed to fetch private music');
+      const json = await res.json();
+      if (!json?.success || !Array.isArray(json.data)) return [];
+      return z.array(PrivateMusicTrackSchema).parse(json.data) as PrivateMusicTrack[];
+    },
+    enabled: Boolean(token && userId) && (options.enabled ?? true),
+    staleTime: STALE_TIME.USER_PROFILE,
+    retry: false,
+  });
+
+export const downloadPrivateMusicTrack = async (trackId: number, token: string): Promise<void> => {
+  const apiUrl = buildApiUrl(`zen-private-music/v1/tracks/${trackId}/download`);
+  const res = await fetch(apiUrl, { headers: getAuthHeaders(token) });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error((data as { message?: string }).message || 'Download failed');
+  }
+
+  const blob = await res.blob();
+  const disposition = res.headers.get('Content-Disposition') || '';
+  const filenameMatch = disposition.match(/filename="([^"]+)"/);
+  const filename = filenameMatch?.[1] || `track-${trackId}.mp3`;
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
 
 interface CheckoutData {
   payment_methods: Array<{ id: string; title: string; description: string }>;

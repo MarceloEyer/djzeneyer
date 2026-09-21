@@ -1,5 +1,5 @@
 // src/pages/MyAccountPage.tsx
-// v20.1 - Removida aba Music (sem catálogo de faixas no site)
+// v20.2 - Private music deliveries live inside the existing account area.
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,11 +9,11 @@ import { HeadlessSEO } from '../components/HeadlessSEO';
 import { useTranslation } from 'react-i18next';
 import {
   User, Settings, ShoppingBag, Award, LogOut,
-  Bell, AlertCircle, Save, ChevronRight, Zap, Trophy, Loader2
+  Bell, AlertCircle, Save, ChevronRight, Zap, Trophy, Loader2, Music, Download, FileAudio
 } from 'lucide-react';
 import { InstagramIcon } from '../components/icons/BrandIcons';
 import { UserStatsCards, OrdersList, RecentActivity } from '../components/account';
-import { useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation, useUserOrdersQuery } from '../hooks/useQueries';
+import { downloadPrivateMusicTrack, usePrivateMusicTracksQuery, useProfileQuery, useUpdateProfileMutation, useNewsletterStatusQuery, useUpdateNewsletterMutation, useUserOrdersQuery } from '../hooks/useQueries';
 import { GamiPressProvider, useGamiPressContext } from '../contexts/GamiPressContext';
 import { getLocalizedRoute, normalizeLanguage } from '../config/routes';
 import { stripHtml } from '../utils/text';
@@ -39,6 +39,7 @@ interface UserStats {
 }
 
 interface ProfileForm {
+  email: string;
   realName: string;
   preferredName: string;
   facebookUrl: string;
@@ -50,6 +51,7 @@ interface ProfileForm {
 const MyAccountContent: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { user, loadingInitial, logout } = useUser();
+  const userToken = user?.token;
   const currentLang = useMemo(() => normalizeLanguage(i18n.language), [i18n.language]);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -72,6 +74,7 @@ const MyAccountContent: React.FC = () => {
   const [profileDraft, setProfileDraft] = useState<Partial<ProfileForm>>({});
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [downloadingTrackId, setDownloadingTrackId] = useState<number | null>(null);
 
   // 🎮 Computar estatísticas do usuário COM DADOS REAIS DO BRAIN (GamiPress)
   // Ensure we use precise dependencies for the memoization or avoid manual memoization objects if simple.
@@ -117,27 +120,36 @@ const MyAccountContent: React.FC = () => {
   // React Query Hooks
   const shouldLoadSettingsData = activeTab === 'settings';
   const shouldLoadOrdersData = activeTab === 'orders';
+  const shouldLoadMusicData = activeTab === 'music';
 
-  const { data: profileData } = useProfileQuery(user?.token, {
+  const { data: profileData } = useProfileQuery(userToken, {
     enabled: shouldLoadSettingsData,
   });
-  const { data: newsletterEnabled } = useNewsletterStatusQuery(user?.token, {
+  const { data: newsletterEnabled } = useNewsletterStatusQuery(userToken, {
     enabled: shouldLoadSettingsData,
   });
-  const updateProfile = useUpdateProfileMutation(user?.token);
-  const updateNewsletter = useUpdateNewsletterMutation(user?.token);
-  const { data: orders = [], isLoading: loadingOrders } = useUserOrdersQuery(user?.id, user?.token, 5, {
+  const updateProfile = useUpdateProfileMutation(userToken);
+  const updateNewsletter = useUpdateNewsletterMutation(userToken);
+  const { data: orders = [], isLoading: loadingOrders } = useUserOrdersQuery(user?.id, userToken, 5, {
     enabled: shouldLoadOrdersData,
+  });
+  const {
+    data: privateTracks = [],
+    isLoading: loadingPrivateTracks,
+    isError: privateTracksError,
+  } = usePrivateMusicTracksQuery(user?.id, userToken, {
+    enabled: shouldLoadMusicData,
   });
 
   const profileDefaults = useMemo<ProfileForm>(() => ({
+    email: profileData?.email || user?.email || '',
     realName: profileData?.real_name || user?.name || '',
     preferredName: profileData?.preferred_name || '',
     facebookUrl: profileData?.facebook_url || '',
     instagramUrl: profileData?.instagram_url || '',
     danceRole: profileData?.dance_role || EMPTY_STRING_ARRAY,
     gender: profileData?.gender || '',
-  }), [profileData, user?.name]);
+  }), [profileData, user?.email, user?.name]);
 
   const profileForm = useMemo<ProfileForm>(() => ({
     ...profileDefaults,
@@ -165,6 +177,7 @@ const MyAccountContent: React.FC = () => {
     try {
       await updateProfile.mutateAsync({
         real_name: profileForm.realName,
+        email: profileForm.email,
         preferred_name: profileForm.preferredName,
         facebook_url: profileForm.facebookUrl,
         instagram_url: profileForm.instagramUrl,
@@ -180,8 +193,21 @@ const MyAccountContent: React.FC = () => {
     }
   }, [profileForm, updateProfile]);
 
+  const handleDownloadTrack = React.useCallback(async (trackId: number) => {
+    if (!userToken) return;
+    setDownloadingTrackId(trackId);
+    try {
+      await downloadPrivateMusicTrack(trackId, userToken);
+    } catch (error) {
+      logger.error('MY_ACCOUNT_PAGE', 'Error downloading private music', { error: String(error), trackId });
+    } finally {
+      setDownloadingTrackId(null);
+    }
+  }, [userToken]);
+
   const tabs = useMemo(() => [
     { id: 'overview', label: t('account.tabs.overview'), icon: User, color: 'primary' },
+    { id: 'music', label: t('account.tabs.music'), icon: Music, color: 'primary' },
     { id: 'orders', label: t('account.tabs.orders'), icon: ShoppingBag, color: 'secondary' },
     { id: 'achievements', label: t('account.tabs.achievements'), icon: Award, color: 'accent' },
     { id: 'settings', label: t('account.tabs.settings'), icon: Settings, color: 'secondary' },
@@ -283,6 +309,63 @@ const MyAccountContent: React.FC = () => {
       case 'orders':
         return <OrdersList orders={orders} loading={loadingOrders} />;
 
+      case 'music':
+        return (
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+            <div>
+              <h2 className="text-3xl font-black font-display tracking-tighter leading-none mb-2">{t('account.private_music.title')}</h2>
+              <p className="text-text/40 text-sm font-medium">{t('account.private_music.subtitle')}</p>
+            </div>
+
+            {loadingPrivateTracks && (
+              <div className="bg-surface/30 border border-border/5 rounded-[2rem] p-10 flex items-center gap-4">
+                <Loader2 className="animate-spin text-primary" size={24} />
+                <span className="text-sm font-black uppercase tracking-widest text-text/40">{t('account.private_music.loading')}</span>
+              </div>
+            )}
+
+            {privateTracksError && (
+              <div className="bg-error/10 border border-error/20 rounded-[2rem] p-10 flex items-center gap-4 text-error">
+                <AlertCircle size={24} />
+                <span className="text-sm font-black uppercase tracking-widest">{t('account.private_music.error')}</span>
+              </div>
+            )}
+
+            {!loadingPrivateTracks && !privateTracksError && privateTracks.length === 0 && (
+              <div className="bg-surface/30 border border-border/5 rounded-[2rem] p-12 text-center">
+                <FileAudio className="mx-auto mb-5 text-text/20" size={48} />
+                <p className="text-xl font-black font-display tracking-tight mb-2">{t('account.private_music.empty_title')}</p>
+                <p className="text-sm text-text/40">{t('account.private_music.empty_desc')}</p>
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {privateTracks.map(track => (
+                <div key={track.id} className="bg-surface/30 border border-border/5 rounded-[2rem] p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                  <div className="flex items-center gap-5 min-w-0">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                      <FileAudio className="text-primary" size={22} />
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-black font-display text-xl tracking-tight truncate">{track.title}</h3>
+                      <p className="text-xs text-text/30 font-bold uppercase tracking-widest truncate">{track.file_name}</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleDownloadTrack(track.id)}
+                    disabled={downloadingTrackId === track.id}
+                    className="btn btn-primary px-7 py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] flex items-center justify-center gap-3"
+                  >
+                    {downloadingTrackId === track.id ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
+                    {t('account.private_music.download')}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        );
+
       case 'achievements':
         return (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
@@ -352,6 +435,16 @@ const MyAccountContent: React.FC = () => {
                   <h3 className="text-xl font-black font-display tracking-tight uppercase">{t('account.profile.identity')}</h3>
                 </div>
                 <div className="space-y-6">
+                  <div>
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text/30 block mb-3 ml-1">{t('account.profile.email')}</label>
+                    <input
+                      type="email"
+                      value={profileForm.email}
+                      onChange={(e) => handleProfileChange('email', e.target.value)}
+                      className="input bg-background/40 border-border/5 focus:border-primary/50 py-4 px-6 rounded-2xl font-medium"
+                      placeholder={t('account.profile.email_placeholder')}
+                    />
+                  </div>
                   <div>
                     <label className="text-[10px] font-black uppercase tracking-[0.3em] text-text/30 block mb-3 ml-1">{t('account.profile.real_name')}</label>
                     <input

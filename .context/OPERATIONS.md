@@ -21,6 +21,14 @@ Este arquivo consolida decisões operacionais que antes estavam apenas em memór
 - HSTS é gerenciado pelo Cloudflare. Não definir `Strict-Transport-Security` no `.htaccess`.
 - CSP é gerada por `inc/csp.php`. Nunca adicionar `Header unset Content-Security-Policy` ou `Header always unset Content-Security-Policy` no `.htaccess`.
 
+## Private Music Delivery
+
+- O plugin `plugins/zen-private-music-delivery/` armazena MP3s em `wp-content/zen-private-music/`, fora de `public/`, Git, build, prerender e biblioteca de mídia pública.
+- Downloads passam por `GET /wp-json/zen-private-music/v1/tracks/{id}/download` com JWT Bearer e checagem de autorização por arquivo. Não colocar tokens em URLs.
+- O plugin cria `.htaccess` com deny no diretório privado, compatível com Apache/LiteSpeed. Se a hospedagem mudar para Nginx puro, adicionar regra equivalente negando acesso direto a `/wp-content/zen-private-music/` antes de publicar.
+- Fazer backup do diretório privado junto com o banco WordPress; os metadados dos arquivos vivem no banco e os binários vivem nesse diretório.
+- Não adicionar regra NOCACHE global para `/wp-json/`; as rotas privadas emitem headers sem cache no próprio endpoint.
+
 ## IndexNow
 
 - IndexNow está configurado via GitHub Secret `INDEXNOW_KEY`.
