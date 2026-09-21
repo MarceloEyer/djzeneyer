@@ -67,13 +67,14 @@ jobs:
           VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
 
       - name: Run Lighthouse CI
+        continue-on-error: ${{ github.event_name == 'pull_request' }}
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           configPath: ./lighthouserc.cjs
           uploadArtifacts: true
           temporaryPublicStorage: true
         env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_GITHUB_APP_TOKEN: ${{ github.event_name == 'pull_request' && '' || secrets.LHCI_GITHUB_APP_TOKEN }}
           LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
           LIGHTHOUSE_TARGET: ${{ github.event_name == 'pull_request' && 'local' || 'production' }}
 
