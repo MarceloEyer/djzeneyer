@@ -335,15 +335,23 @@ async function fetchPostsForLang(lang) {
   }
 
   const concurrencyLimit = 5;
-  for (let i = 2; i <= totalPages; i += concurrencyLimit) {
-    const batch = [];
-    for (let j = 0; j < concurrencyLimit && (i + j) <= totalPages; j++) {
-      batch.push(fetchPostPage(i + j));
+  const pending = [];
+  const active = new Set();
+  for (let page = 2; page <= totalPages; page++) {
+    const request = fetchPostPage(page).finally(() => {
+      active.delete(request);
+    });
+    pending.push(request);
+    active.add(request);
+
+    if (active.size >= concurrencyLimit) {
+      await Promise.race(active);
     }
-    const batchResults = await Promise.all(batch);
-    for (const pageResult of batchResults) {
-      posts.push(...pageResult.posts);
-    }
+  }
+
+  const remainingResults = await Promise.all(pending);
+  for (const pageResult of remainingResults) {
+    posts.push(...pageResult.posts);
   }
   return posts;
 }
