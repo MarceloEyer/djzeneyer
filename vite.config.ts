@@ -8,6 +8,7 @@ export default defineConfig(({ command, mode }) => {
   const isProduction = command === 'build' || mode === 'production';
   const shouldCompressAssets = isProduction && process.platform !== 'win32';
   const compressibleAssetPattern = /\.(js|mjs|css|html|svg|json|xml|txt|webmanifest)$/i;
+  const assetBase = process.env.VITE_ASSET_BASE || (command === 'serve' ? '/' : '/wp-content/themes/zentheme/dist/');
 
   return {
     plugins: [
@@ -38,7 +39,7 @@ export default defineConfig(({ command, mode }) => {
     // 🚀 BASE PATH: Importante para o Headless WordPress
     // Em produção, os assets ficam na pasta do tema.
     // No dev local (npm run dev), usamos '/' para o Preview funcionar sem subpastas.
-    base: command === 'serve' ? '/' : '/wp-content/themes/zentheme/dist/',
+    base: assetBase,
 
     resolve: {
       alias: {

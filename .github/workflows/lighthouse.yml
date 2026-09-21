@@ -62,6 +62,7 @@ jobs:
         env:
           NODE_ENV: production
           SITE_BASE_URL: https://djzeneyer.com
+          VITE_ASSET_BASE: /
           VITE_WP_SITE_URL: https://djzeneyer.com
           VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
 
