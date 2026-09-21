@@ -41,6 +41,8 @@ Em caso de divergência, siga esta ordem:
 - Leia `AI_CONTEXT_INDEX.md`.
 - Verifique a stack real no `package.json` (nunca assuma versões de cabeça).
 - Rode `gh pr list --state open --limit 50` e não crie PR duplicado.
+- Não rode build, testes, Lighthouse, Composer, auditorias amplas ou benchmarks localmente por padrão. Este repositório usa estratégia GitHub-first para economizar tokens de agentes. Abra PR pequeno e deixe GitHub Actions validar.
+- Se uma validação local for inevitável, explique no PR por que não havia alternativa no GitHub.
 - Nunca crie PRs que mexam em mais de um domínio ao mesmo tempo (ex: frontend + PHP juntos). Separe em PRs focados.
 - O título do PR deve descrever o que o diff realmente muda. Não use `fix`, `perf` ou `N+1` se o diff só altera comentário, documentação ou lint.
 - A descrição do PR deve listar validações executadas. Se uma validação relevante não foi executada, explique por quê.
@@ -55,7 +57,7 @@ Antes de abrir PR, confirme todos os itens:
 1. A tarefa veio de pedido humano explícito, issue atribuída, rotina programada de auditoria ou bug reproduzível no código atual.
 2. O diff resolve uma causa real, não apenas uma hipótese genérica extraída de comentário ou learning.
 3. O PR é pequeno, tem um domínio único e não duplica PR aberto.
-4. Existe validação proporcional ao risco (`npm run lint`, teste específico, diff manual ou benchmark reproduzível).
+4. Existe validação proporcional ao risco, preferencialmente via GitHub Actions. Não rode validação local pesada sem pedido humano explícito.
 5. Para desempenho, existe evidência objetiva de impacto: profiler, benchmark, Core Web Vitals, endpoint lento, lista grande, render frequente em hot path, N+1 real, ou regressão visível.
 6. Se a tarefa foi gerada a partir de `.jules/bolt.md`, cite no resumo a evidência concreta encontrada no código atual. Sem evidência concreta, não abra PR.
 
@@ -157,6 +159,7 @@ Regra de escala: micro-otimização de render no cliente não aumenta a capacida
 - **SSOT de rotas:** ao criar nova rota, atualizar `src/config/routes-slugs.json`.
 - **fetch-depth no CI:** manter `2`, nunca `0`.
 - **ESLint ignores:** `.claude`, `.agents`, `.bolt`, `.gemini`, `.jules`, `.devcontainer` — nunca remover.
+- **CI-first:** para validar mudanças, prefira abrir PR e deixar GitHub Actions rodar. Use `Actions > Maintenance Audit` para auditorias manuais em vez de comandos locais.
 
 ---
 

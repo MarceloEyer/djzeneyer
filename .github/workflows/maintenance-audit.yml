@@ -1,0 +1,132 @@
+name: Maintenance Audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_lighthouse:
+        description: Run production Lighthouse audit
+        required: true
+        default: true
+        type: boolean
+      run_composer:
+        description: Run Composer validation/audit when composer.json exists
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  security-events: read
+
+concurrency:
+  group: maintenance-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node-maintenance:
+    name: Node, SEO, Security and Build Checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    env:
+      NODE_ENV: production
+      SITE_BASE_URL: https://djzeneyer.com
+      VITE_WP_SITE_URL: https://djzeneyer.com
+      VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run maintenance checks
+        run: |
+          npm run type-check
+          npm run arch:check
+          npm run i18n:check
+          npm run utf8:check
+          npm run seo:check
+          npm run security:check
+          npm run generate-sitemaps
+          npm run build
+          npm run perf:budget
+
+      - name: NPM audit summary
+        if: always()
+        run: npm audit --audit-level=moderate
+
+  composer-maintenance:
+    name: Composer Validation and Audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    if: ${{ inputs.run_composer }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        directory:
+          - plugins/zeneyer-auth
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@ec406be512d7077f68eed36e63f4d91bc006edc4 # v3
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      - name: Validate Composer files
+        working-directory: ${{ matrix.directory }}
+        run: composer validate --strict
+
+      - name: Composer audit
+        working-directory: ${{ matrix.directory }}
+        run: composer audit --locked
+
+  lighthouse-production:
+    name: Production Lighthouse ${{ matrix.profile }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    if: ${{ inputs.run_lighthouse }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [desktop, mobile]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
+        with:
+          configPath: ./lighthouserc.cjs
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+        env:
+          LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
+          LIGHTHOUSE_TARGET: production
+
+      - name: Summarize Lighthouse warnings
+        if: always()
+        run: node scripts/summarize-lighthouse-results.mjs

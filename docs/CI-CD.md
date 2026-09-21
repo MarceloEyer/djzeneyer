@@ -10,7 +10,8 @@ For deep operational details, see `.context/OPERATIONS.md`.
 | `ci-tests.yml` | PR and push to `main` | Installs deps, runs unit/integration tests and lint |
 | `contract-tests.yml` | PR and push to `main` | Validates integration and API contract assumptions |
 | `quality-gate.yml` | PR and push to `main` | Full quality check (see below) |
-| `lighthouse-ci.yml` | PR and push to `main` | Lighthouse performance and accessibility checks |
+| `lighthouse.yml` | PR, manual dispatch, and successful frontend deploys | Lighthouse performance, accessibility, best-practices, and SEO checks |
+| `maintenance-audit.yml` | Manual dispatch | GitHub-hosted maintenance audit for Node, Composer, security, build, budgets, and optional production Lighthouse |
 | `deploy-frontend.yml` | Push to `main` | Builds React app and deploys to VPS via rsync |
 | `deploy-backend.yml` | Push to `main` | Deploys WordPress theme, plugins, and backend assets to VPS |
 
@@ -37,9 +38,17 @@ Daily prerender is the intended cadence for the current content model. Events ar
 ## Developer workflow
 
 1. Create a branch from `main` — use prefixes `feature/*`, `fix/*`, or `chore/*`.
-2. Push commits and open a pull request.
-3. All CI pipelines must pass before merging.
-4. After merge to `main`, deploy pipelines publish frontend and backend automatically.
+2. Keep the change small and focused.
+3. Push commits and open a pull request early.
+4. Let GitHub Actions, CodeRabbit, CodeQL, Snyk, Dependabot/Renovate, and Jules do the expensive validation/review work.
+5. If a check fails, inspect only the failing GitHub log and patch the smallest cause.
+6. After merge to `main`, deploy pipelines publish frontend and backend automatically.
+
+## GitHub-first agent policy
+
+The maintainer prefers slower but cheaper automation over local agent execution. Agents should not run local builds, tests, Lighthouse, Composer updates/audits, broad scans, or benchmarks by default. Use PRs and GitHub Actions as the main validation surface.
+
+For broad checks, run `Actions > Maintenance Audit > Run workflow` on GitHub. This keeps compute and logs in GitHub instead of consuming agent tokens locally.
 
 ## Environment and secrets
 

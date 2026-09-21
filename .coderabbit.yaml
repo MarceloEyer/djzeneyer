@@ -8,6 +8,8 @@ tone_instructions: |
   Responda em português brasileiro. Comente apenas bugs, regressões, segurança,
   contratos ou regras explícitas do projeto. Ignore estilo, elogios, renomeações,
   micro-otimizações e hipóteses sem evidência.
+  Este repositório usa estratégia GitHub-first para economizar tokens de agentes:
+  prefira apontar checks/workflows existentes em vez de pedir execução local.
 
 reviews:
   profile: 'chill'
@@ -82,6 +84,7 @@ reviews:
         - Minificador: OXC (padrão Vite 8). Nunca adicionar minify: 'esbuild'.
         - composer install NUNCA deve ter --no-security-blocking sem justificativa explícita.
         - plugins/ só deve ser republicado quando plugins/** mudou.
+        - Workflows devem assumir GitHub como executor principal. Evitar instruções que obriguem agentes a rodar auditorias locais.
 
     - path: 'src/config/routes.ts'
       instructions: |

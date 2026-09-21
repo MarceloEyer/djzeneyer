@@ -12,6 +12,17 @@ Este é o ponto de entrada principal para todos os agentes de IA. A conformidade
 
 ## 🚨 Regras Críticas (Bypass Proibido)
 
+### 0. Política GitHub-first para economizar tokens
+
+- **Regra operacional:** agentes devem preferir editar, abrir PR e deixar GitHub Actions/serviços conectados validarem.
+- **Não rodar localmente por padrão:** builds, testes, Lighthouse, Composer, auditorias amplas, benchmarks e suites completas só devem rodar localmente se o mantenedor pedir explicitamente ou se não existir alternativa no GitHub.
+- **Permitido localmente sem pedir:** leitura de arquivos, `rg`, `git status`, `git diff`, `gh pr view/list`, inspeção pontual de logs do GitHub e comandos baratos de metadados.
+- **Quando CI falhar:** ler apenas o log do job que falhou e corrigir a menor causa provável. Não fazer loops locais para "garantir".
+- **PRs pequenos:** separar mudanças por domínio para CodeRabbit, CodeQL, Snyk, Dependabot, Jules/Renovate e GitHub Actions trabalharem melhor.
+- **Auditorias sob demanda:** usar `Actions > Maintenance Audit > Run workflow` em vez de rodar checks locais.
+- **Auto-merge:** habilitar em PRs pequenos/baixo risco quando os checks obrigatórios do GitHub forem suficientes.
+- **Documentação de setup:** ver `.github/AUTOMATION_SETUP.md`.
+
 ### 1. Sanitização de URLs (`safeUrl`)
 
 A função `safeUrl(url)` retorna `'#'` (que é truthy).

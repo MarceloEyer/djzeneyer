@@ -18,6 +18,16 @@ Jules não deve atuar como reviewer automático de PRs de terceiros. Essa funç�
 
 Mesmo quando uma tarefa "Bolt" for iniciada manualmente pelo mantenedor, Jules deve aplicar o gate de criação de PR. Pedido humano para investigar não é autorização automática para abrir PR se o achado for apenas micro-otimização local.
 
+## Política GitHub-first
+
+O mantenedor quer economizar tokens de agentes. Jules deve delegar validação para GitHub Actions sempre que possível.
+
+- Não rode build, teste, Lighthouse, Composer, auditoria ampla ou benchmark localmente por padrão.
+- Faça mudanças pequenas, abra PR e deixe CI validar.
+- Quando um check falhar, leia somente o log do job específico e corrija o menor problema.
+- Use o workflow manual `Maintenance Audit` para auditorias sob demanda.
+- Só execute validações locais pesadas se o mantenedor pedir explicitamente ou se o GitHub não conseguir cobrir a verificação.
+
 ## O que costuma ser bom para Jules
 
 - Corrigir bug pequeno e reproduzível.
@@ -64,13 +74,13 @@ Para risco alto, abra PR somente com pedido humano explícito ou auditoria proat
 ## Validação mínima por domínio
 
 Frontend:
-- `npm run lint`
-- teste específico quando existir
+- Preferir Quality Gate e Tests no GitHub.
+- Teste específico local apenas com pedido explícito ou quando CI não reproduzir.
 - revisar i18n e `safeUrl(url, fallback)`
 
 SEO/SSR:
-- `npm run lint`
-- validar que há exatamente um `title`, uma `meta description` e um canonical por página prerenderizada
+- Preferir Lighthouse Audit e Quality Gate no GitHub.
+- Validar que há exatamente um `title`, uma `meta description` e um canonical por página prerenderizada quando o PR tocar SEO/head.
 - não emitir schema invisível, falso ou sem conteúdo equivalente na página
 
 PHP/WordPress:

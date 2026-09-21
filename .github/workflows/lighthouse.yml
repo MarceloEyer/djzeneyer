@@ -56,7 +56,9 @@ jobs:
 
       - name: Build preview
         if: ${{ github.event_name == 'pull_request' }}
-        run: npm run build:full
+        run: |
+          npm run generate-sitemaps
+          npm run build
         env:
           NODE_ENV: production
           SITE_BASE_URL: https://djzeneyer.com
