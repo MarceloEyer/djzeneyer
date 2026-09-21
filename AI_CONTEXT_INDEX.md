@@ -74,6 +74,7 @@ graph TD
 
 ## 🚦 Regras de Ouro para Agentes
 
+- **GitHub-first:** Para economizar tokens de agentes, preferir PR pequeno + GitHub Actions/serviços conectados. Não rodar build, teste, Lighthouse, Composer, auditorias amplas ou benchmarks localmente sem pedido explícito. Usar `Maintenance Audit` para auditorias sob demanda.
 - **Não Invente:** Se a informação de branding não estiver em `.context/IDENTITY.md`, pergunte.
 - **SafeUrl:** Sempre use fallback explícito: `safeUrl(url, '/fallback.svg')` para imagens, `safeUrl(url, '/')` para links. Nunca `safeUrl(url) || fallback`.
 - **GamiPress:** Use `array_values()` antes de acessar `[0]` em arrays de tipos de pontos/ranks.

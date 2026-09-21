@@ -16,6 +16,8 @@ Responda em Português Brasileiro.
 - Infra: Hostinger VPS + LiteSpeed + Cloudflare + GitHub Actions
 
 ## Regras importantes
+- Preferir estratégia GitHub-first: editar, abrir PR e deixar GitHub Actions validar. Não sugerir builds, testes, Lighthouse, Composer ou auditorias locais por padrão.
+- Para auditorias sob demanda, usar o workflow `Maintenance Audit` no GitHub.
 - Strings visíveis devem usar `t('chave')`.
 - Data fetching no frontend deve passar por `src/hooks/useQueries.ts`.
 - Não usar `fetch()` diretamente em componentes quando houver hook disponível.
