@@ -1,18 +1,6 @@
 name: Lighthouse Audit
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/lighthouse.yml'
-      - 'lighthouserc.cjs'
-      - 'package-lock.json'
-      - 'package.json'
-      - 'public/**'
-      - 'scripts/**'
-      - 'src/**'
-      - 'index.html'
-      - 'vite.config.*'
   workflow_run:
     workflows: ["🚀 Deploy Frontend"]
     types: [completed]
@@ -28,10 +16,10 @@ concurrency:
 
 jobs:
   lighthouse:
-    name: Audit ${{ matrix.profile }} · ${{ github.event_name == 'pull_request' && 'preview' || 'production' }}
+    name: Audit ${{ matrix.profile }} · production
     runs-on: ubuntu-24.04
     timeout-minutes: 20
-    if: ${{ github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     strategy:
       fail-fast: false
       matrix:
@@ -44,39 +32,16 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
-      - name: Setup Node.js
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
-        with:
-          node-version: '22'
-          cache: npm
-
-      - name: Install dependencies
-        if: ${{ github.event_name == 'pull_request' }}
-        run: npm ci
-
-      - name: Build preview
-        if: ${{ github.event_name == 'pull_request' }}
-        run: |
-          npm run generate-sitemaps
-          npm run build
-        env:
-          NODE_ENV: production
-          SITE_BASE_URL: https://djzeneyer.com
-          VITE_ASSET_BASE: /
-          VITE_WP_SITE_URL: https://djzeneyer.com
-          VITE_WP_REST_URL: https://djzeneyer.com/wp-json/
-
       - name: Run Lighthouse CI
-        continue-on-error: ${{ github.event_name == 'pull_request' }}
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           configPath: ./lighthouserc.cjs
           uploadArtifacts: true
           temporaryPublicStorage: true
         env:
-          LHCI_GITHUB_APP_TOKEN: ${{ github.event_name == 'pull_request' && '' || secrets.LHCI_GITHUB_APP_TOKEN }}
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
-          LIGHTHOUSE_TARGET: ${{ github.event_name == 'pull_request' && 'local' || 'production' }}
+          LIGHTHOUSE_TARGET: production
 
       - name: Summarize Lighthouse warnings
         if: always()
