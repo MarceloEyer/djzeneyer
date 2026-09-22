@@ -113,6 +113,10 @@ class DJZ_Vite_Loader
 
     public function enqueue_assets()
     {
+        if (function_exists('djz_is_native_woocommerce_page') && djz_is_native_woocommerce_page()) {
+            return;
+        }
+
         // Dev Mode
         if (defined('DJZ_IS_DEV') && DJZ_IS_DEV) {
             wp_enqueue_script('vite-client', 'http://localhost:5173/@vite/client', [], null, true);
