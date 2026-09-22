@@ -8,7 +8,7 @@ const urls = [
   '/',
   '/pt/eventos-zouk/',
   '/releases/',
-  '/music/',
+  '/zouk-music/',
   '/shop/',
 ].map((path) => new URL(path, baseUrl).toString());
 
