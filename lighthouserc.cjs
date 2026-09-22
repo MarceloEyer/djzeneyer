@@ -2,7 +2,8 @@ const target = process.env.LIGHTHOUSE_TARGET === 'production' ? 'production' : '
 const profile = process.env.LIGHTHOUSE_PROFILE === 'mobile' ? 'mobile' : 'desktop';
 
 const isProduction = target === 'production';
-const baseUrl = isProduction ? 'https://djzeneyer.com' : 'http://127.0.0.1:4173';
+const productionBaseUrl = process.env.LIGHTHOUSE_URL || 'https://djzeneyer.com';
+const baseUrl = isProduction ? productionBaseUrl : 'http://127.0.0.1:4173';
 
 const urls = [
   '/',

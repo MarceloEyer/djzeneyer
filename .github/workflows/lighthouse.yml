@@ -32,6 +32,21 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
+      - name: Verify production URLs
+        env:
+          LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
+          LIGHTHOUSE_TARGET: production
+          LIGHTHOUSE_URL: ${{ vars.LIGHTHOUSE_URL || 'https://djzeneyer.com' }}
+        run: |
+          node -e "const config = require('./lighthouserc.cjs'); console.log(config.ci.collect.url.join('\n'))" > /tmp/lighthouse-urls.txt
+          while IFS= read -r url; do
+            echo "Checking ${url}"
+            curl --fail --location --show-error --silent \
+              --retry 5 --retry-delay 10 \
+              --output /dev/null \
+              "${url}"
+          done < /tmp/lighthouse-urls.txt
+
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
@@ -42,6 +57,7 @@ jobs:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
           LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
           LIGHTHOUSE_TARGET: production
+          LIGHTHOUSE_URL: ${{ vars.LIGHTHOUSE_URL || 'https://djzeneyer.com' }}
 
       - name: Summarize Lighthouse warnings
         if: always()
