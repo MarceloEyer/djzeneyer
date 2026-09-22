@@ -4,7 +4,9 @@ const profile = process.env.LIGHTHOUSE_PROFILE === 'mobile' ? 'mobile' : 'deskto
 const isProduction = target === 'production';
 const productionBaseUrl = process.env.LIGHTHOUSE_URL || 'https://djzeneyer.com';
 const baseUrl = isProduction ? productionBaseUrl : 'http://127.0.0.1:4173';
-const runCacheKey = process.env.GITHUB_RUN_ID || 'local';
+const runCacheKey = [process.env.GITHUB_RUN_ID, process.env.GITHUB_RUN_ATTEMPT]
+  .filter(Boolean)
+  .join('-') || 'local';
 
 const urls = [
   '/',
