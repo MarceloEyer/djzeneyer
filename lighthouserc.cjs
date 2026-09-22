@@ -10,7 +10,7 @@ const urls = [
   '/pt/eventos-zouk/',
   '/releases/',
   '/zouk-music/',
-  '/shop/',
+  '/shop/?lhci=1',
 ].map((path) => new URL(path, baseUrl).toString());
 
 const settings = profile === 'desktop'
@@ -55,10 +55,13 @@ module.exports = {
         deprecations: ['warn', { minScore: 1 }],
         'errors-in-console': ['error', { minScore: 1 }],
         'image-alt': ['error', { minScore: 1 }],
+        'image-delivery-insight': ['warn', { minScore: 0.9 }],
+        'image-size-responsive': ['warn', { minScore: 0.9 }],
         'inspector-issues': ['warn', { minScore: 0.9 }],
         'label-content-name-mismatch': ['warn', { minScore: 1 }],
         'link-name': ['error', { minScore: 1 }],
         redirects: ['warn', { minScore: 1 }],
+        'target-size': ['warn', { minScore: 0.9 }],
         'uses-responsive-images': ['warn', { minScore: 1 }],
         'bf-cache': ['warn', { minScore: 0.9 }],
         'cls-culprits-insight': ['warn', { minScore: 1 }],
