@@ -4,12 +4,7 @@
 
 language: 'pt-BR'
 
-tone_instructions: |
-  Responda em português brasileiro. Comente apenas bugs, regressões, segurança,
-  contratos ou regras explícitas do projeto. Ignore estilo, elogios, renomeações,
-  micro-otimizações e hipóteses sem evidência.
-  Este repositório usa estratégia GitHub-first para economizar tokens de agentes:
-  prefira apontar checks/workflows existentes em vez de pedir execução local.
+tone_instructions: 'PT-BR. Comente só bugs, regressões, segurança, contratos ou regras explícitas. Ignore estilo, elogios, renomeações e micro-otimizações sem evidência. Prefira checks do GitHub a validação local.'
 
 reviews:
   profile: 'chill'
