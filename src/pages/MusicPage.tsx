@@ -249,9 +249,9 @@ const MusicPage: React.FC = () => {
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <Download size={160} />
               </div>
-              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
+              <h2 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
                 <Download className="text-error" /> {t('music.steal_button')}
-              </h3>
+              </h2>
               <p className="text-text/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
               <button
                 onClick={() => handleTrackInteraction('download_hub', 0, 'https://download.djzeneyer.com')}
@@ -271,9 +271,9 @@ const MusicPage: React.FC = () => {
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <Coffee size={160} />
               </div>
-              <h3 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
+              <h2 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
                 <Coffee className="text-primary" /> {t('music.support_button')}
-              </h3>
+              </h2>
               <p className="text-text/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
               <Link
                 to={getLocalizedRoute('support', currentLang)}

@@ -37,6 +37,10 @@
     "switzerland": "Switzerland",
     "united_states": "United States"
   },
+  "carousel": {
+    "previous": "Previous products",
+    "next": "Next products"
+  },
   "dashboard": {
     "loading": "Syncing with the Zen Universe...",
     "error_loading": "Could not load your dashboard data.",
