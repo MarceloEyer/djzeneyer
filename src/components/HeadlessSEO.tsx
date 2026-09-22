@@ -249,6 +249,9 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
   const finalImageHeight = imageHeight ?? OG_IMAGE_HEIGHT;
   const finalImageType = getOpenGraphImageType(finalImage);
   const finalOpenGraphType = type === 'website' && events?.length === 1 ? 'event' : type;
+  const safeCanonicalUrl = safeUrl(finalUrl, '/');
+  const safeOpenGraphImage = safeUrl(finalImage, defaultImage);
+  const safeMusicGroupUrl = safeUrl(`${baseUrl}/#musicgroup`, '/#musicgroup');
 
   const shouldNoIndex = data?.noindex || noindex;
   const robotsContent = robots || (shouldNoIndex ? 'noindex, nofollow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1');
@@ -422,7 +425,7 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       {/* Basic SEO */}
       <title>{finalTitle}</title>
       <meta name="description" content={metaDescription} />
-      <link rel="canonical" href={finalUrl} />
+      <link rel="canonical" href={safeCanonicalUrl} />
       {keywords && <meta name="keywords" content={keywords} />}
       <meta name="author" content={artist.identity.stageName} />
       <meta name="creator" content={artist.identity.fullName} />
@@ -440,11 +443,11 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta property="og:type" content={finalOpenGraphType} />
       <meta property="og:title" content={finalOpenGraphTitle} />
       <meta property="og:description" content={openGraphDescription} />
-      <meta property="og:url" content={finalUrl} />
+      <meta property="og:url" content={safeCanonicalUrl} />
 
       {/* Garante que as imagens sempre apareçam */}
-      {finalImage && <meta property="og:image" content={finalImage} />}
-      {finalImage && finalImage.startsWith('https://') && <meta property="og:image:secure_url" content={finalImage} />}
+      {safeOpenGraphImage && <meta property="og:image" content={safeOpenGraphImage} />}
+      {safeOpenGraphImage && safeOpenGraphImage.startsWith('https://') && <meta property="og:image:secure_url" content={safeOpenGraphImage} />}
       {finalImage && <meta property="og:image:alt" content={finalImageAlt} />}
       {finalImageType && <meta property="og:image:type" content={finalImageType} />}
       {finalImage && <meta property="og:image:width" content={String(finalImageWidth)} />}
@@ -460,16 +463,19 @@ export const HeadlessSEO = React.memo<HeadlessSEOProps>(({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalOpenGraphTitle} />
       <meta name="twitter:description" content={openGraphDescription} />
-      <meta name="twitter:image" content={finalImage} />
+      <meta name="twitter:image" content={safeOpenGraphImage} />
       <meta name="twitter:image:alt" content={finalImageAlt} />
       <meta name="twitter:site" content="@djzeneyer" />
       <meta name="twitter:creator" content="@djzeneyer" />
-      {finalOpenGraphType.startsWith('music.') && <meta property="music:musician" content={`${baseUrl}/#musicgroup`} />}
+      {finalOpenGraphType.startsWith('music.') && <meta property="music:musician" content={safeMusicGroupUrl} />}
 
       {/* Hreflang Tags */}
-      {computedHrefLang.map(({ lang, url: hrefUrl }) => (
-        <link key={lang} rel="alternate" hrefLang={lang} href={safeUrl(hrefUrl, '/')} />
-      ))}
+      {computedHrefLang.map(({ lang, url: hrefUrl }) => {
+        const safeHrefUrl = safeUrl(hrefUrl, '/');
+        return safeHrefUrl !== '/' ? (
+          <link key={lang} rel="alternate" hrefLang={lang} href={safeHrefUrl} />
+        ) : null;
+      })}
 
       <link rel="me" href={safeUrl(artist.identifiers.wikidataUrl, '/')} />
       <link rel="me" href={safeUrl(artist.identifiers.musicbrainzUrl, '/')} />
