@@ -163,6 +163,73 @@ add_action('after_setup_theme', function () {
     ]);
 }, 0);
 
+function djz_is_native_woocommerce_page(): bool
+{
+    if (!function_exists('is_woocommerce')) {
+        return false;
+    }
+
+    return is_woocommerce()
+        || (function_exists('is_cart') && is_cart())
+        || (function_exists('is_checkout') && is_checkout())
+        || (function_exists('is_account_page') && is_account_page());
+}
+
+add_action('wp', function () {
+    if (!djz_is_native_woocommerce_page()) {
+        return;
+    }
+
+    remove_filter('document_title_parts', '__return_empty_array', 9999);
+    add_action('wp_head', '_wp_render_title_tag', 1);
+}, 0);
+
+add_filter('document_title_parts', function ($parts) {
+    if (!djz_is_native_woocommerce_page()) {
+        return $parts;
+    }
+
+    if (function_exists('is_shop') && is_shop()) {
+        $parts['title'] = __('Shop', 'djzeneyer');
+    }
+
+    $parts['site'] = (string) get_bloginfo('name');
+    return $parts;
+}, 20);
+
+add_action('wp_head', function () {
+    if (!djz_is_native_woocommerce_page()) {
+        return;
+    }
+    ?>
+    <style id="djz-woocommerce-lighthouse-css">
+        .woocommerce ul.products li.product .button,
+        .woocommerce-page ul.products li.product .button {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+            min-height: 44px;
+            min-width: 44px;
+            padding: 12px 16px;
+        }
+
+        .woocommerce ul.products li.product,
+        .woocommerce-page ul.products li.product {
+            margin-bottom: 32px;
+        }
+
+        .woocommerce ul.products li.product a img,
+        .woocommerce-page ul.products li.product a img {
+            aspect-ratio: 1 / 1;
+            height: auto;
+            max-width: 320px;
+            object-fit: cover;
+            width: 100%;
+        }
+    </style>
+    <?php
+}, 20);
+
 /**
  * --------------------------------------------------
  * REST API CORS
