@@ -1,0 +1,10 @@
+version: v1.25.0
+ignore:
+  SNYK-JS-URIJS-19963963:
+    - 'eslint > ajv > uri-js':
+        reason: 'Dev-only ESLint dependency. Snyk reports no fixed uri-js version yet; not shipped to production.'
+        expires: '2027-01-21T00:00:00.000Z'
+  SNYK-JS-URIJS-19963961:
+    - 'eslint > ajv > uri-js':
+        reason: 'Dev-only ESLint dependency. Snyk reports no fixed uri-js version yet; not shipped to production.'
+        expires: '2027-01-21T00:00:00.000Z'
