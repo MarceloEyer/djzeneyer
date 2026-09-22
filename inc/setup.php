@@ -201,6 +201,9 @@ add_action('wp_head', function () {
     if (!djz_is_native_woocommerce_page()) {
         return;
     }
+
+    $description = __('Official Zen Eyer shop for Brazilian Zouk music, event tickets, digital releases, and selected artist products.', 'djzeneyer');
+    echo '<meta name="description" content="' . esc_attr($description) . '">' . "\n";
     ?>
     <style id="djz-woocommerce-lighthouse-css">
         .woocommerce ul.products li.product .button,
