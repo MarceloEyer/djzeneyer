@@ -55,6 +55,7 @@ module.exports = {
         deprecations: ['warn', { minScore: 1 }],
         'errors-in-console': ['error', { minScore: 1 }],
         'image-alt': ['error', { minScore: 1 }],
+        'inspector-issues': ['warn', { minScore: 0.9 }],
         'label-content-name-mismatch': ['warn', { minScore: 1 }],
         'link-name': ['error', { minScore: 1 }],
         redirects: ['warn', { minScore: 1 }],

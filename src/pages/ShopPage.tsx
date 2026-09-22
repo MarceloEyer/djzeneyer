@@ -194,7 +194,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
                 disabled={isAddingToCart || !isInStock}
                 aria-busy={isAddingToCart}
                 aria-label={t('shop.add_to_cart')}
-                className={`w-8 h-8 rounded-full bg-text text-background flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-text/80'
+                className={`h-11 w-11 rounded-full bg-text text-background flex items-center justify-center transition-all ${(isAddingToCart || !isInStock) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-text/80'
                   }`}
                 title={t('shop.add_to_cart')}
               >
@@ -202,7 +202,7 @@ const ProductCard = memo(({ product, formatPrice, onAddToCart, isAddingToCart, g
               </button>
               <Link
                 to={productPath}
-                className="h-8 rounded-full bg-text/10 text-text flex items-center justify-center gap-1.5 px-3 hover:bg-text/20 transition-colors border border-border/20 text-[10px] font-bold uppercase tracking-widest"
+                className="min-h-11 rounded-full bg-text/10 text-text flex items-center justify-center gap-1.5 px-4 hover:bg-text/20 transition-colors border border-border/20 text-[10px] font-bold uppercase tracking-widest"
                 title={t('shop.product_details')}
               >
                 <Plus size={16} />
@@ -315,6 +315,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => scroll('left')}
+              aria-label={t('carousel.previous', 'Previous products')}
               className="absolute left-0 top-0 bottom-0 z-40 bg-background/40 hover:bg-background/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
               <ChevronLeft size={48} className="text-text group-hover/btn:scale-125 transition-transform" />
@@ -327,6 +328,7 @@ const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProduct
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => scroll('right')}
+              aria-label={t('carousel.next', 'Next products')}
               className="absolute right-0 top-0 bottom-0 z-40 bg-background/40 hover:bg-background/60 w-12 md:w-16 flex items-center justify-center group/btn"
             >
               <ChevronRight size={48} className="text-text group-hover/btn:scale-125 transition-transform" />
@@ -483,13 +485,23 @@ const ShopPage: React.FC = () => {
     ],
   }), [canonicalUrl, getProductPath, t, visibleProducts]);
 
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-background text-text">
-      <Loader2 className="animate-spin text-primary" size={48} />
-    </div>
-  );
-
   // Removed the `if (error)` block as error handling is now per-query and not aggregated in a single `error` state.
+
+  if (loading) return (
+    <>
+      <HeadlessSEO
+        title={`${t('shop.page_title')} | ${t('common.artist_name')}`}
+        description={t('shop.page_meta_desc')}
+        url={canonicalUrl}
+        image="/images/og/zen-eyer-shop-og.jpg"
+        imageAlt={t('og.image_alt.shop')}
+        schema={shopSchema}
+      />
+      <div className="min-h-screen flex items-center justify-center bg-background text-text">
+        <Loader2 className="animate-spin text-primary" size={48} />
+      </div>
+    </>
+  );
 
   return (
     <div className="min-h-screen bg-background text-text relative overflow-x-clip">

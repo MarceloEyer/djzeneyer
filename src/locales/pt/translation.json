@@ -37,6 +37,10 @@
     "switzerland": "Suíça",
     "united_states": "Estados Unidos"
   },
+  "carousel": {
+    "previous": "Produtos anteriores",
+    "next": "Próximos produtos"
+  },
   "dashboard": {
     "loading": "Sincronizando com o Universo Zen...",
     "error_loading": "Não foi possível carregar os dados do painel.",
