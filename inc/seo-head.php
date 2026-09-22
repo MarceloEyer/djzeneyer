@@ -12,6 +12,7 @@ function djz_frontend_url(string $path = '/'): string
 
 add_action('wp_head', function () {
     if (is_admin()) return;
+    if (function_exists('djz_is_native_woocommerce_page') && djz_is_native_woocommerce_page()) return;
 
     $base_url = untrailingslashit(home_url());
     $path = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
