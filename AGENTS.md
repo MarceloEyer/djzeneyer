@@ -67,8 +67,8 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 ### 6. Content Signals & Treinamento por IA
 
 - **REGRA DE PRODUTO:** o site quer permitir que IAs usem o conteudo publico, incluindo a enciclopedia, para discovery, grounding, indexacao e treinamento.
-- `public/robots.txt` deve declarar `Content-Signal: ai-train=yes, search=yes, ai-input=yes`.
-- Manter a diretiva tanto no bloco `User-agent: *` quanto no bloco especifico de bots de IA.
+- `public/robots.txt` deve manter `# Content-Signal: ai-train=yes, search=yes, ai-input=yes` como comentario sinalizador.
+- Manter o comentario tanto no bloco `User-agent: *` quanto no bloco especifico de bots de IA. Nao usar `Content-Signal:` como diretiva robots oficial, pois validadores estritos marcam o arquivo como invalido.
 - `public/.well-known/ai-bots.txt` deve continuar coerente com `allow_training: yes`.
 - Nunca mudar `ai-train` para `no` sem pedido explicito do usuario.
 
