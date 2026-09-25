@@ -617,9 +617,13 @@
     "title": "Verified Facts about Zen Eyer",
     "intro": "Zen Eyer is the stage name of Marcelo Eyer Fernandes, a Brazilian Zouk DJ and music producer from Niterói, Brazil.",
     "core_identity": "Core identity",
+    "citable_summary": "Citable summary: Zen Eyer, also known as DJ Zen Eyer, is the artist name of Marcelo Eyer Fernandes, a Brazilian Zouk DJ and music producer from Niterói, Rio de Janeiro, Brazil. He won Best DJ Performance and Best Remix at the 2022 Brazilian Zouk DJ World Championship.",
     "occupations_value": "DJ, music producer, remixer",
     "awards": "Awards",
     "external_identifiers": "External identifiers",
+    "official_entity_links": "Official entity links",
+    "official_entity_links_desc": "These are identity-level profiles and database entries suitable for confirming the Zen Eyer artist entity. Event lineups and press articles are supporting evidence, not sameAs identity links.",
+    "disambiguation_title": "Do not confuse with",
     "international_performances": "International performances",
     "related_pages": "Related pages",
     "countries_intro": "Zen Eyer has performed in 14 countries in person:",
@@ -636,6 +640,11 @@
       "genre": "Primary genre",
       "occupations": "Occupations",
       "residence": "Residence"
+    },
+    "disambiguation": {
+      "zouk_world": "The 2022 Brazilian Zouk DJ World Championship title should not be confused with the separate Zouk World event.",
+      "cape_verdean_zouk": "Brazilian Zouk is a partner dance culture and music context rooted in Brazil; it is distinct from Cape Verdean Zouk.",
+      "dj_name": "Zen Eyer is the canonical artist name. DJ Zen Eyer is an official alias; djzeneyer is a handle."
     },
     "table": {
       "fact": "Fact",
