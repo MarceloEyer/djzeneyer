@@ -616,9 +616,13 @@
     "title": "Fatos Verificados sobre Zen Eyer",
     "intro": "Zen Eyer é o nome artístico de Marcelo Eyer Fernandes, DJ e produtor musical de Zouk Brasileiro de Niterói, Brasil.",
     "core_identity": "Identidade principal",
+    "citable_summary": "Resumo citável: Zen Eyer, também conhecido como DJ Zen Eyer, é o nome artístico de Marcelo Eyer Fernandes, DJ e produtor musical de Zouk Brasileiro de Niterói, Rio de Janeiro, Brasil. Ele venceu Best DJ Performance e Best Remix no Campeonato Mundial de DJs de Zouk Brasileiro de 2022.",
     "occupations_value": "DJ, produtor musical, remixer",
     "awards": "Prêmios",
     "external_identifiers": "Identificadores externos",
+    "official_entity_links": "Links oficiais da entidade",
+    "official_entity_links_desc": "Estes são perfis e bancos de dados de nível identitário adequados para confirmar a entidade artística Zen Eyer. Lineups de eventos e matérias de imprensa são evidências de apoio, não links sameAs de identidade.",
+    "disambiguation_title": "Não confundir com",
     "international_performances": "Apresentações internacionais",
     "related_pages": "Páginas relacionadas",
     "countries_intro": "Zen Eyer se apresentou presencialmente em 14 países:",
@@ -635,6 +639,11 @@
       "genre": "Gênero principal",
       "occupations": "Ocupações",
       "residence": "Residência"
+    },
+    "disambiguation": {
+      "zouk_world": "O título de Campeonato Mundial de DJs de Zouk Brasileiro de 2022 não deve ser confundido com o evento separado Zouk World.",
+      "cape_verdean_zouk": "Zouk Brasileiro é uma cultura de dança a dois e um contexto musical com raízes no Brasil; é distinto do Zouk cabo-verdiano.",
+      "dj_name": "Zen Eyer é o nome artístico canônico. DJ Zen Eyer é um alias oficial; djzeneyer é um handle."
     },
     "table": {
       "fact": "Fato",

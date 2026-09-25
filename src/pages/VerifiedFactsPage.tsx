@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ExternalLink, ShieldCheck } from 'lucide-react';
 import { Breadcrumb } from '../components/Breadcrumb';
 import { HeadlessSEO } from '../components/HeadlessSEO';
 import { ARTIST } from '../data/artistData';
@@ -33,6 +33,16 @@ const FACT_ROWS = [
   ['award_remix', 'verified_facts.facts.award_remix_value', 'verified_facts.facts.award_source', 'P166'],
   ['award_performance', 'verified_facts.facts.award_performance_value', 'verified_facts.facts.award_source', 'P166'],
   ['residence', 'Niterói, RJ', 'Official site', 'P551'],
+] as const;
+
+const OFFICIAL_IDENTITY_LINKS = [
+  ['Wikidata', ARTIST.identifiers.wikidataUrl],
+  ['MusicBrainz', ARTIST.identifiers.musicbrainzUrl],
+  ['ISNI', `https://isni.org/isni/${ARTIST.identity.isni.replace(/\s/g, '')}`],
+  ['Discogs', ARTIST.identifiers.discogsUrl],
+  ['Spotify', ARTIST.social.spotify.url],
+  ['Apple Music', ARTIST.social.appleMusic.url],
+  ['YouTube', ARTIST.social.YouTube.url],
 ] as const;
 
 const VerifiedFactsPage: React.FC = () => {
@@ -96,6 +106,9 @@ const VerifiedFactsPage: React.FC = () => {
 
           <section className="mb-10 rounded-2xl border border-border/10 bg-surface/35 p-6">
             <h2 className="mb-4 font-display text-2xl font-black">{t('verified_facts.core_identity')}</h2>
+            <p className="mb-5 max-w-3xl text-sm leading-relaxed text-text/75">
+              {t('verified_facts.citable_summary')}
+            </p>
             <dl className="grid gap-4 sm:grid-cols-2">
               {[
                 ['canonical', ARTIST.identity.stageName],
@@ -114,6 +127,15 @@ const VerifiedFactsPage: React.FC = () => {
                 </div>
               ))}
             </dl>
+          </section>
+
+          <section className="mb-10 rounded-2xl border border-primary/20 bg-primary/5 p-6">
+            <h2 className="mb-4 font-display text-2xl font-black">{t('verified_facts.disambiguation_title')}</h2>
+            <ul className="space-y-3 text-sm leading-relaxed text-text/75">
+              <li>{t('verified_facts.disambiguation.zouk_world')}</li>
+              <li>{t('verified_facts.disambiguation.cape_verdean_zouk')}</li>
+              <li>{t('verified_facts.disambiguation.dj_name')}</li>
+            </ul>
           </section>
 
           <section className="mb-10 overflow-hidden rounded-2xl border border-border/10 bg-surface/35">
@@ -158,6 +180,26 @@ const VerifiedFactsPage: React.FC = () => {
                 <li>Spotify Artist ID: {ARTIST.social.spotify.id}</li>
               </ul>
             </div>
+          </section>
+
+          <section className="mt-10 rounded-2xl border border-border/10 bg-surface/35 p-6">
+            <h2 className="mb-4 font-display text-2xl font-black">{t('verified_facts.official_entity_links')}</h2>
+            <p className="mb-5 text-sm leading-relaxed text-text/75">{t('verified_facts.official_entity_links_desc')}</p>
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {OFFICIAL_IDENTITY_LINKS.map(([label, url]) => (
+                <li key={label}>
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex min-h-12 items-center justify-between gap-3 rounded-xl border border-border/10 bg-text/[0.03] px-4 py-3 text-sm font-bold text-text/80 transition-colors hover:border-primary/40 hover:text-primary"
+                  >
+                    <span>{label}</span>
+                    <ExternalLink size={14} aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </section>
 
           <section className="mt-10 rounded-2xl border border-border/10 bg-surface/35 p-6">
