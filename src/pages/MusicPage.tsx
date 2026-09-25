@@ -83,6 +83,7 @@ const MusicPage: React.FC = () => {
   const { user } = useUser();
   const currentLang = normalizeLanguage(i18n.language);
   const prefersReducedMotion = useReducedMotion();
+  const enableEntryMotion = !prefersReducedMotion;
   const trackInteraction = useTrackInteraction(user?.token);
 
   const handleTrackInteraction = (action: string, objectId?: number, url?: string) => {
@@ -162,57 +163,57 @@ const MusicPage: React.FC = () => {
         imageAlt={t('og.image_alt.music')}
         schema={musicListingSchema}
       />
-      <div className="min-h-screen bg-background text-text pt-24 pb-20">
+      <div className="min-h-screen bg-background text-text pt-20 sm:pt-24 pb-20">
         <div className="container mx-auto px-4 max-w-5xl">
-          <Breadcrumb items={[{ label: t('nav.music') }]} className="mb-8" />
+          <Breadcrumb items={[{ label: t('nav.music') }]} className="mb-6 sm:mb-8" />
 
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 sm:mb-16">
             <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
-              className="mb-6"
+              initial={enableEntryMotion ? { opacity: 0, y: 12 } : false}
+              animate={enableEntryMotion ? { opacity: 1, y: 0 } : undefined}
+              className="mb-4 sm:mb-6"
             >
-              <h1 className="text-3xl sm:text-5xl md:text-8xl font-black font-display tracking-tighter uppercase">
+              <h1 className="mx-auto max-w-[12ch] text-[clamp(2.4rem,14vw,4.75rem)] leading-[0.95] sm:max-w-none sm:text-5xl md:text-8xl font-black font-display tracking-normal sm:tracking-tighter uppercase">
                 <Trans i18nKey="music.hub_title_rich">
                   <span className="text-primary">Streaming</span> Hub
                 </Trans>
               </h1>
             </motion.div>
             <motion.p
-              initial={prefersReducedMotion ? false : { opacity: 0 }}
-              animate={prefersReducedMotion ? undefined : { opacity: 1 }}
-              transition={prefersReducedMotion ? undefined : { delay: 0.2 }}
-              className="text-xl text-text/60"
+              initial={enableEntryMotion ? { opacity: 0 } : false}
+              animate={enableEntryMotion ? { opacity: 1 } : undefined}
+              transition={enableEntryMotion ? { delay: 0.15 } : undefined}
+              className="mx-auto max-w-2xl text-base leading-relaxed text-text/75 sm:text-xl sm:text-text/60"
             >
               {t('music.hub_subtitle')}
             </motion.p>
           </div>
 
-          <div className="space-y-6 mb-16">
+          <div className="space-y-4 sm:space-y-6 mb-12 sm:mb-16">
             {/* Spotify - Featured Hero */}
             <motion.button
               variants={SPOTIFY_VARIANTS}
-              initial={prefersReducedMotion ? false : 'hidden'}
-              animate={prefersReducedMotion ? undefined : 'visible'}
+              initial={enableEntryMotion ? 'hidden' : false}
+              animate={enableEntryMotion ? 'visible' : undefined}
               onClick={() => handleTrackInteraction('spotify_hub', 0, SPOTIFY_PLATFORM.url)}
-              className="w-full flex items-center justify-between p-5 sm:p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
+              className="min-h-[104px] w-full flex items-center justify-between p-4 sm:min-h-[136px] sm:p-8 bg-[#1DB954]/10 border border-[#1DB954]/30 rounded-2xl sm:rounded-[2rem] transition-all duration-500 group relative overflow-hidden active:scale-[0.98] shadow-2xl shadow-[#1DB954]/10 hover:shadow-[#1DB954]/20"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-[#1DB954]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <div className="flex items-center gap-6 relative z-10">
-                <div className="w-16 h-16 flex items-center justify-center bg-[#1DB954] text-pureBlack rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
+              <div className="flex min-w-0 items-center gap-4 sm:gap-6 relative z-10">
+                <div className="w-14 h-14 sm:w-16 sm:h-16 flex shrink-0 items-center justify-center bg-[#1DB954] text-pureBlack rounded-full shadow-lg group-hover:scale-110 transition-transform duration-500">
                   <SpotifyIcon />
                 </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xl sm:text-2xl md:text-4xl font-black font-display uppercase tracking-[0.2em] text-[#1DB954]">
+                <div className="flex min-w-0 flex-col text-left">
+                  <span className="break-words text-lg sm:text-2xl md:text-4xl font-black font-display uppercase tracking-[0.12em] sm:tracking-[0.2em] text-[#1DB954]">
                     {SPOTIFY_PLATFORM.name}
                   </span>
-                  <span className="text-sm md:text-base font-bold uppercase tracking-[0.3em] text-text mt-1 opacity-90 transition-opacity group-hover:opacity-100">
+                  <span className="text-xs sm:text-sm md:text-base font-bold uppercase tracking-[0.18em] sm:tracking-[0.3em] text-text mt-1 opacity-95 transition-opacity group-hover:opacity-100">
                     {t('music.listen_now')}
                   </span>
                 </div>
               </div>
-              <div className="flex items-center gap-4 relative z-10">
-                <ExternalLink size={24} className="text-[#1DB954] group-hover:text-text transition-colors" />
+              <div className="flex shrink-0 items-center gap-4 relative z-10">
+                <ExternalLink size={22} className="text-[#1DB954] group-hover:text-text transition-colors" />
               </div>
             </motion.button>
 
@@ -223,10 +224,10 @@ const MusicPage: React.FC = () => {
                   key={platform.name}
                   custom={index}
                   variants={SECONDARY_ITEM_VARIANTS}
-                  initial={prefersReducedMotion ? false : 'hidden'}
-                  animate={prefersReducedMotion ? undefined : 'visible'}
+                  initial={enableEntryMotion ? 'hidden' : false}
+                  animate={enableEntryMotion ? 'visible' : undefined}
                   onClick={() => handleTrackInteraction(`${platform.name.toLowerCase().replace(' ', '_')}_hub`, 0, platform.url)}
-                  className={`w-full flex items-center justify-between p-5 bg-surface/30 border rounded-2xl transition-all duration-300 group ${platform.color}`}
+                  className={`min-h-[72px] w-full flex items-center justify-between p-5 bg-surface/40 border rounded-2xl transition-all duration-300 group ${platform.color}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-8 flex justify-center opacity-70 group-hover:opacity-100 transition-opacity">{platform.icon}</div>
@@ -242,8 +243,8 @@ const MusicPage: React.FC = () => {
             {/* Download / Grab & Go Card */}
             <motion.div
               variants={CARD_VARIANTS(0.7)}
-              initial={prefersReducedMotion ? false : 'hidden'}
-              animate={prefersReducedMotion ? undefined : 'visible'}
+              initial={enableEntryMotion ? 'hidden' : false}
+              animate={enableEntryMotion ? 'visible' : undefined}
               className="bg-error/5 border border-error/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -252,7 +253,7 @@ const MusicPage: React.FC = () => {
               <h2 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
                 <Download className="text-error" /> {t('music.steal_button')}
               </h2>
-              <p className="text-text/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
+              <p className="text-text/75 sm:text-text/60 mb-8 max-w-xs">{t('music.steal_desc')}</p>
               <button
                 onClick={() => handleTrackInteraction('download_hub', 0, 'https://download.djzeneyer.com')}
                 className="inline-flex items-center gap-2 bg-error hover:bg-error/80 text-text font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-error/20"
@@ -264,8 +265,8 @@ const MusicPage: React.FC = () => {
             {/* Support / Coffee Card */}
             <motion.div
               variants={CARD_VARIANTS(0.8)}
-              initial={prefersReducedMotion ? false : 'hidden'}
-              animate={prefersReducedMotion ? undefined : 'visible'}
+              initial={enableEntryMotion ? 'hidden' : false}
+              animate={enableEntryMotion ? 'visible' : undefined}
               className="bg-primary/5 border border-primary/10 rounded-3xl p-5 sm:p-8 relative overflow-hidden group"
             >
               <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -274,7 +275,7 @@ const MusicPage: React.FC = () => {
               <h2 className="text-2xl font-black font-display mb-4 flex items-center gap-3">
                 <Coffee className="text-primary" /> {t('music.support_button')}
               </h2>
-              <p className="text-text/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
+              <p className="text-text/75 sm:text-text/60 mb-8 max-w-xs">{t('music.support_desc')}</p>
               <Link
                 to={getLocalizedRoute('support', currentLang)}
                 className="inline-flex items-center gap-2 bg-primary hover:brightness-110 text-[rgb(var(--color-primary-fg))] font-black px-8 py-3 rounded-full transition-all hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
@@ -291,7 +292,7 @@ const MusicPage: React.FC = () => {
                   <h2 id="music-releases-title" className="text-2xl font-black font-display text-text">
                     {t('music.releases_title')}
                   </h2>
-                  <p className="mt-1 text-sm text-text/50">{t('music.releases_subtitle')}</p>
+                  <p className="mt-1 text-sm text-text/70 sm:text-text/50">{t('music.releases_subtitle')}</p>
                 </div>
                 <Link to={getLocalizedRoute('news', currentLang)} className="inline-flex items-center gap-2 text-sm font-bold text-primary hover:text-primary/80">
                   {t('music.releases_archive_link')}
@@ -309,7 +310,7 @@ const MusicPage: React.FC = () => {
                       <div className="mb-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold uppercase tracking-wider text-primary">
                         <span>{t(`music.release_type.${release.type}`, { defaultValue: release.type })}</span>
                         {release.releaseDate && (
-                          <span className="text-text/40">
+                          <span className="text-text/60 sm:text-text/40">
                             {formatReleaseListDate(release.releaseDate, currentLang)}
                           </span>
                         )}
