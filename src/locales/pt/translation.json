@@ -878,15 +878,17 @@
     }
   },
   "not_found": {
-    "title": "Batida Não Encontrada",
-    "description": "A página que você está procurando não existe.",
-    "text": "A faixa que você está procurando parece ter sido remixada ou movida para outra frequência.",
-    "home": "Início",
-    "music": "Música",
-    "events": "Eventos",
-    "tribe": "Zen Tribe",
-    "cta": "Voltar para o Início"
-  },
+      "kicker": "Perdido na pista",
+      "title": "Esse link saiu do ritmo",
+      "description": "A página que você está procurando não existe.",
+      "text": "A página que você procurava pode ter sido remixada, renomeada ou movida para outra frequência. Escolha um novo caminho e a música continua.",
+      "home": "Início",
+      "music": "Música",
+      "events": "Eventos",
+      "links": "Links Oficiais",
+      "tribe": "Zen Tribe",
+      "cta": "Voltar para o Início"
+    },
   "presskit": {
     "download_page_title": "Press Kit em PDF",
     "download_page_desc": "Download direto do press kit oficial de Zen Eyer em PDF.",
