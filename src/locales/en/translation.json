@@ -881,15 +881,17 @@
     }
   },
   "not_found": {
-    "title": "Beat Not Found",
-    "description": "The page you are looking for does not exist.",
-    "text": "The track you're looking for seems to have been remixed or moved to another frequency.",
-    "home": "Home",
-    "music": "Music",
-    "events": "Events",
-    "tribe": "Zen Tribe",
-    "cta": "Back to Homepage"
-  },
+      "kicker": "Lost on the dance floor",
+      "title": "This link slipped off the beat",
+      "description": "The page you are looking for does not exist.",
+      "text": "The page you were looking for may have been remixed, renamed, or moved to another frequency. Choose a fresh path and the music keeps going.",
+      "home": "Home",
+      "music": "Music",
+      "events": "Events",
+      "links": "Official Links",
+      "tribe": "Zen Tribe",
+      "cta": "Back to Homepage"
+    },
   "presskit": {
     "download_page_title": "Press Kit PDF",
     "download_page_desc": "Direct download of DJ Zen Eyer's official press kit PDF.",
