@@ -25,6 +25,7 @@ Please **do not** open a public issue on GitHub for security vulnerabilities. We
 -   **Dependency Scanning**: Dependabot is active and monitored.
 -   **JWT Auth**: We follow industry standards for JWT implementation in the `zeneyer-auth` plugin. The signing secret belongs in `wp-config.php` (`ZENEYER_JWT_SECRET`); tokens carry only the user ID and never authenticate privileged accounts on third-party namespaces (`wc/v3`, `mailpoet/v1`).
 -   **Abuse protection**: Login, registration, Google login, token refresh and password reset/set are rate limited per client IP. Proxy headers are trusted only from Cloudflare and configured proxies.
+-   **Account enumeration**: Registration can be switched to a uniform response (`ZENEYER_AUTH_UNIFORM_REGISTRATION`); login and password reset already answer identically for unknown accounts.
 -   **CORS**: Only explicitly allowed origins receive credentialed CORS headers.
 
 ## Dependencies and updates

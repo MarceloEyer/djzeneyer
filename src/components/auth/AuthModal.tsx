@@ -68,6 +68,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   // --- Validação ---
@@ -122,7 +123,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
       if (mode === 'login') {
         await login(email, password);
       } else {
-        await register(username.trim(), email, password, turnstileToken);
+        const outcome = await register(username.trim(), email, password, turnstileToken);
+        if (outcome === 'pending') {
+          // Server sent an activation e-mail instead of opening a session.
+          setNotice(t('auth.register.check_email'));
+          setTurnstileToken('');
+          setMode('login');
+          return;
+        }
       }
 
       if (onSuccess) onSuccess();
@@ -163,6 +171,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
   const switchMode = () => {
     setMode(mode === 'login' ? 'register' : 'login');
     setError('');
+    setNotice('');
     setFormErrors({});
     setTurnstileToken('');
   };
@@ -231,6 +240,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
                   <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </motion.div>
+              )}
+
+              {notice && (
+                <div
+                  role="status"
+                  className="mb-6 p-3 bg-primary/10 border border-primary/20 rounded-lg text-text text-sm"
+                >
+                  {notice}
+                </div>
               )}
 
               {isLoadingSettings ? (

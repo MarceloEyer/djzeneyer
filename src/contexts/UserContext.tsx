@@ -6,6 +6,7 @@ import { fetchAuthSessionFn } from '../hooks/useQueries';
 import {
   authLogin,
   authRegister,
+  isRegisterPending,
   authGoogleLogin,
   authRequestPasswordReset,
   authResetPassword,
@@ -19,7 +20,8 @@ interface UserContextType {
   loadingInitial: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, turnstileToken?: string) => Promise<void>;
+  /** Resolves 'pending' when the server only sent a verification e-mail (no session created). */
+  register: (name: string, email: string, password: string, turnstileToken?: string) => Promise<'authenticated' | 'pending'>;
   googleLogin: (idToken: string) => Promise<void>;
   logout: () => void;
   requestPasswordReset: (email: string) => Promise<void>;
@@ -113,8 +115,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(true);
       setError(null);
       try {
-        const { user: u, token } = await authRegister(name, email, password, turnstileToken);
-        saveSession(u, token);
+        const result = await authRegister(name, email, password, turnstileToken);
+        if (isRegisterPending(result)) {
+          return 'pending' as const;
+        }
+        saveSession(result.user, result.token);
+        return 'authenticated' as const;
       } catch (err) {
         const e = err as Error;
         logger.error('USER_CONTEXT', 'Register error', { error: String(e) });

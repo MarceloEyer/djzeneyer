@@ -242,7 +242,8 @@
       "confirmPasswordPlaceholder": "••••••••",
       "submit": "Create Account",
       "has_account": "Already have an account?",
-      "login_now": "Sign in here"
+      "login_now": "Sign in here",
+      "check_email": "Almost there! If this address can be registered, we sent an e-mail with the next steps. Open the link in it to set your password, then sign in."
     },
     "placeholders": {
       "name": "Your name",

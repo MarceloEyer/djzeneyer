@@ -134,7 +134,7 @@ class Zen_Private_Music {
 		nocache_headers();
 		header('Content-Type: audio/mpeg');
 		header('Content-Length: ' . (string) filesize($file_path));
-		header('Content-Disposition: attachment; filename="' . esc_attr(basename($file_path)) . '"');
+		header('Content-Disposition: attachment; filename="' . str_replace(['"', '\\'], '', sanitize_file_name(basename($file_path))) . '"');
 		header('X-Content-Type-Options: nosniff');
 		readfile($file_path);
 		exit;

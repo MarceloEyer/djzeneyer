@@ -31,7 +31,7 @@ class Admin {
         if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Sem permissão.' );
         check_admin_referer( 'zen_mailer_test' );
 
-        $to   = sanitize_email( $_POST['test_email'] ?? get_option( 'admin_email' ) );
+        $to   = sanitize_email( wp_unslash( $_POST['test_email'] ?? get_option( 'admin_email' ) ) );
         $sent = wp_mail(
             $to,
             '[Zen Mailer] Teste de envio — ' . gmdate( 'Y-m-d H:i:s' ),

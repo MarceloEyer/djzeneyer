@@ -303,8 +303,9 @@ class Zen_SEO_REST_API
     {
         $settings = Zen_SEO_Helpers::get_global_settings();
 
-        // Remove sensitive data from public settings if needed
-        // but keep the endpoint functional for general SEO use
+        // Public by design (feeds the schema/SEO SSOT in the SPA). Add a filter so
+        // fields can be withheld without editing the plugin.
+        $settings = \apply_filters('zen_seo_public_settings', $settings);
 
         return \rest_ensure_response([
             'success' => true,
