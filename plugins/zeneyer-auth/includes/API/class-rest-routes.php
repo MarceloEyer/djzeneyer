@@ -337,14 +337,20 @@ class Rest_Routes
     // Refresh token endpoint
     public static function refresh($request)
     {
-        $refresh_token = $request->get_param('refresh_token');
-        $user_id = $request->get_param('user_id');
+        $rate_check = Rate_Limiter::check('refresh');
+        if (is_wp_error($rate_check)) {
+            return $rate_check;
+        }
 
-        if (empty($refresh_token) || empty($user_id)) {
+        $refresh_token = $request->get_param('refresh_token');
+        $user_id = absint($request->get_param('user_id'));
+
+        if (empty($refresh_token) || !is_string($refresh_token) || empty($user_id)) {
             return new WP_Error('missing_params', 'Refresh token and user ID required', ['status' => 400]);
         }
 
         if (!JWT_Manager::validate_refresh_token($user_id, $refresh_token)) {
+            Rate_Limiter::increment('refresh');
             return new WP_Error('invalid_refresh_token', 'Invalid refresh token', ['status' => 401]);
         }
 
@@ -410,6 +416,15 @@ class Rest_Routes
     // Password reset request
     public static function request_reset($request)
     {
+        $rate_check = Rate_Limiter::check('password_reset');
+        if (is_wp_error($rate_check)) {
+            return $rate_check;
+        }
+
+        // Count every request (not only failures): the endpoint sends e-mail and
+        // always answers the same way, so it must be throttled regardless of outcome.
+        Rate_Limiter::increment('password_reset');
+
         $email = $request->get_param('email');
 
         $result = Password_Auth::request_password_reset($email);
@@ -427,6 +442,11 @@ class Rest_Routes
     // Set new password
     public static function set_password($request)
     {
+        $rate_check = Rate_Limiter::check('password_set');
+        if (is_wp_error($rate_check)) {
+            return $rate_check;
+        }
+
         $key = $request->get_param('key');
         $login = $request->get_param('login');
         $password = $request->get_param('password');
@@ -434,8 +454,11 @@ class Rest_Routes
         $result = Password_Auth::reset_password($key, $login, $password);
 
         if (is_wp_error($result)) {
+            Rate_Limiter::increment('password_set');
             return $result;
         }
+
+        Rate_Limiter::reset('password_set');
 
         return rest_ensure_response([
             'success' => true,

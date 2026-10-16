@@ -78,6 +78,12 @@ class WP_Auth_Integration
             // Verify user exists
             $user = get_userdata($authenticated_user_id);
 
+            // Third-party APIs (wc/v3, mailpoet/v1, ...) must never be reachable with a
+            // JWT issued to a privileged account.
+            if ($user && !self::is_jwt_allowed_for_user($authenticated_user_id)) {
+                return $user_id;
+            }
+
             if ($user) {
                 // Set current user globally
                 wp_set_current_user($authenticated_user_id);
@@ -118,9 +124,9 @@ class WP_Auth_Integration
 
         $decoded = JWT_Manager::validate_token($token);
 
-        // If token is valid, clear authentication errors
+        // If token is valid (and allowed on this route), clear authentication errors
         if (!is_wp_error($decoded) && isset($decoded->data->user_id)) {
-            return true;
+            return self::is_jwt_allowed_for_user((int) $decoded->data->user_id) ? true : $errors;
         }
 
         // If a token was provided but failed validation, return the specific error
@@ -157,11 +163,67 @@ class WP_Auth_Integration
         }
 
         $decoded = JWT_Manager::validate_token($token);
-        if (!is_wp_error($decoded) && isset($decoded->data->user_id)) {
+        if (!is_wp_error($decoded) && isset($decoded->data->user_id) && self::is_jwt_allowed_for_user((int) $decoded->data->user_id)) {
             return true;
         }
 
         return $result;
+    }
+
+    /**
+     * Namespaces owned by this site's headless stack. JWT sessions of privileged
+     * users (admins/shop managers) are only accepted here; on every other allowed
+     * namespace (wc/v3, mailpoet/v1) the JWT is limited to unprivileged accounts.
+     *
+     * @return string[]
+     */
+    private static function first_party_namespaces()
+    {
+        return (array) apply_filters('zeneyer_auth_jwt_first_party_namespaces', [
+            'zeneyer-auth/v1',
+            'zengame/v1',
+        ]);
+    }
+
+    /**
+     * Capabilities that make an account "privileged" for JWT purposes.
+     *
+     * @return string[]
+     */
+    private static function privileged_capabilities()
+    {
+        return (array) apply_filters('zeneyer_auth_jwt_privileged_caps', [
+            'manage_options',
+            'manage_woocommerce',
+            'edit_others_posts',
+            'promote_users',
+        ]);
+    }
+
+    /**
+     * Whether a JWT may authenticate this user on the current REST route.
+     *
+     * @param int $user_id
+     * @return bool
+     */
+    private static function is_jwt_allowed_for_user($user_id)
+    {
+        $route = self::current_rest_route();
+
+        foreach (self::first_party_namespaces() as $ns) {
+            $ns = trim((string) $ns, '/');
+            if ($route === $ns || strpos($route, $ns . '/') === 0) {
+                return true;
+            }
+        }
+
+        foreach (self::privileged_capabilities() as $cap) {
+            if (user_can($user_id, $cap)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -182,21 +244,7 @@ class WP_Auth_Integration
             'zengame/v1',  // GamiPress Headless
         ]);
 
-        $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-        $route = '';
-
-        // Handle ?rest_route= fallback (sites without pretty permalinks).
-        if (isset($_GET['rest_route']) && is_string($_GET['rest_route'])) {
-            $route = ltrim(wp_unslash($_GET['rest_route']), '/');
-        } else {
-            $path = (string) wp_parse_url($request_uri, PHP_URL_PATH);
-            $prefix = function_exists('rest_get_url_prefix') ? trim(rest_get_url_prefix(), '/') : 'wp-json';
-            $marker = '/' . $prefix . '/';
-            $pos = strpos($path, $marker);
-            if ($pos !== false) {
-                $route = ltrim(substr($path, $pos + strlen($marker)), '/');
-            }
-        }
+        $route = self::current_rest_route();
 
         foreach ($allowed_namespaces as $ns) {
             $ns = trim((string) $ns, '/');
@@ -207,6 +255,28 @@ class WP_Auth_Integration
         }
 
         return false;
+    }
+
+    /**
+     * Resolve the REST route (without the /wp-json/ prefix) of the current request.
+     *
+     * @return string
+     */
+    private static function current_rest_route()
+    {
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+
+        // Handle ?rest_route= fallback (sites without pretty permalinks).
+        if (isset($_GET['rest_route']) && is_string($_GET['rest_route'])) {
+            return ltrim(wp_unslash($_GET['rest_route']), '/');
+        }
+
+        $path = (string) wp_parse_url($request_uri, PHP_URL_PATH);
+        $prefix = function_exists('rest_get_url_prefix') ? trim(rest_get_url_prefix(), '/') : 'wp-json';
+        $marker = '/' . $prefix . '/';
+        $pos = strpos($path, $marker);
+
+        return $pos !== false ? ltrim(substr($path, $pos + strlen($marker)), '/') : '';
     }
 
     /**
