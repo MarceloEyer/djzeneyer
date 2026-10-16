@@ -57,7 +57,9 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - `gamipress_get_rank_types()` e similares retornam arrays associativos (slug como chave).
 - **LEI:** Use sempre `array_values($array)[0]` ou `reset($array)` para acessar o primeiro elemento. Nunca use `$array[0]` direto.
 
-### 4.1 Segurança de Plugins PHP (`zeneyer-auth` e demais)
+### 4.1 Segurança de Plugins PHP
+
+As exigências de `Client_IP`, `Rate_Limiter`, `Security_Shield`, JWT e rotas `/auth/*` abaixo se aplicam ao `zeneyer-auth`. Outros plugins devem manter suas próprias proteções; não chamar classes do `zeneyer-auth` sem dependência explícita e verificação de disponibilidade. As regras de CORS e proteção de chaves se aplicam a todos os plugins.
 
 - **IP do cliente:** sempre `ZenEyer\Auth\Core\Client_IP::get()`. Nunca ler `HTTP_CF_CONNECTING_IP`, `HTTP_X_FORWARDED_FOR` ou `HTTP_X_REAL_IP` direto.
 - **CORS:** nunca refletir `Origin` com `Access-Control-Allow-Credentials: true` fora de uma allowlist. `allow_all_origins` foi desativada.
