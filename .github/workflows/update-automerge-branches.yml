@@ -1,0 +1,46 @@
+# Keep opted-in PR branches current without checking out or running their code.
+name: Update auto-merge branches
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: update-automerge-branches
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ secrets.BRANCH_UPDATE_TOKEN }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Explain missing credential
+        if: env.GH_TOKEN == ''
+        run: echo "::notice::Configure BRANCH_UPDATE_TOKEN with repository Contents, Pull requests and Workflows write permissions to enable branch updates."
+
+      - name: Update opted-in branches
+        if: env.GH_TOKEN != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh pr list --repo "$GH_REPO" --state open --base main --limit 100 \
+            --json number,headRefOid,isCrossRepository,isDraft,autoMergeRequest,mergeStateStatus \
+            --jq '.[] | select(.isCrossRepository == false and .isDraft == false and .autoMergeRequest != null and .mergeStateStatus == "BEHIND") | [.number, .headRefOid] | @tsv' > /tmp/automerge-branches.tsv
+          failed=0
+          while IFS=$'\t' read -r number sha; do
+            [[ "$number" =~ ^[0-9]+$ && "$sha" =~ ^[0-9a-f]{40}$ ]] || exit 1
+            echo "Updating PR #$number"
+            if ! gh api --method PUT "repos/$GH_REPO/pulls/$number/update-branch" -f expected_head_sha="$sha"; then
+              echo "::warning::PR #$number could not be updated; inspect conflicts or token permissions."
+              failed=1
+            fi
+          done < /tmp/automerge-branches.tsv
+          exit "$failed"
