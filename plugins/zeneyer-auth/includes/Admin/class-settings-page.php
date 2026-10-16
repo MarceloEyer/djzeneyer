@@ -65,11 +65,6 @@ class Settings_Page
             'default' => 7
         ]);
 
-        add_settings_field('allow_all_origins', 'Allow All Origins (CORS)', [$this, 'render_checkbox'], 'zeneyer-auth', 'zeneyer_auth_general', [
-            'id' => 'allow_all_origins',
-            'desc' => '<strong>WARNING:</strong> Check this only for local testing or troubleshooting. Disables origin protection.'
-        ]);
-
         add_settings_field('allowed_origins_list', 'Specific Allowed Origins', [$this, 'render_textarea'], 'zeneyer-auth', 'zeneyer_auth_general', [
             'id' => 'allowed_origins_list',
             'desc' => 'Enter one URL per line (e.g., <code>https://app.example.com</code>). Wildcards like <code>*.example.com</code> are supported.'
@@ -153,7 +148,6 @@ class Settings_Page
 
         $sanitized['google_client_id'] = isset($input['google_client_id']) ? sanitize_text_field($input['google_client_id']) : '';
         $sanitized['token_expiration'] = isset($input['token_expiration']) ? absint($input['token_expiration']) : 7;
-        $sanitized['allow_all_origins'] = isset($input['allow_all_origins']) ? 1 : 0;
         
         if (isset($input['allowed_origins_list'])) {
             $origins = explode("\n", $input['allowed_origins_list']);
