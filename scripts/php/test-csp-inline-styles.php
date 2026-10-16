@@ -24,6 +24,8 @@ $GLOBALS['fixture_styles'] = new class {
         return $handle === 'woocommerce-inline' ? ".trusted { color: green; }\n/*# sourceURL=woocommerce-inline-inline-css */" : false;
     }
 };
+require_once ABSPATH . 'wp-includes/utf8.php';
+require_once ABSPATH . 'wp-includes/kses.php';
 require dirname(__DIR__, 2) . '/inc/csp.php';
 
 $css = wp_styles()->print_inline_style('woocommerce-inline', false);
