@@ -68,6 +68,17 @@ add_action('send_headers', function() {
 
     header('Content-Security-Policy: ' . $policy);
 
+
+    // Cross-Origin-Opener-Policy é definido em public/.htaccess (unsafe-none, exigido pelo
+    // login Google via popup). Não enviar outro valor aqui para evitar cabeçalhos conflitantes.
+}, 20);
+
+/**
+ * Send the shared Permissions-Policy on frontend and admin responses.
+ */
+function djz_send_permissions_policy(): void {
+    if (headers_sent()) return;
+
     $permissions_policy = implode(', ', [
         'geolocation=()',
         'microphone=()',
@@ -82,9 +93,9 @@ add_action('send_headers', function() {
     ]);
 
     header('Permissions-Policy: ' . $permissions_policy);
-    // Cross-Origin-Opener-Policy é definido em public/.htaccess (unsafe-none, exigido pelo
-    // login Google via popup). Não enviar outro valor aqui para evitar cabeçalhos conflitantes.
-}, 20);
+}
+add_action('send_headers', 'djz_send_permissions_policy', 20);
+add_action('admin_init', 'djz_send_permissions_policy', 20);
 
 /**
  * 3. Injeta o atributo 'nonce' nos Scripts enfileirados pelo WordPress
