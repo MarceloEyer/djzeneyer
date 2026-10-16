@@ -1,5 +1,20 @@
 # ZenEyer Auth Pro - Changelog
 
+## [2.4.1] - 2026-10-16
+
+### Security
+- **CORS**: a opção legada `allow_all_origins` é ignorada (refletia qualquer `Origin` com credenciais) e foi removida da tela de configurações. Usar "Specific Allowed Origins". `Vary: Origin` também no preflight.
+- **IP do cliente**: novo `Core/Client_IP` (fonte única). `CF-Connecting-IP` e `X-Forwarded-For` só valem quando `REMOTE_ADDR` é Cloudflare, loopback ou está no filtro `zeneyer_auth_trusted_proxies`. Usado por rate limiter, sessões JWT e Turnstile.
+- **Rate limit** em `/auth/refresh`, `/auth/password/reset` e `/auth/password/set`.
+- **Escopo do JWT**: fora de `zeneyer-auth/v1` e `zengame/v1` (ex.: `wc/v3`, `mailpoet/v1`), o JWT não autentica contas privilegiadas (`manage_options`, `manage_woocommerce`, `edit_others_posts`, `promote_users`). Filtros: `zeneyer_auth_jwt_first_party_namespaces`, `zeneyer_auth_jwt_privileged_caps`.
+- **Payload do JWT** reduzido a `data.user_id` (sem e-mail, nome ou roles). Tokens já emitidos continuam válidos.
+- **Segredo do JWT**: gravado sem autoload; aviso no admin enquanto `ZENEYER_JWT_SECRET` não estiver no `wp-config.php`.
+- **Login Google**: o `sub` da conta Google fica vinculado ao usuário; um `sub` diferente é recusado (`google_account_mismatch`).
+- **Security Shield**: a constante global `ZEN_AUTH_VALIDATED` foi substituída por uma janela escopada (`Security_Shield::with_validated_registration()`); novo filtro `zeneyer_auth_allow_user_registration`.
+- **zengame**: `?nocache` do dashboard exige `manage_options`.
+- **zen-private-music-delivery**: o link de ativação deixa de trafegar na query string; é exibido uma única vez via transient por administrador.
+
+
 ## [2.2.0] - 2026-01-22
 
 ### Added

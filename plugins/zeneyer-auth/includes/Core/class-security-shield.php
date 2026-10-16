@@ -23,6 +23,29 @@ if (!defined('ABSPATH')) {
 final class Security_Shield
 {
     /**
+     * True only while a validated registration (Turnstile / Google) is creating a user.
+     *
+     * @var bool
+     */
+    private static $registration_validated = false;
+
+    /**
+     * Run a user-creating callback inside the "validated" window. The flag is
+     * always cleared afterwards, so it can never leak to other user_register hooks.
+     *
+     * @param callable $callback
+     * @return mixed
+     */
+    public static function with_validated_registration(callable $callback)
+    {
+        self::$registration_validated = true;
+        try {
+            return $callback();
+        } finally {
+            self::$registration_validated = false;
+        }
+    }
+    /**
      * Initialize security protections
      */
     public static function init()
@@ -107,8 +130,13 @@ final class Security_Shield
             }
         }
 
+        // Other plugins can whitelist legitimate creation flows (e.g. CLI imports).
+        if (\apply_filters('zeneyer_auth_allow_user_registration', false, $user_id)) {
+            return;
+        }
+
         // If not validated by Zen Auth custom logic, delete immediately
-        if (!\defined('ZEN_AUTH_VALIDATED') || !ZEN_AUTH_VALIDATED) {
+        if (!self::$registration_validated) {
             \error_log("🚨 [ZenEyer Security] INTRUDER DETECTED: Unauthorized registration attempt on ID $user_id. Blocking...");
 
             // Delete user without triggering common hooks to be faster

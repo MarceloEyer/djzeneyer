@@ -89,6 +89,9 @@ Rules:
 - Keep secrets out of the repository and never commit real keys.
 - Use the real production URL for both `WP_HOME` and `WP_SITEURL`.
 - Prefer `ZENEYER_JWT_SECRET` for JWT signing. The plugin accepts `JWT_AUTH_SECRET_KEY` and `SIMPLE_JWT_PRIVATE_KEY` as legacy compatibility fallbacks, but they are not canonical.
+- Sem `ZENEYER_JWT_SECRET` o plugin cai para um segredo no banco e exibe aviso no admin; em produção a constante é obrigatória na prática.
+- IP real atrás da Cloudflare: `zeneyer-auth` confia em `CF-Connecting-IP` apenas quando `REMOTE_ADDR` está nas faixas da Cloudflare (`Core/Client_IP`). Se o tráfego passar por outro proxy, adicione-o via filtro `zeneyer_auth_trusted_proxies`.
+- CORS: `allow_all_origins` foi desativada; liste origens em Settings > ZenEyer Auth > Specific Allowed Origins.
 - Keep Turnstile keys defined before activating `zeneyer-auth`.
 - Keep headless mode behavior and admin lockdown enabled by the actual constants the code uses.
 - Do not define `DOMAIN_CURRENT_SITE` unless the installation is truly multisite.

@@ -97,6 +97,8 @@ class Password_Auth {
      * @return \WP_User|WP_Error
      */
     public static function register($email, $password, $name = '', $turnstile_token = '') {
+        $captcha_validated = false;
+
         // --- 1. SEGURANÇA ANTI-BOT (TURNSTILE) ---
         
         // Apenas valida se for uma requisição via API REST (protege contra bots, mas libera admins no painel)
@@ -138,10 +140,7 @@ class Password_Auth {
                 return new WP_Error( 'invalid_captcha', 'Falha na verificação de segurança. Tente novamente.', [ 'status' => 403 ] );
             }
 
-            // ✅ SALVA-VIDAS: Define que este cadastro é legítimo para a "Guilhotina" não deletar
-            if ( ! defined('ZEN_AUTH_VALIDATED') ) {
-                define('ZEN_AUTH_VALIDATED', true);
-            }
+            $captcha_validated = true;
         }
         // --- FIM DA SEGURANÇA ---
 
@@ -194,7 +193,15 @@ class Password_Auth {
         $username = self::generate_username($email);
         
         // Create user
-        $user_id = wp_create_user($username, $password, $email);
+        // Only registrations that passed Turnstile (REST) may cross the Security Shield;
+        // the validated window lasts exactly as long as the creation callback.
+        $create_user = static function () use ($username, $password, $email) {
+            return wp_create_user($username, $password, $email);
+        };
+        $user_id = $captcha_validated
+            ? \ZenEyer\Auth\Core\Security_Shield::with_validated_registration($create_user)
+            : $create_user();
+
         
         if (is_wp_error($user_id)) {
             return $user_id;

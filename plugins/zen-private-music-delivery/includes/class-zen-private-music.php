@@ -170,7 +170,17 @@ class Zen_Private_Music {
 			'order' => 'ASC',
 		]);
 		$notice = isset($_GET['zen_notice']) ? sanitize_key(wp_unslash($_GET['zen_notice'])) : '';
-		$invite = isset($_GET['invite_url']) ? esc_url_raw(wp_unslash($_GET['invite_url'])) : '';
+		$invite = '';
+		$invite_token = isset($_GET['invite']) ? sanitize_key(wp_unslash($_GET['invite'])) : '';
+		if ($invite_token !== '') {
+			// One-time, per-admin transient: the reset key never travels in the URL.
+			$transient_key = 'zen_pm_invite_' . get_current_user_id() . '_' . $invite_token;
+			$stored = get_transient($transient_key);
+			if (is_string($stored)) {
+				$invite = esc_url_raw($stored);
+				delete_transient($transient_key);
+			}
+		}
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html__('Private Music Delivery', 'zen-private-music'); ?></h1>
@@ -577,7 +587,9 @@ class Zen_Private_Music {
 			'zen_notice' => $notice,
 		];
 		if ($invite_url !== '') {
-			$args['invite_url'] = rawurlencode($invite_url);
+			$token = strtolower(wp_generate_password(20, false, false));
+			set_transient('zen_pm_invite_' . get_current_user_id() . '_' . $token, $invite_url, 5 * MINUTE_IN_SECONDS);
+			$args['invite'] = $token;
 		}
 		wp_safe_redirect(add_query_arg($args, admin_url('admin.php')));
 		exit;
