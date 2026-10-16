@@ -205,7 +205,7 @@ add_action('wp_head', function () {
     $description = __('Official Zen Eyer shop for Brazilian Zouk music, event tickets, digital releases, and selected artist products.', 'djzeneyer');
     echo '<meta name="description" content="' . esc_attr($description) . '">' . "\n";
     ?>
-    <style id="djz-woocommerce-lighthouse-css">
+    <style id="djz-woocommerce-lighthouse-css" nonce="<?php echo esc_attr(djz_csp_nonce()); ?>">
         .woocommerce ul.products li.product .button,
         .woocommerce-page ul.products li.product .button {
             align-items: center;
