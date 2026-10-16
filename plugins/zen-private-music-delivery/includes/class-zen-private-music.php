@@ -414,9 +414,8 @@ class Zen_Private_Music {
 
 		update_user_meta($user_id, self::USER_META_DJ, !empty($_POST['receives_dj_music']) ? '1' : '0');
 		if ($initial_password === '') {
-			update_user_meta($user_id, self::USER_META_PENDING, '1');
 			$invite_url = self::generate_invite_url((int) $user_id);
-			self::redirect_admin('recipient_created', $invite_url);
+			self::redirect_admin('recipient_created', $invite_url, (int) $user_id);
 		}
 
 		delete_user_meta($user_id, self::USER_META_PENDING);
@@ -427,7 +426,7 @@ class Zen_Private_Music {
 		$user_id = absint($_POST['user_id'] ?? 0);
 		self::require_admin_action('zen_private_music_generate_invite_' . $user_id);
 		$invite_url = self::generate_invite_url($user_id);
-		self::redirect_admin('invite_generated', $invite_url);
+		self::redirect_admin('invite_generated', $invite_url, $user_id);
 	}
 
 	public static function handle_toggle_dj(): void {
@@ -451,12 +450,18 @@ class Zen_Private_Music {
 		return $user;
 	}
 
+	/**
+	 * Build the plaintext reset/activation URL for a user. Does not touch USER_META_PENDING:
+	 * the account is only marked pending once the link has actually been sealed and is about
+	 * to be stored/delivered (see redirect_admin()) — never before, so a crypto failure (e.g.
+	 * a missing AUTH_KEY/SECURE_AUTH_KEY) can't lock out an existing user or leave a freshly
+	 * created recipient pending with no activation path.
+	 */
 	private static function generate_invite_url(int $user_id): string {
 		$user = get_userdata($user_id);
 		if (!$user) {
 			return '';
 		}
-		update_user_meta($user_id, self::USER_META_PENDING, '1');
 		$key = get_password_reset_key($user);
 		if (is_wp_error($key)) {
 			return '';
@@ -585,19 +590,49 @@ class Zen_Private_Music {
 		check_admin_referer($nonce_action);
 	}
 
-	private static function redirect_admin(string $notice, string $invite_url = ''): void {
+	/**
+	 * Pure decision step (no WordPress calls, no side effects): seal the invite URL, or
+	 * report why it cannot be sealed. Kept side-effect-free so it can be unit tested without
+	 * a WordPress environment.
+	 *
+	 * @return array{sealed: string, notice: string} sealed is '' on failure; notice is the
+	 *         error notice key to show, or '' when invite_url was empty to begin with.
+	 */
+	private static function prepare_invite_delivery(string $invite_url): array {
+		if ($invite_url === '') {
+			return ['sealed' => '', 'notice' => ''];
+		}
+		$sealed = self::encrypt_invite_url($invite_url);
+		if ($sealed === '') {
+			return ['sealed' => '', 'notice' => 'invite_encryption_failed'];
+		}
+		return ['sealed' => $sealed, 'notice' => ''];
+	}
+
+	/**
+	 * @param int $invite_for_user_id When $invite_url is non-empty, the user the activation
+	 *            link belongs to. USER_META_PENDING is set for this user ONLY once the link
+	 *            is confirmed sealed — never before, so a sealing failure (e.g. a missing
+	 *            AUTH_KEY/SECURE_AUTH_KEY) can't block an existing user's login or leave a
+	 *            freshly created recipient pending with no way to activate.
+	 */
+	private static function redirect_admin(string $notice, string $invite_url = '', int $invite_for_user_id = 0): void {
 		$args = [
 			'page' => 'zen-private-music',
 			'zen_notice' => $notice,
 		];
 		if ($invite_url !== '') {
-			$sealed = self::encrypt_invite_url($invite_url);
-			if ($sealed === '') {
-				// Fail closed: never store the link unsealed, never claim the notice succeeded.
-				$args['zen_notice'] = 'invite_encryption_failed';
+			$prepared = self::prepare_invite_delivery($invite_url);
+			if ($prepared['sealed'] === '') {
+				// Fail closed: never store the link unsealed, never mark the account pending,
+				// never claim the notice succeeded.
+				$args['zen_notice'] = $prepared['notice'];
 			} else {
+				if ($invite_for_user_id > 0) {
+					update_user_meta($invite_for_user_id, self::USER_META_PENDING, '1');
+				}
 				$token = strtolower(wp_generate_password(20, false, false));
-				set_transient('zen_pm_invite_' . get_current_user_id() . '_' . $token, $sealed, 5 * MINUTE_IN_SECONDS);
+				set_transient('zen_pm_invite_' . get_current_user_id() . '_' . $token, $prepared['sealed'], 5 * MINUTE_IN_SECONDS);
 				$args['invite'] = $token;
 			}
 		}

@@ -102,6 +102,26 @@ zpm_assert(
 zpm_assert(zpm_call('notice_is_error', ['invite_encryption_failed']) === true, 'invite_encryption_failed is flagged as an error notice', $failures);
 zpm_assert(zpm_call('notice_is_error', ['invite_generated']) === false, 'invite_generated is not flagged as an error notice', $failures);
 
+// --- prepare_invite_delivery() is the single gate redirect_admin() uses to decide whether
+// to mark USER_META_PENDING. It must never signal "proceed" (non-empty sealed value) when
+// sealing fails, and must never signal failure when sealing actually succeeded — this is
+// what keeps an existing user's login from being blocked, and a freshly created recipient
+// from being left pending, by a crypto failure that happens after the account already
+// exists. (The actual update_user_meta()/wp_safe_redirect() wiring around it still needs a
+// WordPress request to exercise end-to-end; see the PR description for the manual steps.)
+$empty = zpm_call('prepare_invite_delivery', ['']);
+zpm_assert($empty['sealed'] === '' && $empty['notice'] === '', 'prepare_invite_delivery(\'\') is a no-op (no invite requested)', $failures);
+
+$ok = zpm_call('prepare_invite_delivery', [$url]);
+zpm_assert($ok['sealed'] !== '' && $ok['notice'] === '', 'prepare_invite_delivery() succeeds and reports no error when secrets are configured', $failures);
+
+$reflectionNoSecrets = new ReflectionClass(Zen_Private_Music_No_Secrets::class);
+$prepareNoSecrets = $reflectionNoSecrets->getMethod('prepare_invite_delivery');
+$prepareNoSecrets->setAccessible(true);
+$failed = $prepareNoSecrets->invokeArgs(null, [$url]);
+zpm_assert($failed['sealed'] === '', 'prepare_invite_delivery() never signals "proceed" when the key is unavailable', $failures);
+zpm_assert($failed['notice'] === 'invite_encryption_failed', 'prepare_invite_delivery() reports the encryption-failure notice when the key is unavailable', $failures);
+
 if ($failures) {
     fwrite(STDERR, "FAILED:\n - " . implode("\n - ", $failures) . "\n");
     exit(1);
