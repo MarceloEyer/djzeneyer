@@ -66,7 +66,7 @@ As exigências de `Client_IP`, `Rate_Limiter`, `Security_Shield`, JWT e rotas `/
 - **Rate limit:** todo endpoint público que envia e-mail, valida chave/segredo ou checa credencial passa por `Rate_Limiter::check()` e `increment()`.
 - **JWT:** payload só com `data.user_id`; não autentica contas privilegiadas fora de `zeneyer-auth/v1` e `zengame/v1`. Segredo em `ZENEYER_JWT_SECRET` no `wp-config.php`.
 - **Criação de usuário validada:** `Security_Shield::with_validated_registration()`, nunca `define()` global.
-- **Chaves de reset/convite:** nunca em query string de redirect; usar transient de uso único.
+- **Chaves de reset/convite:** nunca em query string de redirect; usar transient de uso único com o valor selado (criptografia autenticada, chave fora do banco) — padrão em `Zen_Private_Music::encrypt_invite_url()`/`decrypt_invite_url()`.
 - **Cadastro:** não introduzir mensagens que revelem se um e-mail existe. Ver `ZENEYER_AUTH_UNIFORM_REGISTRATION`.
 - **Rotas REST:** novas rotas de auth em `/auth/*`; aliases sem `/auth` (exceto `/session`) estão deprecados.
 - Antes de abrir PR de PHP, rodar a revisão de `.agents/skills/wp-plugin-code-reviewer` (seção "Auth and abuse hardening").
