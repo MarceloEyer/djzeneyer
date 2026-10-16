@@ -253,6 +253,7 @@ describe('MusicEvent schema generation', () => {
       event_id: '99999999',
       title: 'Zouk Weekend Berlin',
       starts_at: '2026-09-01T20:00:00.000Z',
+      location: { city: 'Berlin', country: 'Germany' },
     };
     const graph = buildMusicEventGraph([mockEvent, second]);
     expect(graph).toHaveLength(1);
@@ -261,7 +262,10 @@ describe('MusicEvent schema generation', () => {
   });
 
   it('EventSeries subEvent contains all provided events', () => {
-    const second: EventSchemaData = { event_id: '2', starts_at: '2026-09-01T20:00:00.000Z', title: 'Event 2' };
+    const second: EventSchemaData = {
+      event_id: '2', starts_at: '2026-09-01T20:00:00.000Z', title: 'Event 2',
+      location: { city: 'Berlin', country: 'Germany' },
+    };
     const [series] = buildMusicEventGraph([mockEvent, second]);
     expect((series.subEvent as unknown[]).length).toBe(2);
   });
