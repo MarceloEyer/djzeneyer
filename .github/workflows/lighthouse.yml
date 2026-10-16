@@ -32,20 +32,45 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
-      - name: Verify production URLs
+      - name: Wait for production and warm caches
         env:
           LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
           LIGHTHOUSE_TARGET: production
           LIGHTHOUSE_URL: ${{ vars.LIGHTHOUSE_URL || 'https://djzeneyer.com' }}
         run: |
           node -e "const config = require('./lighthouserc.cjs'); console.log(config.ci.collect.url.join('\n'))" > /tmp/lighthouse-urls.txt
-          while IFS= read -r url; do
-            echo "Checking ${url}"
-            curl --fail --location --show-error --silent \
-              --retry 5 --retry-delay 10 \
-              --output /dev/null \
-              "${url}"
-          done < /tmp/lighthouse-urls.txt
+          # Prazo total explícito: 6 min para TODAS as URLs e as duas passadas.
+          # Passada 1 espera cada página responder 200 (qualquer erro, inclusive
+          # 520 da Cloudflare, é tentado de novo a cada 10 s). Passada 2 aquece o
+          # cache do LiteSpeed/Cloudflare antes das medições.
+          DEADLINE=$((SECONDS + 360))
+          for pass in 1 2; do
+            while IFS= read -r url; do
+              echo "[passada ${pass}] ${url}"
+              while true; do
+                remaining=$((DEADLINE - SECONDS))
+                if [ "$remaining" -le 0 ]; then
+                  echo "::error::Prazo total de 6 min esgotado em ${url}"
+                  exit 1
+                fi
+                attempt_timeout=$((remaining < 20 ? remaining : 20))
+                code=000
+                if code=$(curl --location --silent --output /dev/null \
+                    --max-time "$attempt_timeout" --write-out '%{http_code}' "${url}") \
+                    && [ "${code}" = "200" ] && [ "$SECONDS" -lt "$DEADLINE" ]; then
+                  break
+                fi
+                echo "  -> ${code:-erro}"
+                remaining=$((DEADLINE - SECONDS))
+                if [ "$remaining" -le 0 ]; then
+                  echo "::error::Prazo total de 6 min esgotado em ${url} (último: ${code:-erro})"
+                  exit 1
+                fi
+                sleep "$((remaining < 10 ? remaining : 10))"
+              done
+              echo "  -> 200"
+            done < /tmp/lighthouse-urls.txt
+          done
 
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
@@ -59,6 +84,8 @@ jobs:
           LIGHTHOUSE_TARGET: production
           LIGHTHOUSE_URL: ${{ vars.LIGHTHOUSE_URL || 'https://djzeneyer.com' }}
 
-      - name: Summarize Lighthouse warnings
+      - name: Summarize Lighthouse results
         if: always()
+        env:
+          LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
         run: node scripts/summarize-lighthouse-results.mjs
