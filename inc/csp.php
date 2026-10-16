@@ -53,6 +53,9 @@ add_action('send_headers', function() {
         
         "style-src 'self' 'nonce-{$nonce}' https://fonts.googleapis.com https://accounts.google.com https://widget.bandsintown.com https://cdn.bandsintown.com",
         
+        // Inline style="" attributes in the prerendered shell/React markup (the meta CSP already allows them).
+        "style-src-attr 'unsafe-inline'",
+
         "font-src 'self' https://fonts.gstatic.com https://r2cdn.perplexity.ai data:",
         
         "img-src 'self' https: data: blob: filesystem:",
