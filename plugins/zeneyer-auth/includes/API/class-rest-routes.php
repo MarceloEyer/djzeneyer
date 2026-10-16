@@ -458,7 +458,8 @@ class Rest_Routes
             return $result;
         }
 
-        Rate_Limiter::reset('password_set');
+        // Do not reset 'password_set': the bucket is keyed by IP and shared with
+        // attempts against other accounts, so a valid reset must not clear it.
 
         return rest_ensure_response([
             'success' => true,
