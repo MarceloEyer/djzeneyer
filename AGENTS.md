@@ -57,6 +57,18 @@ Arquivos que implementam: `src/components/HeadlessSEO.tsx` e `plugins/zen-bit/in
 - `gamipress_get_rank_types()` e similares retornam arrays associativos (slug como chave).
 - **LEI:** Use sempre `array_values($array)[0]` ou `reset($array)` para acessar o primeiro elemento. Nunca use `$array[0]` direto.
 
+### 4.1 Segurança de Plugins PHP (`zeneyer-auth` e demais)
+
+- **IP do cliente:** sempre `ZenEyer\Auth\Core\Client_IP::get()`. Nunca ler `HTTP_CF_CONNECTING_IP`, `HTTP_X_FORWARDED_FOR` ou `HTTP_X_REAL_IP` direto.
+- **CORS:** nunca refletir `Origin` com `Access-Control-Allow-Credentials: true` fora de uma allowlist. `allow_all_origins` foi desativada.
+- **Rate limit:** todo endpoint público que envia e-mail, valida chave/segredo ou checa credencial passa por `Rate_Limiter::check()` e `increment()`.
+- **JWT:** payload só com `data.user_id`; não autentica contas privilegiadas fora de `zeneyer-auth/v1` e `zengame/v1`. Segredo em `ZENEYER_JWT_SECRET` no `wp-config.php`.
+- **Criação de usuário validada:** `Security_Shield::with_validated_registration()`, nunca `define()` global.
+- **Chaves de reset/convite:** nunca em query string de redirect; usar transient de uso único.
+- **Cadastro:** não introduzir mensagens que revelem se um e-mail existe. Ver `ZENEYER_AUTH_UNIFORM_REGISTRATION`.
+- **Rotas REST:** novas rotas de auth em `/auth/*`; aliases sem `/auth` (exceto `/session`) estão deprecados.
+- Antes de abrir PR de PHP, rodar a revisão de `.agents/skills/wp-plugin-code-reviewer` (seção "Auth and abuse hardening").
+
 ### 5. Dados de Pagamento Publicos por Design
 
 - Campos de pagamento e apoio (`payment`, Pix, PayPal, Wise, IBAN, SWIFT, banco) podem aparecer em endpoints e paginas publicas.
