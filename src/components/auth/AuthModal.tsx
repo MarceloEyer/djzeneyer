@@ -240,7 +240,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
               ) : googleClientId ? (
                 <>
                   <div className="mb-6">
-                    <GoogleOAuthProvider clientId={googleClientId}>
+                    <GoogleOAuthProvider
+                      clientId={googleClientId}
+                      nonce={document.querySelector<HTMLScriptElement>('script[nonce]')?.nonce || undefined}
+                    >
                       <div className="w-full flex justify-center">
                         <GoogleLogin
                           onSuccess={handleGoogleSuccess}
