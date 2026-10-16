@@ -95,6 +95,65 @@ describe('buildDynamicGraph — MusicEvent', () => {
     expect(graph.find((n) => n['@type'] === 'MusicEvent')).toBeDefined();
   });
 
+  it('defaults a missing endDate to four hours after startDate across midnight', () => {
+    const graph = buildDynamicGraph({ ...baseOpts, events: [futureEvent] });
+    const ev = graph.find((n) => n['@type'] === 'MusicEvent')!;
+    expect(ev.startDate).toBe(futureEvent.starts_at);
+    expect(ev.endDate).toBe('2099-12-02T00:00:00.000Z');
+  });
+
+  it.each(['ends_at', 'end_date'] as const)('preserves an explicit %s', (field) => {
+    const endDate = '2099-12-02T02:30:00-03:00';
+    const graph = buildDynamicGraph({
+      ...baseOpts,
+      events: [{ ...futureEvent, [field]: endDate }],
+    });
+    expect(graph.find((n) => n['@type'] === 'MusicEvent')?.endDate).toBe(endDate);
+  });
+
+  it.each([
+    undefined,
+    { venue: 'Arena Rio' },
+    { venue: 'Arena Rio', city: '', region: '  ', country: '' },
+  ])('preserves the event and valid fields without an address: %j', (location) => {
+    const validEvent = {
+      ...futureEvent,
+      ends_at: '2099-12-02T02:00:00Z',
+      canonical_url: `${BASE}/events/rio/`,
+      description: 'A Brazilian Zouk night.',
+      image: `${BASE}/images/rio.jpg`,
+      tickets: ['https://example.com/tickets'],
+    };
+    const complete = buildDynamicGraph({ ...baseOpts, events: [validEvent] })
+      .find((n) => n['@type'] === 'MusicEvent')!;
+    const ev = buildDynamicGraph({ ...baseOpts, events: [{ ...validEvent, location }] })
+      .find((n) => n['@type'] === 'MusicEvent')!;
+    expect(ev).toEqual({
+      ...complete,
+      location: { '@type': 'Place', name: location?.venue || 'TBA' },
+    });
+    expect(ev.location).not.toHaveProperty('address');
+  });
+
+  it.each([
+    [{ city: 'Rio de Janeiro', region: '', country: ' ' }, { addressLocality: 'Rio de Janeiro' }],
+    [{ city: '', region: 'RJ', country: '' }, { addressRegion: 'RJ' }],
+    [{ city: ' ', region: '', country: 'BR' }, { addressCountry: 'BR' }],
+    [{ city: 'Rio de Janeiro', region: 'RJ', country: 'BR' }, {
+      addressLocality: 'Rio de Janeiro', addressRegion: 'RJ', addressCountry: 'BR',
+    }],
+  ])('emits only supplied nonblank address fields: %j', (address, expected) => {
+    const graph = buildDynamicGraph({
+      ...baseOpts,
+      events: [{ ...futureEvent, location: { venue: 'Arena Rio', ...address } }],
+    });
+    const ev = graph.find((n) => n['@type'] === 'MusicEvent')!;
+    expect(ev.location).toEqual({
+      '@type': 'Place', name: 'Arena Rio',
+      address: { '@type': 'PostalAddress', ...expected },
+    });
+  });
+
   it('emits EventSeries for multiple events', () => {
     const event2 = { ...futureEvent, event_id: '2', title: 'Zen Eyer at SP' };
     const graph = buildDynamicGraph({ ...baseOpts, events: [futureEvent, event2] });
