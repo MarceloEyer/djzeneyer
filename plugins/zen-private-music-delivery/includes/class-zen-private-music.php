@@ -173,11 +173,15 @@ class Zen_Private_Music {
 		$invite = '';
 		$invite_token = isset($_GET['invite']) ? sanitize_key(wp_unslash($_GET['invite'])) : '';
 		if ($invite_token !== '') {
-			// One-time, per-admin transient: the reset key never travels in the URL.
+			// One-time, per-admin transient: the reset key never travels in the URL,
+			// and the stored value itself is sealed (see encrypt_invite_url()).
 			$transient_key = 'zen_pm_invite_' . get_current_user_id() . '_' . $invite_token;
 			$stored = get_transient($transient_key);
 			if (is_string($stored)) {
-				$invite = esc_url_raw($stored);
+				$decrypted = self::decrypt_invite_url($stored);
+				if ($decrypted !== null) {
+					$invite = esc_url_raw($decrypted);
+				}
 				delete_transient($transient_key);
 			}
 		}
@@ -588,11 +592,52 @@ class Zen_Private_Music {
 		];
 		if ($invite_url !== '') {
 			$token = strtolower(wp_generate_password(20, false, false));
-			set_transient('zen_pm_invite_' . get_current_user_id() . '_' . $token, $invite_url, 5 * MINUTE_IN_SECONDS);
+			set_transient('zen_pm_invite_' . get_current_user_id() . '_' . $token, self::encrypt_invite_url($invite_url), 5 * MINUTE_IN_SECONDS);
 			$args['invite'] = $token;
 		}
 		wp_safe_redirect(add_query_arg($args, admin_url('admin.php')));
 		exit;
+	}
+
+	/**
+	 * Authenticated-encryption key for the one-time invite transient.
+	 * Derived from wp-config.php secrets (AUTH_KEY/SECURE_AUTH_KEY), never stored in the database.
+	 */
+	private static function invite_encryption_key(): string {
+		$material = (defined('AUTH_KEY') ? AUTH_KEY : '') . (defined('SECURE_AUTH_KEY') ? SECURE_AUTH_KEY : '');
+		return hash_hmac('sha256', 'zen_pm_invite_url', $material, true);
+	}
+
+	/**
+	 * Seal the invite/reset URL before it is persisted in a transient (wp_options without
+	 * a persistent object cache). AES-256-GCM: the key never touches the database, and the
+	 * auth tag detects tampering.
+	 */
+	private static function encrypt_invite_url(string $url): string {
+		$key   = self::invite_encryption_key();
+		$nonce = random_bytes(12);
+		$tag   = '';
+		$cipher = openssl_encrypt($url, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag);
+		if ($cipher === false) {
+			return '';
+		}
+		return base64_encode($nonce . $tag . $cipher);
+	}
+
+	/**
+	 * Reverse encrypt_invite_url(). Returns null on tampering, a missing key, or malformed input.
+	 */
+	private static function decrypt_invite_url(string $sealed): ?string {
+		$raw = base64_decode($sealed, true);
+		if ($raw === false || strlen($raw) <= 12 + 16) {
+			return null;
+		}
+		$nonce  = substr($raw, 0, 12);
+		$tag    = substr($raw, 12, 16);
+		$cipher = substr($raw, 28);
+		$key    = self::invite_encryption_key();
+		$plain  = openssl_decrypt($cipher, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag);
+		return $plain === false ? null : $plain;
 	}
 
 	private static function notice_message(string $notice): string {

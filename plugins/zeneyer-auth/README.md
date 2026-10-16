@@ -55,7 +55,7 @@ JWT authentication plugin for the headless WordPress + React stack.
 
 - **JWT secret**: defina `ZENEYER_JWT_SECRET` no `wp-config.php`. Sem a constante o plugin gera um segredo no banco (sem autoload) e mostra um aviso no admin.
 - **JWT scope**: o token autentica em `zeneyer-auth/v1`, `zengame/v1`, `wc/v3` e `mailpoet/v1`. Em `wc/v3` e `mailpoet/v1`, contas com `manage_options`, `manage_woocommerce`, `edit_others_posts` ou `promote_users` não são autenticadas por JWT. Ajuste com os filtros `zeneyer_auth_jwt_first_party_namespaces` e `zeneyer_auth_jwt_privileged_caps`.
-- **CORS**: apenas origens em "Specific Allowed Origins" (aceita `https://*.exemplo.com`) mais as origens locais de desenvolvimento. `allow_all_origins` não tem mais efeito.
+- **CORS**: use apenas origens exatas em "Specific Allowed Origins", como `https://app.exemplo.com`, além das origens locais de desenvolvimento. `allow_all_origins` não tem mais efeito.
 - **Client IP**: `Core/Client_IP` confia em headers de proxy apenas para Cloudflare, loopback e IPs adicionados via `zeneyer_auth_trusted_proxies`. Revisar as faixas em https://www.cloudflare.com/ips/ quando a Cloudflare publicar mudanças.
 - **Rate limit** (por IP e ação): `login`, `register`, `google_login`, `refresh`, `password_reset`, `password_set`. Limites em Settings (`rate_limit_attempts`, `rate_limit_duration`).
 - **Cadastro uniforme (opt-in)**: com `ZENEYER_AUTH_UNIFORM_REGISTRATION`, o cadastro não revela se o e-mail já existe; a senha é definida pelo link enviado por e-mail. Sem a constante, o comportamento atual (login imediato, 409 para e-mail existente) é mantido.
