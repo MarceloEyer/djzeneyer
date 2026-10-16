@@ -267,8 +267,12 @@ class WP_Auth_Integration
         $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
 
         // Handle ?rest_route= fallback (sites without pretty permalinks).
-        if (isset($_GET['rest_route']) && is_string($_GET['rest_route'])) {
-            return ltrim(wp_unslash($_GET['rest_route']), '/');
+        // WordPress core reads $_GET first, then $_POST (rest_api_loaded()), so mirror that
+        // precedence to evaluate the same route that will actually be dispatched.
+        foreach ([$_GET, $_POST] as $source) {
+            if (isset($source['rest_route']) && is_string($source['rest_route']) && $source['rest_route'] !== '') {
+                return ltrim(wp_unslash($source['rest_route']), '/');
+            }
         }
 
         $path = (string) wp_parse_url($request_uri, PHP_URL_PATH);

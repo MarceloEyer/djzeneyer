@@ -73,6 +73,12 @@ final class Client_IP
             return $cf_ip;
         }
 
+        // Nginx/LiteSpeed-style single-value header (only reached for trusted peers).
+        $real_ip = self::server_ip('HTTP_X_REAL_IP');
+        if ($real_ip !== '' && !self::is_trusted_proxy($real_ip)) {
+            return $real_ip;
+        }
+
         // Generic proxy chain: walk right-to-left and return the first hop
         // that is not itself a trusted proxy.
         if (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) && is_string($_SERVER['HTTP_X_FORWARDED_FOR'])) {
