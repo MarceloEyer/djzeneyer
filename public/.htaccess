@@ -116,7 +116,8 @@ CacheKeyModify -qs:_ga
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), display-capture=()"
+  # Permissions-Policy é enviado por inc/csp.php (delega YouTube). Não duplicar aqui:
+  # "Header always set" daqui sobrescreve o do PHP e remove as delegações do YouTube.
   # HSTS gerenciado exclusivamente pelo Cloudflare — não definir aqui para evitar duplicidade
   
   # CORREÇÃO CRÍTICA: Permite que o popup do Google Login se comunique com o site
@@ -189,7 +190,7 @@ CacheKeyModify -qs:_ga
 # ==============================================================================
 # 7. SEGURANÇA DE ARQUIVOS
 # ==============================================================================
-<FilesMatch "^(wp-config\.php|\.htaccess|readme\.html|license\.txt|\.git.*|composer\.json|package\.json)$">
+<FilesMatch "^(wp-config\.php|wp-config-sample\.php|\.htaccess|\.htaccess\..*|.*\.(bk|bak|old|orig|swp|sql|log)|\.ftp-deploy-sync-state\.json|readme\.html|license\.txt|\.git.*|composer\.json|package\.json)$">
   Require all denied
 </FilesMatch>
 <Files xmlrpc.php>

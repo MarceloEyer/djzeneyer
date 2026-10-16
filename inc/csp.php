@@ -82,7 +82,8 @@ add_action('send_headers', function() {
     ]);
 
     header('Permissions-Policy: ' . $permissions_policy);
-    header('Cross-Origin-Opener-Policy: same-origin-allow-popups');
+    // Cross-Origin-Opener-Policy é definido em public/.htaccess (unsafe-none, exigido pelo
+    // login Google via popup). Não enviar outro valor aqui para evitar cabeçalhos conflitantes.
 }, 20);
 
 /**
