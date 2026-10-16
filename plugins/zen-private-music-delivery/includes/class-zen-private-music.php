@@ -189,7 +189,7 @@ class Zen_Private_Music {
 		<div class="wrap">
 			<h1><?php echo esc_html__('Private Music Delivery', 'zen-private-music'); ?></h1>
 			<?php if ($notice) : ?>
-				<div class="notice notice-success"><p><?php echo esc_html(self::notice_message($notice)); ?></p></div>
+				<div class="notice <?php echo self::notice_is_error($notice) ? 'notice-error' : 'notice-success'; ?>"><p><?php echo esc_html(self::notice_message($notice)); ?></p></div>
 			<?php endif; ?>
 			<?php if ($invite) : ?>
 				<div class="notice notice-info">
@@ -414,9 +414,8 @@ class Zen_Private_Music {
 
 		update_user_meta($user_id, self::USER_META_DJ, !empty($_POST['receives_dj_music']) ? '1' : '0');
 		if ($initial_password === '') {
-			update_user_meta($user_id, self::USER_META_PENDING, '1');
 			$invite_url = self::generate_invite_url((int) $user_id);
-			self::redirect_admin('recipient_created', $invite_url);
+			self::redirect_admin('recipient_created', $invite_url, (int) $user_id);
 		}
 
 		delete_user_meta($user_id, self::USER_META_PENDING);
@@ -427,7 +426,7 @@ class Zen_Private_Music {
 		$user_id = absint($_POST['user_id'] ?? 0);
 		self::require_admin_action('zen_private_music_generate_invite_' . $user_id);
 		$invite_url = self::generate_invite_url($user_id);
-		self::redirect_admin('invite_generated', $invite_url);
+		self::redirect_admin('invite_generated', $invite_url, $user_id);
 	}
 
 	public static function handle_toggle_dj(): void {
@@ -451,12 +450,18 @@ class Zen_Private_Music {
 		return $user;
 	}
 
+	/**
+	 * Build the plaintext reset/activation URL for a user. Does not touch USER_META_PENDING:
+	 * the account is only marked pending once the link has actually been sealed and is about
+	 * to be stored/delivered (see redirect_admin()) — never before, so a crypto failure (e.g.
+	 * a missing AUTH_KEY/SECURE_AUTH_KEY) can't lock out an existing user or leave a freshly
+	 * created recipient pending with no activation path.
+	 */
 	private static function generate_invite_url(int $user_id): string {
 		$user = get_userdata($user_id);
 		if (!$user) {
 			return '';
 		}
-		update_user_meta($user_id, self::USER_META_PENDING, '1');
 		$key = get_password_reset_key($user);
 		if (is_wp_error($key)) {
 			return '';
@@ -585,15 +590,51 @@ class Zen_Private_Music {
 		check_admin_referer($nonce_action);
 	}
 
-	private static function redirect_admin(string $notice, string $invite_url = ''): void {
+	/**
+	 * Pure decision step (no WordPress calls, no side effects): seal the invite URL, or
+	 * report why it cannot be sealed. Kept side-effect-free so it can be unit tested without
+	 * a WordPress environment.
+	 *
+	 * @return array{sealed: string, notice: string} sealed is '' on failure; notice is the
+	 *         error notice key to show, or '' when invite_url was empty to begin with.
+	 */
+	private static function prepare_invite_delivery(string $invite_url): array {
+		if ($invite_url === '') {
+			return ['sealed' => '', 'notice' => ''];
+		}
+		$sealed = self::encrypt_invite_url($invite_url);
+		if ($sealed === '') {
+			return ['sealed' => '', 'notice' => 'invite_encryption_failed'];
+		}
+		return ['sealed' => $sealed, 'notice' => ''];
+	}
+
+	/**
+	 * @param int $invite_for_user_id When $invite_url is non-empty, the user the activation
+	 *            link belongs to. USER_META_PENDING is set for this user ONLY once the link
+	 *            is confirmed sealed — never before, so a sealing failure (e.g. a missing
+	 *            AUTH_KEY/SECURE_AUTH_KEY) can't block an existing user's login or leave a
+	 *            freshly created recipient pending with no way to activate.
+	 */
+	private static function redirect_admin(string $notice, string $invite_url = '', int $invite_for_user_id = 0): void {
 		$args = [
 			'page' => 'zen-private-music',
 			'zen_notice' => $notice,
 		];
 		if ($invite_url !== '') {
-			$token = strtolower(wp_generate_password(20, false, false));
-			set_transient('zen_pm_invite_' . get_current_user_id() . '_' . $token, self::encrypt_invite_url($invite_url), 5 * MINUTE_IN_SECONDS);
-			$args['invite'] = $token;
+			$prepared = self::prepare_invite_delivery($invite_url);
+			if ($prepared['sealed'] === '') {
+				// Fail closed: never store the link unsealed, never mark the account pending,
+				// never claim the notice succeeded.
+				$args['zen_notice'] = $prepared['notice'];
+			} else {
+				if ($invite_for_user_id > 0) {
+					update_user_meta($invite_for_user_id, self::USER_META_PENDING, '1');
+				}
+				$token = strtolower(wp_generate_password(20, false, false));
+				set_transient('zen_pm_invite_' . get_current_user_id() . '_' . $token, $prepared['sealed'], 5 * MINUTE_IN_SECONDS);
+				$args['invite'] = $token;
+			}
 		}
 		wp_safe_redirect(add_query_arg($args, admin_url('admin.php')));
 		exit;
@@ -602,19 +643,29 @@ class Zen_Private_Music {
 	/**
 	 * Authenticated-encryption key for the one-time invite transient.
 	 * Derived from wp-config.php secrets (AUTH_KEY/SECURE_AUTH_KEY), never stored in the database.
+	 * Fails closed (null) when neither secret is configured, instead of deriving a key from an
+	 * empty, publicly-known HMAC input.
 	 */
-	private static function invite_encryption_key(): string {
-		$material = (defined('AUTH_KEY') ? AUTH_KEY : '') . (defined('SECURE_AUTH_KEY') ? SECURE_AUTH_KEY : '');
-		return hash_hmac('sha256', 'zen_pm_invite_url', $material, true);
+	private static function invite_encryption_key(): ?string {
+		$auth_key   = defined('AUTH_KEY') ? (string) AUTH_KEY : '';
+		$secure_key = defined('SECURE_AUTH_KEY') ? (string) SECURE_AUTH_KEY : '';
+		if ($auth_key === '' && $secure_key === '') {
+			return null;
+		}
+		return hash_hmac('sha256', 'zen_pm_invite_url', $auth_key . $secure_key, true);
 	}
 
 	/**
 	 * Seal the invite/reset URL before it is persisted in a transient (wp_options without
 	 * a persistent object cache). AES-256-GCM: the key never touches the database, and the
-	 * auth tag detects tampering.
+	 * auth tag detects tampering. Returns '' (never the plaintext URL) when no key is
+	 * available or encryption otherwise fails; callers must treat '' as a hard failure.
 	 */
 	private static function encrypt_invite_url(string $url): string {
-		$key   = self::invite_encryption_key();
+		$key = self::invite_encryption_key();
+		if ($key === null) {
+			return '';
+		}
 		$nonce = random_bytes(12);
 		$tag   = '';
 		$cipher = openssl_encrypt($url, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag);
@@ -625,9 +676,14 @@ class Zen_Private_Music {
 	}
 
 	/**
-	 * Reverse encrypt_invite_url(). Returns null on tampering, a missing key, or malformed input.
+	 * Reverse encrypt_invite_url(). Returns null on tampering, a missing/unavailable key, or
+	 * malformed input.
 	 */
 	private static function decrypt_invite_url(string $sealed): ?string {
+		$key = self::invite_encryption_key();
+		if ($key === null) {
+			return null;
+		}
 		$raw = base64_decode($sealed, true);
 		if ($raw === false || strlen($raw) <= 12 + 16) {
 			return null;
@@ -635,7 +691,6 @@ class Zen_Private_Music {
 		$nonce  = substr($raw, 0, 12);
 		$tag    = substr($raw, 12, 16);
 		$cipher = substr($raw, 28);
-		$key    = self::invite_encryption_key();
 		$plain  = openssl_decrypt($cipher, 'aes-256-gcm', $key, OPENSSL_RAW_DATA, $nonce, $tag);
 		return $plain === false ? null : $plain;
 	}
@@ -648,7 +703,12 @@ class Zen_Private_Music {
 			'recipient_created' => __('Recipient created.', 'zen-private-music'),
 			'recipient_saved' => __('Recipient updated.', 'zen-private-music'),
 			'invite_generated' => __('Activation link generated.', 'zen-private-music'),
+			'invite_encryption_failed' => __('Could not create a secure activation link: AUTH_KEY and SECURE_AUTH_KEY are missing from wp-config.php. No link was created or stored.', 'zen-private-music'),
 		];
 		return $messages[$notice] ?? __('Saved.', 'zen-private-music');
+	}
+
+	private static function notice_is_error(string $notice): bool {
+		return $notice === 'invite_encryption_failed';
 	}
 }
