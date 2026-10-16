@@ -45,7 +45,7 @@ class Rest_Routes
             $is_session = ($callback === 'session'); // /session is still used by the frontend
 
             register_rest_route(self::NAMESPACE , $route, [
-                'methods' => ($is_session ? WP_REST_Server::READABLE : WP_REST_Server::CREATABLE),
+                'methods' => ($callback === 'session' ? WP_REST_Server::READABLE : WP_REST_Server::CREATABLE),
                 'callback' => $is_session
                     ? [__CLASS__, $callback]
                     : static function ($request) use ($route, $callback) {
@@ -1095,4 +1095,3 @@ class Rest_Routes
         delete_transient('djz_auth_settings_v1');
     }
 }
-
