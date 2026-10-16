@@ -273,7 +273,8 @@
       "confirmPasswordPlaceholder": "••••••••",
       "submit": "Criar Conta",
       "has_account": "Já tem uma conta?",
-      "login_now": "Entre aqui"
+      "login_now": "Entre aqui",
+      "check_email": "Quase lá! Se este endereço puder ser cadastrado, enviamos um e-mail com os próximos passos. Abra o link para definir sua senha e depois entre."
     },
     "placeholders": {
       "name": "Seu nome",

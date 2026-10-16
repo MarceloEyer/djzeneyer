@@ -85,6 +85,14 @@ Severity guide:
 - Use route `args` schemas for validation/sanitization where practical.
 - Keep authenticated endpoints aligned with `zeneyer-auth` JWT/user patterns.
 - Do not make intentional public AI/search resources private without explicit human request.
+### Auth and abuse hardening (zeneyer-auth)
+
+- Client IP must come from `ZenEyer\Auth\Core\Client_IP::get()`; flag direct reads of `HTTP_CF_CONNECTING_IP`, `HTTP_X_FORWARDED_FOR` or `HTTP_X_REAL_IP`.
+- Flag CORS code that reflects `Origin` with `Access-Control-Allow-Credentials: true` outside an allowlist.
+- Public endpoints that send e-mail, accept refresh/reset keys or check credentials need `Rate_Limiter::check()` and `increment()`.
+- JWT-authenticated requests must not reach privileged accounts on third-party namespaces (`wc/v3`, `mailpoet/v1`); JWT payload stays `data.user_id` only.
+- Reset/invite keys never go in redirect query strings; use one-time transients.
+- User creation that must survive the Security Shield uses `Security_Shield::with_validated_registration()`, never a global `define()`.
 
 ## Output Format
 

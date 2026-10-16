@@ -42,9 +42,21 @@ class Rest_Routes
         ];
 
         foreach ($aliases as $route => $callback) {
+            $is_session = ($callback === 'session'); // /session is still used by the frontend
+
             register_rest_route(self::NAMESPACE , $route, [
                 'methods' => ($callback === 'session' ? WP_REST_Server::READABLE : WP_REST_Server::CREATABLE),
-                'callback' => [__CLASS__, $callback],
+                'callback' => $is_session
+                    ? [__CLASS__, $callback]
+                    : static function ($request) use ($route, $callback) {
+                        // Legacy alias: same behaviour, flagged for removal in favour of /auth/*.
+                        $response = rest_ensure_response(call_user_func([__CLASS__, $callback], $request));
+                        if ($response instanceof \WP_HTTP_Response) {
+                            $response->header('Deprecation', 'true');
+                            $response->header('Link', '<' . rest_url(self::NAMESPACE . '/auth' . $route) . '>; rel="successor-version"');
+                        }
+                        return $response;
+                    },
                 'permission_callback' => '__return_true',
             ]);
         }
@@ -253,6 +265,24 @@ class Rest_Routes
         $name = $request->get_param('name');
         $turnstile_token = $request->get_param('turnstileToken');
         $turnstile_token = is_string($turnstile_token) ? sanitize_text_field($turnstile_token) : '';
+
+        if (Password_Auth::uniform_registration_enabled()) {
+            $pending = Password_Auth::register_pending($email, $password, $name, $turnstile_token);
+
+            if (is_wp_error($pending)) {
+                Rate_Limiter::increment('register');
+                return $pending;
+            }
+
+            // Count every accepted attempt as well: this branch sends e-mail.
+            Rate_Limiter::increment('register');
+
+            return rest_ensure_response([
+                'success' => true,
+                'message' => 'If the address can be registered, an e-mail with the next steps was sent.',
+                'data' => ['status' => 'verification_sent'],
+            ]);
+        }
 
         $user = Password_Auth::register($email, $password, $name, $turnstile_token);
 
@@ -1066,4 +1096,3 @@ class Rest_Routes
         delete_transient('djz_auth_settings_v1');
     }
 }
-

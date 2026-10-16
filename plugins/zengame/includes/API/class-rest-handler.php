@@ -72,7 +72,8 @@ final class REST_Handler
             }
 
             $cache_key = 'djz_gamipress_dashboard_' . \ZenEyer\Game\ZenGame::CACHE_VERSION . '_' . $user_id;
-            $bypass_cache = (bool) $request->get_param('nocache');
+            // Cache bypass reruns heavy GamiPress/WooCommerce queries: admins only.
+            $bypass_cache = (bool) $request->get_param('nocache') && \current_user_can('manage_options');
             if (!$bypass_cache) {
                 $cached = \get_transient($cache_key);
                 if (false !== $cached) {

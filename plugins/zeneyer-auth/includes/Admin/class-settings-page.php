@@ -15,6 +15,21 @@ class Settings_Page
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_init', [$this, 'register_settings']);
         add_action('admin_post_zen_invalidate_all_sessions', [$this, 'handle_invalidate_sessions']);
+        add_action('admin_notices', [$this, 'maybe_warn_about_jwt_secret']);
+    }
+
+    /**
+     * Warn admins while the JWT signing secret lives only in the database.
+     */
+    public function maybe_warn_about_jwt_secret()
+    {
+        if (!current_user_can('manage_options') || \ZenEyer\Auth\Core\JWT_Manager::has_config_secret()) {
+            return;
+        }
+
+        echo '<div class="notice notice-warning"><p><strong>ZenEyer Auth:</strong> '
+            . esc_html__('the JWT signing secret is stored in the database. Define ZENEYER_JWT_SECRET in wp-config.php (64+ random characters) so a database leak cannot be used to forge tokens. Changing it signs everyone out.', 'zeneyer-auth')
+            . '</p></div>';
     }
 
     public function handle_invalidate_sessions()
