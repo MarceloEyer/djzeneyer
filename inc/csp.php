@@ -116,45 +116,61 @@ add_filter('style_loader_tag', function($html, $handle, $href, $media) {
 }, 20, 4);
 
 /**
- * 5. Nonce em <style>/<script> inline gerados por core/plugins (ex.: speculation
- * rules, wc inline css, scripts do footer). Eles não passam por script_loader_tag
- * e, sob 'strict-dynamic', são bloqueados sem nonce (gera erros de console que
- * derrubam o Lighthouse). Marca também com data-no-optimize para o LiteSpeed não
- * converter scripts inline em data: URIs (também bloqueados pela CSP).
+ * 5. Nonce nos <script> inline gerados pelo core/plugins.
+ *
+ * Só scripts emitidos por wp_get_inline_script_tag()/wp_print_inline_script_tag()
+ * (speculation rules, wp_add_inline_script, etc.) recebem o nonce, na origem.
+ * Nenhum HTML final é reescrito: um <script> injetado por conteúdo comprometido
+ * não passa por esses hooks e continua bloqueado pela CSP.
  */
-add_action('template_redirect', function () {
-    if (is_admin() || is_feed() || is_embed() || wp_doing_ajax()) return;
-    if (defined('REST_REQUEST') && REST_REQUEST) return;
-    if (!class_exists('WP_HTML_Tag_Processor')) return;
+function djz_csp_should_add_nonce(): bool {
+    if (is_admin() || (defined('REST_REQUEST') && REST_REQUEST) || wp_doing_ajax()) return false;
+    return !is_feed();
+}
 
-    ob_start('djz_csp_add_inline_nonces');
+add_filter('wp_inline_script_attributes', function ($attributes) {
+    if (!is_array($attributes) || !djz_csp_should_add_nonce()) return $attributes;
+    if (empty($attributes['nonce'])) {
+        $attributes['nonce'] = djz_csp_nonce();
+    }
+    // Evita que o LiteSpeed converta o script inline em data: URI (bloqueado pela CSP).
+    $attributes['data-no-optimize'] = '1';
+    return $attributes;
+}, 20);
+
+/**
+ * 6. Nonce em <style> inline de core/plugins que não oferecem hook de atributos.
+ *
+ * wp_add_inline_style() imprime <style id="{handle}-inline-css"> sem filtro. Em vez
+ * de reescrever todo o HTML, só os ids conhecidos abaixo recebem o nonce. Para
+ * incluir outro, adicione o id via filtro 'djz_csp_inline_style_ids'.
+ * Estilos do próprio tema recebem o nonce direto no template.
+ */
+function djz_csp_inline_style_ids(): array {
+    return (array) apply_filters('djz_csp_inline_style_ids', [
+        'wp-img-auto-sizes-contain-inline-css',
+        'woocommerce-inline-inline-css',
+        'ai_summarization-inline-css',
+        'ai_content_translation-inline-css',
+    ]);
+}
+
+add_action('template_redirect', function () {
+    if (!djz_csp_should_add_nonce() || !class_exists('WP_HTML_Tag_Processor')) return;
+    ob_start('djz_csp_nonce_known_inline_styles');
 }, 1);
 
-function djz_csp_add_inline_nonces($html) {
-    if (!is_string($html) || $html === '' || stripos($html, '<html') === false) {
-        return $html;
-    }
+function djz_csp_nonce_known_inline_styles($html) {
+    if (!is_string($html) || stripos($html, '<style') === false) return $html;
 
+    $allowed = array_flip(djz_csp_inline_style_ids());
     $nonce = djz_csp_nonce();
     $p = new WP_HTML_Tag_Processor($html);
 
-    while ($p->next_tag()) {
-        $tag = $p->get_tag();
-
-        if ($tag === 'STYLE') {
-            if ($p->get_attribute('nonce') === null) {
-                $p->set_attribute('nonce', $nonce);
-            }
-            continue;
-        }
-
-        if ($tag === 'SCRIPT' && $p->get_attribute('src') === null) {
-            if ($p->get_attribute('nonce') === null) {
-                $p->set_attribute('nonce', $nonce);
-            }
-            if ($p->get_attribute('data-no-optimize') === null) {
-                $p->set_attribute('data-no-optimize', '1');
-            }
+    while ($p->next_tag('STYLE')) {
+        $id = $p->get_attribute('id');
+        if (is_string($id) && isset($allowed[$id]) && $p->get_attribute('nonce') === null) {
+            $p->set_attribute('nonce', $nonce);
         }
     }
 

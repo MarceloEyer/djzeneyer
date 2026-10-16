@@ -39,20 +39,25 @@ jobs:
           LIGHTHOUSE_URL: ${{ vars.LIGHTHOUSE_URL || 'https://djzeneyer.com' }}
         run: |
           node -e "const config = require('./lighthouserc.cjs'); console.log(config.ci.collect.url.join('\n'))" > /tmp/lighthouse-urls.txt
-          # Pass 1 waits until every page answers 200 (up to ~3 min per URL, retrying
-          # on any error such as Cloudflare 520/52x). Pass 2 re-fetches so LiteSpeed
-          # and Cloudflare serve a warm cache during the measured runs.
+          # Prazo total explícito: 6 min para TODAS as URLs e as duas passadas.
+          # Passada 1 espera cada página responder 200 (qualquer erro, inclusive
+          # 520 da Cloudflare, é tentado de novo a cada 10 s). Passada 2 aquece o
+          # cache do LiteSpeed/Cloudflare antes das medições.
+          DEADLINE=$((SECONDS + 360))
           for pass in 1 2; do
             while IFS= read -r url; do
-              echo "[pass ${pass}] ${url}"
-              curl --fail --location --show-error --silent \
-                --retry 12 --retry-delay 15 --retry-all-errors \
-                --max-time 30 \
-                --output /dev/null \
-                --write-out "  -> %{http_code} in %{time_total}s\n" \
-                "${url}"
+              echo "[passada ${pass}] ${url}"
+              until code=$(curl --location --silent --output /dev/null \
+                  --max-time 20 --write-out '%{http_code}' "${url}") && [ "${code}" = "200" ]; do
+                echo "  -> ${code:-erro}"
+                if [ "${SECONDS}" -ge "${DEADLINE}" ]; then
+                  echo "::error::${url} não respondeu 200 dentro de 6 min (último: ${code:-erro})"
+                  exit 1
+                fi
+                sleep 10
+              done
+              echo "  -> 200"
             done < /tmp/lighthouse-urls.txt
-            if [ "${pass}" = "1" ]; then sleep 20; fi
           done
 
       - name: Run Lighthouse CI

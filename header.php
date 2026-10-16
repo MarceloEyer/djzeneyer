@@ -24,7 +24,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <style>
+    <style nonce="<?php echo esc_attr(djz_csp_nonce()); ?>">
         /* CSS Crítico */
         #wpadminbar { display: none !important; }
         html { margin-top: 0 !important; }
