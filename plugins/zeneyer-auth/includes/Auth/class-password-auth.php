@@ -100,46 +100,12 @@ class Password_Auth {
         $captcha_validated = false;
 
         // --- 1. SEGURANÇA ANTI-BOT (TURNSTILE) ---
-        
-        // Apenas valida se for uma requisição via API REST (protege contra bots, mas libera admins no painel)
+        // Apenas valida em requisições REST (protege contra bots, mas libera admins no painel)
         if ( defined('REST_REQUEST') && REST_REQUEST ) {
-            
-            $turnstile_token = is_string($turnstile_token) ? sanitize_text_field($turnstile_token) : '';
-
-            // Pega a chave secreta do wp-config.php (Segurança Máxima)
-            $secret_key = defined('ZEN_TURNSTILE_SECRET_KEY') ? ZEN_TURNSTILE_SECRET_KEY : '';
-            
-            // Se a chave não estiver no config, erro crítico de servidor
-            if ( empty($secret_key) ) {
-                return new WP_Error('config_error', 'Erro de configuração de segurança no servidor (Chave ausente).', ['status' => 500]);
+            $captcha = self::verify_turnstile($turnstile_token);
+            if ( is_wp_error($captcha) ) {
+                return $captcha;
             }
-
-            if ( empty( $turnstile_token ) ) {
-                return new WP_Error( 'missing_captcha', 'Verificação de segurança obrigatória.', [ 'status' => 403 ] );
-            }
-            
-            $client_ip = \ZenEyer\Auth\Core\Client_IP::get();
-            $client_ip = $client_ip === '0.0.0.0' ? '' : $client_ip;
-
-            // Valida com o Cloudflare
-            $response = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-                'body' => [
-                    'secret'   => $secret_key,
-                    'response' => $turnstile_token,
-                    'remoteip' => $client_ip,
-                ]
-            ]);
-            
-            if ( is_wp_error( $response ) ) {
-                return new WP_Error( 'captcha_error', 'Erro ao conectar com servidor de validação.', [ 'status' => 500 ] );
-            }
-            
-            $result = json_decode( wp_remote_retrieve_body( $response ) );
-            
-            if ( ! is_object($result) || empty($result->success) ) {
-                return new WP_Error( 'invalid_captcha', 'Falha na verificação de segurança. Tente novamente.', [ 'status' => 403 ] );
-            }
-
             $captcha_validated = true;
         }
         // --- FIM DA SEGURANÇA ---
@@ -221,6 +187,168 @@ class Password_Auth {
     }
     
     /**
+     * Validate a Cloudflare Turnstile token.
+     *
+     * @param mixed $turnstile_token
+     * @return true|WP_Error
+     */
+    private static function verify_turnstile($turnstile_token) {
+        $turnstile_token = is_string($turnstile_token) ? sanitize_text_field($turnstile_token) : '';
+
+        // Chave secreta no wp-config.php
+        $secret_key = defined('ZEN_TURNSTILE_SECRET_KEY') ? ZEN_TURNSTILE_SECRET_KEY : '';
+
+        if ( empty($secret_key) ) {
+            return new WP_Error('config_error', __('Server security configuration error (missing key).', 'zeneyer-auth'), ['status' => 500]);
+        }
+
+        if ( empty($turnstile_token) ) {
+            return new WP_Error('missing_captcha', __('Security verification is required.', 'zeneyer-auth'), ['status' => 403]);
+        }
+
+        $client_ip = \ZenEyer\Auth\Core\Client_IP::get();
+        $client_ip = $client_ip === '0.0.0.0' ? '' : $client_ip;
+
+        $response = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+            'body' => [
+                'secret'   => $secret_key,
+                'response' => $turnstile_token,
+                'remoteip' => $client_ip,
+            ],
+        ]);
+
+        if ( is_wp_error($response) ) {
+            return new WP_Error('captcha_error', __('Could not reach the verification server.', 'zeneyer-auth'), ['status' => 500]);
+        }
+
+        $result = json_decode(wp_remote_retrieve_body($response));
+
+        if ( ! is_object($result) || empty($result->success) ) {
+            return new WP_Error('invalid_captcha', __('Security verification failed. Please try again.', 'zeneyer-auth'), ['status' => 403]);
+        }
+
+        return true;
+    }
+
+    /**
+     * Frontend URL that receives the reset/activation key (same page for every flow).
+     *
+     * @param \WP_User $user
+     * @param string   $key
+     * @return string
+     */
+    public static function build_reset_url($user, $key) {
+        $base = apply_filters('zeneyer_auth_reset_url', home_url('/reset-password/'), $user);
+
+        return add_query_arg([
+            'action' => 'reset_password',
+            'key'    => $key,
+            'login'  => rawurlencode($user->user_login),
+        ], $base);
+    }
+
+    /**
+     * Whether registration answers identically for new and existing e-mails.
+     * Enable with define('ZENEYER_AUTH_UNIFORM_REGISTRATION', true) or the filter.
+     */
+    public static function uniform_registration_enabled() {
+        $enabled = defined('ZENEYER_AUTH_UNIFORM_REGISTRATION') && ZENEYER_AUTH_UNIFORM_REGISTRATION;
+
+        return (bool) apply_filters('zeneyer_auth_uniform_registration', $enabled);
+    }
+
+    /**
+     * Registration without account enumeration.
+     *
+     * Always returns true on valid input: a new e-mail gets an account (random
+     * password) plus an activation link, an existing e-mail gets a notice with a
+     * reset link. Nobody is logged in; the owner of the mailbox sets the password.
+     *
+     * @return true|WP_Error
+     */
+    public static function register_pending($email, $password, $name = '', $turnstile_token = '') {
+        if ( defined('REST_REQUEST') && REST_REQUEST ) {
+            $captcha = self::verify_turnstile($turnstile_token);
+            if ( is_wp_error($captcha) ) {
+                return $captcha;
+            }
+        }
+
+        $email    = sanitize_email($email);
+        $password = trim((string) $password);
+        $name     = sanitize_text_field($name);
+
+        if ( empty($email) || empty($password) ) {
+            return new WP_Error('missing_fields', __('Email and password are required', 'zeneyer-auth'), ['status' => 400]);
+        }
+
+        if ( ! is_email($email) ) {
+            return new WP_Error('invalid_email', __('Invalid email address', 'zeneyer-auth'), ['status' => 400]);
+        }
+
+        if ( ! get_option('users_can_register') ) {
+            return new WP_Error('registration_disabled', __('User registration is disabled', 'zeneyer-auth'), ['status' => 403]);
+        }
+
+        $strength = self::validate_password_strength($password);
+        if ( is_wp_error($strength) ) {
+            return $strength;
+        }
+
+        $existing = get_user_by('email', $email);
+
+        if ( $existing ) {
+            $key = get_password_reset_key($existing);
+            if ( ! is_wp_error($key) ) {
+                wp_mail(
+                    $email,
+                    __('Your account already exists', 'zeneyer-auth'),
+                    sprintf(
+                        __('Someone tried to create an account with this e-mail, but you already have one. If it was you, set a new password here:', 'zeneyer-auth') . "\n\n%s\n\n" .
+                        __('If it was not you, ignore this message.', 'zeneyer-auth'),
+                        self::build_reset_url($existing, $key)
+                    )
+                );
+            }
+            return true;
+        }
+
+        $username = self::generate_username($email);
+        $create   = static function () use ($username, $email) {
+            return wp_create_user($username, wp_generate_password(32, true, true), $email);
+        };
+        $user_id = \ZenEyer\Auth\Core\Security_Shield::with_validated_registration($create);
+
+        if ( is_wp_error($user_id) ) {
+            // Do not reveal why (race with another registration, reserved name, ...).
+            return true;
+        }
+
+        if ( ! empty($name) ) {
+            wp_update_user(['ID' => $user_id, 'display_name' => $name]);
+        }
+
+        $user = get_user_by('id', $user_id);
+        $key  = $user ? get_password_reset_key($user) : null;
+
+        if ( $user && ! is_wp_error($key) ) {
+            wp_mail(
+                $email,
+                __('Activate your account', 'zeneyer-auth'),
+                sprintf(
+                    __('Welcome! Open the link below to choose your password and activate your account:', 'zeneyer-auth') . "\n\n%s\n\n" .
+                    __('If you did not request this, ignore this message.', 'zeneyer-auth'),
+                    self::build_reset_url($user, $key)
+                )
+            );
+        }
+
+        do_action('zeneyer_auth_user_registered', $user_id, $email);
+
+        return true;
+    }
+
+    /**
      * Request password reset
      *
      * @param string $email
@@ -252,11 +380,7 @@ class Password_Auth {
         }
         
         // Send email
-        $reset_url = add_query_arg([
-            'action' => 'reset_password',
-            'key' => $key,
-            'login' => rawurlencode($user->user_login),
-        ], wp_login_url());
+        $reset_url = self::build_reset_url($user, $key);
         
         $message = sprintf(
             __('Someone requested a password reset for your account. If this was you, click the link below:', 'zeneyer-auth') . "\n\n%s\n\n" .

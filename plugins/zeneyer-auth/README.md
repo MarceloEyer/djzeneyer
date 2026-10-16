@@ -58,4 +58,6 @@ JWT authentication plugin for the headless WordPress + React stack.
 - **CORS**: use apenas origens exatas em "Specific Allowed Origins", como `https://app.exemplo.com`, além das origens locais de desenvolvimento. `allow_all_origins` não tem mais efeito.
 - **Client IP**: `Core/Client_IP` confia em headers de proxy apenas para Cloudflare, loopback e IPs adicionados via `zeneyer_auth_trusted_proxies`. Revisar as faixas em https://www.cloudflare.com/ips/ quando a Cloudflare publicar mudanças.
 - **Rate limit** (por IP e ação): `login`, `register`, `google_login`, `refresh`, `password_reset`, `password_set`. Limites em Settings (`rate_limit_attempts`, `rate_limit_duration`).
+- **Cadastro uniforme (opt-in)**: com `ZENEYER_AUTH_UNIFORM_REGISTRATION`, o cadastro não revela se o e-mail já existe; a senha é definida pelo link enviado por e-mail. Sem a constante, o comportamento atual (login imediato, 409 para e-mail existente) é mantido.
+- **Aliases legados** (`/login`, `/register`, `/google`, `/refresh`, `/logout`) são deprecados; use `/auth/*`.
 - **Registro**: `Security_Shield` remove usuários criados fora dos fluxos validados (Turnstile/Google). Integrações legítimas usam o filtro `zeneyer_auth_allow_user_registration`.

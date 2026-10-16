@@ -1,5 +1,17 @@
 # ZenEyer Auth Pro - Changelog
 
+## [2.4.2] - 2026-10-16
+
+### Added
+- **Cadastro sem enumeração de e-mail** (opt-in): `define('ZENEYER_AUTH_UNIFORM_REGISTRATION', true)` ou filtro `zeneyer_auth_uniform_registration`. `POST /auth/register` responde igual para e-mail novo e existente (`data.status = verification_sent`), sem sessão. E-mail novo recebe link de ativação (define a senha); e-mail existente recebe aviso com link de redefinição. O frontend (`authService`, `UserContext`, `AuthModal`) já trata a resposta `pending`.
+- `Password_Auth::build_reset_url()` e filtro `zeneyer_auth_reset_url`.
+
+### Changed
+- E-mail de redefinição de senha aponta para a página do frontend (`/reset-password/`), igual ao convite do Private Music, em vez de `wp-login.php`.
+- Turnstile extraído para `Password_Auth::verify_turnstile()`; mensagens agora traduzíveis (`zeneyer-auth`).
+- Aliases legados `/login`, `/register`, `/google`, `/refresh`, `/logout` respondem com `Deprecation: true` e `Link: rel="successor-version"` apontando para `/auth/*`. `/session` continua (usado pelo frontend).
+
+
 ## [2.4.1] - 2026-10-16
 
 ### Security
