@@ -47,14 +47,26 @@ jobs:
           for pass in 1 2; do
             while IFS= read -r url; do
               echo "[passada ${pass}] ${url}"
-              until code=$(curl --location --silent --output /dev/null \
-                  --max-time 20 --write-out '%{http_code}' "${url}") && [ "${code}" = "200" ]; do
-                echo "  -> ${code:-erro}"
-                if [ "${SECONDS}" -ge "${DEADLINE}" ]; then
-                  echo "::error::${url} não respondeu 200 dentro de 6 min (último: ${code:-erro})"
+              while true; do
+                remaining=$((DEADLINE - SECONDS))
+                if [ "$remaining" -le 0 ]; then
+                  echo "::error::Prazo total de 6 min esgotado em ${url}"
                   exit 1
                 fi
-                sleep 10
+                attempt_timeout=$((remaining < 20 ? remaining : 20))
+                code=000
+                if code=$(curl --location --silent --output /dev/null \
+                    --max-time "$attempt_timeout" --write-out '%{http_code}' "${url}") \
+                    && [ "${code}" = "200" ] && [ "$SECONDS" -lt "$DEADLINE" ]; then
+                  break
+                fi
+                echo "  -> ${code:-erro}"
+                remaining=$((DEADLINE - SECONDS))
+                if [ "$remaining" -le 0 ]; then
+                  echo "::error::Prazo total de 6 min esgotado em ${url} (último: ${code:-erro})"
+                  exit 1
+                fi
+                sleep "$((remaining < 10 ? remaining : 10))"
               done
               echo "  -> 200"
             done < /tmp/lighthouse-urls.txt
