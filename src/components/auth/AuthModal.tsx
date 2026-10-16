@@ -128,6 +128,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => 
           // Server sent an activation e-mail instead of opening a session.
           setNotice(t('auth.register.check_email'));
           setTurnstileToken('');
+          setPassword('');
           setMode('login');
           return;
         }
