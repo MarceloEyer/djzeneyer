@@ -46,7 +46,9 @@ const pct = (score) => (typeof score === 'number' ? Math.round(score * 100) : nu
 
 function median(values) {
   const nums = values.filter((v) => typeof v === 'number').sort((a, b) => a - b);
-  return nums.length ? nums[Math.floor(nums.length / 2)] : null;
+  if (nums.length === 0) return null;
+  const middle = Math.floor(nums.length / 2);
+  return nums.length % 2 === 0 ? (nums[middle - 1] + nums[middle]) / 2 : nums[middle];
 }
 
 function icon(score, min) {
