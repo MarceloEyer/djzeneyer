@@ -343,8 +343,14 @@ class Zen_SEO_Admin
 
         $sanitized = [];
 
+        if (!\is_array($input)) {
+            return Zen_SEO_Helpers::get_global_settings();
+        }
+
         foreach ($input as $key => $value) {
-            if (empty($value)) {
+            // Only scalar settings exist; arrays/objects (e.g. from a crafted import) would
+            // make sanitize_text_field() throw a TypeError on PHP 8.
+            if (empty($value) || !\is_scalar($value) || !\is_string($key)) {
                 continue;
             }
 
@@ -721,6 +727,11 @@ class Zen_SEO_Admin
 
             if (\UPLOAD_ERR_OK !== $upload_error || '' === $import_file_path || !\is_uploaded_file($import_file_path)) {
                 \add_settings_error('zen_seo_tools', 'no_file', __('Please select a file to import.', 'zen-seo'), 'error');
+                return;
+            }
+
+            if (!empty($import_file['size']) && (int) $import_file['size'] > 512 * 1024) {
+                \add_settings_error('zen_seo_tools', 'file_too_large', __('Backup file is too large (max 512 KB).', 'zen-seo'), 'error');
                 return;
             }
 

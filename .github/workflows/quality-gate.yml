@@ -71,6 +71,22 @@ jobs:
           node --test scripts/cloudflare-cache-rule.node-test.mjs
           npm run security:check
 
+      - name: Setup PHP for CSP regression
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v3
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Verify CSP inline style trust boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l inc/csp.php
+          curl --fail --silent --show-error --location --max-time 60 --retry 2 \
+            https://wordpress.org/wordpress-6.9.zip -o "$RUNNER_TEMP/wordpress-csp.zip"
+          unzip -q "$RUNNER_TEMP/wordpress-csp.zip" -d "$RUNNER_TEMP/wordpress-csp"
+          php scripts/php/test-csp-inline-styles.php "$RUNNER_TEMP/wordpress-csp/wordpress"
+
       - name: Generate sitemaps
         run: npm run generate-sitemaps
 

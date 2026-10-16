@@ -1,6 +1,6 @@
 # API_GENERATED.md
 
-> **Gerado automaticamente** por `scripts/generate-api-inventory.mjs` em 2026-09-20.
+> **Gerado automaticamente** por `scripts/generate-api-inventory.mjs` em 2026-10-16.
 > Não edite manualmente. Para o mapa curado, veja [`.context/API.md`](./API.md).
 
 Total de endpoints encontrados: **51**
@@ -72,17 +72,17 @@ Total de endpoints encontrados: **51**
 | `POST` | `/auth/register` | `register` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `GET` | `/auth/session` | `session` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `POST` | `/auth/validate` | `validate` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
-| `POST` | `/google` | `google_login` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
-| `POST` | `/login` | `login` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
-| `POST` | `/logout` | `logout` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
+| `POST` | `/google` | — | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
+| `POST` | `/login` | — | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
+| `POST` | `/logout` | — | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `GET` | `/newsletter` | `get_newsletter_status` | `[__CLASS__], check_auth` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `POST` | `/newsletter` | `toggle_newsletter` | `[__CLASS__], check_auth` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `GET` | `/orders` | `get_orders` | `[__CLASS__], check_auth` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `GET` | `/profile` | `get_profile` | `[__CLASS__], check_auth` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `POST` | `/profile` | `update_profile` | `[__CLASS__], check_auth` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
-| `POST` | `/refresh` | `refresh` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
-| `POST` | `/register` | `register` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
-| `GET` | `/session` | `session` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
+| `POST` | `/refresh` | — | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
+| `POST` | `/register` | — | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
+| `GET` | `/session` | — | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 | `GET` | `/settings` | `get_settings` | `__return_true` | `plugins/zeneyer-auth/includes/API/class-rest-routes.php` |
 
 ## `zengame/v1`

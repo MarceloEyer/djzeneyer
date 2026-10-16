@@ -45,11 +45,11 @@ class JWT_Manager
             'iat' => $issued_at,
             'nbf' => $issued_at,
             'exp' => $expiration,
+            // Minimal claims: JWT payloads are only base64-encoded, so keep PII
+            // (e-mail, name) and role snapshots out. Capabilities are always read
+            // live from the database. Extend through `zeneyer_auth_jwt_payload`.
             'data' => [
                 'user_id' => $user->ID,
-                'email' => $user->user_email,
-                'display_name' => $user->display_name,
-                'roles' => $user->roles,
             ],
         ];
 
@@ -274,11 +274,7 @@ class JWT_Manager
      */
     private static function get_client_ip()
     {
-        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']))
-            return $_SERVER['HTTP_CF_CONNECTING_IP'];
-        if (!empty($_SERVER['HTTP_X_REAL_IP']))
-            return $_SERVER['HTTP_X_REAL_IP'];
-        return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        return Client_IP::get();
     }
 
     /**
@@ -311,9 +307,25 @@ class JWT_Manager
 
         // Priority 4: Generate new secret
         $new_secret = wp_generate_password(64, true, true);
-        update_option('zeneyer_auth_jwt_secret', $new_secret);
+        update_option('zeneyer_auth_jwt_secret', $new_secret, false); // never autoload the secret
 
         return $new_secret;
+    }
+
+    /**
+     * Whether the signing secret comes from wp-config.php (recommended) instead of
+     * the database fallback.
+     *
+     * @return bool
+     */
+    public static function has_config_secret()
+    {
+        foreach (['ZENEYER_JWT_SECRET', 'JWT_AUTH_SECRET_KEY', 'SIMPLE_JWT_PRIVATE_KEY'] as $constant) {
+            if (defined($constant) && constant($constant) !== '' && constant($constant) !== null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

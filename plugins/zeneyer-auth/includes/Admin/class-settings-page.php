@@ -15,6 +15,21 @@ class Settings_Page
         add_action('admin_menu', [$this, 'add_admin_menu']);
         add_action('admin_init', [$this, 'register_settings']);
         add_action('admin_post_zen_invalidate_all_sessions', [$this, 'handle_invalidate_sessions']);
+        add_action('admin_notices', [$this, 'maybe_warn_about_jwt_secret']);
+    }
+
+    /**
+     * Warn admins while the JWT signing secret lives only in the database.
+     */
+    public function maybe_warn_about_jwt_secret()
+    {
+        if (!current_user_can('manage_options') || \ZenEyer\Auth\Core\JWT_Manager::has_config_secret()) {
+            return;
+        }
+
+        echo '<div class="notice notice-warning"><p><strong>ZenEyer Auth:</strong> '
+            . esc_html__('the JWT signing secret is stored in the database. Define ZENEYER_JWT_SECRET in wp-config.php (64+ random characters) so a database leak cannot be used to forge tokens. Changing it signs everyone out.', 'zeneyer-auth')
+            . '</p></div>';
     }
 
     public function handle_invalidate_sessions()
@@ -63,11 +78,6 @@ class Settings_Page
             'id' => 'token_expiration',
             'type' => 'number',
             'default' => 7
-        ]);
-
-        add_settings_field('allow_all_origins', 'Allow All Origins (CORS)', [$this, 'render_checkbox'], 'zeneyer-auth', 'zeneyer_auth_general', [
-            'id' => 'allow_all_origins',
-            'desc' => '<strong>WARNING:</strong> Check this only for local testing or troubleshooting. Disables origin protection.'
         ]);
 
         add_settings_field('allowed_origins_list', 'Specific Allowed Origins', [$this, 'render_textarea'], 'zeneyer-auth', 'zeneyer_auth_general', [
@@ -153,7 +163,6 @@ class Settings_Page
 
         $sanitized['google_client_id'] = isset($input['google_client_id']) ? sanitize_text_field($input['google_client_id']) : '';
         $sanitized['token_expiration'] = isset($input['token_expiration']) ? absint($input['token_expiration']) : 7;
-        $sanitized['allow_all_origins'] = isset($input['allow_all_origins']) ? 1 : 0;
         
         if (isset($input['allowed_origins_list'])) {
             $origins = explode("\n", $input['allowed_origins_list']);

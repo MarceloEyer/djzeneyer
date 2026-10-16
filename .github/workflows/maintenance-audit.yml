@@ -129,4 +129,6 @@ jobs:
 
       - name: Summarize Lighthouse warnings
         if: always()
+        env:
+          LIGHTHOUSE_PROFILE: ${{ matrix.profile }}
         run: node scripts/summarize-lighthouse-results.mjs

@@ -5,7 +5,7 @@
  */
 ?>
 
-    </div> <script>
+    </div> <script nonce="<?php echo esc_attr(djz_csp_nonce()); ?>" data-no-optimize="1">
         // 🕵️‍♂️ DETECTOR DE REACT (Transição Suave)
         // Monitora o container #root. Assim que o React injeta conteúdo novo,
         // adicionamos a classe .react-loaded ao body.

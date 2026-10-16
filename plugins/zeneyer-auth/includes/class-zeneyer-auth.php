@@ -62,6 +62,7 @@ final class ZenEyer_Auth_Pro
     {
         // Internal Components
         require_once ZENEYER_AUTH_PATH . 'includes/Core/class-jwt-manager.php';
+        require_once ZENEYER_AUTH_PATH . 'includes/Core/class-client-ip.php';
         require_once ZENEYER_AUTH_PATH . 'includes/Core/class-cors-handler.php';
         require_once ZENEYER_AUTH_PATH . 'includes/Core/class-rate-limiter.php';
         require_once ZENEYER_AUTH_PATH . 'includes/Core/class-wp-auth-integration.php';

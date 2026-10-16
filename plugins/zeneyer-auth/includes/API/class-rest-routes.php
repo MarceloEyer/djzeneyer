@@ -42,9 +42,21 @@ class Rest_Routes
         ];
 
         foreach ($aliases as $route => $callback) {
+            $is_session = ($callback === 'session'); // /session is still used by the frontend
+
             register_rest_route(self::NAMESPACE , $route, [
                 'methods' => ($callback === 'session' ? WP_REST_Server::READABLE : WP_REST_Server::CREATABLE),
-                'callback' => [__CLASS__, $callback],
+                'callback' => $is_session
+                    ? [__CLASS__, $callback]
+                    : static function ($request) use ($route, $callback) {
+                        // Legacy alias: same behaviour, flagged for removal in favour of /auth/*.
+                        $response = rest_ensure_response(call_user_func([__CLASS__, $callback], $request));
+                        if ($response instanceof \WP_HTTP_Response) {
+                            $response->header('Deprecation', 'true');
+                            $response->header('Link', '<' . rest_url(self::NAMESPACE . '/auth' . $route) . '>; rel="successor-version"');
+                        }
+                        return $response;
+                    },
                 'permission_callback' => '__return_true',
             ]);
         }
@@ -254,6 +266,24 @@ class Rest_Routes
         $turnstile_token = $request->get_param('turnstileToken');
         $turnstile_token = is_string($turnstile_token) ? sanitize_text_field($turnstile_token) : '';
 
+        if (Password_Auth::uniform_registration_enabled()) {
+            $pending = Password_Auth::register_pending($email, $password, $name, $turnstile_token);
+
+            if (is_wp_error($pending)) {
+                Rate_Limiter::increment('register');
+                return $pending;
+            }
+
+            // Count every accepted attempt as well: this branch sends e-mail.
+            Rate_Limiter::increment('register');
+
+            return rest_ensure_response([
+                'success' => true,
+                'message' => 'If the address can be registered, an e-mail with the next steps was sent.',
+                'data' => ['status' => 'verification_sent'],
+            ]);
+        }
+
         $user = Password_Auth::register($email, $password, $name, $turnstile_token);
 
         if (is_wp_error($user)) {
@@ -337,14 +367,20 @@ class Rest_Routes
     // Refresh token endpoint
     public static function refresh($request)
     {
-        $refresh_token = $request->get_param('refresh_token');
-        $user_id = $request->get_param('user_id');
+        $rate_check = Rate_Limiter::check('refresh');
+        if (is_wp_error($rate_check)) {
+            return $rate_check;
+        }
 
-        if (empty($refresh_token) || empty($user_id)) {
+        $refresh_token = $request->get_param('refresh_token');
+        $user_id = absint($request->get_param('user_id'));
+
+        if (empty($refresh_token) || !is_string($refresh_token) || empty($user_id)) {
             return new WP_Error('missing_params', 'Refresh token and user ID required', ['status' => 400]);
         }
 
         if (!JWT_Manager::validate_refresh_token($user_id, $refresh_token)) {
+            Rate_Limiter::increment('refresh');
             return new WP_Error('invalid_refresh_token', 'Invalid refresh token', ['status' => 401]);
         }
 
@@ -410,6 +446,15 @@ class Rest_Routes
     // Password reset request
     public static function request_reset($request)
     {
+        $rate_check = Rate_Limiter::check('password_reset');
+        if (is_wp_error($rate_check)) {
+            return $rate_check;
+        }
+
+        // Count every request (not only failures): the endpoint sends e-mail and
+        // always answers the same way, so it must be throttled regardless of outcome.
+        Rate_Limiter::increment('password_reset');
+
         $email = $request->get_param('email');
 
         $result = Password_Auth::request_password_reset($email);
@@ -427,6 +472,11 @@ class Rest_Routes
     // Set new password
     public static function set_password($request)
     {
+        $rate_check = Rate_Limiter::check('password_set');
+        if (is_wp_error($rate_check)) {
+            return $rate_check;
+        }
+
         $key = $request->get_param('key');
         $login = $request->get_param('login');
         $password = $request->get_param('password');
@@ -434,8 +484,12 @@ class Rest_Routes
         $result = Password_Auth::reset_password($key, $login, $password);
 
         if (is_wp_error($result)) {
+            Rate_Limiter::increment('password_set');
             return $result;
         }
+
+        // Do not reset 'password_set': the bucket is keyed by IP and shared with
+        // attempts against other accounts, so a valid reset must not clear it.
 
         return rest_ensure_response([
             'success' => true,
@@ -1042,4 +1096,3 @@ class Rest_Routes
         delete_transient('djz_auth_settings_v1');
     }
 }
-

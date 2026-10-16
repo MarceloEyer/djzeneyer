@@ -62,18 +62,34 @@ export const authLogin = async (email: string, password: string): Promise<AuthRe
   return extractAuthResult(await parseJsonOrThrow(res));
 };
 
+/** Returned when the server answers registration identically for new and existing e-mails
+ *  (ZENEYER_AUTH_UNIFORM_REGISTRATION): no session, the user finishes via the e-mail link. */
+export interface RegisterPending {
+  pending: true;
+}
+
+export type RegisterResult = AuthResult | RegisterPending;
+
+export const isRegisterPending = (result: RegisterResult): result is RegisterPending =>
+  'pending' in result && result.pending === true;
+
 export const authRegister = async (
   name: string,
   email: string,
   password: string,
   turnstileToken?: string
-): Promise<AuthResult> => {
+): Promise<RegisterResult> => {
   const res = await fetch(`${authBase()}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password, name, turnstileToken: turnstileToken || '' }),
   });
-  return extractAuthResult(await parseJsonOrThrow(res));
+  const json = await parseJsonOrThrow(res);
+  const pending = json as { success?: boolean; data?: { status?: string } };
+  if (pending.success && pending.data?.status === 'verification_sent') {
+    return { pending: true };
+  }
+  return extractAuthResult(json);
 };
 
 export const authGoogleLogin = async (idToken: string): Promise<AuthResult> => {

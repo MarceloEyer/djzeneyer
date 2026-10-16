@@ -49,8 +49,27 @@ class Google_Provider {
             return $user;
         }
         
-        // Update Google ID
-        update_user_meta($user->ID, 'zeneyer_google_id', $user_data['sub']);
+        // Bind the account to the Google subject on first login and require the same
+        // subject afterwards, so a recycled/changed Google e-mail cannot take over it.
+        $google_sub = isset($user_data['sub']) ? (string) $user_data['sub'] : '';
+        if ($google_sub === '') {
+            return new WP_Error(
+                'google_invalid_token',
+                __('Invalid or expired Google token', 'zeneyer-auth'),
+                ['status' => 401]
+            );
+        }
+
+        $stored_sub = (string) get_user_meta($user->ID, 'zeneyer_google_id', true);
+        if ($stored_sub !== '' && !hash_equals($stored_sub, $google_sub)) {
+            return new WP_Error(
+                'google_account_mismatch',
+                __('This account is linked to a different Google identity', 'zeneyer-auth'),
+                ['status' => 403]
+            );
+        }
+
+        update_user_meta($user->ID, 'zeneyer_google_id', $google_sub);
 
         // Trigger standard WP login hook for GamiPress and other plugins (streak, achievements, etc.)
         do_action('wp_login', $user->user_login, $user);
@@ -155,12 +174,12 @@ class Google_Provider {
         $username = self::generate_username($email);
         $password = wp_generate_password(20, true, true);
         
-        // ✅ SALVA-VIDAS: Define que este cadastro é legítimo para a "Guilhotina" não deletar
-        if ( ! defined('ZEN_AUTH_VALIDATED') ) {
-            define('ZEN_AUTH_VALIDATED', true);
-        }
-
-        $user_id = wp_create_user($username, $password, $email);
+        // Google token already validated above: allow the Security Shield to accept this user_register.
+        $user_id = \ZenEyer\Auth\Core\Security_Shield::with_validated_registration(
+            static function () use ($username, $password, $email) {
+                return wp_create_user($username, $password, $email);
+            }
+        );
         
         if (is_wp_error($user_id)) {
             return $user_id;
