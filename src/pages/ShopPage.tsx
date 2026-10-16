@@ -259,6 +259,7 @@ interface ProductRowProps {
 }
 
 const ProductRow = memo(({ title, products, onAddToCart, isAdding, activeProductId, formatPrice, getProductPath }: ProductRowProps) => {
+  const { t } = useTranslation();
   const carouselRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
