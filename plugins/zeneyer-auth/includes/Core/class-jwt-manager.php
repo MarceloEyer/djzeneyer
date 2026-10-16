@@ -274,11 +274,7 @@ class JWT_Manager
      */
     private static function get_client_ip()
     {
-        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']))
-            return $_SERVER['HTTP_CF_CONNECTING_IP'];
-        if (!empty($_SERVER['HTTP_X_REAL_IP']))
-            return $_SERVER['HTTP_X_REAL_IP'];
-        return $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        return Client_IP::get();
     }
 
     /**
