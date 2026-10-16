@@ -73,9 +73,11 @@ final class Client_IP
             return $cf_ip;
         }
 
-        // Nginx/LiteSpeed-style single-value header (only reached for trusted peers).
+        // Nginx/LiteSpeed-style single-value header. Only a local reverse proxy
+        // (loopback peer) is trusted to set it; a configured CIDR proxy could
+        // forward an attacker-supplied value untouched.
         $real_ip = self::server_ip('HTTP_X_REAL_IP');
-        if ($real_ip !== '' && !self::is_trusted_proxy($real_ip)) {
+        if ($real_ip !== '' && in_array($remote, ['127.0.0.1', '::1'], true) && !self::is_trusted_proxy($real_ip)) {
             return $real_ip;
         }
 
