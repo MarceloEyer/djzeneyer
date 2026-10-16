@@ -65,6 +65,7 @@ class CORS_Handler {
             header('Access-Control-Allow-Credentials: true');
         }
 
+        header('Vary: Origin');
         header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS, PATCH');
         header('Access-Control-Allow-Headers: Authorization, Content-Type, X-WP-Nonce, X-Requested-With');
         header('Access-Control-Max-Age: 86400');
@@ -82,10 +83,9 @@ class CORS_Handler {
     {
         $options = get_option('zeneyer_auth_settings', []);
 
-        // If "Allow All Origins" is checked, return early with current origin if set
-        if (!empty($options['allow_all_origins']) && isset($_SERVER['HTTP_ORIGIN'])) {
-            return [$_SERVER['HTTP_ORIGIN']];
-        }
+        // The legacy "allow_all_origins" setting is intentionally ignored: reflecting any
+        // Origin together with Access-Control-Allow-Credentials lets any site read
+        // authenticated responses. Use `allowed_origins_list` (supports wildcards) instead.
 
         $origins = [
             'http://localhost:5173',
