@@ -77,7 +77,7 @@ function buildBreadcrumbItems(pathname: string): Array<{ position: number; item:
 
 function buildMusicEventGraph(events: EventSchemaData[]): Array<Record<string, unknown>> {
   const now = Date.now();
-  const threeHoursMs = 3 * 60 * 60 * 1000;
+  const fourHoursMs = 4 * 60 * 60 * 1000;
   const musicEvents: Record<string, unknown>[] = [];
 
   for (const event of events) {
@@ -94,17 +94,20 @@ function buildMusicEventGraph(events: EventSchemaData[]): Array<Record<string, u
     const endDate =
       endDateRaw ||
       (!isNaN(parsedStartDate)
-        ? new Date(parsedStartDate + threeHoursMs).toISOString()
+        ? new Date(parsedStartDate + fourHoursMs).toISOString()
         : undefined);
 
     const isPast = !isNaN(parsedStartDate) ? parsedStartDate < now : false;
     const locName = event.location?.venue ?? (event.event_location as string | undefined) ?? 'TBA';
     const isOnline = locName.toLowerCase().includes('online');
 
-    const eventCity = event.location?.city ?? '';
-    const eventCountry = event.location?.country ?? '';
+    const eventCity = event.location?.city?.trim() || '';
+    const eventRegion = event.location?.region?.trim() || '';
+    const eventCountry = event.location?.country?.trim() || '';
+    if (!eventCity && !eventRegion && !eventCountry) continue;
     const addressObj: Record<string, string> = { '@type': 'PostalAddress' };
     if (eventCity) addressObj['addressLocality'] = eventCity;
+    if (eventRegion) addressObj['addressRegion'] = eventRegion;
     if (eventCountry) addressObj['addressCountry'] = eventCountry;
 
     const baseOffer = {
@@ -274,8 +277,16 @@ describe('MusicEvent schema generation', () => {
       title: 'Online Class',
       starts_at: '2026-08-01T18:00:00.000Z',
       event_location: 'Online via Zoom',
+      location: { country: 'BR' },
     }]);
     expect(event.eventAttendanceMode).toBe('https://schema.org/OnlineEventAttendanceMode');
+  });
+
+  it('omits online schema without a real address', () => {
+    expect(buildMusicEventGraph([{
+      starts_at: '2099-08-01T18:00:00.000Z',
+      event_location: 'Online via Zoom',
+    }])).toEqual([]);
   });
 
   it('uses OfflineEventAttendanceMode for physical venues', () => {

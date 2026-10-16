@@ -148,6 +148,9 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
       if (eventRegion) addressObj['addressRegion'] = eventRegion;
       if (eventCountry) addressObj['addressCountry'] = eventCountry;
 
+      // Match zen-bit: schema requires a real address; UI event data stays untouched.
+      if (!eventCity && !eventRegion && !eventCountry) continue;
+
       const eventDescription =
         stripHtml(event.description || (event.desc as string | undefined) || '').substring(0, 300) ||
         `Live Brazilian Zouk DJ set by ${artistIdentity.stageName} at ${locName}.`;
@@ -165,7 +168,7 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
         location: {
           '@type': 'Place',
           name: locName,
-          ...(eventCity || eventRegion || eventCountry ? { address: addressObj } : {}),
+          address: addressObj,
         },
         image: (event.image as string | undefined) || finalImage,
         description: eventDescription,

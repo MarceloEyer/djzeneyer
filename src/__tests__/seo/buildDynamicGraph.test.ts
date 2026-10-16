@@ -115,26 +115,13 @@ describe('buildDynamicGraph — MusicEvent', () => {
     undefined,
     { venue: 'Arena Rio' },
     { venue: 'Arena Rio', city: '', region: '  ', country: '' },
-  ])('preserves the event and valid fields without an address: %j', (location) => {
-    const validEvent = {
-      ...futureEvent,
-      ends_at: '2099-12-02T02:00:00Z',
-      canonical_url: `${BASE}/events/rio/`,
-      description: 'A Brazilian Zouk night.',
-      image: `${BASE}/images/rio.jpg`,
-      tickets: ['https://example.com/tickets'],
-    };
-    const complete = buildDynamicGraph({ ...baseOpts, events: [validEvent] })
-      .find((n) => n['@type'] === 'MusicEvent')!;
-    const ev = buildDynamicGraph({ ...baseOpts, events: [{ ...validEvent, location }] })
-      .find((n) => n['@type'] === 'MusicEvent')!;
-    expect(ev).toEqual({
-      ...complete,
-      location: { '@type': 'Place', name: location?.venue || 'TBA' },
-    });
-    expect(ev.location).not.toHaveProperty('address');
+  ])('omits addressless MusicEvent without mutating UI event data: %j', (location) => {
+    const events = [{ ...futureEvent, location }];
+    const original = structuredClone(events);
+    const graph = buildDynamicGraph({ ...baseOpts, events });
+    expect(graph.some((n) => n['@type'] === 'MusicEvent' || n['@type'] === 'EventSeries')).toBe(false);
+    expect(events).toEqual(original);
   });
-
   it.each([
     [{ city: 'Rio de Janeiro', region: '', country: ' ' }, { addressLocality: 'Rio de Janeiro' }],
     [{ city: '', region: 'RJ', country: '' }, { addressRegion: 'RJ' }],
@@ -180,13 +167,33 @@ describe('buildDynamicGraph — MusicEvent', () => {
     expect(performer['@id']).toBe(`${BASE}/#musicgroup`);
   });
 
-  it('online event gets OnlineEventAttendanceMode', () => {
-    const online = { ...futureEvent, location: { venue: 'Online Stream', city: '', country: '' } };
+  it('online event with real address gets OnlineEventAttendanceMode', () => {
+    const online = { ...futureEvent, location: { ...futureEvent.location, venue: 'Online Stream' } };
     const graph = buildDynamicGraph({ ...baseOpts, events: [online] });
     const ev = graph.find((n) => n['@type'] === 'MusicEvent')!;
     expect(ev.eventAttendanceMode).toBe('https://schema.org/OnlineEventAttendanceMode');
   });
 
+  it('omits an online MusicEvent without a real address', () => {
+    const online = { ...futureEvent, location: { venue: 'Online Stream', city: '', country: '' } };
+    const graph = buildDynamicGraph({ ...baseOpts, events: [online] });
+    expect(graph.find((n) => n['@type'] === 'MusicEvent')).toBeUndefined();
+  });
+
+  it('excludes addressless events from EventSeries while preserving valid nodes', () => {
+    const second = { ...futureEvent, event_id: '2', title: 'Second Event' };
+    const missingAddress = { ...futureEvent, event_id: '3', location: { venue: 'Unknown Address' } };
+    const validGraph = buildDynamicGraph({ ...baseOpts, events: [futureEvent, second] });
+    const graph = buildDynamicGraph({ ...baseOpts, events: [futureEvent, missingAddress, second] });
+    expect(graph).toEqual(validGraph);
+    expect(graph.find((n) => n['@type'] === 'EventSeries')).toBeDefined();
+  });
+
+  it('emits the remaining valid MusicEvent when another event has no address', () => {
+    const missingAddress = { ...futureEvent, event_id: '2', location: { venue: 'Unknown Address' } };
+    expect(buildDynamicGraph({ ...baseOpts, events: [futureEvent, missingAddress] }))
+      .toEqual(buildDynamicGraph({ ...baseOpts, events: [futureEvent] }));
+  });
   it('uses a stripped plain-text title for MusicEvent name', () => {
     const graph = buildDynamicGraph({
       ...baseOpts,
