@@ -116,8 +116,9 @@ CacheKeyModify -qs:_ga
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  # Permissions-Policy é enviado por inc/csp.php (delega YouTube). Não duplicar aqui:
-  # "Header always set" daqui sobrescreve o do PHP e remove as delegações do YouTube.
+  # Permissions-Policy: fonte única aqui (cobre HTML prerenderizado/cacheado e estáticos).
+  # Mantém a delegação ao YouTube; o inc/csp.php envia o mesmo valor, manter em sincronia.
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), display-capture=(), accelerometer=(self \"https://www.youtube.com\" \"https://www.youtube-nocookie.com\"), gyroscope=(self \"https://www.youtube.com\" \"https://www.youtube-nocookie.com\"), compute-pressure=(self \"https://www.youtube.com\" \"https://www.youtube-nocookie.com\")"
   # HSTS gerenciado exclusivamente pelo Cloudflare — não definir aqui para evitar duplicidade
   
   # CORREÇÃO CRÍTICA: Permite que o popup do Google Login se comunique com o site
