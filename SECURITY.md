@@ -27,7 +27,7 @@ Please **do not** open a public issue on GitHub for security vulnerabilities. We
 -   **Abuse protection**: Login, registration, Google login, token refresh and password reset/set are rate limited per client IP. Proxy headers are trusted only from Cloudflare and configured proxies.
 -   **Account enumeration**: Registration can be switched to a uniform response (`ZENEYER_AUTH_UNIFORM_REGISTRATION`); login and password reset already answer identically for unknown accounts.
 -   **CORS**: Only explicitly allowed origins receive credentialed CORS headers.
--   **Private music invite links**: the one-time admin transient (`zen-private-music-delivery`) stores the password-reset URL sealed with AES-256-GCM; the key is derived from `AUTH_KEY`/`SECURE_AUTH_KEY` (never persisted in the database).
+-   **Private music invite links**: the one-time admin transient (`zen-private-music-delivery`) stores the password-reset URL sealed with AES-256-GCM; the key is derived from `AUTH_KEY`/`SECURE_AUTH_KEY` (never persisted in the database). Fails closed: if neither secret is configured, no link is sealed or stored, and the admin sees an explicit error instead of a false success.
 
 ## Dependencies and updates
 

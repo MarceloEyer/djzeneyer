@@ -84,7 +84,7 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
         }))
       : events;
     const now = Date.now();
-    const threeHoursMs = 3 * 60 * 60 * 1000;
+    const fourHoursMs = 4 * 60 * 60 * 1000;
     const musicEvents: Record<string, unknown>[] = [];
 
     for (const event of schemaEvents) {
@@ -105,7 +105,7 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
       const endDate =
         endDateRaw ||
         (!isNaN(parsedStartDate)
-          ? new Date(parsedStartDate + threeHoursMs).toISOString()
+          ? new Date(parsedStartDate + fourHoursMs).toISOString()
           : undefined);
 
       const isPast = !isNaN(parsedStartDate) ? parsedStartDate < now : false;
@@ -139,14 +139,17 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
         eventOffers = { ...baseOffer, url: canonicalUrl || finalUrl };
       }
 
-      const eventCity = event.location?.city || '';
-      const eventRegion = event.location?.region || '';
-      const eventCountry = event.location?.country || '';
+      const eventCity = event.location?.city?.trim() || '';
+      const eventRegion = event.location?.region?.trim() || '';
+      const eventCountry = event.location?.country?.trim() || '';
       const isOnline = locName.toLowerCase().includes('online');
       const addressObj: Record<string, string> = { '@type': 'PostalAddress' };
       if (eventCity) addressObj['addressLocality'] = eventCity;
       if (eventRegion) addressObj['addressRegion'] = eventRegion;
       if (eventCountry) addressObj['addressCountry'] = eventCountry;
+
+      // Match zen-bit: schema requires a real address; UI event data stays untouched.
+      if (!eventCity && !eventRegion && !eventCountry) continue;
 
       const eventDescription =
         stripHtml(event.description || (event.desc as string | undefined) || '').substring(0, 300) ||
@@ -162,7 +165,11 @@ export function buildDynamicGraph(opts: BuildDynamicGraphOpts): Record<string, u
         eventAttendanceMode: isOnline
           ? 'https://schema.org/OnlineEventAttendanceMode'
           : 'https://schema.org/OfflineEventAttendanceMode',
-        location: { '@type': 'Place', name: locName, address: addressObj },
+        location: {
+          '@type': 'Place',
+          name: locName,
+          address: addressObj,
+        },
         image: (event.image as string | undefined) || finalImage,
         description: eventDescription,
         performer: {
