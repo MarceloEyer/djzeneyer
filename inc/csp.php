@@ -145,7 +145,7 @@ add_filter('wp_inline_script_attributes', function ($attributes) {
  * 6. Nonce em <style> inline de core/plugins que não oferecem hook de atributos.
  *
  * wp_add_inline_style() imprime <style id="{handle}-inline-css"> sem filtro. Em vez
- * de reescrever todo o HTML, só os ids conhecidos abaixo recebem o nonce. Para
+ * de autorizar pelo ID, exige ID permitido e CSS igual ao registrado em WP_Styles. Para
  * incluir outro, adicione o id via filtro 'djz_csp_inline_style_ids'.
  * Estilos do próprio tema recebem o nonce direto no template.
  */
@@ -159,20 +159,34 @@ function djz_csp_inline_style_ids(): array {
 }
 
 add_action('template_redirect', function () {
-    if (!djz_csp_should_add_nonce() || !class_exists('WP_HTML_Tag_Processor')) return;
+    if (!djz_csp_should_add_nonce() || !method_exists('WP_HTML_Tag_Processor', 'get_modifiable_text')) return;
     ob_start('djz_csp_nonce_known_inline_styles');
 }, 1);
 
 function djz_csp_nonce_known_inline_styles($html) {
     if (!is_string($html) || stripos($html, '<style') === false) return $html;
 
-    $allowed = array_flip(djz_csp_inline_style_ids());
+    // Trust the registered CSS, never an ID copied into lower-trust page content.
+    // print_inline_style(false) includes core's sourceURL comment when applicable.
+    $expected = [];
+    $styles = wp_styles();
+    $suffix = '-inline-css';
+    foreach (djz_csp_inline_style_ids() as $id) {
+        if (!is_string($id) || !str_ends_with($id, $suffix)) continue;
+        $handle = substr($id, 0, -strlen($suffix));
+        $css = $styles->print_inline_style($handle, false);
+        if (is_string($css) && trim($css) !== '') {
+            $expected[$id] = trim(str_replace(["\r\n", "\r"], "\n", $css));
+        }
+    }
+
     $nonce = djz_csp_nonce();
     $p = new WP_HTML_Tag_Processor($html);
 
     while ($p->next_tag('STYLE')) {
         $id = $p->get_attribute('id');
-        if (is_string($id) && isset($allowed[$id]) && $p->get_attribute('nonce') === null) {
+        if (is_string($id) && isset($expected[$id]) && $p->get_attribute('nonce') === null
+            && trim($p->get_modifiable_text()) === $expected[$id]) {
             $p->set_attribute('nonce', $nonce);
         }
     }
