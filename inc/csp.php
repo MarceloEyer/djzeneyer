@@ -114,3 +114,49 @@ add_filter('style_loader_tag', function($html, $handle, $href, $media) {
 
     return preg_replace('/<link\b/i', '<link nonce="' . esc_attr($nonce) . '"', $html, 1);
 }, 20, 4);
+
+/**
+ * 5. Nonce em <style>/<script> inline gerados por core/plugins (ex.: speculation
+ * rules, wc inline css, scripts do footer). Eles não passam por script_loader_tag
+ * e, sob 'strict-dynamic', são bloqueados sem nonce (gera erros de console que
+ * derrubam o Lighthouse). Marca também com data-no-optimize para o LiteSpeed não
+ * converter scripts inline em data: URIs (também bloqueados pela CSP).
+ */
+add_action('template_redirect', function () {
+    if (is_admin() || is_feed() || is_embed() || wp_doing_ajax()) return;
+    if (defined('REST_REQUEST') && REST_REQUEST) return;
+    if (!class_exists('WP_HTML_Tag_Processor')) return;
+
+    ob_start('djz_csp_add_inline_nonces');
+}, 1);
+
+function djz_csp_add_inline_nonces($html) {
+    if (!is_string($html) || $html === '' || stripos($html, '<html') === false) {
+        return $html;
+    }
+
+    $nonce = djz_csp_nonce();
+    $p = new WP_HTML_Tag_Processor($html);
+
+    while ($p->next_tag()) {
+        $tag = $p->get_tag();
+
+        if ($tag === 'STYLE') {
+            if ($p->get_attribute('nonce') === null) {
+                $p->set_attribute('nonce', $nonce);
+            }
+            continue;
+        }
+
+        if ($tag === 'SCRIPT' && $p->get_attribute('src') === null) {
+            if ($p->get_attribute('nonce') === null) {
+                $p->set_attribute('nonce', $nonce);
+            }
+            if ($p->get_attribute('data-no-optimize') === null) {
+                $p->set_attribute('data-no-optimize', '1');
+            }
+        }
+    }
+
+    return $p->get_updated_html();
+}
