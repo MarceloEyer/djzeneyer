@@ -116,16 +116,8 @@ class Password_Auth {
                 return new WP_Error( 'missing_captcha', 'Verificação de segurança obrigatória.', [ 'status' => 403 ] );
             }
             
-            $client_ip = '';
-            if (!empty($_SERVER['HTTP_CF_CONNECTING_IP']) && is_string($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-                $client_ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP']));
-            } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR']) && is_string($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-                $forwarded_ips = explode(',', wp_unslash($_SERVER['HTTP_X_FORWARDED_FOR']));
-                $client_ip = sanitize_text_field(trim((string) ($forwarded_ips[0] ?? '')));
-            } elseif (!empty($_SERVER['REMOTE_ADDR']) && is_string($_SERVER['REMOTE_ADDR'])) {
-                $client_ip = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
-            }
-            $client_ip = filter_var($client_ip, FILTER_VALIDATE_IP) ? $client_ip : '';
+            $client_ip = \ZenEyer\Auth\Core\Client_IP::get();
+            $client_ip = $client_ip === '0.0.0.0' ? '' : $client_ip;
 
             // Valida com o Cloudflare
             $response = wp_remote_post( 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
