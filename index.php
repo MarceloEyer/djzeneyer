@@ -174,6 +174,26 @@ if ($serve_file) {
             $html_content
         );
 
+        // The HTTP header uses 'strict-dynamic': host/'self' allowlists are ignored, so every
+        // <script>, <style> and modulepreload tag of the prerendered shell needs this request's
+        // nonce, otherwise the browser blocks the Vite bundle and the app never starts.
+        $nonce_attr = ' nonce="' . esc_attr($csp_nonce) . '"';
+        $html_content = preg_replace_callback(
+            '/<(script|style|link)\b([^>]*)>/i',
+            static function (array $m) use ($nonce_attr): string {
+                $tag = strtolower($m[1]);
+                $attrs = $m[2];
+                if (stripos($attrs, ' nonce=') !== false || stripos($attrs, "\tnonce=") !== false) {
+                    return $m[0];
+                }
+                if ($tag === 'link' && !preg_match('/\brel=["\']?(modulepreload|preload|stylesheet)\b/i', $attrs)) {
+                    return $m[0];
+                }
+                return '<' . $m[1] . $nonce_attr . $attrs . '>';
+            },
+            $html_content
+        ) ?? $html_content;
+
         if (strpos($html_content, 'window.wpData') === false) {
             $html_content = str_replace('</body>', $wp_data_script . "\n</body>", $html_content);
         }
