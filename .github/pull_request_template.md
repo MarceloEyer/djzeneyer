@@ -35,6 +35,7 @@
 - [ ] Data fetching centralizado (`src/hooks/useQueries.ts`) quando aplicável
 - [ ] `HeadlessSEO` validado para mudanças de página/rota
 - [ ] Sem conflito com `AGENTS.md` e contextos locais
+- [ ] Se este PR toca segredos/credenciais: documentado o que acontece quando a env var/segredo necessário está ausente ou vazio (fail-closed, não fail-open)
 
 ## 🤖 Avaliação de sugestões de outros bots
 - Sugestões aproveitadas:
