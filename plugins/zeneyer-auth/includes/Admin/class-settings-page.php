@@ -1,6 +1,8 @@
 <?php
 namespace ZenEyer\Auth\Admin;
 
+use ZenEyer\Auth\Core\JWT_Manager;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -74,10 +76,11 @@ class Settings_Page
             'desc' => 'Get this from <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a>'
         ]);
 
-        add_settings_field('token_expiration', 'Token Expiration (days)', [$this, 'render_input'], 'zeneyer-auth', 'zeneyer_auth_general', [
+        add_settings_field('token_expiration', 'Token Expiration (minutes)', [$this, 'render_input'], 'zeneyer-auth', 'zeneyer_auth_general', [
             'id' => 'token_expiration',
             'type' => 'number',
-            'default' => 7
+            'default' => JWT_Manager::DEFAULT_EXPIRATION,
+            'desc' => 'Access token lifetime in minutes. JWT_Manager reads this value as minutes (not days). Default: ' . JWT_Manager::DEFAULT_EXPIRATION . '.'
         ]);
 
         add_settings_field('allowed_origins_list', 'Specific Allowed Origins', [$this, 'render_textarea'], 'zeneyer-auth', 'zeneyer_auth_general', [
@@ -162,7 +165,7 @@ class Settings_Page
         $sanitized = [];
 
         $sanitized['google_client_id'] = isset($input['google_client_id']) ? sanitize_text_field($input['google_client_id']) : '';
-        $sanitized['token_expiration'] = isset($input['token_expiration']) ? absint($input['token_expiration']) : 7;
+        $sanitized['token_expiration'] = isset($input['token_expiration']) ? absint($input['token_expiration']) : JWT_Manager::DEFAULT_EXPIRATION;
         
         if (isset($input['allowed_origins_list'])) {
             $origins = explode("\n", $input['allowed_origins_list']);
