@@ -21,6 +21,11 @@ class JWT_Manager
 
     const ALGORITHM = 'HS256';
     const DEFAULT_EXPIRATION = 60; // 60 minutes (1 hour) for access tokens
+    // Single source of truth for the admin-configurable access-token lifetime.
+    // Unit is always minutes — see Admin\Settings_Page::sanitize_token_expiration().
+    const MIN_EXPIRATION_MINUTES = 5;     // below this, tokens expire before most page loads finish
+    const MAX_EXPIRATION_MINUTES = 1440;  // 24h — keeps access tokens short-lived; long sessions are
+    // the refresh token's job (zeneyer_sessions, 30 days), not a stretched access token.
 
     /**
      * Create JWT token for user
@@ -329,16 +334,63 @@ class JWT_Manager
     }
 
     /**
-     * Get token expiration days
+     * Get the access-token lifetime in minutes.
      *
-     * @return int
+     * Defends token *emission* against invalid persisted configuration —
+     * independently of whatever validation Settings_Page::sanitize_settings()
+     * applied when the value was saved. A row written before validation
+     * existed, edited directly in the database, or returned mangled by a
+     * third-party filter must never produce a non-numeric, zero, negative,
+     * or absurdly large token lifetime.
+     *
+     * @return int Minutes, always within [MIN_EXPIRATION_MINUTES, MAX_EXPIRATION_MINUTES].
      */
     private static function get_expiration_minutes()
     {
         $options = get_option('zeneyer_auth_settings', []);
-        $minutes = isset($options['token_expiration']) ? (int) $options['token_expiration'] : self::DEFAULT_EXPIRATION;
+        $raw = is_array($options) && isset($options['token_expiration']) ? $options['token_expiration'] : null;
 
-        return apply_filters('zeneyer_auth_token_expiration_minutes', $minutes);
+        $minutes = self::sanitize_expiration_minutes($raw, self::DEFAULT_EXPIRATION);
+
+        $filtered = apply_filters('zeneyer_auth_token_expiration_minutes', $minutes);
+
+        // A filter is third-party-extensible surface; it gets no more trust
+        // than the stored option did.
+        return self::sanitize_expiration_minutes($filtered, self::DEFAULT_EXPIRATION);
+    }
+
+    /**
+     * Clamp a candidate expiration value to a safe, valid minute count.
+     * Non-numeric, non-integer-valued, or out-of-range input falls back to
+     * $fallback rather than being silently coerced (e.g. a negative value
+     * must never become positive via abs()/absint()).
+     *
+     * Public so Admin\Settings_Page::sanitize_token_expiration() applies the
+     * exact same rule at save time — one definition of valid, used by both
+     * the emitter and the admin form.
+     *
+     * @param mixed $candidate
+     * @param int   $fallback Already assumed valid (a constant or a previously-validated value).
+     * @return int
+     */
+    public static function sanitize_expiration_minutes($candidate, int $fallback): int
+    {
+        if (is_bool($candidate) || is_array($candidate) || !is_numeric($candidate)) {
+            return $fallback;
+        }
+
+        // Reject non-integer-valued numerics (e.g. "60.5") rather than truncating.
+        if ((float) $candidate !== (float) (int) $candidate) {
+            return $fallback;
+        }
+
+        $value = (int) $candidate;
+
+        if ($value < self::MIN_EXPIRATION_MINUTES || $value > self::MAX_EXPIRATION_MINUTES) {
+            return $fallback;
+        }
+
+        return $value;
     }
 
     /**
