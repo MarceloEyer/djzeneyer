@@ -12,6 +12,7 @@ import {
   authResetPassword,
   type WordPressUser,
 } from '../services/authService';
+import { TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT } from '../lib/tokenRefresh';
 
 interface UserContextType {
   user: WordPressUser | null;
@@ -40,19 +41,51 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('zen_jwt');
+    localStorage.removeItem('zen_refresh_token');
     localStorage.removeItem('zen_user');
     clearAllCache();
   }, []);
 
   const saveSession = useCallback(
-    (userData: Omit<WordPressUser, 'isLoggedIn'> & { isLoggedIn?: boolean }, token: string) => {
+    (
+      userData: Omit<WordPressUser, 'isLoggedIn'> & { isLoggedIn?: boolean },
+      token: string,
+      refreshToken?: string
+    ) => {
       const userWithStatus = { ...userData, isLoggedIn: true, token };
       setUser(userWithStatus);
       localStorage.setItem('zen_jwt', token);
       localStorage.setItem('zen_user', JSON.stringify(userWithStatus));
+      if (refreshToken) {
+        localStorage.setItem('zen_refresh_token', refreshToken);
+      }
     },
     []
   );
+
+  // Keep context state in sync with the silent token renewal in
+  // src/lib/tokenRefresh.ts: it writes localStorage directly (it runs from
+  // plain fetch wrappers, outside React), so this just mirrors the new token
+  // into state, or ends the session with a clear message if renewal failed.
+  useEffect(() => {
+    const onTokenRefreshed = (event: Event) => {
+      const detail = (event as CustomEvent<{ token: string }>).detail;
+      if (!detail?.token) return;
+      setUser((prev) => (prev ? { ...prev, token: detail.token } : prev));
+    };
+
+    const onSessionExpired = () => {
+      logout();
+      setError('Sua sessão expirou. Entre novamente.');
+    };
+
+    window.addEventListener(TOKEN_REFRESHED_EVENT, onTokenRefreshed);
+    window.addEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
+    return () => {
+      window.removeEventListener(TOKEN_REFRESHED_EVENT, onTokenRefreshed);
+      window.removeEventListener(SESSION_EXPIRED_EVENT, onSessionExpired);
+    };
+  }, [logout]);
 
   useEffect(() => {
     const init = async () => {
@@ -96,8 +129,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(true);
       setError(null);
       try {
-        const { user: u, token } = await authLogin(email, password);
-        saveSession(u, token);
+        const { user: u, token, refreshToken } = await authLogin(email, password);
+        saveSession(u, token, refreshToken);
       } catch (err) {
         const e = err as Error;
         logger.error('USER_CONTEXT', 'Login error', { error: String(e) });
@@ -119,7 +152,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         if (isRegisterPending(result)) {
           return 'pending' as const;
         }
-        saveSession(result.user, result.token);
+        saveSession(result.user, result.token, result.refreshToken);
         return 'authenticated' as const;
       } catch (err) {
         const e = err as Error;
@@ -138,8 +171,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setLoading(true);
       setError(null);
       try {
-        const { user: u, token } = await authGoogleLogin(idToken);
-        saveSession(u, token);
+        const { user: u, token, refreshToken } = await authGoogleLogin(idToken);
+        saveSession(u, token, refreshToken);
       } catch (err) {
         const e = err as Error;
         logger.error('USER_CONTEXT', 'Google login failed', { error: String(e) });

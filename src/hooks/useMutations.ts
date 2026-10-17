@@ -2,7 +2,7 @@
 // All write operations — cart, profile, newsletter, subscription, interaction tracking.
 
 import { useMutation } from '@tanstack/react-query';
-import { buildApiUrl, getAuthHeaders } from '../config/api';
+import { buildApiUrl, getAuthHeaders, fetchWithAuthRetry } from '../config/api';
 import { invalidateQueries } from '../config/queryClient';
 import type { ProfileUpdatePayload } from './useAuthenticatedQueries';
 
@@ -33,9 +33,8 @@ export const useUpdateProfileMutation = (token?: string) =>
     mutationFn: async (profileData: ProfileUpdatePayload) => {
       if (!token) throw new Error('No token provided');
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
-      const res = await fetch(apiUrl, {
+      const res = await fetchWithAuthRetry(apiUrl, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(profileData),
       });
       if (!res.ok) {
@@ -54,9 +53,8 @@ export const useUpdateNewsletterMutation = (token?: string) =>
     mutationFn: async (enabled: boolean) => {
       if (!token) throw new Error('No token provided');
       const apiUrl = buildApiUrl('zeneyer-auth/v1/newsletter');
-      const res = await fetch(apiUrl, {
+      const res = await fetchWithAuthRetry(apiUrl, token, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ enabled }),
       });
       if (!res.ok) {
@@ -156,11 +154,8 @@ export const useTrackInteraction = (token?: string) =>
   useMutation({
     mutationFn: async ({ action, objectId }: { action: string; objectId?: number }) => {
       const apiUrl = buildApiUrl('zengame/v1/track');
-      const headers: HeadersInit = { 'Content-Type': 'application/json' };
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-      const res = await fetch(apiUrl, {
+      const res = await fetchWithAuthRetry(apiUrl, token, {
         method: 'POST',
-        headers,
         body: JSON.stringify({ action, object_id: objectId }),
       });
       if (!res.ok) {
