@@ -22,6 +22,7 @@
     "i18n:check": "node scripts/check-i18n-parity.mjs",
     "utf8:check": "node scripts/check-utf8-content.mjs",
     "workflow-names:check": "node scripts/check-workflow-names.mjs",
+    "auth:token-units:check": "node scripts/check-auth-token-expiration-units.mjs",
     "arch:check": "node scripts/check-architecture-boundaries.mjs",
     "docs:links": "node scripts/check-broken-docs-links.mjs",
     "api:inventory": "node scripts/generate-api-inventory.mjs",

@@ -63,6 +63,9 @@ jobs:
       - name: Workflow name contract check
         run: npm run workflow-names:check
 
+      - name: Auth token-expiration unit check
+        run: npm run auth:token-units:check
+
       - name: SEO invariant check
         run: npm run seo:check
 
