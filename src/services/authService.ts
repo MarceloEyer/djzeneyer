@@ -19,6 +19,7 @@ export interface WordPressUser {
 export interface AuthResult {
   user: WordPressUser;
   token: string;
+  refreshToken?: string;
 }
 
 const authBase = () => buildApiUrl('zeneyer-auth/v1');
@@ -47,10 +48,14 @@ const parseJsonOrThrow = async (res: Response): Promise<unknown> => {
 };
 
 const extractAuthResult = (json: unknown): AuthResult => {
-  const data = json as { success: boolean; message?: string; data?: { user: WordPressUser; token: string } };
+  const data = json as {
+    success: boolean;
+    message?: string;
+    data?: { user: WordPressUser; token: string; refresh_token?: string };
+  };
   if (!data.success) throw new Error(data.message || 'Falha na autenticação');
   if (!data.data) throw new Error('Resposta inválida do servidor de autenticação');
-  return { user: data.data.user, token: data.data.token };
+  return { user: data.data.user, token: data.data.token, refreshToken: data.data.refresh_token };
 };
 
 export const authLogin = async (email: string, password: string): Promise<AuthResult> => {
@@ -99,6 +104,39 @@ export const authGoogleLogin = async (idToken: string): Promise<AuthResult> => {
     body: JSON.stringify({ id_token: idToken }),
   });
   return extractAuthResult(await parseJsonOrThrow(res));
+};
+
+/** Thrown when the refresh token itself is invalid/expired/revoked — the caller must
+ *  end the session (log out) rather than retry; no new token is recoverable. */
+export class RefreshTokenInvalidError extends Error {
+  constructor(message = 'Refresh token inválido ou expirado') {
+    super(message);
+    this.name = 'RefreshTokenInvalidError';
+  }
+}
+
+export const authRefresh = async (
+  refreshToken: string,
+  userId: number
+): Promise<{ token: string; refreshToken: string }> => {
+  const res = await fetch(`${authBase()}/auth/refresh`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: refreshToken, user_id: userId }),
+  });
+
+  if (res.status === 401) {
+    throw new RefreshTokenInvalidError();
+  }
+
+  const json = (await parseJsonOrThrow(res)) as {
+    success: boolean;
+    message?: string;
+    data?: { token: string; refresh_token: string };
+  };
+  if (!json.success || !json.data) throw new RefreshTokenInvalidError(json.message);
+
+  return { token: json.data.token, refreshToken: json.data.refresh_token };
 };
 
 export const authRequestPasswordReset = async (email: string): Promise<void> => {
