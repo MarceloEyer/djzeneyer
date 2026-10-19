@@ -12,7 +12,7 @@ import {
   authResetPassword,
   type WordPressUser,
 } from '../services/authService';
-import { TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT } from '../lib/tokenRefresh';
+import { TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT } from '../lib/authEvents';
 
 interface UserContextType {
   user: WordPressUser | null;

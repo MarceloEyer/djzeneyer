@@ -160,33 +160,3 @@ export const getAuthHeaders = (token?: string): HeadersInit => {
   return headers;
 };
 
-/**
- * Like `fetch`, but when the call is authenticated (a `token` is passed) and
- * the server answers 401, it renews the access token once (via the shared,
- * single-flight `refreshAccessToken()`) and retries the request with the new
- * token before giving up. If renewal isn't possible (no refresh token, or it
- * was rejected), the original 401 response is returned as-is — the caller's
- * existing error handling still applies, and `tokenRefresh` has already
- * dispatched SESSION_EXPIRED_EVENT so the UI can log the user out with a
- * clear message rather than erroring silently forever.
- */
-export const fetchWithAuthRetry = async (
-  url: string,
-  token: string | undefined,
-  init: RequestInit = {}
-): Promise<Response> => {
-  const res = await fetch(url, { ...init, headers: { ...init.headers, ...getAuthHeaders(token) } });
-
-  if (res.status !== 401 || !token) {
-    return res;
-  }
-
-  const { refreshAccessToken } = await import('../lib/tokenRefresh');
-  const newToken = await refreshAccessToken();
-  if (!newToken) {
-    return res; // Session couldn't be renewed; original 401 stands.
-  }
-
-  return fetch(url, { ...init, headers: { ...init.headers, ...getAuthHeaders(newToken) } });
-};
-

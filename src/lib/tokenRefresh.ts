@@ -14,15 +14,13 @@
 // events below to keep its own state in sync.
 
 import { authRefresh, RefreshTokenInvalidError } from '../services/authService';
+import { TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT } from './authEvents';
+
+export { TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT };
 
 const JWT_KEY = 'zen_jwt';
 const REFRESH_KEY = 'zen_refresh_token';
 const USER_KEY = 'zen_user';
-
-/** Dispatched on `window` with `detail: { token: string }` after a successful renewal. */
-export const TOKEN_REFRESHED_EVENT = 'zen-auth:token-refreshed';
-/** Dispatched on `window` when the session cannot be renewed and must end. */
-export const SESSION_EXPIRED_EVENT = 'zen-auth:session-expired';
 
 let inFlight: Promise<string | null> | null = null;
 

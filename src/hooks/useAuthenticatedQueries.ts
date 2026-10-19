@@ -21,7 +21,8 @@ const jwtSub = (token: string | undefined): string => {
   }
 };
 import { z } from 'zod';
-import { buildApiUrl, getAuthHeaders, fetchWithAuthRetry } from '../config/api';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
+import { fetchWithAuthRetry } from '../lib/fetchWithAuthRetry';
 import { QUERY_KEYS, STALE_TIME } from '../config/queryClient';
 import type { ZenGameUserData } from '../types/gamification';
 import { ZenGameUserDataSchema } from '../schemas';

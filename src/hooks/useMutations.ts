@@ -2,7 +2,8 @@
 // All write operations — cart, profile, newsletter, subscription, interaction tracking.
 
 import { useMutation } from '@tanstack/react-query';
-import { buildApiUrl, getAuthHeaders, fetchWithAuthRetry } from '../config/api';
+import { buildApiUrl, getAuthHeaders } from '../config/api';
+import { fetchWithAuthRetry } from '../lib/fetchWithAuthRetry';
 import { invalidateQueries } from '../config/queryClient';
 import type { ProfileUpdatePayload } from './useAuthenticatedQueries';
 
