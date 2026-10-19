@@ -46,36 +46,51 @@ const getStoredUserId = (): number | null => {
  * A transient failure (network error) rejects instead, so a flaky request
  * doesn't end the session.
  */
+const runRefresh = async (): Promise<string | null> => {
+  const refreshToken = localStorage.getItem(REFRESH_KEY);
+  const userId = getStoredUserId();
+
+  if (!refreshToken || !userId) {
+    window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+    return null;
+  }
+
+  try {
+    const { token, refreshToken: newRefreshToken } = await authRefresh(refreshToken, userId);
+
+    localStorage.setItem(JWT_KEY, token);
+    localStorage.setItem(REFRESH_KEY, newRefreshToken);
+    window.dispatchEvent(new CustomEvent(TOKEN_REFRESHED_EVENT, { detail: { token } }));
+    return token;
+  } catch (err) {
+    if (err instanceof RefreshTokenInvalidError) {
+      localStorage.removeItem(REFRESH_KEY);
+      window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+      return null;
+    }
+    throw err;
+  }
+};
+
 export const refreshAccessToken = (): Promise<string | null> => {
   if (inFlight) return inFlight;
 
-  inFlight = (async () => {
-    try {
-      const refreshToken = localStorage.getItem(REFRESH_KEY);
-      const userId = getStoredUserId();
-
-      if (!refreshToken || !userId) {
-        window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
-        return null;
-      }
-
-      const { token, refreshToken: newRefreshToken } = await authRefresh(refreshToken, userId);
-
-      localStorage.setItem(JWT_KEY, token);
-      localStorage.setItem(REFRESH_KEY, newRefreshToken);
-      window.dispatchEvent(new CustomEvent(TOKEN_REFRESHED_EVENT, { detail: { token } }));
-      return token;
-    } catch (err) {
-      if (err instanceof RefreshTokenInvalidError) {
-        localStorage.removeItem(REFRESH_KEY);
-        window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
-        return null;
-      }
-      throw err;
-    } finally {
+  // IMPORTANT: when runRefresh() has no `await` on its path (the "nothing to
+  // refresh with" branch resolves synchronously), chaining `.finally()`
+  // directly on its result — rather than resetting `inFlight` from inside an
+  // `async () => { ...; inFlight = null; }` IIFE — is what keeps the reset
+  // from racing the `inFlight = promise` assignment below. A `.finally()`
+  // callback is always scheduled as a microtask, so it can never run before
+  // this synchronous assignment completes, whereas code inside the async
+  // function body can run synchronously up to its first `await` — including
+  // past a `return` — and would otherwise clobber this assignment by
+  // resetting `inFlight` to null *before* it was ever set to the promise.
+  const promise = runRefresh().finally(() => {
+    if (inFlight === promise) {
       inFlight = null;
     }
-  })();
+  });
 
-  return inFlight;
+  inFlight = promise;
+  return promise;
 };
