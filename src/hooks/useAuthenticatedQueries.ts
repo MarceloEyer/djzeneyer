@@ -22,6 +22,7 @@ const jwtSub = (token: string | undefined): string => {
 };
 import { z } from 'zod';
 import { buildApiUrl, getAuthHeaders } from '../config/api';
+import { fetchWithAuthRetry } from '../lib/fetchWithAuthRetry';
 import { QUERY_KEYS, STALE_TIME } from '../config/queryClient';
 import type { ZenGameUserData } from '../types/gamification';
 import { ZenGameUserDataSchema } from '../schemas';
@@ -125,7 +126,7 @@ const AuthSessionResponseSchema = z.object({
 
 export const fetchAuthSessionFn = async (token: string): Promise<AuthSessionResponse> => {
   const apiUrl = buildApiUrl('zeneyer-auth/v1/session');
-  const res = await fetch(apiUrl, { headers: getAuthHeaders(token) });
+  const res = await fetchWithAuthRetry(apiUrl, token);
   const text = await res.text();
   if (!res.ok || text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
     throw new Error('Invalid session response');
@@ -159,8 +160,7 @@ export const useGamipressQuery = (userId?: number, token?: string) =>
     queryKey: QUERY_KEYS.user.gamipress(userId || 0),
     queryFn: async (): Promise<ZenGameUserData | null> => {
       const apiUrl = buildApiUrl('zengame/v1/me');
-      const headers: HeadersInit = getAuthHeaders(token);
-      const res = await fetch(apiUrl, { headers });
+      const res = await fetchWithAuthRetry(apiUrl, token);
 
       const text = await res.text();
       let data: unknown;
@@ -204,7 +204,7 @@ export const useProfileQuery = (token?: string, options: { enabled?: boolean } =
     queryFn: async (): Promise<UserProfile | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/profile');
-      const res = await fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetchWithAuthRetry(apiUrl, token);
       if (!res.ok) throw new Error('Failed to fetch profile');
       const json = await res.json();
       if (!json.success) return null;
@@ -232,7 +232,7 @@ export const useUserOrdersQuery = (
     queryFn: async (): Promise<WCOrder[]> => {
       if (!token || !userId) return [];
       const apiUrl = buildApiUrl('zeneyer-auth/v1/orders', { limit: String(limit) });
-      const res = await fetch(apiUrl, { headers: getAuthHeaders(token) });
+      const res = await fetchWithAuthRetry(apiUrl, token);
       if (!res.ok) throw new Error('Failed to fetch user orders');
       const data = await res.json();
       if (data?.success && Array.isArray(data.data)) return data.data as WCOrder[];
@@ -253,7 +253,7 @@ export const usePrivateMusicTracksQuery = (
     queryFn: async (): Promise<PrivateMusicTrack[]> => {
       if (!token || !userId) return [];
       const apiUrl = buildApiUrl('zen-private-music/v1/tracks');
-      const res = await fetch(apiUrl, { headers: getAuthHeaders(token) });
+      const res = await fetchWithAuthRetry(apiUrl, token);
       if (!res.ok) throw new Error('Failed to fetch private music');
       const json = await res.json();
       if (!json?.success || !Array.isArray(json.data)) return [];
@@ -266,7 +266,7 @@ export const usePrivateMusicTracksQuery = (
 
 export const downloadPrivateMusicTrack = async (trackId: number, token: string): Promise<void> => {
   const apiUrl = buildApiUrl(`zen-private-music/v1/tracks/${trackId}/download`);
-  const res = await fetch(apiUrl, { headers: getAuthHeaders(token) });
+  const res = await fetchWithAuthRetry(apiUrl, token);
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
     throw new Error((data as { message?: string }).message || 'Download failed');
@@ -322,7 +322,7 @@ export const useNewsletterStatusQuery = (token?: string, options: { enabled?: bo
     queryFn: async (): Promise<boolean | null> => {
       if (!token) return null;
       const apiUrl = buildApiUrl('zeneyer-auth/v1/newsletter');
-      const res = await fetch(apiUrl, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetchWithAuthRetry(apiUrl, token);
       if (!res.ok) throw new Error('Failed to fetch newsletter status');
       const data = await res.json();
       return data?.success ? (data.subscribed as boolean) : false;

@@ -1,0 +1,94 @@
+// src/lib/tokenRefresh.ts
+// Single-flight access-token renewal, shared by every authenticated fetch call.
+//
+// The backend already rotates the refresh token on each use (old one revoked,
+// new one issued) — see zeneyer-auth's /auth/refresh. That means two
+// concurrent 401s racing to refresh at once would have the second request
+// try to redeem an already-revoked token and fail. `refreshAccessToken()`
+// de-duplicates concurrent callers into one in-flight request so every
+// caller gets the same new token (or the same "session really is over"
+// outcome) instead of racing.
+//
+// This module talks to localStorage directly (not React state) so it works
+// from plain fetch wrappers outside React. UserContext listens for the
+// events below to keep its own state in sync.
+
+import { authRefresh, RefreshTokenInvalidError } from '../services/authService';
+import { TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT } from './authEvents';
+
+export { TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT };
+
+const JWT_KEY = 'zen_jwt';
+const REFRESH_KEY = 'zen_refresh_token';
+const USER_KEY = 'zen_user';
+
+let inFlight: Promise<string | null> | null = null;
+
+const getStoredUserId = (): number | null => {
+  try {
+    const raw = localStorage.getItem(USER_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { id?: number };
+    return typeof parsed.id === 'number' ? parsed.id : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Exchanges the stored refresh token for a new access token.
+ * Returns the new access token, or null if the session cannot be renewed
+ * (nothing to refresh with, or the refresh token itself was rejected —
+ * SESSION_EXPIRED_EVENT fires in that case so the UI can log the user out
+ * with a clear message instead of leaving stale "looks logged in" state).
+ * A transient failure (network error) rejects instead, so a flaky request
+ * doesn't end the session.
+ */
+const runRefresh = async (): Promise<string | null> => {
+  const refreshToken = localStorage.getItem(REFRESH_KEY);
+  const userId = getStoredUserId();
+
+  if (!refreshToken || !userId) {
+    window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+    return null;
+  }
+
+  try {
+    const { token, refreshToken: newRefreshToken } = await authRefresh(refreshToken, userId);
+
+    localStorage.setItem(JWT_KEY, token);
+    localStorage.setItem(REFRESH_KEY, newRefreshToken);
+    window.dispatchEvent(new CustomEvent(TOKEN_REFRESHED_EVENT, { detail: { token } }));
+    return token;
+  } catch (err) {
+    if (err instanceof RefreshTokenInvalidError) {
+      localStorage.removeItem(REFRESH_KEY);
+      window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+      return null;
+    }
+    throw err;
+  }
+};
+
+export const refreshAccessToken = (): Promise<string | null> => {
+  if (inFlight) return inFlight;
+
+  // IMPORTANT: when runRefresh() has no `await` on its path (the "nothing to
+  // refresh with" branch resolves synchronously), chaining `.finally()`
+  // directly on its result — rather than resetting `inFlight` from inside an
+  // `async () => { ...; inFlight = null; }` IIFE — is what keeps the reset
+  // from racing the `inFlight = promise` assignment below. A `.finally()`
+  // callback is always scheduled as a microtask, so it can never run before
+  // this synchronous assignment completes, whereas code inside the async
+  // function body can run synchronously up to its first `await` — including
+  // past a `return` — and would otherwise clobber this assignment by
+  // resetting `inFlight` to null *before* it was ever set to the promise.
+  const promise = runRefresh().finally(() => {
+    if (inFlight === promise) {
+      inFlight = null;
+    }
+  });
+
+  inFlight = promise;
+  return promise;
+};
