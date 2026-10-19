@@ -1,6 +1,8 @@
 <?php
 namespace ZenEyer\Auth\Admin;
 
+use ZenEyer\Auth\Core\JWT_Manager;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -16,6 +18,57 @@ class Settings_Page
         add_action('admin_init', [$this, 'register_settings']);
         add_action('admin_post_zen_invalidate_all_sessions', [$this, 'handle_invalidate_sessions']);
         add_action('admin_notices', [$this, 'maybe_warn_about_jwt_secret']);
+        add_action('admin_notices', [$this, 'maybe_warn_about_token_expiration_units']);
+    }
+
+    /**
+     * One-time-visible guidance for the historical days/minutes ambiguity on
+     * this field (it used to be labeled "(days)" with a default of 7, but
+     * JWT_Manager always consumed the value as minutes — a saved "7" meant
+     * 7-minute access tokens, not 7 days). This never auto-converts the
+     * stored value — a heuristic guess ("looks small, must mean days") could
+     * just as easily be wrong for an install that genuinely wants a short
+     * lifetime. It only tells the admin plainly what unit is in effect and
+     * asks them to confirm/re-enter it.
+     */
+    public function maybe_warn_about_token_expiration_units()
+    {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+
+        $options = get_option($this->option_name, []);
+        $raw = isset($options['token_expiration']) ? $options['token_expiration'] : null;
+
+        if (!is_numeric($raw)) {
+            return;
+        }
+
+        // Use the EFFECTIVE value — the same one JWT_Manager::get_expiration_minutes()
+        // would actually emit — not the raw stored number. A raw value outside
+        // JWT_Manager's valid range (e.g. negative, or corrupted) is silently
+        // clamped to DEFAULT_EXPIRATION at emission time; warning about the raw
+        // number here would show a confusing figure that doesn't match what the
+        // site is actually doing.
+        $effective = JWT_Manager::sanitize_expiration_minutes((int) $raw, JWT_Manager::DEFAULT_EXPIRATION);
+
+        // Below ~1 hour is unusual for an access token and matches the
+        // known-bad historical default (7) — worth a confirmation prompt,
+        // without ever rewriting the stored value automatically.
+        if ($effective >= 60) {
+            return;
+        }
+
+        echo '<div class="notice notice-warning"><p><strong>ZenEyer Auth:</strong> '
+            . sprintf(
+                esc_html__(
+                    'Token Expiration is currently set to %1$d minutes (stored raw value: %2$d). This field was previously labeled "(days)" by mistake — if this value was entered back then expecting days, it is producing a %1$d-minute access token today, not %1$d days. Open the settings page and re-enter the intended lifetime in minutes; it will not be converted automatically.',
+                    'zeneyer-auth'
+                ),
+                $effective,
+                (int) $raw
+            )
+            . '</p></div>';
     }
 
     /**
@@ -74,10 +127,24 @@ class Settings_Page
             'desc' => 'Get this from <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a>'
         ]);
 
-        add_settings_field('token_expiration', 'Token Expiration (days)', [$this, 'render_input'], 'zeneyer-auth', 'zeneyer_auth_general', [
+        add_settings_field('token_expiration', 'Token Expiration (minutes)', [$this, 'render_input'], 'zeneyer-auth', 'zeneyer_auth_general', [
             'id' => 'token_expiration',
             'type' => 'number',
-            'default' => 7
+            'min' => JWT_Manager::MIN_EXPIRATION_MINUTES,
+            'max' => JWT_Manager::MAX_EXPIRATION_MINUTES,
+            'default' => JWT_Manager::DEFAULT_EXPIRATION,
+            'desc' => sprintf(
+                'Access token lifetime in <strong>minutes</strong> — not days. Example: %d = 1 hour. '
+                . 'Allowed range: %d–%d minutes. Default: %d. '
+                . 'Changing this does <strong>not</strong> change the expiration of tokens already issued — '
+                . 'users must sign in again (or renew via a refresh flow, if one is wired up) to pick up the new value. '
+                . 'If this still shows an old value saved as a small number of <em>days</em> from before this field '
+                . 'was unit-corrected, re-enter it now as minutes — it will not be converted automatically.',
+                JWT_Manager::DEFAULT_EXPIRATION,
+                JWT_Manager::MIN_EXPIRATION_MINUTES,
+                JWT_Manager::MAX_EXPIRATION_MINUTES,
+                JWT_Manager::DEFAULT_EXPIRATION
+            ),
         ]);
 
         add_settings_field('allowed_origins_list', 'Specific Allowed Origins', [$this, 'render_textarea'], 'zeneyer-auth', 'zeneyer_auth_general', [
@@ -108,7 +175,15 @@ class Settings_Page
         $value = isset($options[$args['id']]) ? $options[$args['id']] : ($args['default'] ?? '');
         $type = $args['type'] ?? 'text';
 
-        echo '<input type="' . esc_attr($type) . '" name="' . $this->option_name . '[' . $args['id'] . ']" value="' . esc_attr($value) . '" class="regular-text">';
+        $bounds = '';
+        if (isset($args['min'])) {
+            $bounds .= ' min="' . esc_attr($args['min']) . '"';
+        }
+        if (isset($args['max'])) {
+            $bounds .= ' max="' . esc_attr($args['max']) . '"';
+        }
+
+        echo '<input type="' . esc_attr($type) . '" name="' . $this->option_name . '[' . $args['id'] . ']" value="' . esc_attr($value) . '" class="regular-text"' . $bounds . '>';
 
         if (!empty($args['desc'])) {
             $allowed_html = [
@@ -162,8 +237,8 @@ class Settings_Page
         $sanitized = [];
 
         $sanitized['google_client_id'] = isset($input['google_client_id']) ? sanitize_text_field($input['google_client_id']) : '';
-        $sanitized['token_expiration'] = isset($input['token_expiration']) ? absint($input['token_expiration']) : 7;
-        
+        $sanitized['token_expiration'] = $this->sanitize_token_expiration($input['token_expiration'] ?? null);
+
         if (isset($input['allowed_origins_list'])) {
             $origins = explode("\n", $input['allowed_origins_list']);
             $origins = array_map('trim', $origins);
@@ -175,6 +250,64 @@ class Settings_Page
         $sanitized['rate_limit_duration'] = isset($input['rate_limit_duration']) ? absint($input['rate_limit_duration']) : 300;
 
         return $sanitized;
+    }
+
+    /**
+     * Validate the token_expiration input (minutes). Unlike absint(), this
+     * never silently turns a negative/invalid value into something that
+     * looks valid: anything that isn't a whole number within
+     * [JWT_Manager::MIN_EXPIRATION_MINUTES, JWT_Manager::MAX_EXPIRATION_MINUTES]
+     * is rejected outright, the admin is told why via add_settings_error(),
+     * and the previously-saved valid value is kept (or JWT_Manager's default,
+     * for a fresh install with nothing saved yet).
+     *
+     * @param mixed $raw
+     * @return int
+     */
+    private function sanitize_token_expiration($raw): int
+    {
+        $existing = get_option($this->option_name, []);
+        $previous = (isset($existing['token_expiration']) && is_numeric($existing['token_expiration']))
+            ? (int) $existing['token_expiration']
+            : JWT_Manager::DEFAULT_EXPIRATION;
+        // The previous value only counts as a safe fallback if it was itself valid;
+        // JWT_Manager::get_expiration_minutes() applies the same guard at emission
+        // time regardless, but we don't want sanitize_settings() to resurrect an
+        // old invalid value (e.g. the historical "7" meant as days) as if it were fine.
+        $previous = JWT_Manager::sanitize_expiration_minutes($previous, JWT_Manager::DEFAULT_EXPIRATION);
+
+        $is_valid_input = is_numeric($raw) && !is_array($raw) && !is_bool($raw)
+            && (float) $raw === (float) (int) $raw;
+
+        if (!$is_valid_input) {
+            add_settings_error(
+                $this->option_name,
+                'token_expiration_invalid',
+                sprintf(
+                    'Token Expiration must be a whole number of minutes. Kept the previous value (%d).',
+                    $previous
+                )
+            );
+            return $previous;
+        }
+
+        $value = (int) $raw;
+
+        if ($value < JWT_Manager::MIN_EXPIRATION_MINUTES || $value > JWT_Manager::MAX_EXPIRATION_MINUTES) {
+            add_settings_error(
+                $this->option_name,
+                'token_expiration_out_of_range',
+                sprintf(
+                    'Token Expiration must be between %d and %d minutes. Kept the previous value (%d).',
+                    JWT_Manager::MIN_EXPIRATION_MINUTES,
+                    JWT_Manager::MAX_EXPIRATION_MINUTES,
+                    $previous
+                )
+            );
+            return $previous;
+        }
+
+        return $value;
     }
 
     public function render_page()

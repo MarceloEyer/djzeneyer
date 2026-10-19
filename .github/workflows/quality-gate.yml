@@ -63,6 +63,9 @@ jobs:
       - name: Workflow name contract check
         run: npm run workflow-names:check
 
+      - name: Auth token-expiration unit check
+        run: npm run auth:token-units:check
+
       - name: SEO invariant check
         run: npm run seo:check
 
@@ -76,6 +79,7 @@ jobs:
         with:
           php-version: '8.3'
           coverage: none
+          tools: composer:v2
 
       - name: Verify CSP inline style trust boundary
         shell: bash
@@ -86,6 +90,12 @@ jobs:
             https://wordpress.org/wordpress-6.9.zip -o "$RUNNER_TEMP/wordpress-csp.zip"
           unzip -q "$RUNNER_TEMP/wordpress-csp.zip" -d "$RUNNER_TEMP/wordpress-csp"
           php scripts/php/test-csp-inline-styles.php "$RUNNER_TEMP/wordpress-csp/wordpress"
+
+      - name: Install PHP test dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: PHP plugin regression tests
+        run: composer run php:test
 
       - name: Generate sitemaps
         run: npm run generate-sitemaps
