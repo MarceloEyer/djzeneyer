@@ -38,28 +38,35 @@ class Settings_Page
         }
 
         $options = get_option($this->option_name, []);
-        $current = isset($options['token_expiration']) ? $options['token_expiration'] : null;
+        $raw = isset($options['token_expiration']) ? $options['token_expiration'] : null;
 
-        if (!is_numeric($current)) {
+        if (!is_numeric($raw)) {
             return;
         }
+
+        // Use the EFFECTIVE value — the same one JWT_Manager::get_expiration_minutes()
+        // would actually emit — not the raw stored number. A raw value outside
+        // JWT_Manager's valid range (e.g. negative, or corrupted) is silently
+        // clamped to DEFAULT_EXPIRATION at emission time; warning about the raw
+        // number here would show a confusing figure that doesn't match what the
+        // site is actually doing.
+        $effective = JWT_Manager::sanitize_expiration_minutes((int) $raw, JWT_Manager::DEFAULT_EXPIRATION);
 
         // Below ~1 hour is unusual for an access token and matches the
         // known-bad historical default (7) — worth a confirmation prompt,
         // without ever rewriting the stored value automatically.
-        if ((int) $current >= 60) {
+        if ($effective >= 60) {
             return;
         }
 
         echo '<div class="notice notice-warning"><p><strong>ZenEyer Auth:</strong> '
             . sprintf(
                 esc_html__(
-                    'Token Expiration is currently set to %d minutes. This field was previously labeled "(days)" by mistake — if this value was entered back then expecting days, it is producing a %d-minute access token today, not %d days. Open the settings page and re-enter the intended lifetime in minutes; it will not be converted automatically.',
+                    'Token Expiration is currently set to %1$d minutes (stored raw value: %2$d). This field was previously labeled "(days)" by mistake — if this value was entered back then expecting days, it is producing a %1$d-minute access token today, not %1$d days. Open the settings page and re-enter the intended lifetime in minutes; it will not be converted automatically.',
                     'zeneyer-auth'
                 ),
-                (int) $current,
-                (int) $current,
-                (int) $current
+                $effective,
+                (int) $raw
             )
             . '</p></div>';
     }
