@@ -7,6 +7,7 @@
 // lets both stay out of the eagerly-loaded bundle entirely.
 
 import { getAuthHeaders } from '../config/api';
+import { getStoredUserId, getTokenUserId } from './authStorage';
 
 /**
  * Like `fetch`, but when the call is authenticated (a `token` is passed) and
@@ -23,6 +24,10 @@ export const fetchWithAuthRetry = async (
   token: string | undefined,
   init: RequestInit = {}
 ): Promise<Response> => {
+  // The account this request acts as, captured before any await: the stored session
+  // can change (logout, another tab's login) while the request and renewal run.
+  const requestedAs = token ? (getTokenUserId(token) ?? getStoredUserId()) : null;
+
   const res = await fetch(url, { ...init, headers: { ...init.headers, ...getAuthHeaders(token) } });
 
   if (res.status !== 401 || !token) {
@@ -33,6 +38,9 @@ export const fetchWithAuthRetry = async (
   const newToken = await refreshAccessToken(token);
   if (!newToken) {
     return res; // Session couldn't be renewed; original 401 stands.
+  }
+  if (getStoredUserId() !== requestedAs) {
+    return res; // Logged out or switched account meanwhile: never replay this request as someone else.
   }
 
   return fetch(url, { ...init, headers: { ...init.headers, ...getAuthHeaders(newToken) } });

@@ -4,6 +4,7 @@ import { waitFor } from '@testing-library/react';
 import { server } from '../../test/mocks/server';
 import { renderHookWithProviders } from '../../test/utils';
 import { refreshAccessToken, TOKEN_REFRESHED_EVENT, SESSION_EXPIRED_EVENT } from '../../lib/tokenRefresh';
+import { getTokenUserId } from '../../lib/authStorage';
 import { useZenGameUserData } from '../../hooks/useAuthenticatedQueries';
 import { REST_BASE } from '../../test/mocks/fixtures';
 
@@ -170,6 +171,145 @@ describe('refreshAccessToken', () => {
       expect(onExpired).not.toHaveBeenCalled();
       window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
     });
+  });
+});
+
+describe('when the session changes during a renewal', () => {
+  const OTHER_USER_ID = 7;
+
+  // Minimal unsigned JWT carrying the claim JWT_Manager::create_token() sets.
+  const jwtFor = (userId: number) => {
+    const payload = btoa(JSON.stringify({ data: { user_id: userId } }))
+      .replace(/=+$/, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+    return `header.${payload}.signature`;
+  };
+
+  const refreshSucceeds = () =>
+    HttpResponse.json({ success: true, data: { token: NEW_TOKEN, refresh_token: NEW_REFRESH_TOKEN } });
+
+  const switchToOtherAccount = () => {
+    localStorage.setItem('zen_user', JSON.stringify({ id: OTHER_USER_ID }));
+    localStorage.setItem('zen_jwt', 'other.account.jwt');
+    localStorage.setItem('zen_refresh_token', 'other-account-refresh');
+  };
+
+  const listen = () => {
+    const onRefreshed = vi.fn();
+    const onExpired = vi.fn();
+    window.addEventListener(TOKEN_REFRESHED_EVENT, onRefreshed);
+    window.addEventListener(SESSION_EXPIRED_EVENT, onExpired);
+    return {
+      onRefreshed,
+      onExpired,
+      stop: () => {
+        window.removeEventListener(TOKEN_REFRESHED_EVENT, onRefreshed);
+        window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
+      },
+    };
+  };
+
+  it('does not restore tokens when the user logs out while the renewal is in flight', async () => {
+    seedSession();
+    localStorage.setItem('zen_jwt', OLD_TOKEN);
+    server.use(
+      http.post(`${REST_BASE}/zeneyer-auth/v1/auth/refresh`, () => {
+        localStorage.clear(); // what UserContext.logout() does mid-request
+        return refreshSucceeds();
+      })
+    );
+    const events = listen();
+
+    const result = await refreshAccessToken(OLD_TOKEN);
+
+    expect(result).toBeNull();
+    expect(localStorage.getItem('zen_jwt')).toBeNull();
+    expect(localStorage.getItem('zen_refresh_token')).toBeNull();
+    expect(events.onRefreshed).not.toHaveBeenCalled();
+    expect(events.onExpired).not.toHaveBeenCalled(); // the user chose to log out
+    events.stop();
+  });
+
+  it('keeps the new account\'s tokens when the account switches while the renewal is in flight', async () => {
+    seedSession();
+    localStorage.setItem('zen_jwt', OLD_TOKEN);
+    server.use(
+      http.post(`${REST_BASE}/zeneyer-auth/v1/auth/refresh`, () => {
+        switchToOtherAccount();
+        return refreshSucceeds();
+      })
+    );
+    const events = listen();
+
+    const result = await refreshAccessToken(OLD_TOKEN);
+
+    expect(result).toBeNull();
+    expect(localStorage.getItem('zen_jwt')).toBe('other.account.jwt');
+    expect(localStorage.getItem('zen_refresh_token')).toBe('other-account-refresh');
+    expect(JSON.parse(localStorage.getItem('zen_user') as string)).toMatchObject({ id: OTHER_USER_ID });
+    expect(events.onRefreshed).not.toHaveBeenCalled();
+    events.stop();
+  });
+
+  it('does not clear or expire the new account\'s session when the old refresh token is rejected', async () => {
+    seedSession();
+    localStorage.setItem('zen_jwt', OLD_TOKEN);
+    server.use(
+      http.post(`${REST_BASE}/zeneyer-auth/v1/auth/refresh`, () => {
+        switchToOtherAccount();
+        return HttpResponse.json({ code: 'invalid_refresh_token', message: 'Invalid refresh token' }, { status: 401 });
+      })
+    );
+    const events = listen();
+
+    const result = await refreshAccessToken(OLD_TOKEN);
+
+    expect(result).toBeNull();
+    expect(localStorage.getItem('zen_refresh_token')).toBe('other-account-refresh');
+    expect(events.onExpired).not.toHaveBeenCalled();
+    events.stop();
+  });
+
+  it('does not renew with the stored session when the rejected request belonged to another account', async () => {
+    seedSession(); // stored session is user 42
+    let refreshCalls = 0;
+    server.use(
+      http.post(`${REST_BASE}/zeneyer-auth/v1/auth/refresh`, () => {
+        refreshCalls += 1;
+        return refreshSucceeds();
+      })
+    );
+    const events = listen();
+
+    // The 401 came from a request sent with user 7's token, e.g. before another tab logged in as 42.
+    const result = await refreshAccessToken(jwtFor(OTHER_USER_ID));
+
+    expect(result).toBeNull();
+    expect(refreshCalls).toBe(0);
+    expect(localStorage.getItem('zen_refresh_token')).toBe('valid-refresh-token');
+    expect(events.onRefreshed).not.toHaveBeenCalled();
+    expect(events.onExpired).not.toHaveBeenCalled();
+    events.stop();
+  });
+});
+
+describe('getTokenUserId', () => {
+  const encode = (claims: unknown) =>
+    `h.${btoa(JSON.stringify(claims)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_')}.s`;
+
+  it('reads the user id claim, numeric or numeric string', () => {
+    expect(getTokenUserId(encode({ data: { user_id: 42 } }))).toBe(42);
+    expect(getTokenUserId(encode({ data: { user_id: '42' } }))).toBe(42);
+  });
+
+  it('returns null for anything that is not a decodable token with that claim', () => {
+    expect(getTokenUserId(null)).toBeNull();
+    expect(getTokenUserId('')).toBeNull();
+    expect(getTokenUserId('old.jwt.token')).toBeNull();
+    expect(getTokenUserId('not-a-jwt')).toBeNull();
+    expect(getTokenUserId(encode({ data: {} }))).toBeNull();
+    expect(getTokenUserId(encode({ data: { user_id: 'abc' } }))).toBeNull();
   });
 });
 
