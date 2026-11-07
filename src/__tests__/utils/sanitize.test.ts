@@ -397,14 +397,25 @@ describe('sanitizeHtml', () => {
 describe('regressão: bypasses de open redirect', () => {
   // Browsers removem tab/newline e tratam "\" como "/" em URLs http(s),
   // então estes valores navegam para //evil.example.
+  // Atenção ao escape: em string JS, "\\" é uma barra invertida literal, enquanto "\e" e "\/"
+  // são escapes de identidade ("/\evil.example" viraria "/evil.example", um caminho interno
+  // válido). "\t", "\n" e "\r" abaixo são os caracteres de controle de verdade.
   const hostileInternalLooking = [
-    '/\evil.example',
-    '/\/evil.example',
+    '/\\evil.example',
+    '/\\/evil.example',
     '/\t/evil.example',
     '/\n/evil.example',
     '/\r/evil.example',
-    '  /\evil.example',
+    '  /\\evil.example',
   ];
+
+  it('os valores hostis contêm de fato o caractere que o teste promete', () => {
+    // Trava o erro de escape: sem isso, "/\evil" vira "/evil" e os casos viram falsos positivos.
+    expect(hostileInternalLooking[0]).toBe(`/${String.fromCharCode(92)}evil.example`);
+    expect(hostileInternalLooking[1]).toBe(`/${String.fromCharCode(92)}/evil.example`);
+    expect(hostileInternalLooking[2]).toBe(`/${String.fromCharCode(9)}/evil.example`);
+    expect(hostileInternalLooking[5]).toBe(`  /${String.fromCharCode(92)}evil.example`);
+  });
 
   it.each(hostileInternalLooking)('isInternalPath rejeita %j', (path) => {
     expect(isInternalPath(path)).toBe(false);
@@ -420,7 +431,8 @@ describe('regressão: bypasses de open redirect', () => {
   });
 
   it('continua aceitando caminhos internos legítimos', () => {
-    for (const path of ['/', '/events', '/a/b?x=1', '/a\b']) {
+    // "/a\\b" é uma barra invertida literal no meio do caminho (só o início importa para o bypass).
+    for (const path of ['/', '/events', '/a/b?x=1', '/a\\b']) {
       expect(isInternalPath(path)).toBe(true);
       expect(safeRedirect(path, 'BLOCKED')).toBe(path);
     }
