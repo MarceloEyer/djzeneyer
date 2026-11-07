@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { http, HttpResponse } from 'msw';
 import { waitFor } from '@testing-library/react';
 import { server } from '../../test/mocks/server';
@@ -18,6 +18,11 @@ const seedSession = (refreshToken = 'valid-refresh-token', userId = 42) => {
 
 beforeEach(() => {
   localStorage.clear();
+});
+
+afterEach(() => {
+  // Tests that fake the Web Locks API define it as an own property of navigator.
+  Reflect.deleteProperty(navigator, 'locks');
 });
 
 describe('refreshAccessToken', () => {
@@ -90,6 +95,81 @@ describe('refreshAccessToken', () => {
     expect(localStorage.getItem('zen_refresh_token')).toBeNull();
     expect(onExpired).toHaveBeenCalledTimes(1);
     window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
+  });
+
+  describe('across browser tabs', () => {
+    const countRefreshCalls = () => {
+      const counter = { calls: 0 };
+      server.use(
+        http.post(`${REST_BASE}/zeneyer-auth/v1/auth/refresh`, () => {
+          counter.calls += 1;
+          return HttpResponse.json({ success: true, data: { token: 'unexpected.jwt', refresh_token: 'unexpected-refresh' } });
+        })
+      );
+      return counter;
+    };
+
+    it('reuses the access token another tab already stored instead of redeeming the refresh token again', async () => {
+      seedSession();
+      localStorage.setItem('zen_jwt', NEW_TOKEN); // another tab renewed after this tab's request was rejected
+      const refreshCalls = countRefreshCalls();
+      const onRefreshed = vi.fn();
+      window.addEventListener(TOKEN_REFRESHED_EVENT, onRefreshed);
+
+      const result = await refreshAccessToken(OLD_TOKEN);
+
+      expect(result).toBe(NEW_TOKEN);
+      expect(refreshCalls.calls).toBe(0);
+      expect(onRefreshed).toHaveBeenCalledTimes(1);
+      expect((onRefreshed.mock.calls[0][0] as CustomEvent<{ token: string }>).detail.token).toBe(NEW_TOKEN);
+      window.removeEventListener(TOKEN_REFRESHED_EVENT, onRefreshed);
+    });
+
+    it('takes a cross-tab Web Lock and adopts the token the previous holder stored while this tab waited', async () => {
+      seedSession();
+      const refreshCalls = countRefreshCalls();
+      const lockNames: string[] = [];
+      Object.defineProperty(navigator, 'locks', {
+        configurable: true,
+        value: {
+          request: async (name: string, task: () => Promise<unknown>) => {
+            lockNames.push(name);
+            // The other tab held the lock, refreshed, and released it before this task runs.
+            localStorage.setItem('zen_jwt', NEW_TOKEN);
+            localStorage.setItem('zen_refresh_token', NEW_REFRESH_TOKEN);
+            return task();
+          },
+        },
+      });
+
+      const result = await refreshAccessToken(OLD_TOKEN);
+
+      expect(lockNames).toEqual(['zen-auth-refresh']);
+      expect(result).toBe(NEW_TOKEN);
+      expect(refreshCalls.calls).toBe(0);
+      expect(localStorage.getItem('zen_refresh_token')).toBe(NEW_REFRESH_TOKEN);
+    });
+
+    it('keeps the other tab\'s session when its rotation made this tab\'s refresh token look invalid (no Web Locks)', async () => {
+      seedSession('old-refresh-token');
+      server.use(
+        http.post(`${REST_BASE}/zeneyer-auth/v1/auth/refresh`, () => {
+          // Meanwhile, the other tab redeemed the same token first and stored its rotated pair.
+          localStorage.setItem('zen_jwt', NEW_TOKEN);
+          localStorage.setItem('zen_refresh_token', NEW_REFRESH_TOKEN);
+          return HttpResponse.json({ code: 'invalid_refresh_token', message: 'Invalid refresh token' }, { status: 401 });
+        })
+      );
+      const onExpired = vi.fn();
+      window.addEventListener(SESSION_EXPIRED_EVENT, onExpired);
+
+      const result = await refreshAccessToken(OLD_TOKEN);
+
+      expect(result).toBe(NEW_TOKEN);
+      expect(localStorage.getItem('zen_refresh_token')).toBe(NEW_REFRESH_TOKEN);
+      expect(onExpired).not.toHaveBeenCalled();
+      window.removeEventListener(SESSION_EXPIRED_EVENT, onExpired);
+    });
   });
 });
 

@@ -20,6 +20,9 @@ interface UserContextType {
   loading: boolean;
   loadingInitial: boolean;
   error: string | null;
+  /** True after a silent renewal failed and the session was ended; drives the "session expired" notice. */
+  sessionExpired: boolean;
+  dismissSessionExpired: () => void;
   login: (email: string, password: string) => Promise<void>;
   /** Resolves 'pending' when the server only sent a verification e-mail (no session created). */
   register: (name: string, email: string, password: string, turnstileToken?: string) => Promise<'authenticated' | 'pending'>;
@@ -37,6 +40,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [loading, setLoading] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const dismissSessionExpired = useCallback(() => setSessionExpired(false), []);
 
   const logout = useCallback(() => {
     setUser(null);
@@ -74,9 +79,11 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser((prev) => (prev ? { ...prev, token: detail.token } : prev));
     };
 
+    // Not `error`: no auth screen renders that field, and ResetPasswordPage
+    // clears it on mount. MainLayout shows a localized toast from this flag.
     const onSessionExpired = () => {
       logout();
-      setError('Sua sessão expirou. Entre novamente.');
+      setSessionExpired(true);
     };
 
     window.addEventListener(TOKEN_REFRESHED_EVENT, onTokenRefreshed);
@@ -105,9 +112,14 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             if (!data.authenticated) {
               logout();
             } else if (data.user) {
+              // fetchAuthSessionFn may have renewed an expired access token on
+              // the way (see lib/tokenRefresh.ts), which writes the new one to
+              // localStorage. Persist that one — not the `token` captured before
+              // the request — or this call would put the expired token back.
+              const currentToken = localStorage.getItem('zen_jwt') || token;
               // Merge top-level roles from session response into the user object
               // so that roles are preserved in localStorage and UserContext state.
-              saveSession({ ...data.user, roles: data.roles ?? [] }, token);
+              saveSession({ ...data.user, roles: data.roles ?? [] }, currentToken);
             }
           } catch (err) {
             logger.error('USER_CONTEXT', 'Session validation error', { error: String(err) });
@@ -224,6 +236,8 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       loading,
       loadingInitial,
       error,
+      sessionExpired,
+      dismissSessionExpired,
       login,
       register,
       googleLogin,
@@ -232,7 +246,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       resetPassword,
       clearError,
     }),
-    [user, loading, loadingInitial, error, login, register, googleLogin, logout, requestPasswordReset, resetPassword, clearError]
+    [user, loading, loadingInitial, error, sessionExpired, dismissSessionExpired, login, register, googleLogin, logout, requestPasswordReset, resetPassword, clearError]
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

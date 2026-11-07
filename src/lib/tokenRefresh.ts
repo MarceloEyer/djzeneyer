@@ -35,6 +35,32 @@ const getStoredUserId = (): number | null => {
   }
 };
 
+const REFRESH_LOCK_NAME = 'zen-auth-refresh';
+
+/**
+ * Serializes renewal across every tab/window of this origin. `inFlight` below
+ * only de-duplicates within one JavaScript realm, but all tabs share the same
+ * localStorage refresh token and the backend rotates it on use, so two tabs
+ * refreshing at once would make one of them redeem a revoked token. Falls
+ * back to running directly where the Web Locks API is unavailable.
+ */
+const withRefreshLock = <T>(task: () => Promise<T>): Promise<T> =>
+  typeof navigator !== 'undefined' && navigator.locks
+    ? navigator.locks.request(REFRESH_LOCK_NAME, task)
+    : task();
+
+/**
+ * If localStorage holds an access token different from the one that was
+ * rejected, another tab already renewed: mirror it to this tab's state and
+ * return it. Returns null when there is nothing newer to adopt.
+ */
+const adoptRenewedToken = (staleToken: string | null): string | null => {
+  const current = localStorage.getItem(JWT_KEY);
+  if (!current || current === staleToken) return null;
+  window.dispatchEvent(new CustomEvent(TOKEN_REFRESHED_EVENT, { detail: { token: current } }));
+  return current;
+};
+
 /**
  * Exchanges the stored refresh token for a new access token.
  * Returns the new access token, or null if the session cannot be renewed
@@ -44,33 +70,54 @@ const getStoredUserId = (): number | null => {
  * A transient failure (network error) rejects instead, so a flaky request
  * doesn't end the session.
  */
-const runRefresh = async (): Promise<string | null> => {
-  const refreshToken = localStorage.getItem(REFRESH_KEY);
-  const userId = getStoredUserId();
+const runRefresh = (staleToken: string | null): Promise<string | null> =>
+  withRefreshLock(async () => {
+    // Another tab may have renewed while this one waited for the lock (or
+    // between the 401 and now). The shared localStorage then already holds a
+    // newer access token than the one that was rejected: reuse it instead of
+    // redeeming a refresh token that tab just rotated away.
+    const adopted = adoptRenewedToken(staleToken);
+    if (adopted) return adopted;
 
-  if (!refreshToken || !userId) {
-    window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
-    return null;
-  }
+    const refreshToken = localStorage.getItem(REFRESH_KEY);
+    const userId = getStoredUserId();
 
-  try {
-    const { token, refreshToken: newRefreshToken } = await authRefresh(refreshToken, userId);
-
-    localStorage.setItem(JWT_KEY, token);
-    localStorage.setItem(REFRESH_KEY, newRefreshToken);
-    window.dispatchEvent(new CustomEvent(TOKEN_REFRESHED_EVENT, { detail: { token } }));
-    return token;
-  } catch (err) {
-    if (err instanceof RefreshTokenInvalidError) {
-      localStorage.removeItem(REFRESH_KEY);
+    if (!refreshToken || !userId) {
       window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
       return null;
     }
-    throw err;
-  }
-};
 
-export const refreshAccessToken = (): Promise<string | null> => {
+    try {
+      const { token, refreshToken: newRefreshToken } = await authRefresh(refreshToken, userId);
+
+      localStorage.setItem(JWT_KEY, token);
+      localStorage.setItem(REFRESH_KEY, newRefreshToken);
+      window.dispatchEvent(new CustomEvent(TOKEN_REFRESHED_EVENT, { detail: { token } }));
+      return token;
+    } catch (err) {
+      if (err instanceof RefreshTokenInvalidError) {
+        // Without Web Locks another tab can rotate the refresh token while this
+        // request is in flight, which makes the token we sent look "invalid".
+        // If storage now holds a different refresh token, that tab won: keep its
+        // session instead of wiping the token it just stored.
+        if (localStorage.getItem(REFRESH_KEY) !== refreshToken) {
+          const adoptedAfterRace = adoptRenewedToken(staleToken);
+          if (adoptedAfterRace) return adoptedAfterRace;
+        }
+        localStorage.removeItem(REFRESH_KEY);
+        window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
+        return null;
+      }
+      throw err;
+    }
+  });
+
+/**
+ * @param staleToken The access token the rejected request was sent with. Lets
+ * a late 401 (from this tab or another) tell "my token is old" from "my token
+ * is the current one and really expired". Defaults to whatever is stored now.
+ */
+export const refreshAccessToken = (staleToken?: string | null): Promise<string | null> => {
   if (inFlight) return inFlight;
 
   // IMPORTANT: when runRefresh() has no `await` on its path (the "nothing to
@@ -83,7 +130,7 @@ export const refreshAccessToken = (): Promise<string | null> => {
   // function body can run synchronously up to its first `await` — including
   // past a `return` — and would otherwise clobber this assignment by
   // resetting `inFlight` to null *before* it was ever set to the promise.
-  const promise = runRefresh().finally(() => {
+  const promise = runRefresh(staleToken ?? localStorage.getItem(JWT_KEY)).finally(() => {
     if (inFlight === promise) {
       inFlight = null;
     }

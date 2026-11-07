@@ -30,7 +30,7 @@ export const fetchWithAuthRetry = async (
   }
 
   const { refreshAccessToken } = await import('./tokenRefresh');
-  const newToken = await refreshAccessToken();
+  const newToken = await refreshAccessToken(token);
   if (!newToken) {
     return res; // Session couldn't be renewed; original 401 stands.
   }
