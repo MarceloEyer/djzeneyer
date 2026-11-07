@@ -50,9 +50,11 @@ const withRefreshLock = <T>(task: () => Promise<T>): Promise<T> =>
  * return it. Returns null when there is nothing newer to adopt. Callers must
  * have verified that the stored session is still the same account's.
  */
-const adoptRenewedToken = (staleToken: string | null): string | null => {
+const adoptRenewedToken = (staleToken: string | null, expectedUserId: number | null): string | null => {
   const current = localStorage.getItem(JWT_KEY);
   if (!current || current === staleToken) return null;
+  const currentUserId = getTokenUserId(current);
+  if (currentUserId !== null && currentUserId !== expectedUserId) return null;
   window.dispatchEvent(new CustomEvent(TOKEN_REFRESHED_EVENT, { detail: { token: current } }));
   return current;
 };
@@ -73,12 +75,14 @@ const runRefresh = (staleToken: string | null, expectedUserId: number | null): P
     // The user may have logged out, or switched account, while this call waited
     // for the lock. Their stored tokens are not ours to renew or overwrite.
     if (getStoredUserId() !== expectedUserId) return null;
+    const storedTokenUserId = getTokenUserId(localStorage.getItem(JWT_KEY));
+    if (storedTokenUserId !== null && storedTokenUserId !== expectedUserId) return null;
 
     // Another tab may have renewed while this one waited for the lock (or
     // between the 401 and now). The shared localStorage then already holds a
     // newer access token than the one that was rejected: reuse it instead of
     // redeeming a refresh token that tab just rotated away.
-    const adopted = adoptRenewedToken(staleToken);
+    const adopted = adoptRenewedToken(staleToken, expectedUserId);
     if (adopted) return adopted;
 
     const refreshToken = localStorage.getItem(REFRESH_KEY);
@@ -98,7 +102,7 @@ const runRefresh = (staleToken: string | null, expectedUserId: number | null): P
       if (getStoredUserId() !== userId) return null;
       // Same account, but its session was replaced or rotated by another context
       // while we waited: keep that one and only pick up its access token.
-      if (localStorage.getItem(REFRESH_KEY) !== refreshToken) return adoptRenewedToken(staleToken);
+      if (localStorage.getItem(REFRESH_KEY) !== refreshToken) return adoptRenewedToken(staleToken, userId);
 
       localStorage.setItem(JWT_KEY, token);
       localStorage.setItem(REFRESH_KEY, newRefreshToken);
@@ -113,7 +117,7 @@ const runRefresh = (staleToken: string | null, expectedUserId: number | null): P
         // request is in flight, which makes the token we sent look "invalid".
         // If storage now holds a different refresh token, that tab won: keep its
         // session instead of wiping the token it just stored.
-        if (localStorage.getItem(REFRESH_KEY) !== refreshToken) return adoptRenewedToken(staleToken);
+        if (localStorage.getItem(REFRESH_KEY) !== refreshToken) return adoptRenewedToken(staleToken, userId);
 
         localStorage.removeItem(REFRESH_KEY);
         window.dispatchEvent(new CustomEvent(SESSION_EXPIRED_EVENT));
@@ -134,7 +138,7 @@ export const refreshAccessToken = (staleToken?: string | null): Promise<string |
   // The token's own claim wins over the stored account: another tab may have
   // switched accounts since this request was sent.
   const userId = getTokenUserId(stale) ?? getStoredUserId();
-  const key = String(userId);
+  const key = `${String(userId)}:${localStorage.getItem(REFRESH_KEY) ?? ''}`;
 
   const running = inFlight.get(key);
   if (running) return running;
