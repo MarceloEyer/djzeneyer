@@ -77,11 +77,26 @@ class Activator {
     }
     
     private static function set_default_options() {
+        // Defensive: load Core\JWT_Manager explicitly rather than assuming
+        // ZenEyer_Auth_Pro's constructor already ran in this request. The
+        // require is idempotent (require_once), so this is safe even if the
+        // class is already loaded.
+        if (!class_exists('\\ZenEyer\\Auth\\Core\\JWT_Manager') && defined('ZENEYER_AUTH_PATH')) {
+            require_once ZENEYER_AUTH_PATH . 'includes/Core/class-jwt-manager.php';
+        }
+
+        $default_expiration = class_exists('\\ZenEyer\\Auth\\Core\\JWT_Manager')
+            ? \ZenEyer\Auth\Core\JWT_Manager::DEFAULT_EXPIRATION
+            : 60; // Matches JWT_Manager::DEFAULT_EXPIRATION if the class truly can't load.
+
         $defaults = [
-            'token_expiration' => 7,
+            // Minutes — see Admin\Settings_Page::sanitize_token_expiration()
+            // and Core\JWT_Manager::get_expiration_minutes() for the single
+            // definition of this unit, its default, and its valid range.
+            'token_expiration' => $default_expiration,
             'google_client_id' => '',
         ];
-        
+
         if (!get_option('zeneyer_auth_settings')) {
             add_option('zeneyer_auth_settings', $defaults);
         }
