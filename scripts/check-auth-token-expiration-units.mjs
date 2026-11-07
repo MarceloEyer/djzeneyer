@@ -12,10 +12,35 @@ import path from 'path';
 const jwtManagerPath = path.resolve('plugins/zeneyer-auth/includes/Core/class-jwt-manager.php');
 const settingsPagePath = path.resolve('plugins/zeneyer-auth/includes/Admin/class-settings-page.php');
 
+const activatorPath = path.resolve('plugins/zeneyer-auth/includes/class-activator.php');
+
 const failures = [];
 
 const jwtManager = fs.existsSync(jwtManagerPath) ? fs.readFileSync(jwtManagerPath, 'utf8') : '';
 const settingsPage = fs.existsSync(settingsPagePath) ? fs.readFileSync(settingsPagePath, 'utf8') : '';
+const activator = fs.existsSync(activatorPath) ? fs.readFileSync(activatorPath, 'utf8') : '';
+
+function sliceFrom(source, marker, length) {
+  const start = source.indexOf(marker);
+  return start === -1 ? '' : source.slice(start, start + length);
+}
+
+// Returns the `{ ... }` body of a PHP method by brace matching, so a check can
+// look at one method instead of the whole file. Braces inside strings/comments
+// are not special-cased: the methods checked here don't contain unbalanced ones.
+function extractMethodBody(source, methodName) {
+  const signature = new RegExp(`function\\s+${methodName}\\s*\\([^)]*\\)[^{]*\\{`).exec(source);
+  if (!signature) return '';
+  let depth = 1;
+  let i = signature.index + signature[0].length;
+  const bodyStart = i;
+  while (i < source.length && depth > 0) {
+    if (source[i] === '{') depth += 1;
+    else if (source[i] === '}') depth -= 1;
+    i += 1;
+  }
+  return depth === 0 ? source.slice(bodyStart, i - 1) : '';
+}
 
 if (!jwtManager) failures.push(`${jwtManagerPath}: file not found`);
 if (!settingsPage) failures.push(`${settingsPagePath}: file not found`);
@@ -32,14 +57,57 @@ if (jwtManager && settingsPage) {
     );
   }
 
-  // The admin field and its sanitize fallback must read the single source of
-  // truth (JWT_Manager::DEFAULT_EXPIRATION), not a hardcoded magic number that
-  // can silently drift from what the token code actually consumes.
-  if (!settingsPage.includes('JWT_Manager::DEFAULT_EXPIRATION')) {
+  // Each place that decides a token_expiration default must read the single
+  // source of truth (JWT_Manager::DEFAULT_EXPIRATION) on its own. Checking the
+  // whole file for one mention is not enough: the form field could reference
+  // the constant while the save-time fallback (or the activator) keeps a
+  // hardcoded number that silently drifts from what the token code consumes.
+  const settingsFieldRegion = sliceFrom(settingsPage, "add_settings_field('token_expiration'", 900);
+  if (!settingsFieldRegion.includes('JWT_Manager::DEFAULT_EXPIRATION')) {
     failures.push(
-      'class-settings-page.php: token_expiration field/sanitize default must reference ' +
-        'JWT_Manager::DEFAULT_EXPIRATION instead of a hardcoded number.'
+      "class-settings-page.php: the add_settings_field('token_expiration') default must reference " +
+        'JWT_Manager::DEFAULT_EXPIRATION.'
     );
+  }
+
+  const sanitizeBody = extractMethodBody(settingsPage, 'sanitize_token_expiration');
+  if (!sanitizeBody) {
+    failures.push('class-settings-page.php: sanitize_token_expiration() not found.');
+  } else {
+    if (!sanitizeBody.includes('JWT_Manager::DEFAULT_EXPIRATION')) {
+      failures.push(
+        'class-settings-page.php: sanitize_token_expiration() fallback must reference ' +
+          'JWT_Manager::DEFAULT_EXPIRATION instead of a hardcoded number.'
+      );
+    }
+    if (!sanitizeBody.includes('JWT_Manager::sanitize_expiration_minutes')) {
+      failures.push(
+        'class-settings-page.php: sanitize_token_expiration() must validate the previous value with ' +
+          'JWT_Manager::sanitize_expiration_minutes() so save-time and emission-time rules stay identical.'
+      );
+    }
+  }
+
+  if (activator) {
+    const defaultsBody = extractMethodBody(activator, 'set_default_options');
+    if (!defaultsBody) {
+      failures.push('class-activator.php: set_default_options() not found.');
+    } else {
+      if (!defaultsBody.includes('JWT_Manager::DEFAULT_EXPIRATION')) {
+        failures.push(
+          'class-activator.php: set_default_options() must derive token_expiration from ' +
+            'JWT_Manager::DEFAULT_EXPIRATION.'
+        );
+      }
+      if (/['"]token_expiration['"]\s*=>\s*\d+/.test(defaultsBody)) {
+        failures.push(
+          'class-activator.php: set_default_options() hardcodes a numeric token_expiration; ' +
+            'a fresh install would persist it as minutes (the original "7" incident).'
+        );
+      }
+    }
+  } else {
+    failures.push(`${activatorPath}: file not found`);
   }
 
   // The label must say minutes, not days — the exact unit mismatch that
