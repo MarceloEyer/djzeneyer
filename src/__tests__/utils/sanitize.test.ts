@@ -393,3 +393,60 @@ describe('sanitizeHtml', () => {
     });
   });
 });
+describe('regressão: bypasses de open redirect', () => {
+  // Browsers removem tab/newline e tratam "\" como "/" em URLs http(s),
+  // então estes valores navegam para //evil.example.
+  // Atenção ao escape: em string JS, "\\" é uma barra invertida literal, enquanto "\e" e "\/"
+  // são escapes de identidade ("/\evil.example" viraria "/evil.example", um caminho interno
+  // válido). "\t", "\n" e "\r" abaixo são os caracteres de controle de verdade.
+  const hostileInternalLooking = [
+    '/\\evil.example',
+    '/\\/evil.example',
+    '/\t/evil.example',
+    '/\n/evil.example',
+    '/\r/evil.example',
+    '  /\\evil.example',
+  ];
+
+  it('os valores hostis contêm de fato o caractere que o teste promete', () => {
+    // Trava o erro de escape: sem isso, "/\evil" vira "/evil" e os casos viram falsos positivos.
+    expect(hostileInternalLooking[0]).toBe(`/${String.fromCharCode(92)}evil.example`);
+    expect(hostileInternalLooking[1]).toBe(`/${String.fromCharCode(92)}/evil.example`);
+    expect(hostileInternalLooking[2]).toBe(`/${String.fromCharCode(9)}/evil.example`);
+    expect(hostileInternalLooking[5]).toBe(`  /${String.fromCharCode(92)}evil.example`);
+  });
+
+  it.each(hostileInternalLooking)('isInternalPath rejeita %j', (path) => {
+    expect(isInternalPath(path)).toBe(false);
+  });
+
+  it.each(hostileInternalLooking)('safeRedirect bloqueia %j', (url) => {
+    expect(safeRedirect(url, 'BLOCKED')).toBe('BLOCKED');
+  });
+
+  it.each(hostileInternalLooking)('safeUrl bloqueia %j com o fallback informado', (url) => {
+    expect(safeUrl(url, 'BLOCKED')).toBe('BLOCKED');
+    expect(safeUrl(url)).toBe('#');
+  });
+
+  it('continua aceitando caminhos internos legítimos', () => {
+    // "/a\\b" é uma barra invertida literal no meio do caminho (só o início importa para o bypass).
+    for (const path of ['/', '/events', '/a/b?x=1', '/a\\b']) {
+      expect(isInternalPath(path)).toBe(true);
+      expect(safeRedirect(path, 'BLOCKED')).toBe(path);
+    }
+  });
+
+  it.each([
+    '//djzeneyer.com:x@evil.example/a.png',
+    '//djzeneyer.com:80@evil.example/a.png',
+    '//djzeneyer.com@evil.example/a.png',
+    '//user:pass@evil.example/a.png',
+  ])('safeUrl valida o host real (não o userinfo) em %s', (url) => {
+    expect(safeUrl(url, 'BLOCKED')).toBe('BLOCKED');
+  });
+
+  it('safeUrl ainda aceita protocol-relative confiável com porta', () => {
+    expect(safeUrl('//localhost:5173/a.png')).toBe('//localhost:5173/a.png');
+  });
+});

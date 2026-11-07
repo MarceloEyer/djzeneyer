@@ -130,8 +130,11 @@ const isDangerousUrl = (url: string): boolean =>
 export const isInternalPath = (path: string | undefined | null): boolean => {
     if (!path) return false;
     const trimmed = path.trim();
-    // Caminhos que começam com / mas não com // (que o navegador trata como protocolo atual)
-    return (trimmed.startsWith('/') && !trimmed.startsWith('//')) ||
+    // Browsers ignoram tab/newline e tratam "\" como "/" em URLs http(s): "/\evil.com" e
+    // "/<TAB>/evil.com" viram "//evil.com". Normaliza igual ao browser antes de checar.
+    const normalized = trimmed.replace(STRIP_CTRL_RE, '');
+    // Caminhos que começam com / mas não com // ou /\ (que o navegador trata como protocolo atual)
+    return (normalized.startsWith('/') && !normalized.startsWith('//') && !normalized.startsWith('/\\')) ||
         trimmed.startsWith('./') ||
         trimmed.startsWith('../') ||
         trimmed === '#' ||
@@ -166,7 +169,9 @@ export const safeUrl = (url: string | undefined | null, fallback: string = '#'):
 
         // Se começar com //, verificamos o domínio
         if (trimmedUrl.startsWith('//')) {
-            const domain = trimmedUrl.substring(2).split('/')[0].split(':')[0].toLowerCase();
+            // Usa o parser de URL (como o browser) para extrair o host real, ignorando userinfo
+            // ("//djzeneyer.com:x@evil.com" tem host evil.com).
+            const domain = new URL(`https:${trimmedUrl}`).hostname.toLowerCase();
             if (TRUSTED_DOMAINS.some(trusted => domain === trusted || domain.endsWith('.' + trusted))) {
                 return trimmedUrl;
             }
