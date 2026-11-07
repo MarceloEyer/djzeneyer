@@ -4,11 +4,14 @@ import Navbar from '../components/Layout/Navbar';
 import Footer from '../components/common/Footer';
 import ScrollToTop from '../components/ScrollToTop';
 import { findKeyByPath } from '../config/routes';
+import { useUser } from '../contexts/UserContext';
 
 const AuthModal = lazy(() => import('../components/auth/AuthModal'));
+const SessionExpiredToast = lazy(() => import('../components/auth/SessionExpiredToast'));
 
 const MainLayout: React.FC = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { sessionExpired } = useUser();
   const location = useLocation();
 
   const routeKey = findKeyByPath(location.pathname);
@@ -40,6 +43,12 @@ const MainLayout: React.FC = () => {
         {isAuthModalOpen ? (
           <Suspense fallback={null}>
             <AuthModal isOpen={isAuthModalOpen} onClose={closeModal} />
+          </Suspense>
+        ) : null}
+
+        {sessionExpired ? (
+          <Suspense fallback={null}>
+            <SessionExpiredToast />
           </Suspense>
         ) : null}
       </div>
