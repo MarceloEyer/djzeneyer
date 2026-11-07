@@ -393,7 +393,6 @@ describe('sanitizeHtml', () => {
     });
   });
 });
-
 describe('regressão: bypasses de open redirect', () => {
   // Browsers removem tab/newline e tratam "\" como "/" em URLs http(s),
   // então estes valores navegam para //evil.example.
