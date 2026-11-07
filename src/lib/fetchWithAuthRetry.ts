@@ -1,13 +1,17 @@
 // src/lib/fetchWithAuthRetry.ts
 // Kept out of src/config/api.ts on purpose: api.ts is imported from the app
 // shell (index.html's entry graph), so anything exported from it ships in
-// the initial JS bundle. This function is only used by route-lazy
-// authenticated hooks (useAuthenticatedQueries.ts, useMutations.ts), so
-// giving it — and its dynamic import of lib/tokenRefresh.ts — its own file
-// lets both stay out of the eagerly-loaded bundle entirely.
+// the initial JS bundle. Giving this function its own file keeps its
+// dynamic import of lib/tokenRefresh.ts — the actual renewal logic — out of
+// the eagerly-loaded bundle.
+//
+// NOTE: this file itself IS in the initial bundle. UserContext statically
+// imports fetchAuthSessionFn, which lives in hooks/useAuthenticatedQueries.ts,
+// and that module imports this one. So keep static imports here to a minimum
+// and put anything new (account/identity checks, storage helpers) in
+// lib/tokenRefresh.ts or lib/authStorage.ts, which only that lazy module loads.
 
 import { getAuthHeaders } from '../config/api';
-import { getStoredUserId, getTokenUserId } from './authStorage';
 
 /**
  * Like `fetch`, but when the call is authenticated (a `token` is passed) and
@@ -24,10 +28,6 @@ export const fetchWithAuthRetry = async (
   token: string | undefined,
   init: RequestInit = {}
 ): Promise<Response> => {
-  // The account this request acts as, captured before any await: the stored session
-  // can change (logout, another tab's login) while the request and renewal run.
-  const requestedAs = token ? (getTokenUserId(token) ?? getStoredUserId()) : null;
-
   const res = await fetch(url, { ...init, headers: { ...init.headers, ...getAuthHeaders(token) } });
 
   if (res.status !== 401 || !token) {
@@ -35,12 +35,12 @@ export const fetchWithAuthRetry = async (
   }
 
   const { refreshAccessToken } = await import('./tokenRefresh');
+  // Renewal is bound to the account that owns `token` (its own user_id claim): it
+  // returns null if the stored session was logged out or switched to another
+  // account meanwhile, so a non-null result is always this account's token.
   const newToken = await refreshAccessToken(token);
   if (!newToken) {
-    return res; // Session couldn't be renewed; original 401 stands.
-  }
-  if (getStoredUserId() !== requestedAs) {
-    return res; // Logged out or switched account meanwhile: never replay this request as someone else.
+    return res; // Session couldn't be renewed (or changed hands); original 401 stands.
   }
 
   return fetch(url, { ...init, headers: { ...init.headers, ...getAuthHeaders(newToken) } });
