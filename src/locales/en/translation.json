@@ -221,6 +221,7 @@
   "error": "Error",
   "success": "Success",
   "auth": {
+    "sessionExpired": "Your session expired. Please sign in again.",
     "login": {
       "title": "Welcome Back 👋",
       "subtitle": "Sign in to access your Zen Tribe account",

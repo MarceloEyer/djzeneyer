@@ -252,6 +252,7 @@
   "error": "Erro",
   "success": "Sucesso",
   "auth": {
+    "sessionExpired": "Sua sessão expirou. Entre novamente.",
     "login": {
       "title": "Bem-vindo de Volta 👋",
       "subtitle": "Entre na sua conta Zen Tribe",
