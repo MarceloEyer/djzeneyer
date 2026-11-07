@@ -6,6 +6,7 @@ namespace ZenEyer\Tests;
 
 use Brain\Monkey;
 use Brain\Monkey\Functions;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ZenEyer\Auth\Admin\Settings_Page;
 
@@ -32,7 +33,12 @@ final class TokenExpirationNoticeTest extends TestCase
         parent::tearDown();
     }
 
-    private function renderNotice(?int $storedTokenExpiration, bool $canManageOptions = true): string
+    /**
+     * @param int|float|string|null $storedTokenExpiration Raw persisted value, exactly as get_option() would return
+     *                                                     it — including values the admin form can never write
+     *                                                     (e.g. "7.5" from an import or direct database edit).
+     */
+    private function renderNotice($storedTokenExpiration, bool $canManageOptions = true): string
     {
         Functions\when('current_user_can')->justReturn($canManageOptions);
         Functions\when('get_option')->alias(function ($name, $default = []) use ($storedTokenExpiration) {
@@ -67,6 +73,37 @@ final class TokenExpirationNoticeTest extends TestCase
         $output = $this->renderNotice(-999999);
 
         $this->assertSame('', $output);
+    }
+
+    /**
+     * JWT_Manager::sanitize_expiration_minutes() rejects a decimal (not integer-valued)
+     * and the emitter falls back to 60. Casting to int first would turn "7.5" into 7
+     * and warn "7 minutes" while tokens are really issued for 60.
+     *
+     * @param string|float $decimal
+     */
+    #[DataProvider('decimalRawValues')]
+    public function test_does_not_warn_for_a_decimal_raw_value_the_emitter_rejects($decimal): void
+    {
+        $this->assertSame('', $this->renderNotice($decimal));
+    }
+
+    /** @return array<string, array{0: string|float}> */
+    public static function decimalRawValues(): array
+    {
+        return [
+            'string 7.5'  => ['7.5'],
+            'float 7.5'   => [7.5],
+            'string 59.9' => ['59.9'],
+        ];
+    }
+
+    public function test_warns_for_a_numeric_string_that_is_a_valid_short_integer(): void
+    {
+        $output = $this->renderNotice('7');
+
+        $this->assertStringContainsString('notice-warning', $output);
+        $this->assertStringContainsString('7', $output);
     }
 
     public function test_does_not_warn_for_a_valid_high_value(): void

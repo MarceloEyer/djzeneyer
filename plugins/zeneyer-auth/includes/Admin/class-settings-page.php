@@ -50,7 +50,9 @@ class Settings_Page
         // clamped to DEFAULT_EXPIRATION at emission time; warning about the raw
         // number here would show a confusing figure that doesn't match what the
         // site is actually doing.
-        $effective = JWT_Manager::sanitize_expiration_minutes((int) $raw, JWT_Manager::DEFAULT_EXPIRATION);
+        // Pass $raw uncast: (int) "7.5" would become 7 *before* validation, while
+        // the emitter validates the raw value, rejects the decimal and issues 60.
+        $effective = JWT_Manager::sanitize_expiration_minutes($raw, JWT_Manager::DEFAULT_EXPIRATION);
 
         // Below ~1 hour is unusual for an access token and matches the
         // known-bad historical default (7) — worth a confirmation prompt,
@@ -267,14 +269,12 @@ class Settings_Page
     private function sanitize_token_expiration($raw): int
     {
         $existing = get_option($this->option_name, []);
-        $previous = (isset($existing['token_expiration']) && is_numeric($existing['token_expiration']))
-            ? (int) $existing['token_expiration']
-            : JWT_Manager::DEFAULT_EXPIRATION;
-        // The previous value only counts as a safe fallback if it was itself valid;
-        // JWT_Manager::get_expiration_minutes() applies the same guard at emission
-        // time regardless, but we don't want sanitize_settings() to resurrect an
-        // old invalid value (e.g. the historical "7" meant as days) as if it were fine.
-        $previous = JWT_Manager::sanitize_expiration_minutes($previous, JWT_Manager::DEFAULT_EXPIRATION);
+        $stored = is_array($existing) && isset($existing['token_expiration']) ? $existing['token_expiration'] : null;
+        // The previous value only counts as a safe fallback if it was itself valid.
+        // Validate the RAW stored value, exactly as JWT_Manager::get_expiration_minutes()
+        // does at emission time: casting first would turn a persisted "7.5" into 7 and
+        // keep a lifetime the emitter never actually uses (it falls back to 60).
+        $previous = JWT_Manager::sanitize_expiration_minutes($stored, JWT_Manager::DEFAULT_EXPIRATION);
 
         $is_valid_input = is_numeric($raw) && !is_array($raw) && !is_bool($raw)
             && (float) $raw === (float) (int) $raw;

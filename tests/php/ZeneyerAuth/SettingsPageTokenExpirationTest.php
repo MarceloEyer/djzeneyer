@@ -6,6 +6,7 @@ namespace ZenEyer\Tests;
 
 use Brain\Monkey;
 use Brain\Monkey\Functions;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ZenEyer\Auth\Admin\Settings_Page;
@@ -134,6 +135,32 @@ final class SettingsPageTokenExpirationTest extends TestCase
         $result = $this->sanitize('garbage', []);
 
         $this->assertSame(JWT_Manager::DEFAULT_EXPIRATION, $result);
+    }
+
+    /**
+     * "7.5" is not integer-valued, so JWT_Manager::get_expiration_minutes() ignores it
+     * and issues DEFAULT_EXPIRATION. The fallback here must agree with the emitter:
+     * casting to int first would keep 7, a lifetime nothing actually uses.
+     *
+     * @param string|float $decimal
+     */
+    #[DataProvider('decimalPersistedValues')]
+    public function test_decimal_persisted_previous_value_is_not_truncated_into_a_valid_fallback($decimal): void
+    {
+        Functions\expect('add_settings_error')->once();
+
+        $result = $this->sanitize('garbage', ['token_expiration' => $decimal]);
+
+        $this->assertSame(JWT_Manager::DEFAULT_EXPIRATION, $result);
+    }
+
+    /** @return array<string, array{0: string|float}> */
+    public static function decimalPersistedValues(): array
+    {
+        return [
+            'string 7.5' => ['7.5'],
+            'float 7.5'  => [7.5],
+        ];
     }
 
     public function test_invalid_persisted_previous_value_is_not_trusted_as_fallback(): void
