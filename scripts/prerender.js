@@ -790,10 +790,28 @@ async function prerender() {
 
           try {
             await page.waitForSelector('h1', { timeout: 10000 });
-            await wait(PRERENDER_WAIT_MS);
           } catch (e) {
             console.warn(`⚠️ Warning: Timeout on ${route}`);
           }
+
+          // HeadlessSEO (react-helmet-async) só aplica canonical/title depois do render.
+          // Espera o canonical apontar para o path da rota antes de gravar o HTML.
+          const expectedPath = new URL(url).pathname.replace(/\/+$/, '');
+          try {
+            await page.waitForFunction((path) => {
+              const link = document.querySelector('link[rel="canonical"]');
+              if (!link) return false;
+              try {
+                return new URL(link.href).pathname.replace(/\/+$/, '') === path;
+              } catch {
+                return false;
+              }
+            }, { timeout: 10000, polling: 200 }, expectedPath);
+          } catch (e) {
+            console.warn(`⚠️ Warning: canonical não corresponde a ${route} (gravando mesmo assim)`);
+          }
+
+          await wait(PRERENDER_WAIT_MS);
 
           const html = await page.content();
 
