@@ -25,6 +25,8 @@ console.log(`📡 Internal API Endpoint: ${INTERNAL_API_EVENTS}`);
 
 // 1. Carregar Rotas (SSOT — src/config/routes-slugs.json)
 let routesList = [];
+// Rota → path que o canonical da página deve apontar, quando diferente da própria rota.
+const EXPECTED_CANONICAL_OVERRIDES = new Map();
 const ROUTES_DATA_PATH = join(__dirname, '..', 'src', 'config', 'routes-slugs.json');
 const ENCYCLOPEDIA_TERMS_PATH = join(__dirname, '..', 'src', 'config', 'encyclopedia-term-slugs.json');
 try {
@@ -58,6 +60,13 @@ try {
         if (!routesList.includes(ptRoute)) { routesList.push(ptRoute); added++; }
       }
       console.log(`📚 Encyclopedia: ${added} rotas adicionadas ao prerender.`);
+    }
+    // TermsPage (usada também em conduct) canonicaliza para a rota de termos.
+    const conductRoute = data.routes.find(r => r.key === 'conduct');
+    const termsRoute = data.routes.find(r => r.key === 'terms');
+    if (conductRoute && termsRoute) {
+      EXPECTED_CANONICAL_OVERRIDES.set(`/${conductRoute.en}`, `/${termsRoute.en}`);
+      EXPECTED_CANONICAL_OVERRIDES.set(`/pt/${conductRoute.pt}`, `/pt/${termsRoute.pt}`);
     }
     console.log(`📋 SSOT: ${routesList.length} rotas (EN + PT).`);
   } else {
@@ -796,7 +805,8 @@ async function prerender() {
 
           // HeadlessSEO (react-helmet-async) só aplica canonical/title depois do render.
           // Espera o canonical apontar para o path da rota antes de gravar o HTML.
-          const expectedPath = new URL(url).pathname.replace(/\/+$/, '');
+          const routePath = new URL(url).pathname.replace(/\/+$/, '');
+          const expectedPath = (EXPECTED_CANONICAL_OVERRIDES.get(routePath) ?? routePath).replace(/\/+$/, '');
           try {
             await page.waitForFunction((path) => {
               const link = document.querySelector('link[rel="canonical"]');
