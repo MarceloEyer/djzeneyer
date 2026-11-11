@@ -809,7 +809,9 @@ async function prerender() {
           const expectedPath = (EXPECTED_CANONICAL_OVERRIDES.get(routePath) ?? routePath).replace(/\/+$/, '');
           try {
             await page.waitForFunction((path) => {
-              const link = document.querySelector('link[rel="canonical"]');
+              // O index.html pode trazer um canonical da home antes do helmet; o último é o da rota (como dedupePrerenderHead).
+              const links = document.querySelectorAll('link[rel="canonical"]');
+              const link = links[links.length - 1];
               if (!link) return false;
               try {
                 return new URL(link.href).pathname.replace(/\/+$/, '') === path;
