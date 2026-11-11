@@ -20,9 +20,20 @@ const LISTING_FALLBACK_PATHS = [
   '/pt/lancamentos',
 ];
 
+// Mesma altura aproximada da MusicPage renderizada no desktop (medida ao vivo: ~1620px).
+// Evita o salto de CLS quando o chunk lazy termina e o footer é empurrado para baixo.
+const MUSIC_FALLBACK_PATHS = [
+  '/zouk-music',
+  '/pt/musica-zouk',
+];
+
 export const getRouteFallbackHeight = (pathname: string) => {
   if (pathname === '/' || pathname === '/pt' || pathname === '/pt/') {
     return 'min-h-[3600px]';
+  }
+
+  if (MUSIC_FALLBACK_PATHS.some((path) => pathname.startsWith(path))) {
+    return 'min-h-[60vh] sm:min-h-[1600px]';
   }
 
   if (LISTING_FALLBACK_PATHS.some((path) => pathname.startsWith(path))) {
