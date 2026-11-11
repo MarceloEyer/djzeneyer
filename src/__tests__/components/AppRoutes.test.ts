@@ -11,6 +11,11 @@ describe('route fallback height', () => {
     expect(getRouteFallbackHeight('/releases/')).toBe('min-h-[1600px]');
   });
 
+  it('reserves the music page height on desktop for zouk-music routes', () => {
+    expect(getRouteFallbackHeight('/zouk-music/')).toBe('min-h-[60vh] sm:min-h-[1600px]');
+    expect(getRouteFallbackHeight('/pt/musica-zouk/')).toBe('min-h-[60vh] sm:min-h-[1600px]');
+  });
+
   it('uses the compact fallback for regular pages', () => {
     expect(getRouteFallbackHeight('/about-dj-zen-eyer/')).toBe('min-h-[60vh]');
   });
