@@ -261,7 +261,6 @@ const EventListContent = ({ lang }: { lang: string }) => {
           events={[]}
         />
         <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5">
-          <h1 className="sr-only">{t('events_page_title')}</h1>
           <p className="text-text/70">{t('events_no_results')}</p>
         </div>
       </div>
