@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: contract-tests-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
@@ -17,6 +21,7 @@ jobs:
   contract-fixtures:
     name: Contract Tests (fixture)
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
 
     steps:
     - name: Checkout repository
@@ -42,6 +47,7 @@ jobs:
     name: Smoke Production Contracts
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
+    timeout-minutes: 10
     continue-on-error: true
 
     steps:
