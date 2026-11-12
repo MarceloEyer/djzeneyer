@@ -251,8 +251,19 @@ const EventListContent = ({ lang }: { lang: string }) => {
 
   if (events.length === 0) {
     return (
-      <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5 animate-in fade-in duration-500">
-        <p className="text-text/70">{t('events_no_results')}</p>
+      <div className="mx-auto max-w-5xl animate-in fade-in duration-500">
+        <HeadlessSEO
+          title={t('events_page_title')}
+          description={t('events_page_meta_desc')}
+          url={`${origin}${getLocalizedRoute('events', lang as Language)}`}
+          image={`${ARTIST.site.baseUrl}/images/og/zen-eyer-events-og.jpg`}
+          imageAlt={t('og.image_alt.events_list')}
+          events={[]}
+        />
+        <div className="text-center py-20 bg-surface/30 rounded-3xl border border-border/5">
+          <h1 className="sr-only">{t('events_page_title')}</h1>
+          <p className="text-text/70">{t('events_no_results')}</p>
+        </div>
       </div>
     );
   }
