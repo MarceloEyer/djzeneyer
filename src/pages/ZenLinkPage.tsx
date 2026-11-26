@@ -173,7 +173,7 @@ const ZenLinkPageComponent = () => {
       <HeadlessSEO
         title="Zen Link | Zen Eyer"
         description="Página oficial de links de Zen Eyer para Instagram bio."
-        url={`${artist.site.baseUrl}/zenlink`}
+        url={`${artist.site.baseUrl}${getLocalizedRoute('zenlink', lang)}`}
         image="/images/og/zen-eyer-support-og.jpg"
         imageAlt={t('og.image_alt.zenlink')}
         robots="noindex, follow"
