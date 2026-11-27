@@ -130,9 +130,11 @@ async function fetchEvents() {
     const res = await fetch(INTERNAL_API_EVENTS, { headers: { Accept: 'application/json' } });
     if (res.ok) {
       const data = await res.json();
-      if (data && data.success && Array.isArray(data.events)) {
+      if (data && data.success && Array.isArray(data.events) && data.events.length > 0) {
         raw = data.events;
         source = 'INTERNAL_API';
+      } else if (data && data.success && Array.isArray(data.events)) {
+        console.warn('⚠️ API interna respondeu sem eventos. Tentando Bandsintown...');
       }
     }
   } catch (e) {
